@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ "develop"]
 
-env:
-  AWS_REGION: ap-northeast-2
-
 jobs:
   test-ci:
     name: Build test
