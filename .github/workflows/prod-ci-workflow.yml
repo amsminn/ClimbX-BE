@@ -1,10 +1,10 @@
-name: Spring Boot CI
+name: Prod CI Workflow
 
 on:
   workflow_dispatch:
 
   pull_request:
-    branches: [ "develop", "main" ]
+    branches: [ "main"]
 
 env:
   AWS_REGION: ap-northeast-2
