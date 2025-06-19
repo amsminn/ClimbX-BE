@@ -6,10 +6,6 @@ on:
   push:
     branches: [ "main" ]
 
-env:
-  ECR_REPOSITORY_URI: clibmx-be-core
-  CONTAINER_PORT: 8080
-
 jobs:
   deploy-to-ec2:
     name: Deploy to EC2
@@ -30,7 +26,7 @@ jobs:
             # 1. AWS ECR에 로그인
             # EC2에 연결된 IAM 역할 덕분에 Access Key 없이 로그인이 가능
             aws ecr get-login-password \
-              --region ${{ secrets.AWS_REGION }} \
+              --region ${{ env.AWS_REGION }} \
             | docker login \
               --username AWS \
               --password-stdin ${{ secrets.ECR_REPOSITORY_URI }}
