@@ -26,7 +26,7 @@ jobs:
             # 1. AWS ECR에 로그인
             # EC2에 연결된 IAM 역할 덕분에 Access Key 없이 로그인이 가능
             aws ecr get-login-password \
-              --region ${{ env.AWS_REGION }} \
+              --region ${{ vars.AWS_REGION }} \
             | docker login \
               --username AWS \
               --password-stdin ${{ secrets.ECR_REPOSITORY_URI }}
@@ -44,7 +44,7 @@ jobs:
             
             # 4. 새로운 컨테이너 실행
             echo "Starting new container..."
-            docker run -d -p ${{ env.CONTAINER_PORT }}:${{ env.CONTAINER_PORT }} \
+            docker run -d -p ${{ vars.CONTAINER_PORT }}:${{ vars.CONTAINER_PORT }} \
               --name ${{ secrets.ECR_REPOSITORY_URI }} \
               --restart always \
               ${{ secrets.ECR_REPOSITORY_URI }}:latest
