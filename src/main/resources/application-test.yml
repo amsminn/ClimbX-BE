@@ -7,15 +7,19 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+
+# 테스트용 포트 (dev와 충돌 방지)
+server:
+  port: 8081
 
 logging:
   level:
-    com.climbx: DEBUG
-    org.springframework.web: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    
-    # 테스트 환경에서는 더 조용한 로깅도 가능
-    # org.springframework.test: INFO
-    # org.testcontainers: INFO 
+    # 테스트는 조용하게 (성능 향상)
+    root: WARN
+    com.climbx: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
