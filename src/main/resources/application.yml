@@ -1,16 +1,13 @@
 spring:
   profiles:
     active: dev
-
     group:
       dev:
         - db-dev
-
     include:
       - db
 
   jpa:
-    generate-ddl: true
     open-in-view: false
     properties:
       hibernate:
@@ -24,3 +21,4 @@ server:
 logging:
   level:
     root: INFO
+    com.climbx: INFO
