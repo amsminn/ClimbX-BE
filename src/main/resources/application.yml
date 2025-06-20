@@ -4,6 +4,8 @@ spring:
     group:
       dev:
         - db-dev
+      test:
+        - db-test
     include:
       - db
 
