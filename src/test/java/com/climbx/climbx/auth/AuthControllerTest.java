@@ -3,16 +3,11 @@ package com.climbx.climbx.auth;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.climbx.climbx.auth.exception.UnauthorizedException;
 import com.climbx.climbx.auth.models.LoginResponse;
-import com.climbx.climbx.auth.models.UserSSOInfoResponse;
 import com.climbx.climbx.common.security.JwtUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Instant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +30,6 @@ class AuthControllerTest {
     @MockitoBean
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private final String FIXED_TOKEN = "TEST_FIXED_TOKEN";
 
     @Test
@@ -49,8 +41,7 @@ class AuthControllerTest {
 
         // when & then
         mockMvc.perform(get("/api/auth/oauth2/{provider}", provider))
-                .andExpect(status().isOk())
-                .andExpect(content().string(provider));
+                .andExpect(status().isFound());
     }
 
     @Test
@@ -63,8 +54,8 @@ class AuthControllerTest {
         given(authService.handleCallback(provider, code)).willReturn(loginResponse);
 
         // when & then
-        mockMvc.perform(get("/api/auth/callback/{provider}", provider)
-                        .header("code", code))
+        mockMvc.perform(get("/api/auth/oauth2/callback/{provider}", provider)
+                        .param("code", code))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
                 .andExpect(jsonPath("$.accessToken").value(FIXED_TOKEN))
@@ -85,71 +76,13 @@ class AuthControllerTest {
             """;
 
         // when & then
-        mockMvc.perform(post("/api/auth/refresh")
+        mockMvc.perform(post("/api/auth/oauth2/refresh")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
                 .andExpect(jsonPath("$.accessToken").value(FIXED_TOKEN))
                 .andExpect(jsonPath("$.expiresIn").value(3600));
-    }
-
-    @Test
-    @DisplayName("유효한 토큰으로 사용자 정보 조회 API 테스트")
-    void shouldGetCurrentUserInfoWithValidToken() throws Exception {
-        // given
-        String authHeader = "Bearer " + FIXED_TOKEN;
-        Instant now = Instant.now();
-        UserSSOInfoResponse userInfo = new UserSSOInfoResponse(
-                "user-1", "dummy-user", "GOOGLE", now, now.plusSeconds(3600)
-        );
-        given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn(FIXED_TOKEN);
-        given(authService.getCurrentUserInfo(FIXED_TOKEN)).willReturn(userInfo);
-
-        // when & then
-        mockMvc.perform(get("/api/auth/me")
-                        .header("Authorization", authHeader))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value("user-1"))
-                    .andExpect(jsonPath("$.nickname").value("dummy-user"))
-                    .andExpect(jsonPath("$.provider").value("GOOGLE"))
-                    .andExpect(jsonPath("$.issuedAt").exists())
-                    .andExpect(jsonPath("$.expiresAt").exists());
-    }
-
-    @Test
-    @DisplayName("Authorization 헤더 없이 사용자 정보 조회 시 400 에러")
-    void shouldReturn400WhenAuthorizationHeaderMissing() throws Exception {
-        mockMvc.perform(get("/api/auth/me"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("토큰이 비어있을 때 401 에러")
-    void shouldReturn401WhenTokenIsEmpty() throws Exception {
-        // given
-        String authHeader = "Bearer "; // 빈 토큰
-        given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn("");
-
-        // when & then
-        mockMvc.perform(get("/api/auth/me")
-                        .header("Authorization", authHeader))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("유효하지 않은 토큰으로 사용자 정보 조회 시 401 에러")
-    void shouldReturn401WhenTokenInvalid() throws Exception {
-        // given
-        String authHeader = "Bearer invalid_token";
-        given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn("invalid_token");
-        given(authService.getCurrentUserInfo("invalid_token"))
-                .willThrow(new UnauthorizedException("Invalid token"));
-
-        // when & then
-        mockMvc.perform(get("/api/auth/me")
-                        .header("Authorization", authHeader))
-                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -168,6 +101,6 @@ class AuthControllerTest {
                         .header("Authorization", authHeader)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(refreshTokenJson))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 } 

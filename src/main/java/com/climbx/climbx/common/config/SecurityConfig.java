@@ -1,6 +1,7 @@
 package com.climbx.climbx.common.config;
 
 import com.climbx.climbx.common.security.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,13 +13,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -27,8 +25,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
                 auth
-                    .requestMatchers("/api/auth/oauth2/**", "/api/auth/callback/**", "/api/auth/refresh").permitAll()
-                    .requestMatchers("/api/auth/me").authenticated()
+                    .requestMatchers("/api/auth/oauth2/**", "/api/auth/oauth2/callback/**").permitAll()
+                    .requestMatchers("/api/auth/me", "/api/auth/oauth2/refresh").authenticated()
                     .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
