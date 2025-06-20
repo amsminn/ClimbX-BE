@@ -21,7 +21,7 @@ server:
   port: 8081
 
 auth:
-  fixed-jwt: ${FIXED_JWT}
+  fixed-jwt: ${FIXED_JWT:default-jwt-token}
 
 logging:
   level:
