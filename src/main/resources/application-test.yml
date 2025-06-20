@@ -1,0 +1,25 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+
+# 테스트용 포트 (dev와 충돌 방지)
+server:
+  port: 8081
+
+logging:
+  level:
+    # 테스트는 조용하게 (성능 향상)
+    root: WARN
+    com.climbx: INFO
+    org.springframework: WARN
+    org.hibernate: WARN

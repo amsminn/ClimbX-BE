@@ -4,9 +4,18 @@ spring:
       on-profile: dev
 
   jpa:
+    generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
 
 logging:
   level:
-    root: INFO
+    com.climbx: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

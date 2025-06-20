@@ -4,7 +4,23 @@ spring:
       on-profile: db-dev
 
   datasource:
-    url: jdbc:mysql://localhost:3306/climbx?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
-    username: ${MYSQL_USER:dev_user}
-    password: ${MYSQL_PASSWORD:dev_password}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/climbx?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USER:dev_user}
+    password: ${DB_PASSWORD:dev_password}
+    
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 10
+      auto-commit: false
+      connection-timeout: 20000
+      validation-timeout: 3000
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true

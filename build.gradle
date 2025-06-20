@@ -38,5 +38,4 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-	jvmArgs += "-Dspring.profiles.active=test"
 }
