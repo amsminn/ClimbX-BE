@@ -3,11 +3,12 @@ package com.climbx.climbx.user.entity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class UserAccount extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", updatable = false, nullable = false)
-    private BigInteger userId; // 사용자 ID
+    private Long userId; // 사용자 ID
 
     @Column(name = "role", length = 20, nullable = false)
     private String role; // USER, ADMIN 등 권한
@@ -42,6 +43,9 @@ public class UserAccount extends BaseTimeEntity {
     @Builder.Default
     @Column(name = "last_login_date", nullable = false)
     private LocalDate lastLoginDate = LocalDate.now(); // 마지막 접속 날짜, 기본값은 현재 날짜
+
+    @OneToOne(mappedBy = "userAccount", fetch = FetchType.LAZY, optional = false)
+    private UserStat userStat;
 
     public void markLogin() {
         this.lastLoginDate = LocalDate.now(); // 현재 날짜로 마지막 접속 날짜 갱신
