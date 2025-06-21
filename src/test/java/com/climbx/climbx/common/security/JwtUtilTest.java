@@ -2,7 +2,6 @@ package com.climbx.climbx.common.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,8 +99,8 @@ class JwtUtilTest {
     @DisplayName("유효한 토큰에서 사용자 ID를 추출한다")
     void shouldExtractSubjectFromValidToken() {
         // when
-        BigInteger userId = BigInteger.valueOf(1L);
-        BigInteger subject = jwtUtil.extractSubject(FIXED_TOKEN);
+        Long userId = 1L;
+        Long subject = jwtUtil.extractSubject(FIXED_TOKEN);
 
         // then
         assertThat(subject).isEqualTo(userId);
@@ -114,7 +113,7 @@ class JwtUtilTest {
         String invalidToken = "INVALID_TOKEN";
 
         // when
-        BigInteger subject = jwtUtil.extractSubject(invalidToken);
+        Long subject = jwtUtil.extractSubject(invalidToken);
 
         // then
         assertThat(subject).isNull();

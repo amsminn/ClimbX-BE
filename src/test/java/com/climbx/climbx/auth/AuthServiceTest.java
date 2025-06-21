@@ -82,7 +82,7 @@ class AuthServiceTest {
     @DisplayName("유효한 user-id로 사용자 정보를 조회한다")
     void shouldGetCurrentUserInfoWithValidToken() {
         // given
-        BigInteger validUserId = BigInteger.valueOf(1L);
+        Long validUserId = 1L;
 
         // when
         UserOauth2InfoResponse response = authService.getCurrentUserInfo(validUserId);
@@ -99,7 +99,7 @@ class AuthServiceTest {
     @DisplayName("유효하지 않은 user-id로 사용자 정보 조회 시 예외가 발생한다")
     void shouldThrowExceptionForInvalidToken() {
         // given
-        BigInteger invalidUserId = BigInteger.valueOf(123456789L);
+        Long invalidUserId = 123456789L;
 
         // when & then
         assertThatThrownBy(() -> authService.getCurrentUserInfo(invalidUserId))

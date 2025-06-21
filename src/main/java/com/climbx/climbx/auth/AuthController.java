@@ -5,7 +5,6 @@ import com.climbx.climbx.auth.dto.RefreshRequest;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import java.math.BigInteger;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,7 +57,7 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<UserOauth2InfoResponse> getCurrentUserInfo(
-        @AuthenticationPrincipal BigInteger userId
+        @AuthenticationPrincipal Long userId
     ) {
         UserOauth2InfoResponse resp = authService.getCurrentUserInfo(userId);
         return ResponseEntity.ok(resp);

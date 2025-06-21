@@ -1,10 +1,9 @@
 package com.climbx.climbx.auth;
 
-import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.auth.dto.LoginResponse;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
+import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.common.security.JwtUtil;
-import java.math.BigInteger;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final JwtUtil jwtUtil;
-    private static final BigInteger FIXED_USER_ID = BigInteger.valueOf(1L);
+    private static final Long FIXED_USER_ID = 1L;
     private static final String DUMMY_USERNAME = "dummy-user";
     private static final String DUMMY_PROVIDER = "GOOGLE";
 
@@ -32,7 +31,7 @@ public class AuthService {
         return new LoginResponse("Bearer", token, null, 3600L);
     }
 
-    public UserOauth2InfoResponse getCurrentUserInfo(BigInteger userId) {
+    public UserOauth2InfoResponse getCurrentUserInfo(Long userId) {
         if (!userId.equals(FIXED_USER_ID)) {
             throw new UserUnauthorizedException("Unauthorized user");
         }

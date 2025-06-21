@@ -5,7 +5,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -32,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtUtil.extractTokenFromHeader(authHeader);
 
         if (token != null && jwtUtil.validateToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
-            BigInteger userId = jwtUtil.extractSubject(token);
+            Long userId = jwtUtil.extractSubject(token);
             
             if (userId != null) {
                 UsernamePasswordAuthenticationToken authToken =
