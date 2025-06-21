@@ -1,8 +1,8 @@
 package com.climbx.climbx.auth;
 
 import com.climbx.climbx.auth.exception.UserUnauthorizedException;
-import com.climbx.climbx.auth.models.LoginResponse;
-import com.climbx.climbx.auth.models.UserOauth2InfoResponse;
+import com.climbx.climbx.auth.dto.LoginResponse;
+import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
 import com.climbx.climbx.common.security.JwtUtil;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package com.climbx.climbx.auth;
 
-import com.climbx.climbx.auth.models.LoginResponse;
-import com.climbx.climbx.auth.models.RefreshRequest;
-import com.climbx.climbx.auth.models.UserOauth2InfoResponse;
+import com.climbx.climbx.auth.dto.LoginResponse;
+import com.climbx.climbx.auth.dto.RefreshRequest;
+import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.net.URI;
