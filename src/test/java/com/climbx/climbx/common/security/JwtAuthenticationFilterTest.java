@@ -54,6 +54,7 @@ class JwtAuthenticationFilterTest {
         given(request.getHeader("Authorization")).willReturn(authHeader);
         given(jwtUtil.validateToken(VALID_TOKEN)).willReturn(true);
         given(jwtUtil.extractSubject(VALID_TOKEN)).willReturn("user-1");
+        given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn(VALID_TOKEN);
         given(securityContext.getAuthentication()).willReturn(null);
 
         // when
@@ -62,6 +63,7 @@ class JwtAuthenticationFilterTest {
         // then
         verify(securityContext).setAuthentication(org.mockito.ArgumentMatchers.any());
         verify(filterChain).doFilter(request, response);
+        verify(jwtUtil).extractTokenFromHeader(authHeader);
     }
 
     @Test
@@ -99,6 +101,7 @@ class JwtAuthenticationFilterTest {
         String authHeader = "Bearer invalid_token";
         given(request.getHeader("Authorization")).willReturn(authHeader);
         given(jwtUtil.validateToken("invalid_token")).willReturn(false);
+        given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn("invalid_token");
 
         // when
         jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
@@ -106,6 +109,7 @@ class JwtAuthenticationFilterTest {
         // then
         verify(securityContext, never()).setAuthentication(org.mockito.ArgumentMatchers.any());
         verify(filterChain).doFilter(request, response);
+        verify(jwtUtil).extractTokenFromHeader(authHeader);
     }
 
     @Test
@@ -116,6 +120,7 @@ class JwtAuthenticationFilterTest {
         Authentication existingAuth = org.mockito.Mockito.mock(Authentication.class);
         given(request.getHeader("Authorization")).willReturn(authHeader);
         given(jwtUtil.validateToken(VALID_TOKEN)).willReturn(true);
+        given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn(VALID_TOKEN);
         given(securityContext.getAuthentication()).willReturn(existingAuth);
 
         // when
@@ -124,6 +129,7 @@ class JwtAuthenticationFilterTest {
         // then
         verify(securityContext, never()).setAuthentication(org.mockito.ArgumentMatchers.any());
         verify(filterChain).doFilter(request, response);
+        verify(jwtUtil).extractTokenFromHeader(authHeader);
     }
 
     @Test
@@ -134,6 +140,7 @@ class JwtAuthenticationFilterTest {
         given(request.getHeader("Authorization")).willReturn(authHeader);
         given(jwtUtil.validateToken(VALID_TOKEN)).willReturn(true);
         given(jwtUtil.extractSubject(VALID_TOKEN)).willReturn(null);
+        given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn(VALID_TOKEN);
         given(securityContext.getAuthentication()).willReturn(null);
 
         // when
@@ -142,6 +149,7 @@ class JwtAuthenticationFilterTest {
         // then
         verify(securityContext, never()).setAuthentication(org.mockito.ArgumentMatchers.any());
         verify(filterChain).doFilter(request, response);
+        verify(jwtUtil).extractTokenFromHeader(authHeader);
     }
 
     @Test
