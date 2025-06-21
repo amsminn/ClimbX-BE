@@ -1,7 +1,8 @@
-package com.climbx.climbx.auth.models;
+package com.climbx.climbx.auth.dto;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record LoginResponse(
@@ -14,7 +15,7 @@ public record LoginResponse(
     @Nullable
     String refreshToken, // 임시 구현이기 떄문에 null
 
-    @Positive
+    @Positive @NotNull
     long expiresIn // 토큰 만료 시간 (초 단위, 임시로 3600초)
 ) {
 }

@@ -6,8 +6,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.climbx.climbx.auth.exception.UserUnauthorizedException;
-import com.climbx.climbx.auth.models.LoginResponse;
-import com.climbx.climbx.auth.models.UserOauth2InfoResponse;
+import com.climbx.climbx.auth.dto.LoginResponse;
+import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
 import com.climbx.climbx.common.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
