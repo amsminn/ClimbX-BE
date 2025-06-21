@@ -1,8 +1,8 @@
 package com.climbx.climbx.auth;
 
-import com.climbx.climbx.auth.exception.UnauthorizedException;
+import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.auth.models.LoginResponse;
-import com.climbx.climbx.auth.models.UserSSOInfoResponse;
+import com.climbx.climbx.auth.models.UserOauth2InfoResponse;
 import com.climbx.climbx.common.security.JwtUtil;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +31,11 @@ public class AuthService {
         return new LoginResponse("Bearer", token, null, 3600L);
     }
 
-    public UserSSOInfoResponse getCurrentUserInfo(String userId) {
+    public UserOauth2InfoResponse getCurrentUserInfo(String userId) {
         if (!userId.equals(FIXED_USER_ID)) {
-            throw new UnauthorizedException("Unauthorized user");
+            throw new UserUnauthorizedException("Unauthorized user");
         }
-        return new UserSSOInfoResponse(
+        return new UserOauth2InfoResponse(
             FIXED_USER_ID,
             DUMMY_USERNAME,
             DUMMY_PROVIDER,

@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.climbx.climbx.auth.exception.UnauthorizedException;
+import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.auth.models.LoginResponse;
-import com.climbx.climbx.auth.models.UserSSOInfoResponse;
+import com.climbx.climbx.auth.models.UserOauth2InfoResponse;
 import com.climbx.climbx.common.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -84,7 +84,7 @@ class AuthServiceTest {
         String validUserId = "user-1";
 
         // when
-        UserSSOInfoResponse response = authService.getCurrentUserInfo(validUserId);
+        UserOauth2InfoResponse response = authService.getCurrentUserInfo(validUserId);
 
         // then
         assertThat(response.id()).isEqualTo("user-1");
@@ -102,7 +102,7 @@ class AuthServiceTest {
 
         // when & then
         assertThatThrownBy(() -> authService.getCurrentUserInfo(invalidUserId))
-                .isInstanceOf(UnauthorizedException.class)
+                .isInstanceOf(UserUnauthorizedException.class)
                 .hasMessage("Unauthorized user");
 //        UnauthorizedException e = assertThrows(UnauthorizedException.class, () -> authService.getCurrentUserInfo(invalidUserId));
 //        assertThat(e.getMessage()).isEqualTo("Unauthorized user");

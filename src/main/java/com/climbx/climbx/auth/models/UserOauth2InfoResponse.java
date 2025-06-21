@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 
-public record UserSSOInfoResponse(
+public record UserOauth2InfoResponse(
     @NotNull
     String  id,
 
@@ -19,4 +19,5 @@ public record UserSSOInfoResponse(
 
     @NotNull
     Instant expiresAt // 액세스 토큰 만료 시간
-) {}
+) {
+}

@@ -15,4 +15,5 @@ public record LoginResponse(
 
     @NotBlank
     long expiresIn // 토큰 만료 시간 (초 단위, 임시로 3600초)
-){}
+) {
+}

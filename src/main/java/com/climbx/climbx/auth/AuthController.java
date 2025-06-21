@@ -2,7 +2,7 @@ package com.climbx.climbx.auth;
 
 import com.climbx.climbx.auth.models.LoginResponse;
 import com.climbx.climbx.auth.models.RefreshRequest;
-import com.climbx.climbx.auth.models.UserSSOInfoResponse;
+import com.climbx.climbx.auth.models.UserOauth2InfoResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.net.URI;
@@ -56,9 +56,9 @@ public class AuthController {
      }
 
     @GetMapping("/me")
-    public ResponseEntity<UserSSOInfoResponse> getCurrentUserInfo(Authentication authentication) {
+    public ResponseEntity<UserOauth2InfoResponse> getCurrentUserInfo(Authentication authentication) {
         String userId = authentication.getName();
-        UserSSOInfoResponse resp = authService.getCurrentUserInfo(userId);
+        UserOauth2InfoResponse resp = authService.getCurrentUserInfo(userId);
         return ResponseEntity.ok(resp);
     }
 
