@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,7 +54,7 @@ class JwtAuthenticationFilterTest {
         String authHeader = "Bearer " + VALID_TOKEN;
         given(request.getHeader("Authorization")).willReturn(authHeader);
         given(jwtUtil.validateToken(VALID_TOKEN)).willReturn(true);
-        given(jwtUtil.extractSubject(VALID_TOKEN)).willReturn("user-1");
+        given(jwtUtil.extractSubject(VALID_TOKEN)).willReturn(BigInteger.valueOf(1L));
         given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn(VALID_TOKEN);
         given(securityContext.getAuthentication()).willReturn(null);
 

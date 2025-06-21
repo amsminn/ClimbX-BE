@@ -9,6 +9,7 @@ import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.auth.dto.LoginResponse;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
 import com.climbx.climbx.common.security.JwtUtil;
+import java.math.BigInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -81,13 +82,13 @@ class AuthServiceTest {
     @DisplayName("유효한 user-id로 사용자 정보를 조회한다")
     void shouldGetCurrentUserInfoWithValidToken() {
         // given
-        String validUserId = "user-1";
+        BigInteger validUserId = BigInteger.valueOf(1L);
 
         // when
         UserOauth2InfoResponse response = authService.getCurrentUserInfo(validUserId);
 
         // then
-        assertThat(response.id()).isEqualTo("user-1");
+        assertThat(response.id()).isEqualTo(validUserId);
         assertThat(response.nickname()).isEqualTo("dummy-user");
         assertThat(response.provider()).isEqualTo("GOOGLE");
         assertThat(response.issuedAt()).isNotNull();
@@ -98,7 +99,7 @@ class AuthServiceTest {
     @DisplayName("유효하지 않은 user-id로 사용자 정보 조회 시 예외가 발생한다")
     void shouldThrowExceptionForInvalidToken() {
         // given
-        String invalidUserId = "invalid_user_id";
+        BigInteger invalidUserId = BigInteger.valueOf(123456789L);
 
         // when & then
         assertThatThrownBy(() -> authService.getCurrentUserInfo(invalidUserId))

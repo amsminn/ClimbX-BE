@@ -1,5 +1,6 @@
 package com.climbx.climbx.common.security;
 
+import java.math.BigInteger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -28,9 +29,9 @@ public class JwtUtil {
         return FIXED_JWT_TOKEN.equals(token);
     }
 
-    public String extractSubject(String token) {
+    public BigInteger extractSubject(String token) {
         if (validateToken(token)) {
-            return "user-1";
+            return BigInteger.valueOf(1L);
         }
         return null;
     }
