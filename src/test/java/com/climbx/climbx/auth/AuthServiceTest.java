@@ -16,16 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
     @Mock
     private JwtUtil jwtUtil;
-
-    @Mock
-    Authentication authentication;
 
     private AuthService authService;
     private final String FIXED_TOKEN = "TEST_FIXED_TOKEN";
