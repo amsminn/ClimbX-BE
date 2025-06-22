@@ -1,4 +1,4 @@
-name: Dev CI Workflow
+name: Test Workflow
 
 on:
   workflow_dispatch:
@@ -7,8 +7,8 @@ on:
     branches: [ "develop"]
 
 jobs:
-  test-ci:
-    name: Build test
+  test:
+    name: Test
     runs-on: ubuntu-latest
 
     services:
@@ -42,8 +42,7 @@ jobs:
 
       - name: Build with Gradle
         env:
-          SPRING_PROFILES_ACTIVE: test
           DB_URL: jdbc:mysql://localhost:3306/climbx?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
           DB_USER: test_user
           DB_PASSWORD: test_password
-        run: ./gradlew build
+        run: ./gradlew test
