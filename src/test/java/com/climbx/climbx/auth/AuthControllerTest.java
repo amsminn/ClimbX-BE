@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.climbx.climbx.auth.dto.LoginResponse;
+import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.common.security.JwtUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class AuthControllerTest {
         // given
         String provider = "google";
         String code = "auth_code";
-        LoginResponse loginResponse = new LoginResponse("Bearer", FIXED_TOKEN, null, 3600L);
+        LoginResponseDto loginResponse = new LoginResponseDto("Bearer", FIXED_TOKEN, null, 3600L);
         given(authService.handleCallback(provider, code)).willReturn(loginResponse);
 
         // when & then
@@ -67,7 +67,7 @@ class AuthControllerTest {
     void shouldRefreshToken() throws Exception {
         // given
         String refreshToken = "refreshToken";
-        LoginResponse loginResponse = new LoginResponse("Bearer", FIXED_TOKEN, null, 3600L);
+        LoginResponseDto loginResponse = new LoginResponseDto("Bearer", FIXED_TOKEN, null, 3600L);
         given(authService.refreshAccessToken(refreshToken)).willReturn(loginResponse);
         String json = """
             {

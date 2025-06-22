@@ -14,6 +14,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
      */
     Optional<UserAccount> findByNickname(String nickname);
 
+    boolean existsByNicknameIgnoreCase(String nickname);
     boolean existsByNickname(String nickname);
 
     /*

@@ -61,6 +61,14 @@ public class UserStat extends BaseTimeEntity {
 
     @Builder.Default
     @Column(
+        name = "solved_problems_count",
+        nullable = false,
+        columnDefinition = "BIGINT DEFAULT 0"
+    )
+    private Long solvedProblemsCount = 0L; // 해결한 문제 수, 기본값은 0
+
+    @Builder.Default
+    @Column(
         name = "rival_count",
         nullable = false,
         columnDefinition = "BIGINT DEFAULT 0"

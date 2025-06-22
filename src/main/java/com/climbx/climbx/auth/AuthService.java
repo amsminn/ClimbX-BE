@@ -1,7 +1,7 @@
 package com.climbx.climbx.auth;
 
-import com.climbx.climbx.auth.dto.LoginResponse;
-import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
+import com.climbx.climbx.auth.dto.LoginResponseDto;
+import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.common.security.JwtUtil;
 import java.time.Instant;
@@ -21,21 +21,21 @@ public class AuthService {
          return provider; // 임시 구현: 실제로는 OAuth2 리다이렉트 URL을 반환해야 함
      }
 
-     public LoginResponse handleCallback(String provider, String code) {
+     public LoginResponseDto handleCallback(String provider, String code) {
          String token = jwtUtil.generateFixedToken();
-         return new LoginResponse("Bearer", token, null, 3600L);
+         return new LoginResponseDto("Bearer", token, null, 3600L);
      }
 
-    public LoginResponse refreshAccessToken(String sub) {
+    public LoginResponseDto refreshAccessToken(String sub) {
         String token = jwtUtil.generateFixedToken();
-        return new LoginResponse("Bearer", token, null, 3600L);
+        return new LoginResponseDto("Bearer", token, null, 3600L);
     }
 
-    public UserOauth2InfoResponse getCurrentUserInfo(Long userId) {
+    public UserOauth2InfoResponseDto getCurrentUserInfo(Long userId) {
         if (!userId.equals(FIXED_USER_ID)) {
             throw new UserUnauthorizedException("Unauthorized user");
         }
-        return new UserOauth2InfoResponse(
+        return new UserOauth2InfoResponseDto(
             FIXED_USER_ID,
             DUMMY_USERNAME,
             DUMMY_PROVIDER,

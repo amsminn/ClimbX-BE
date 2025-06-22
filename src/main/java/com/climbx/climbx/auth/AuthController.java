@@ -1,8 +1,8 @@
 package com.climbx.climbx.auth;
 
-import com.climbx.climbx.auth.dto.LoginResponse;
-import com.climbx.climbx.auth.dto.RefreshRequest;
-import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
+import com.climbx.climbx.auth.dto.LoginResponseDto;
+import com.climbx.climbx.auth.dto.RefreshRequestDto;
+import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.net.URI;
@@ -39,34 +39,34 @@ public class AuthController {
      }
 
      @GetMapping("/oauth2/callback/{provider}")
-     public ResponseEntity<LoginResponse> handleOAuth2Callback(
+     public ResponseEntity<LoginResponseDto> handleOAuth2Callback(
             @PathVariable("provider") @NotBlank String provider,
             @RequestParam("code") @NotBlank String code
      ) {
-        LoginResponse resp = authService.handleCallback(provider, code);
+        LoginResponseDto resp = authService.handleCallback(provider, code);
         return ResponseEntity.ok(resp);
      }
 
      @PostMapping("/oauth2/refresh")
-     public ResponseEntity<LoginResponse> refreshAccessToken(
-         @RequestBody @Valid RefreshRequest request
+     public ResponseEntity<LoginResponseDto> refreshAccessToken(
+         @RequestBody @Valid RefreshRequestDto request
      ) {
-         LoginResponse resp = authService.refreshAccessToken(request.refreshToken());
+         LoginResponseDto resp = authService.refreshAccessToken(request.refreshToken());
          return ResponseEntity.ok(resp);
      }
 
     @GetMapping("/me")
-    public ResponseEntity<UserOauth2InfoResponse> getCurrentUserInfo(
+    public ResponseEntity<UserOauth2InfoResponseDto> getCurrentUserInfo(
         @AuthenticationPrincipal Long userId
     ) {
-        UserOauth2InfoResponse resp = authService.getCurrentUserInfo(userId);
+        UserOauth2InfoResponseDto resp = authService.getCurrentUserInfo(userId);
         return ResponseEntity.ok(resp);
     }
 
     @PostMapping("/signout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void signOut(
-        @RequestBody @Valid RefreshRequest request
+        @RequestBody @Valid RefreshRequestDto request
     ) {
         // 임시 로그인에서 리프레쉬 토큰 드롭 구현 X
     }

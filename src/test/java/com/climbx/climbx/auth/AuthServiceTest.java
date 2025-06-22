@@ -6,10 +6,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.climbx.climbx.auth.exception.UserUnauthorizedException;
-import com.climbx.climbx.auth.dto.LoginResponse;
-import com.climbx.climbx.auth.dto.UserOauth2InfoResponse;
+import com.climbx.climbx.auth.dto.LoginResponseDto;
+import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.common.security.JwtUtil;
-import java.math.BigInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +48,7 @@ class AuthServiceTest {
         given(jwtUtil.generateFixedToken()).willReturn(FIXED_TOKEN);
 
         // when
-        LoginResponse response = authService.handleCallback("GOOGLE", "auth_code");
+        LoginResponseDto response = authService.handleCallback("GOOGLE", "auth_code");
 
         // then
         assertThat(response.tokenType()).isEqualTo("Bearer");
@@ -67,7 +66,7 @@ class AuthServiceTest {
         given(jwtUtil.generateFixedToken()).willReturn(FIXED_TOKEN);
 
         // when
-        LoginResponse response = authService.refreshAccessToken("refresh_token");
+        LoginResponseDto response = authService.refreshAccessToken("refresh_token");
 
         // then
         assertThat(response.tokenType()).isEqualTo("Bearer");
@@ -85,7 +84,7 @@ class AuthServiceTest {
         Long validUserId = 1L;
 
         // when
-        UserOauth2InfoResponse response = authService.getCurrentUserInfo(validUserId);
+        UserOauth2InfoResponseDto response = authService.getCurrentUserInfo(validUserId);
 
         // then
         assertThat(response.id()).isEqualTo(validUserId);

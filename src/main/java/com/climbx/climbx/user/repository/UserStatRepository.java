@@ -31,4 +31,18 @@ public interface UserStatRepository extends JpaRepository<UserStat, Long> {
     default Long findRatingRank(Long rating) {
         return countByRatingGreaterThan(rating) + 1;
     }
+
+    /**
+     * 최장 스트릭, 해결한 문제 수 기준 사용자의 순위(1-based) 조회
+     * ranking api 구현 시 포함
+     */
+//    long countByLongestStreakGreaterThan(Long longestStreak);
+//    default Long findLongestStreakRank(Long longestStreak) {
+//        return countByLongestStreakGreaterThan(longestStreak) + 1;
+//    }
+//
+//    long countBySolvedProblemsCountGreaterThan(Long solvedProblemsCount);
+//    default Long findSolvedProblemsCountRank(Long solvedProblemsCount) {
+//        return countBySolvedProblemsCountGreaterThan(solvedProblemsCount) + 1;
+//    }
 }
