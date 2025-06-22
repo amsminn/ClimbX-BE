@@ -13,12 +13,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Entity
 @Table(name = "user_stats")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
+@Setter
+@Accessors(fluent = true, chain = true)
 @Builder
 public class UserStat extends BaseTimeEntity {
 
