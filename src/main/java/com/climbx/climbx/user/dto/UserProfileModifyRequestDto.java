@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotNull;
 
 public record UserProfileModifyRequestDto(
     @NotBlank
-    String nickname,
+    String newNickname,
 
     @NotNull
-    String statusMessage,
+    String newStatusMessage,
 
-    String profileImageUrl // null 허용
+    String newProfileImageUrl // null 허용
 ) {
 }

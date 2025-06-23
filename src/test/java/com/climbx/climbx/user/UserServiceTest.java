@@ -101,7 +101,7 @@ public class UserServiceTest {
             // when & then
             assertThatThrownBy(() -> userService.getUserByNickname(nickname))
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with nickname: " + nickname);
+                .hasMessage("User not found with newNickname: " + nickname);
         }
 
         @Test
@@ -301,7 +301,7 @@ public class UserServiceTest {
             // when & then
             assertThatThrownBy(() -> userService.getUserByNickname(null))
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with nickname: null");
+                .hasMessage("User not found with newNickname: null");
         }
 
         @Test
@@ -315,7 +315,7 @@ public class UserServiceTest {
             // when & then
             assertThatThrownBy(() -> userService.getUserByNickname(emptyNickname))
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with nickname: ");
+                .hasMessage("User not found with newNickname: ");
         }
     }
 }

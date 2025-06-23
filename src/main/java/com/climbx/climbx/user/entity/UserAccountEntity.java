@@ -35,7 +35,7 @@ public class UserAccountEntity extends BaseTimeEntity {
     @Column(name = "role", length = 20, nullable = false)
     private String role; // USER, ADMIN 등 권한
 
-    @Column(name = "nickname", length = 50, nullable = false, unique = true)
+    @Column(name = "newNickname", length = 50, nullable = false, unique = true)
     private String nickname; // 사용자 닉네임
 
     @Column(name = "status_message", length = 100, nullable = true)

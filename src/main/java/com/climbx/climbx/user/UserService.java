@@ -62,14 +62,14 @@ class UserService {
             throw new NicknameMismatchException(currentNickname, userAccountEntity.nickname());
         }
 
-        if (!currentNickname.equals(userProfileDto.nickname()) &&
-            userAccountRepository.existsByNickname(userProfileDto.nickname())) {
-            throw new DuplicateNicknameException(userProfileDto.nickname());
+        if (!currentNickname.equals(userProfileDto.newNickname()) &&
+            userAccountRepository.existsByNickname(userProfileDto.newNickname())) {
+            throw new DuplicateNicknameException(userProfileDto.newNickname());
         }
 
-        userAccountEntity.nickname(userProfileDto.nickname());
-        userAccountEntity.statusMessage(userProfileDto.statusMessage());
-        userAccountEntity.profileImageUrl(userProfileDto.profileImageUrl());
+        userAccountEntity.nickname(userProfileDto.newNickname());
+        userAccountEntity.statusMessage(userProfileDto.newStatusMessage());
+        userAccountEntity.profileImageUrl(userProfileDto.newProfileImageUrl());
         userAccountRepository.save(userAccountEntity);
 
         return getUserById(userId);

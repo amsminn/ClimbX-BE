@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.FORBIDDEN)
 public class NicknamePathMismatchException extends RuntimeException {
     public NicknamePathMismatchException(String pathNickname, String userNickname) {
-        super(String.format("Path nickname '%s' does not match your current nickname '%s'",
+        super(String.format("Path newNickname '%s' does not match your current newNickname '%s'",
             pathNickname, userNickname));
     }
 }
