@@ -34,7 +34,7 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 20, nullable = false)
-    private String role; // USER, ADMIN 등 권한
+    private RoleType role; // USER, ADMIN 등 권한
 
     @Column(name = "newNickname", length = 50, nullable = false, unique = true)
     private String nickname; // 사용자 닉네임
