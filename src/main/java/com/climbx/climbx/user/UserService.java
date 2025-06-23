@@ -56,7 +56,8 @@ class UserService {
     ) {
         UserAccount userAccount = findUserById(userId);
 
-        if (userAccountRepository.existsByNickname(userProfileDto.nickname())) {
+        if (!userAccount.nickname().equals(userProfileDto.nickname()) &&
+            userAccountRepository.existsByNickname(userProfileDto.nickname())) {
             throw new DuplicateNicknameException(userProfileDto.nickname());
         }
 
