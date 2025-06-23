@@ -5,15 +5,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
+import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.common.security.JwtUtil;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -23,13 +23,9 @@ class AuthServiceTest {
     @Mock
     private JwtUtil jwtUtil;
 
+    @InjectMocks
     private AuthService authService;
     private final String FIXED_TOKEN = "TEST_FIXED_TOKEN";
-
-    @BeforeEach
-    void setUp() {
-        authService = new AuthService(jwtUtil);
-    }
 
     @Test
     @DisplayName("authorization URL을 요청하면 provider를 그대로 반환한다")
