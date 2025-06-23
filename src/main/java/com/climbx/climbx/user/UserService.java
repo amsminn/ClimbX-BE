@@ -17,23 +17,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 class UserService {
 
     private final UserAccountRepository userAccountRepository;
     private final UserStatRepository userStatRepository;
 
-    private UserProfileResponseDto getUserById(Long userId) {
+    @Transactional(readOnly = true)
+    public UserProfileResponseDto getUserById(Long userId) {
         UserAccountEntity userAccountEntity = findUserById(userId);
         return buildProfile(userAccountEntity);
     }
 
+    @Transactional(readOnly = true)
     public UserProfileResponseDto getUserByNickname(String nickname) {
         UserAccountEntity userAccountEntity = findUserByNickname(nickname);
         return buildProfile(userAccountEntity);
     }
 
+    @Transactional
     public UserProfileResponseDto modifyUserProfile(
         Long userId,
         String currentNickname,
@@ -89,7 +91,7 @@ class UserService {
             .orElseThrow(() -> new UserNotFoundException(nickname));
     }
 
-    private UserStatEntity findUserStatByUserId(Long userId) {
+    protected UserStatEntity findUserStatByUserId(Long userId) {
         return userStatRepository.findByUserId(userId)
             .orElseThrow(() -> new UserStatNotFoundException(userId));
     }
