@@ -45,8 +45,7 @@ class UserService {
         );
     }
 
-    public UserProfileResponseDto getUserByNickname(String nickname)
-        throws UserNotFoundException, UserStatNotFoundException {
+    public UserProfileResponseDto getUserByNickname(String nickname) {
         Long userId = findUserByNickname(nickname).userId();
         return getUserById(userId);
     }
@@ -54,7 +53,7 @@ class UserService {
     public UserProfileResponseDto modifyUserProfile(
         Long userId,
         UserProfileRequestDto userProfileDto
-    ) throws UserNotFoundException, DuplicateNicknameException {
+    ) {
         UserAccount userAccount = findUserById(userId);
 
         if (userAccountRepository.existsByNickname(userProfileDto.nickname())) {
