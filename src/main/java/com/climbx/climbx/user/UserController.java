@@ -2,7 +2,6 @@ package com.climbx.climbx.user;
 
 import com.climbx.climbx.user.dto.UserProfileRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
-import com.climbx.climbx.user.exception.NicknameMismatchException;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,9 +33,6 @@ class UserController {
         @PathVariable @NotBlank String nickname,
         UserProfileRequestDto request
     ) {
-        if (!nickname.equals(request.nickname())) {
-            throw new NicknameMismatchException(nickname, request.nickname());
-        }
         return userService.modifyUserProfile(userId, request);
     }
 }
