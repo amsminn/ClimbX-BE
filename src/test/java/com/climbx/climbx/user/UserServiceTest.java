@@ -145,11 +145,11 @@ public class UserServiceTest {
             Long rating = 1200L;
             Long ratingRank = 20L;
 
-            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
-                newNickname,
-                newStatusMessage,
-                newProfileImageUrl
-            );
+            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+                .newNickname(newNickname)
+                .newStatusMessage(newStatusMessage)
+                .newProfileImageUrl(newProfileImageUrl)
+                .build();
 
             UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
@@ -200,11 +200,11 @@ public class UserServiceTest {
             // given
             Long userId = 999L;
             String currentNickname = "oldNickname";
-            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
-                "newNickname",
-                "New status",
-                "new.jpg"
-            );
+            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+                .newNickname("newNickname")
+                .newStatusMessage("New status")
+                .newProfileImageUrl("new.jpg")
+                .build();
 
             given(userAccountRepository.findByUserId(userId))
                 .willReturn(Optional.empty());
@@ -224,11 +224,12 @@ public class UserServiceTest {
             Long userId = 1L;
             String currentNickname = "oldNickname";
             String actualNickname = "actualNickname";
-            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
-                "newNickname",
-                "New status",
-                "new.jpg"
-            );
+
+            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+                .newNickname("newNickname")
+                .newStatusMessage("New status")
+                .newProfileImageUrl("new.jpg")
+                .build();
 
             UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
@@ -252,11 +253,12 @@ public class UserServiceTest {
             Long userId = 1L;
             String currentNickname = "oldNickname";
             String duplicateNickname = "existingNickname";
-            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
-                duplicateNickname,
-                "New status",
-                "new.jpg"
-            );
+
+            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+                .newNickname(duplicateNickname)
+                .newStatusMessage("New status")
+                .newProfileImageUrl("new.jpg")
+                .build();
 
             UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
@@ -282,11 +284,12 @@ public class UserServiceTest {
             // given
             Long userId = 1L;
             String currentNickname = "sameNickname";
-            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
-                currentNickname, // 동일한 닉네임
-                "New status",
-                "new.jpg"
-            );
+
+            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+                .newNickname(currentNickname)
+                .newStatusMessage("New status")
+                .newProfileImageUrl("new.jpg")
+                .build();
 
             UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
@@ -323,11 +326,12 @@ public class UserServiceTest {
             Long userId = 1L;
             String currentNickname = "oldNickname";
             String newNickname = "newNickname";
-            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
-                newNickname,
-                "New status",
-                "new.jpg"
-            );
+
+            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+                .newNickname(newNickname)
+                .newStatusMessage("New status")
+                .newProfileImageUrl("new.jpg")
+                .build();
 
             UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)

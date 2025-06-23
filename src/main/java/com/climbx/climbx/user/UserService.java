@@ -11,7 +11,6 @@ import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import java.util.Collections;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,20 +64,19 @@ class UserService {
     private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
         UserStatEntity userStat = findUserStatByUserId(userAccount.userId());
         Long ratingRank = userStatRepository.findRatingRank(userStat.rating());
-        Map<String, Long> categoryRatings = Collections.emptyMap();
 
-        return new UserProfileResponseDto(
-            userAccount.nickname(),
-            userAccount.statusMessage(),
-            userAccount.profileImageUrl(),
-            ratingRank,
-            userStat.rating(),
-            categoryRatings,
-            userStat.currentStreak(),
-            userStat.longestStreak(),
-            userStat.solvedProblemsCount(),
-            userStat.rivalCount()
-        );
+        return UserProfileResponseDto.builder()
+            .nickname(userAccount.nickname())
+            .statusMessage(userAccount.statusMessage())
+            .profileImageUrl(userAccount.profileImageUrl())
+            .ranking(ratingRank)
+            .rating(userStat.rating())
+            .categoryRatings(Collections.emptyMap())
+            .currentStreak(userStat.currentStreak())
+            .longestStreak(userStat.longestStreak())
+            .solvedProblemsCount(userStat.solvedProblemsCount())
+            .rivalCount(userStat.rivalCount())
+            .build();
     }
 
     private UserAccountEntity findUserById(Long userId) {
