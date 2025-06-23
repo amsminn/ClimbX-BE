@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED) // 기본 생성자는 protected로 설정
 @Getter
-public abstract class SoftDeleteEntity {
+public abstract class SoftDeleteTimeEntity {
 
     /*
      * soft delete 시간을 기록, null이면 삭제되지 않은 상태

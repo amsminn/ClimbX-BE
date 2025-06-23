@@ -24,7 +24,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true, chain = true)
 @Builder
-public class UserStat extends BaseTimeEntity {
+public class UserStatEntity extends BaseTimeEntity {
 
     @Id
     @Column(name = "user_id", updatable = false, nullable = false)
@@ -33,7 +33,7 @@ public class UserStat extends BaseTimeEntity {
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
-    private UserAccount userAccount;
+    private UserAccountEntity userAccountEntity;
 
     @Builder.Default
     @Column(

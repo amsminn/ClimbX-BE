@@ -7,10 +7,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.climbx.climbx.user.dto.UserProfileRequestDto;
+import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
-import com.climbx.climbx.user.entity.UserAccount;
-import com.climbx.climbx.user.entity.UserStat;
+import com.climbx.climbx.user.entity.UserAccountEntity;
+import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
@@ -50,14 +50,14 @@ public class UserServiceTest {
             Long rating = 1500L;
             Long ratingRank = 10L;
 
-            UserAccount userAccount = UserAccount.builder()
+            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
                 .nickname(nickname)
                 .statusMessage("Test status")
                 .profileImageUrl("test.jpg")
                 .build();
 
-            UserStat userStat = UserStat.builder()
+            UserStatEntity userStatEntity = UserStatEntity.builder()
                 .userId(userId)
                 .rating(rating)
                 .currentStreak(5L)
@@ -66,11 +66,11 @@ public class UserServiceTest {
                 .build();
 
             given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccount));
+                .willReturn(Optional.of(userAccountEntity));
             given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccount));
+                .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStat));
+                .willReturn(Optional.of(userStatEntity));
             given(userStatRepository.findRatingRank(rating))
                 .willReturn(ratingRank);
 
@@ -111,15 +111,15 @@ public class UserServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
 
-            UserAccount userAccount = UserAccount.builder()
+            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
                 .nickname(nickname)
                 .build();
 
             given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccount));
+                .willReturn(Optional.of(userAccountEntity));
             given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccount));
+                .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.empty());
 
@@ -146,20 +146,20 @@ public class UserServiceTest {
             Long rating = 1200L;
             Long ratingRank = 20L;
 
-            UserProfileRequestDto requestDto = new UserProfileRequestDto(
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
                 newNickname,
                 newStatusMessage,
                 newProfileImageUrl
             );
 
-            UserAccount userAccount = UserAccount.builder()
+            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
                 .nickname("oldNickname")
                 .statusMessage("Old status")
                 .profileImageUrl("old.jpg")
                 .build();
 
-            UserStat userStat = UserStat.builder()
+            UserStatEntity userStatEntity = UserStatEntity.builder()
                 .userId(userId)
                 .rating(rating)
                 .currentStreak(3L)
@@ -168,11 +168,11 @@ public class UserServiceTest {
                 .build();
 
             given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccount));
+                .willReturn(Optional.of(userAccountEntity));
             given(userAccountRepository.existsByNickname(newNickname))
                 .willReturn(false);
             given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStat));
+                .willReturn(Optional.of(userStatEntity));
             given(userStatRepository.findRatingRank(rating))
                 .willReturn(ratingRank);
 
@@ -187,11 +187,11 @@ public class UserServiceTest {
             assertThat(result.ranking()).isEqualTo(ratingRank);
             assertThat(result.rating()).isEqualTo(rating);
 
-            assertThat(userAccount.nickname()).isEqualTo(newNickname);
-            assertThat(userAccount.statusMessage()).isEqualTo(newStatusMessage);
-            assertThat(userAccount.profileImageUrl()).isEqualTo(newProfileImageUrl);
+            assertThat(userAccountEntity.nickname()).isEqualTo(newNickname);
+            assertThat(userAccountEntity.statusMessage()).isEqualTo(newStatusMessage);
+            assertThat(userAccountEntity.profileImageUrl()).isEqualTo(newProfileImageUrl);
 
-            verify(userAccountRepository).save(userAccount);
+            verify(userAccountRepository).save(userAccountEntity);
         }
 
         @Test
@@ -200,7 +200,7 @@ public class UserServiceTest {
             // given
             Long userId = 999L;
             String currentNickname = "oldNickname";
-            UserProfileRequestDto requestDto = new UserProfileRequestDto(
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
                 "newNickname",
                 "New status",
                 "new.jpg"
@@ -225,19 +225,19 @@ public class UserServiceTest {
             Long userId = 1L;
             String currentNickname = "oldNickname";
             String duplicateNickname = "existingNickname";
-            UserProfileRequestDto requestDto = new UserProfileRequestDto(
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
                 duplicateNickname,
                 "New status",
                 "new.jpg"
             );
 
-            UserAccount userAccount = UserAccount.builder()
+            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
                 .nickname("oldNickname")
                 .build();
 
             given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccount));
+                .willReturn(Optional.of(userAccountEntity));
             given(userAccountRepository.existsByNickname(duplicateNickname))
                 .willReturn(true);
 
@@ -257,24 +257,24 @@ public class UserServiceTest {
             Long userId = 1L;
             String currentNickname = "oldNickname";
             String newNickname = "newNickname";
-            UserProfileRequestDto requestDto = new UserProfileRequestDto(
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
                 newNickname,
                 "New status",
                 "new.jpg"
             );
 
-            UserAccount userAccount = UserAccount.builder()
+            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
                 .nickname("oldNickname")
                 .build();
 
             given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccount));
+                .willReturn(Optional.of(userAccountEntity));
             given(userAccountRepository.existsByNickname(newNickname))
                 .willReturn(false);
 
             given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccount));
+                .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.empty());
 
@@ -283,7 +283,7 @@ public class UserServiceTest {
                 .isInstanceOf(UserStatNotFoundException.class)
                 .hasMessage("User stats not found for user: " + userId);
 
-            verify(userAccountRepository).save(userAccount);
+            verify(userAccountRepository).save(userAccountEntity);
         }
     }
 

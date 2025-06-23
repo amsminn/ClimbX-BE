@@ -1,6 +1,6 @@
 package com.climbx.climbx.user;
 
-import com.climbx.climbx.user.dto.UserProfileRequestDto;
+import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -33,7 +33,7 @@ class UserController {
     public UserProfileResponseDto modifyUserProfile(
         @AuthenticationPrincipal Long userId,
         @PathVariable @NotBlank String nickname,
-        @RequestBody @Valid UserProfileRequestDto request
+        @RequestBody @Valid UserProfileModifyRequestDto request
     ) {
         return userService.modifyUserProfile(userId, nickname, request);
     }

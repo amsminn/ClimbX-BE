@@ -1,9 +1,9 @@
 package com.climbx.climbx.user;
 
-import com.climbx.climbx.user.dto.UserProfileRequestDto;
+import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
-import com.climbx.climbx.user.entity.UserAccount;
-import com.climbx.climbx.user.entity.UserStat;
+import com.climbx.climbx.user.entity.UserAccountEntity;
+import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
 import com.climbx.climbx.user.exception.NicknameMismatchException;
 import com.climbx.climbx.user.exception.UserNotFoundException;
@@ -26,23 +26,23 @@ class UserService {
 
     private UserProfileResponseDto getUserById(Long userId)
         throws UserNotFoundException, UserStatNotFoundException {
-        UserAccount userAccount = findUserById(userId);
-        UserStat userStat = findUserStatByUserId(userId);
+        UserAccountEntity userAccountEntity = findUserById(userId);
+        UserStatEntity userStatEntity = findUserStatByUserId(userId);
 
-        Long ratingRank = userStatRepository.findRatingRank(userStat.rating());
+        Long ratingRank = userStatRepository.findRatingRank(userStatEntity.rating());
         Map<String, Long> categoryRatings = Collections.emptyMap(); // TODO: 분야별 레이팅은 추후 구현 예정
 
         return new UserProfileResponseDto(
-            userAccount.nickname(),
-            userAccount.statusMessage(),
-            userAccount.profileImageUrl(),
+            userAccountEntity.nickname(),
+            userAccountEntity.statusMessage(),
+            userAccountEntity.profileImageUrl(),
             ratingRank,
-            userStat.rating(),
+            userStatEntity.rating(),
             categoryRatings,
-            userStat.currentStreak(),
-            userStat.longestStreak(),
-            userStat.solvedProblemsCount(),
-            userStat.rivalCount()
+            userStatEntity.currentStreak(),
+            userStatEntity.longestStreak(),
+            userStatEntity.solvedProblemsCount(),
+            userStatEntity.rivalCount()
         );
     }
 
@@ -54,12 +54,12 @@ class UserService {
     public UserProfileResponseDto modifyUserProfile(
         Long userId,
         String currentNickname,
-        UserProfileRequestDto userProfileDto
+        UserProfileModifyRequestDto userProfileDto
     ) {
-        UserAccount userAccount = findUserById(userId);
+        UserAccountEntity userAccountEntity = findUserById(userId);
 
-        if (!currentNickname.equals(userAccount.nickname())) {
-            throw new NicknameMismatchException(currentNickname, userAccount.nickname());
+        if (!currentNickname.equals(userAccountEntity.nickname())) {
+            throw new NicknameMismatchException(currentNickname, userAccountEntity.nickname());
         }
 
         if (!currentNickname.equals(userProfileDto.nickname()) &&
@@ -67,25 +67,25 @@ class UserService {
             throw new DuplicateNicknameException(userProfileDto.nickname());
         }
 
-        userAccount.nickname(userProfileDto.nickname());
-        userAccount.statusMessage(userProfileDto.statusMessage());
-        userAccount.profileImageUrl(userProfileDto.profileImageUrl());
-        userAccountRepository.save(userAccount);
+        userAccountEntity.nickname(userProfileDto.nickname());
+        userAccountEntity.statusMessage(userProfileDto.statusMessage());
+        userAccountEntity.profileImageUrl(userProfileDto.profileImageUrl());
+        userAccountRepository.save(userAccountEntity);
 
         return getUserById(userId);
     }
 
-    private UserAccount findUserById(Long userId) {
+    private UserAccountEntity findUserById(Long userId) {
         return userAccountRepository.findByUserId(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    private UserAccount findUserByNickname(String nickname) {
+    private UserAccountEntity findUserByNickname(String nickname) {
         return userAccountRepository.findByNickname(nickname)
             .orElseThrow(() -> new UserNotFoundException(nickname));
     }
 
-    private UserStat findUserStatByUserId(Long userId) {
+    private UserStatEntity findUserStatByUserId(Long userId) {
         return userStatRepository.findByUserId(userId)
             .orElseThrow(() -> new UserStatNotFoundException(userId));
     }

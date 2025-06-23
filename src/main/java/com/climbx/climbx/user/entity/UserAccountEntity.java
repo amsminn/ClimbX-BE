@@ -25,7 +25,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true, chain = true)
 @Builder
-public class UserAccount extends BaseTimeEntity {
+public class UserAccountEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,8 +48,8 @@ public class UserAccount extends BaseTimeEntity {
     @Column(name = "last_login_date", nullable = false)
     private LocalDate lastLoginDate = LocalDate.now(); // 마지막 접속 날짜, 기본값은 현재 날짜
 
-    @OneToOne(mappedBy = "userAccount", fetch = FetchType.LAZY, optional = false)
-    private UserStat userStat;
+    @OneToOne(mappedBy = "userAccountEntity", fetch = FetchType.LAZY, optional = false)
+    private UserStatEntity userStatEntity;
 
     public void markLogin() {
         this.lastLoginDate = LocalDate.now(); // 현재 날짜로 마지막 접속 날짜 갱신

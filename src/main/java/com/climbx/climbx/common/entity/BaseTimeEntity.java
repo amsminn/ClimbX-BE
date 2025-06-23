@@ -14,7 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED) // 기본 생성자는 protected로 설정
 @Getter
-public abstract class BaseTimeEntity extends SoftDeleteEntity {
+public abstract class BaseTimeEntity extends SoftDeleteTimeEntity {
 
     /*
      * JPA Auditing으로 생성자(@CreatedBy), 수정자(@LastModifiedBy)을 자동으로 주입
@@ -25,6 +25,6 @@ public abstract class BaseTimeEntity extends SoftDeleteEntity {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at", updatable = false)
+    @Column(name = "updated_at", updatable = true)
     private LocalDateTime updatedAt;
 }

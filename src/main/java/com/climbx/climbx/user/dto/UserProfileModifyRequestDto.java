@@ -3,7 +3,7 @@ package com.climbx.climbx.user.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record UserProfileRequestDto(
+public record UserProfileModifyRequestDto(
     @NotBlank
     String nickname,
 
