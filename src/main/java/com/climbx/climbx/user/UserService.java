@@ -24,31 +24,14 @@ class UserService {
     private final UserAccountRepository userAccountRepository;
     private final UserStatRepository userStatRepository;
 
-    private UserProfileResponseDto getUserById(Long userId)
-        throws UserNotFoundException, UserStatNotFoundException {
+    private UserProfileResponseDto getUserById(Long userId) {
         UserAccountEntity userAccountEntity = findUserById(userId);
-        UserStatEntity userStatEntity = findUserStatByUserId(userId);
-
-        Long ratingRank = userStatRepository.findRatingRank(userStatEntity.rating());
-        Map<String, Long> categoryRatings = Collections.emptyMap(); // TODO: 분야별 레이팅은 추후 구현 예정
-
-        return new UserProfileResponseDto(
-            userAccountEntity.nickname(),
-            userAccountEntity.statusMessage(),
-            userAccountEntity.profileImageUrl(),
-            ratingRank,
-            userStatEntity.rating(),
-            categoryRatings,
-            userStatEntity.currentStreak(),
-            userStatEntity.longestStreak(),
-            userStatEntity.solvedProblemsCount(),
-            userStatEntity.rivalCount()
-        );
+        return buildProfile(userAccountEntity);
     }
 
     public UserProfileResponseDto getUserByNickname(String nickname) {
-        Long userId = findUserByNickname(nickname).userId();
-        return getUserById(userId);
+        UserAccountEntity userAccountEntity = findUserByNickname(nickname);
+        return buildProfile(userAccountEntity);
     }
 
     public UserProfileResponseDto modifyUserProfile(
@@ -67,7 +50,6 @@ class UserService {
             throw new DuplicateNicknameException(userProfileDto.newNickname());
         }
 
-//        userAccountEntity.nickname(userProfileDto.newNickname());
         userAccountEntity.modifyProfile(
             userProfileDto.newNickname(),
             userProfileDto.newStatusMessage(),
@@ -76,6 +58,25 @@ class UserService {
         userAccountRepository.save(userAccountEntity);
 
         return getUserById(userId);
+    }
+
+    private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
+        UserStatEntity userStat = findUserStatByUserId(userAccount.userId());
+        Long ratingRank = userStatRepository.findRatingRank(userStat.rating());
+        Map<String, Long> categoryRatings = Collections.emptyMap();
+
+        return new UserProfileResponseDto(
+            userAccount.nickname(),
+            userAccount.statusMessage(),
+            userAccount.profileImageUrl(),
+            ratingRank,
+            userStat.rating(),
+            categoryRatings,
+            userStat.currentStreak(),
+            userStat.longestStreak(),
+            userStat.solvedProblemsCount(),
+            userStat.rivalCount()
+        );
     }
 
     private UserAccountEntity findUserById(Long userId) {
