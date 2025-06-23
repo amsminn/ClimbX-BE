@@ -5,6 +5,7 @@ import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccount;
 import com.climbx.climbx.user.entity.UserStat;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
+import com.climbx.climbx.user.exception.NicknameMismatchException;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
@@ -52,11 +53,16 @@ class UserService {
 
     public UserProfileResponseDto modifyUserProfile(
         Long userId,
+        String currentNickname,
         UserProfileRequestDto userProfileDto
     ) {
         UserAccount userAccount = findUserById(userId);
 
-        if (!userAccount.nickname().equals(userProfileDto.nickname()) &&
+        if (!currentNickname.equals(userAccount.nickname())) {
+            throw new NicknameMismatchException(currentNickname, userAccount.nickname());
+        }
+
+        if (!currentNickname.equals(userProfileDto.nickname()) &&
             userAccountRepository.existsByNickname(userProfileDto.nickname())) {
             throw new DuplicateNicknameException(userProfileDto.nickname());
         }
