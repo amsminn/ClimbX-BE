@@ -67,9 +67,12 @@ class UserService {
             throw new DuplicateNicknameException(userProfileDto.newNickname());
         }
 
-        userAccountEntity.nickname(userProfileDto.newNickname());
-        userAccountEntity.statusMessage(userProfileDto.newStatusMessage());
-        userAccountEntity.profileImageUrl(userProfileDto.newProfileImageUrl());
+//        userAccountEntity.nickname(userProfileDto.newNickname());
+        userAccountEntity.modifyProfile(
+            userProfileDto.newNickname(),
+            userProfileDto.newStatusMessage(),
+            userProfileDto.newProfileImageUrl()
+        );
         userAccountRepository.save(userAccountEntity);
 
         return getUserById(userId);

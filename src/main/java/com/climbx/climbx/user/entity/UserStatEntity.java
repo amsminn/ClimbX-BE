@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Entity
@@ -21,8 +20,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
-@Setter
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true)
 @Builder
 public class UserStatEntity extends BaseTimeEntity {
 

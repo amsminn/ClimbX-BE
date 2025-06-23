@@ -14,7 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Entity
@@ -22,8 +21,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
-@Setter
-@Accessors(fluent = true, chain = true)
+@Accessors(fluent = true)
 @Builder
 public class UserAccountEntity extends BaseTimeEntity {
 
@@ -53,5 +51,11 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     public void markLogin() {
         this.lastLoginDate = LocalDate.now(); // 현재 날짜로 마지막 접속 날짜 갱신
+    }
+
+    public void modifyProfile(String nickname, String statusMessage, String profileImageUrl) {
+        this.nickname = nickname;
+        this.statusMessage = statusMessage;
+        this.profileImageUrl = profileImageUrl;
     }
 }
