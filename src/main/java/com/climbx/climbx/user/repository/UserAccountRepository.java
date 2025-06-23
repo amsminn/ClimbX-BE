@@ -1,5 +1,6 @@
 package com.climbx.climbx.user.repository;
 
+import com.climbx.climbx.user.entity.RoleType;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -35,5 +36,5 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
     Page<UserAccountEntity> findByNicknameContainingIgnoreCase(String nickname, Pageable pageable);
 
     // 특정 역할의 사용자들 조회
-    Page<UserAccountEntity> findByRole(String role, Pageable pageable);
+    Page<UserAccountEntity> findByRole(RoleType role, Pageable pageable);
 }

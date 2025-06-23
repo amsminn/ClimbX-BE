@@ -12,6 +12,7 @@ import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
+import com.climbx.climbx.user.exception.NicknameMismatchException;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
@@ -62,12 +63,11 @@ public class UserServiceTest {
                 .rating(rating)
                 .currentStreak(5L)
                 .longestStreak(15L)
+                .solvedProblemsCount(25L)
                 .rivalCount(3L)
                 .build();
 
             given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccountEntity));
-            given(userAccountRepository.findByUserId(userId))
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
@@ -86,6 +86,7 @@ public class UserServiceTest {
             assertThat(result.rating()).isEqualTo(rating);
             assertThat(result.currentStreak()).isEqualTo(5L);
             assertThat(result.longestStreak()).isEqualTo(15L);
+            assertThat(result.solvedProblemsCount()).isEqualTo(25L);
             assertThat(result.rivalCount()).isEqualTo(3L);
             assertThat(result.categoryRatings()).isEmpty();
         }
@@ -117,8 +118,6 @@ public class UserServiceTest {
                 .build();
 
             given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccountEntity));
-            given(userAccountRepository.findByUserId(userId))
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.empty());
@@ -154,7 +153,7 @@ public class UserServiceTest {
 
             UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
-                .nickname("oldNickname")
+                .nickname(currentNickname)
                 .statusMessage("Old status")
                 .profileImageUrl("old.jpg")
                 .build();
@@ -164,6 +163,7 @@ public class UserServiceTest {
                 .rating(rating)
                 .currentStreak(3L)
                 .longestStreak(10L)
+                .solvedProblemsCount(15L)
                 .rivalCount(2L)
                 .build();
 
@@ -186,10 +186,10 @@ public class UserServiceTest {
             assertThat(result.profileImageUrl()).isEqualTo(newProfileImageUrl);
             assertThat(result.ranking()).isEqualTo(ratingRank);
             assertThat(result.rating()).isEqualTo(rating);
-
-            assertThat(userAccountEntity.nickname()).isEqualTo(newNickname);
-            assertThat(userAccountEntity.statusMessage()).isEqualTo(newStatusMessage);
-            assertThat(userAccountEntity.profileImageUrl()).isEqualTo(newProfileImageUrl);
+            assertThat(result.currentStreak()).isEqualTo(3L);
+            assertThat(result.longestStreak()).isEqualTo(10L);
+            assertThat(result.solvedProblemsCount()).isEqualTo(15L);
+            assertThat(result.rivalCount()).isEqualTo(2L);
 
             verify(userAccountRepository).save(userAccountEntity);
         }
@@ -214,6 +214,33 @@ public class UserServiceTest {
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("User not found with id: " + userId);
 
+            verify(userAccountRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("현재 닉네임과 요청 닉네임이 일치하지 않음")
+        void modifyUserProfile_NicknameMismatch() {
+            // given
+            Long userId = 1L;
+            String currentNickname = "oldNickname";
+            String actualNickname = "actualNickname";
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
+                "newNickname",
+                "New status",
+                "new.jpg"
+            );
+
+            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
+                .userId(userId)
+                .nickname(actualNickname)
+                .build();
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+
+            // when & then
+            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                .isInstanceOf(NicknameMismatchException.class);
 
             verify(userAccountRepository, never()).save(any());
         }
@@ -233,7 +260,7 @@ public class UserServiceTest {
 
             UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
-                .nickname("oldNickname")
+                .nickname(currentNickname)
                 .build();
 
             given(userAccountRepository.findByUserId(userId))
@@ -246,8 +273,47 @@ public class UserServiceTest {
                 .isInstanceOf(DuplicateNicknameException.class)
                 .hasMessage("Nickname already in use: " + duplicateNickname);
 
-
             verify(userAccountRepository, never()).save(any());
+        }
+
+        @Test
+        @DisplayName("같은 닉네임으로 수정하는 경우 중복 체크 안함")
+        void modifyUserProfile_SameNickname_NoDuplicateCheck() {
+            // given
+            Long userId = 1L;
+            String currentNickname = "sameNickname";
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
+                currentNickname, // 동일한 닉네임
+                "New status",
+                "new.jpg"
+            );
+
+            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
+                .userId(userId)
+                .nickname(currentNickname)
+                .statusMessage("Old status")
+                .profileImageUrl("old.jpg")
+                .build();
+
+            UserStatEntity userStatEntity = UserStatEntity.builder()
+                .userId(userId)
+                .rating(1000L)
+                .build();
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+            given(userStatRepository.findByUserId(userId))
+                .willReturn(Optional.of(userStatEntity));
+            given(userStatRepository.findRatingRank(1000L))
+                .willReturn(50L);
+
+            // when
+            UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname, requestDto);
+
+            // then
+            assertThat(result).isNotNull();
+            verify(userAccountRepository, never()).existsByNickname(any());
+            verify(userAccountRepository).save(userAccountEntity);
         }
 
         @Test
@@ -265,16 +331,13 @@ public class UserServiceTest {
 
             UserAccountEntity userAccountEntity = UserAccountEntity.builder()
                 .userId(userId)
-                .nickname("oldNickname")
+                .nickname(currentNickname)
                 .build();
 
             given(userAccountRepository.findByUserId(userId))
                 .willReturn(Optional.of(userAccountEntity));
             given(userAccountRepository.existsByNickname(newNickname))
                 .willReturn(false);
-
-            given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.empty());
 

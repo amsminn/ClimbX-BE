@@ -3,6 +3,8 @@ package com.climbx.climbx.user.entity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,6 +32,7 @@ public class UserAccountEntity extends BaseTimeEntity {
     @Column(name = "user_id", updatable = false, nullable = false)
     private Long userId; // 사용자 ID
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 20, nullable = false)
     private String role; // USER, ADMIN 등 권한
 
