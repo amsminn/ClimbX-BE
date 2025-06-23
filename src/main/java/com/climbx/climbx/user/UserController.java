@@ -35,6 +35,6 @@ class UserController {
         @PathVariable @NotBlank String nickname,
         @RequestBody @Valid UserProfileRequestDto request
     ) {
-        return userService.modifyUserProfile(userId, request);
+        return userService.modifyUserProfile(userId, nickname, request);
     }
 }

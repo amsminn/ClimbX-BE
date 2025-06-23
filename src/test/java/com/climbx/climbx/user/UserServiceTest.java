@@ -139,6 +139,7 @@ public class UserServiceTest {
         void modifyUserProfile_Success() {
             // given
             Long userId = 1L;
+            String currentNickname = "oldNickname";
             String newNickname = "newNickname";
             String newStatusMessage = "New status";
             String newProfileImageUrl = "new.jpg";
@@ -176,7 +177,7 @@ public class UserServiceTest {
                 .willReturn(ratingRank);
 
             // when
-            UserProfileResponseDto result = userService.modifyUserProfile(userId, requestDto);
+            UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname, requestDto);
 
             // then
             assertThat(result).isNotNull();
@@ -198,6 +199,7 @@ public class UserServiceTest {
         void modifyUserProfile_UserNotFound() {
             // given
             Long userId = 999L;
+            String currentNickname = "oldNickname";
             UserProfileRequestDto requestDto = new UserProfileRequestDto(
                 "newNickname",
                 "New status",
@@ -208,7 +210,7 @@ public class UserServiceTest {
                 .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> userService.modifyUserProfile(userId, requestDto))
+            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("User not found with id: " + userId);
 
@@ -221,6 +223,7 @@ public class UserServiceTest {
         void modifyUserProfile_DuplicateNickname() {
             // given
             Long userId = 1L;
+            String currentNickname = "oldNickname";
             String duplicateNickname = "existingNickname";
             UserProfileRequestDto requestDto = new UserProfileRequestDto(
                 duplicateNickname,
@@ -239,7 +242,7 @@ public class UserServiceTest {
                 .willReturn(true);
 
             // when & then
-            assertThatThrownBy(() -> userService.modifyUserProfile(userId, requestDto))
+            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
                 .isInstanceOf(DuplicateNicknameException.class)
                 .hasMessage("Nickname already in use: " + duplicateNickname);
 
@@ -252,6 +255,7 @@ public class UserServiceTest {
         void modifyUserProfile_UserStatNotFoundAfterUpdate() {
             // given
             Long userId = 1L;
+            String currentNickname = "oldNickname";
             String newNickname = "newNickname";
             UserProfileRequestDto requestDto = new UserProfileRequestDto(
                 newNickname,
@@ -275,7 +279,7 @@ public class UserServiceTest {
                 .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> userService.modifyUserProfile(userId, requestDto))
+            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
                 .isInstanceOf(UserStatNotFoundException.class)
                 .hasMessage("User stats not found for user: " + userId);
 
