@@ -7,10 +7,10 @@ spring:
 
   jpa:
     open-in-view: false
-    generate-ddl: true
     hibernate:
       ddl-auto: create-drop
     properties:
+      javax.persistence.validation.mode: CALLBACK
       hibernate:
         globally_quoted_identifiers: true
         globally_quoted_identifiers_skip_column_definitions: true

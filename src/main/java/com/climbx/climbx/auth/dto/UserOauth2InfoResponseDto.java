@@ -4,7 +4,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
+import lombok.Builder;
 
+@Builder
 public record UserOauth2InfoResponseDto(
     @NotNull @Min(0)
     Long id,

@@ -9,6 +9,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +41,8 @@ public class UserStatEntity extends BaseTimeEntity {
         nullable = true,
         columnDefinition = "BIGINT DEFAULT 0"
     )
+    @NotNull
+    @Min(0)
     private Long rating = 0L; // 레이팅, 기본값은 0
 
     @Builder.Default
@@ -47,6 +51,8 @@ public class UserStatEntity extends BaseTimeEntity {
         nullable = true,
         columnDefinition = "BIGINT DEFAULT 0"
     )
+    @NotNull
+    @Min(0)
     private Long currentStreak = 0L; // 현재 출석일, 기본값은 0
 
     @Builder.Default
@@ -55,6 +61,8 @@ public class UserStatEntity extends BaseTimeEntity {
         nullable = true,
         columnDefinition = "BIGINT DEFAULT 0"
     )
+    @NotNull
+    @Min(0)
     private Long longestStreak = 0L; // 가장 긴 연속 출석일, 기본값은 0
 
     @Builder.Default
@@ -63,6 +71,8 @@ public class UserStatEntity extends BaseTimeEntity {
         nullable = false,
         columnDefinition = "BIGINT DEFAULT 0"
     )
+    @NotNull
+    @Min(0)
     private Long solvedProblemsCount = 0L; // 해결한 문제 수, 기본값은 0
 
     @Builder.Default
@@ -71,5 +81,7 @@ public class UserStatEntity extends BaseTimeEntity {
         nullable = false,
         columnDefinition = "BIGINT DEFAULT 0"
     )
+    @NotNull
+    @Min(0)
     private Long rivalCount = 0L; // 라이벌 수, 기본값은 0
 }

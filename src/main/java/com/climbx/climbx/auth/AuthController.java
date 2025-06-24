@@ -39,7 +39,7 @@ public class AuthController {
      }
 
      @GetMapping("/oauth2/callback/{provider}")
-     public ResponseEntity<LoginResponseDto> handleOAuth2Callback(
+     public ResponseEntity<@Valid LoginResponseDto> handleOAuth2Callback(
             @PathVariable("provider") @NotBlank String provider,
             @RequestParam("code") @NotBlank String code
      ) {
@@ -48,7 +48,7 @@ public class AuthController {
      }
 
      @PostMapping("/oauth2/refresh")
-     public ResponseEntity<LoginResponseDto> refreshAccessToken(
+     public ResponseEntity<@Valid LoginResponseDto> refreshAccessToken(
          @RequestBody @Valid RefreshRequestDto request
      ) {
          LoginResponseDto resp = authService.refreshAccessToken(request.refreshToken());
@@ -56,7 +56,7 @@ public class AuthController {
      }
 
     @GetMapping("/me")
-    public ResponseEntity<UserOauth2InfoResponseDto> getCurrentUserInfo(
+    public ResponseEntity<@Valid UserOauth2InfoResponseDto> getCurrentUserInfo(
         @AuthenticationPrincipal Long userId
     ) {
         UserOauth2InfoResponseDto resp = authService.getCurrentUserInfo(userId);
@@ -65,9 +65,10 @@ public class AuthController {
 
     @PostMapping("/signout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void signOut(
+    public ResponseEntity<Void> signOut(
         @RequestBody @Valid RefreshRequestDto request
     ) {
         // 임시 로그인에서 리프레쉬 토큰 드롭 구현 X
+        return ResponseEntity.noContent().build();
     }
 }

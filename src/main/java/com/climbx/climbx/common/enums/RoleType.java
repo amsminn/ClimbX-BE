@@ -1,4 +1,4 @@
-package com.climbx.climbx.user.entity;
+package com.climbx.climbx.common.enums;
 
 public enum RoleType {
     USER,

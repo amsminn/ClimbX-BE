@@ -100,8 +100,6 @@ class AuthServiceTest {
         assertThatThrownBy(() -> authService.getCurrentUserInfo(invalidUserId))
                 .isInstanceOf(UserUnauthorizedException.class)
                 .hasMessage("Unauthorized user");
-//        UnauthorizedException e = assertThrows(UnauthorizedException.class, () -> authService.getCurrentUserInfo(invalidUserId));
-//        assertThat(e.getMessage()).isEqualTo("Unauthorized user");
     }
 
     @Test

@@ -23,25 +23,35 @@ public class AuthService {
 
      public LoginResponseDto handleCallback(String provider, String code) {
          String token = jwtUtil.generateFixedToken();
-         return new LoginResponseDto("Bearer", token, null, 3600L);
+         return LoginResponseDto.builder()
+             .tokenType("Bearer")
+             .accessToken(token)
+             .refreshToken(null)
+             .expiresIn(3600L)
+             .build();
      }
 
     public LoginResponseDto refreshAccessToken(String sub) {
         String token = jwtUtil.generateFixedToken();
-        return new LoginResponseDto("Bearer", token, null, 3600L);
+        return LoginResponseDto.builder()
+            .tokenType("Bearer")
+            .accessToken(token)
+            .refreshToken(null)
+            .expiresIn(3600L)
+            .build();
     }
 
     public UserOauth2InfoResponseDto getCurrentUserInfo(Long userId) {
         if (!userId.equals(FIXED_USER_ID)) {
             throw new UserUnauthorizedException("Unauthorized user");
         }
-        return new UserOauth2InfoResponseDto(
-            FIXED_USER_ID,
-            DUMMY_USERNAME,
-            DUMMY_PROVIDER,
-            Instant.now(),
-            Instant.now().plusSeconds(3600)
-        );
+        return UserOauth2InfoResponseDto.builder()
+            .id(FIXED_USER_ID)
+            .nickname(DUMMY_USERNAME)
+            .provider(DUMMY_PROVIDER)
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusSeconds(3600))
+            .build();
     }
 
     public void signOut(String token) {

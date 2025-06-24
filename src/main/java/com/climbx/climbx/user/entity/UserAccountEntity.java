@@ -1,5 +1,6 @@
 package com.climbx.climbx.user.entity;
 
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +12,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,12 +38,17 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 20, nullable = false)
+    @NotNull
     private RoleType role; // USER, ADMIN 등 권한
 
     @Column(name = "nickname", length = 50, nullable = false, unique = true)
+    @NotBlank
+    @Size(min = 2, max = 50)
     private String nickname; // 사용자 닉네임
 
     @Column(name = "status_message", length = 100, nullable = true)
+    @NotNull
+    @Size(max = 100)
     private String statusMessage; // 상태 메시지
 
     @Column(name = "profile_image_url", length = 255, nullable = true)
