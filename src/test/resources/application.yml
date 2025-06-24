@@ -7,8 +7,6 @@ spring:
 
   jpa:
     open-in-view: false
-    hibernate:
-      ddl-auto: create-drop
     properties:
       javax.persistence.validation.mode: CALLBACK
       hibernate:
