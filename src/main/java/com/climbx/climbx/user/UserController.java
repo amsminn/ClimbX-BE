@@ -5,7 +5,6 @@ import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,22 +23,20 @@ class UserController {
     private final UserService userService;
 
     @GetMapping("/{nickname}")
-    public ResponseEntity<@Valid UserProfileResponseDto> getUserByNickname(
+    public @Valid UserProfileResponseDto getUserByNickname(
         @PathVariable @NotBlank String nickname
     ) {
-        UserProfileResponseDto response = userService.getUserByNickname(nickname);
-        return ResponseEntity.ok(response);
+        return userService.getUserByNickname(nickname);
     }
 
     @PutMapping("/{nickname}")
-    public ResponseEntity<@Valid UserProfileResponseDto> modifyUserProfile(
+    public @Valid UserProfileResponseDto modifyUserProfile(
         @AuthenticationPrincipal Long userId,
         @PathVariable @NotBlank String nickname,
         @RequestBody @Valid UserProfileModifyRequestDto request
     ) {
-        UserProfileResponseDto response = userService.modifyUserProfile(
+        return userService.modifyUserProfile(
             userId, nickname, request
         );
-        return ResponseEntity.ok(response);
     }
 }
