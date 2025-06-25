@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Range;
 
 @Builder
 public record GymInfoResponseDto(
+
     @NotNull
     Long gymId,
 
