@@ -1,12 +1,15 @@
-package com.climbx.climbx.auth.models;
+package com.climbx.climbx.auth.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
+import lombok.Builder;
 
-public record UserOauth2InfoResponse(
-    @NotNull
-    String  id,
+@Builder
+public record UserOauth2InfoResponseDto(
+    @NotNull @Min(0)
+    Long id,
 
     @NotBlank
     String nickname,

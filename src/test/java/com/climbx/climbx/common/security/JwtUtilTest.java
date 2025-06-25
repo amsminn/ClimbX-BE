@@ -99,10 +99,11 @@ class JwtUtilTest {
     @DisplayName("유효한 토큰에서 사용자 ID를 추출한다")
     void shouldExtractSubjectFromValidToken() {
         // when
-        String subject = jwtUtil.extractSubject(FIXED_TOKEN);
+        Long userId = 1L;
+        Long subject = jwtUtil.extractSubject(FIXED_TOKEN);
 
         // then
-        assertThat(subject).isEqualTo("user-1");
+        assertThat(subject).isEqualTo(userId);
     }
 
     @Test
@@ -112,7 +113,7 @@ class JwtUtilTest {
         String invalidToken = "INVALID_TOKEN";
 
         // when
-        String subject = jwtUtil.extractSubject(invalidToken);
+        Long subject = jwtUtil.extractSubject(invalidToken);
 
         // then
         assertThat(subject).isNull();

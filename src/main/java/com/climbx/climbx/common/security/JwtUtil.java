@@ -28,9 +28,9 @@ public class JwtUtil {
         return FIXED_JWT_TOKEN.equals(token);
     }
 
-    public String extractSubject(String token) {
+    public Long extractSubject(String token) {
         if (validateToken(token)) {
-            return "user-1";
+            return 1L;
         }
         return null;
     }

@@ -53,7 +53,7 @@ class JwtAuthenticationFilterTest {
         String authHeader = "Bearer " + VALID_TOKEN;
         given(request.getHeader("Authorization")).willReturn(authHeader);
         given(jwtUtil.validateToken(VALID_TOKEN)).willReturn(true);
-        given(jwtUtil.extractSubject(VALID_TOKEN)).willReturn("user-1");
+        given(jwtUtil.extractSubject(VALID_TOKEN)).willReturn(1L);
         given(jwtUtil.extractTokenFromHeader(authHeader)).willReturn(VALID_TOKEN);
         given(securityContext.getAuthentication()).willReturn(null);
 

@@ -1,8 +1,8 @@
 package com.climbx.climbx.auth;
 
+import com.climbx.climbx.auth.dto.LoginResponseDto;
+import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.exception.UserUnauthorizedException;
-import com.climbx.climbx.auth.models.LoginResponse;
-import com.climbx.climbx.auth.models.UserOauth2InfoResponse;
 import com.climbx.climbx.common.security.JwtUtil;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final JwtUtil jwtUtil;
-    private static final String FIXED_USER_ID = "user-1";
+    private static final Long FIXED_USER_ID = 1L;
     private static final String DUMMY_USERNAME = "dummy-user";
     private static final String DUMMY_PROVIDER = "GOOGLE";
 
@@ -21,27 +21,37 @@ public class AuthService {
          return provider; // 임시 구현: 실제로는 OAuth2 리다이렉트 URL을 반환해야 함
      }
 
-     public LoginResponse handleCallback(String provider, String code) {
+     public LoginResponseDto handleCallback(String provider, String code) {
          String token = jwtUtil.generateFixedToken();
-         return new LoginResponse("Bearer", token, null, 3600L);
+         return LoginResponseDto.builder()
+             .tokenType("Bearer")
+             .accessToken(token)
+             .refreshToken(null)
+             .expiresIn(3600L)
+             .build();
      }
 
-    public LoginResponse refreshAccessToken(String sub) {
+    public LoginResponseDto refreshAccessToken(String sub) {
         String token = jwtUtil.generateFixedToken();
-        return new LoginResponse("Bearer", token, null, 3600L);
+        return LoginResponseDto.builder()
+            .tokenType("Bearer")
+            .accessToken(token)
+            .refreshToken(null)
+            .expiresIn(3600L)
+            .build();
     }
 
-    public UserOauth2InfoResponse getCurrentUserInfo(String userId) {
+    public UserOauth2InfoResponseDto getCurrentUserInfo(Long userId) {
         if (!userId.equals(FIXED_USER_ID)) {
             throw new UserUnauthorizedException("Unauthorized user");
         }
-        return new UserOauth2InfoResponse(
-            FIXED_USER_ID,
-            DUMMY_USERNAME,
-            DUMMY_PROVIDER,
-            Instant.now(),
-            Instant.now().plusSeconds(3600)
-        );
+        return UserOauth2InfoResponseDto.builder()
+            .id(FIXED_USER_ID)
+            .nickname(DUMMY_USERNAME)
+            .provider(DUMMY_PROVIDER)
+            .issuedAt(Instant.now())
+            .expiresAt(Instant.now().plusSeconds(3600))
+            .build();
     }
 
     public void signOut(String token) {
