@@ -17,4 +17,10 @@ public class GymService {
             .map(GymInfoResponseDto::from)
             .toList();
     }
+
+    public List<GymInfoResponseDto> getGymListByDistance(Double latitude, Double longitude) {
+        return gymRepository.findAllByLocationOrderByDistance(latitude, longitude).stream()
+            .map(GymInfoResponseDto::from)
+            .toList();
+    }
 }
