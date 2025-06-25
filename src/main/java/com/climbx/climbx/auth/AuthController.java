@@ -35,7 +35,7 @@ public class AuthController {
          return "redirect:" + provider;
      }
 
-     @GetMapping("/oauth2/callback/{provider}")
+     @GetMapping("/oauth2/{provider}/callback")
      public @Valid LoginResponseDto handleOAuth2Callback(
             @PathVariable("provider") @NotBlank String provider,
             @RequestParam("code") @NotBlank String code
