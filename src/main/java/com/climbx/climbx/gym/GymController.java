@@ -19,14 +19,15 @@ public class GymController {
     @GetMapping
     public List<@Valid GymInfoResponseDto> getGymList(
         @RequestParam(required = false) Double latitude,
-        @RequestParam(required = false) Double longitude
+        @RequestParam(required = false) Double longitude,
+        @RequestParam(required = false) String keyword
     ) {
 
         if (latitude != null && longitude != null) {
-            return gymService.getGymListByDistance(latitude, longitude);
+            return gymService.getGymListByDistance(latitude, longitude, keyword);
         }
 
-        return gymService.getGymList();
+        return gymService.getGymList(keyword);
     }
 
 }

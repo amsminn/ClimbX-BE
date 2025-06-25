@@ -13,20 +13,41 @@ public class GymService {
 
     private final GymRepository gymRepository;
 
-    public List<GymInfoResponseDto> getGymList() {
-        return gymRepository.findAll().stream()
+    public List<GymInfoResponseDto> getGymList(String keyword) {
+
+        if (keyword == null || keyword.isBlank()) {
+            return gymRepository.findAll().stream()
+                .map(GymInfoResponseDto::from)
+                .toList();
+        }
+        return gymRepository.findAllByNameContainingIgnoreCase(keyword).stream()
             .map(GymInfoResponseDto::from)
             .toList();
     }
 
-    public List<GymInfoResponseDto> getGymListByDistance(Double latitude, Double longitude) {
+    public List<GymInfoResponseDto> getGymListByDistance(
+        Double latitude,
+        Double longitude,
+        String keyword
+    ) {
 
-        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-            throw new InvalidLocationException(latitude, longitude);
+        assertValidCoordinate(latitude, longitude);
+
+        if (keyword == null || keyword.isBlank()) {
+            return gymRepository.findAllByLocationOrderByDistance(latitude, longitude).stream()
+                .map(GymInfoResponseDto::from)
+                .toList();
         }
-
-        return gymRepository.findAllByLocationOrderByDistance(latitude, longitude).stream()
+        return gymRepository.findAllByNameContainingIgnoreCaseOrderByDistance(
+                latitude, longitude, keyword).stream()
             .map(GymInfoResponseDto::from)
             .toList();
+    }
+
+    private void assertValidCoordinate(Double latitude, Double longitude) {
+        if (latitude == null || longitude == null
+            || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+            throw new InvalidLocationException(latitude, longitude);
+        }
     }
 }

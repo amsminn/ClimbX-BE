@@ -46,7 +46,7 @@ public class GymServiceTest {
                 .willReturn(List.of(gymEntity1, gymEntity2));
 
             // when
-            List<GymInfoResponseDto> gymList = gymService.getGymList();
+            List<GymInfoResponseDto> gymList = gymService.getGymList(null);
 
             // then
             then(gymRepository).should(times(1)).findAll();
@@ -79,7 +79,9 @@ public class GymServiceTest {
                 .willReturn(sortedGyms);
 
             // when
-            List<GymInfoResponseDto> result = gymService.getGymListByDistance(latitude, longitude);
+            List<GymInfoResponseDto> result = gymService.getGymListByDistance(
+                latitude, longitude, null
+            );
 
             // then
             then(gymRepository)
@@ -92,33 +94,78 @@ public class GymServiceTest {
 
         @DisplayName("잘못된 위치 정보가 주어졌을 때, InvalidLocationException을 발생시킨다")
         @ParameterizedTest
-        @CsvSource({
-            "-91.0, 50.0", // 위도 범위 초과
-            "0.0, -181.0", // 경도 범위 초과
-            "91.0, 300.0"  // 위도, 경도 모두 초과
-        })
+        @CsvSource(value = {
+            "-91.0, 50.0",  // 위도 범위 초과
+            "0.0, -181.0",  // 경도 범위 초과
+            "91.0, 300.0",  // 위도, 경도 모두 초과
+            "null, null",   // null 포함
+            "null, 50.0",   // 위도만 null
+        }, nullValues = "null")
         void throwInvalidLocationException_whenInvalidLocation(Double latitude, Double longitude) {
 
-            assertThatThrownBy(() -> gymService.getGymListByDistance(latitude, longitude))
+            assertThatThrownBy(() -> gymService.getGymListByDistance(latitude, longitude, null))
                 .isInstanceOf(InvalidLocationException.class)
                 .hasMessage(String.format(
-                    "Invalid location: latitude '%s' and longitude '%s' must be between -90 to 90 and -180 to 180 respectively.",
-                    latitude, longitude));
+                        "Invalid location: latitude '%s' and longitude '%s' must be between -90 to 90 and -180 to 180 respectively.",
+                        latitude, longitude
+                    )
+                );
 
             then(gymRepository).shouldHaveNoInteractions();
         }
 
-        @DisplayName("keyword가 주어졌을 때, 해당 키워드로 클라이밍장 목록을 필터링한다")
-        void getGymList_whenKeywordProvided() {
+        @DisplayName("keyword가 존재하고 좌표 정보가 없으면, 해당 클라이밍장 목록 전체를 반환한다")
+        @Test
+        void getGymList_whenKeywordIsContainingAndNoCoordinates() {
             // given
-            // 특정 키워드가 주어진 상황
+            GymEntity gymEntity1 = GymFixture.createGymEntity(1L, "더클라임 클라이밍 홍대", 37.0, 126.0);
+            GymEntity gymEntity2 = GymFixture.createGymEntity(2L, "클라이밍존 홍대", 37.0, 126.0);
+            List<GymEntity> mockGyms = List.of(gymEntity1, gymEntity2);
+
+            String keyword = "홍대";
+            given(gymRepository.findAllByNameContainingIgnoreCase(keyword))
+                .willReturn(mockGyms);
 
             // when
-            // 해당 키워드를 포함하는 클라이밍장 목록을 조회
+            List<GymInfoResponseDto> result = gymService.getGymList(keyword);
 
             // then
-            // 키워드에 해당하는 클라이밍장 목록이 반환된다
+            then(gymRepository).should().findAllByNameContainingIgnoreCase(keyword);
+
+            assertThat(result).hasSize(2);
+            assertThat(result)
+                .extracting(GymInfoResponseDto::name)
+                .containsExactlyInAnyOrder("더클라임 클라이밍 홍대", "클라이밍존 홍대");
         }
 
+        @DisplayName("keyword가 존재하고 좌표 정보가 있으면, 해당 클라이밍장 목록을 거리순으로 정렬하여 반환한다")
+        @Test
+        void getGymList_whenKeywordIsContainingAndCoordinates() {
+            // given
+            GymEntity gymEntity1 = GymFixture.createGymEntity(1L, "더클라임 클라이밍 홍대", 37.0, 126.0);
+            GymEntity gymEntity2 = GymFixture.createGymEntity(2L, "클라이밍존 홍대", 37.0, 126.0);
+            List<GymEntity> mockGyms = List.of(gymEntity1, gymEntity2);
+
+            Double latitude = 37.0;
+            Double longitude = 126.0;
+            String keyword = "홍대";
+
+            given(gymRepository.findAllByNameContainingIgnoreCaseOrderByDistance(
+                latitude, longitude, keyword)
+            ).willReturn(mockGyms);
+
+            // when
+            List<GymInfoResponseDto> result = gymService.getGymListByDistance(
+                latitude, longitude, keyword
+            );
+
+            // then
+            then(gymRepository).should()
+                .findAllByNameContainingIgnoreCaseOrderByDistance(latitude, longitude, keyword);
+            assertThat(result).hasSize(2);
+            assertThat(result)
+                .extracting(GymInfoResponseDto::name)
+                .containsExactlyInAnyOrder("더클라임 클라이밍 홍대", "클라이밍존 홍대");
+        }
     }
 }
