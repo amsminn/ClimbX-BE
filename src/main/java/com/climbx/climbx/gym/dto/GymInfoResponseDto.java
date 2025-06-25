@@ -1,0 +1,60 @@
+package com.climbx.climbx.gym.dto;
+
+import com.climbx.climbx.gym.entity.GymEntity;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import org.hibernate.validator.constraints.Range;
+
+@Builder
+public record GymInfoResponseDto(
+    @NotNull
+    Long gymId,
+
+    @NotBlank
+    @Size(min = 1, max = 30)
+    String name,
+
+    @Range(min = -90, max = 90)
+    Double latitude,
+
+    @Range(min = -180, max = 180)
+    Double longitude,
+
+    @Size(max = 100)
+    String address,
+
+    @Size(min = 11, max = 13)
+    @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
+    String phoneNumber,
+
+    @Size(max = 200)
+    String description,
+
+    @Size(max = 30)
+    String openTime,
+
+    @Size(max = 30)
+    String closeTime,
+
+    @Size(max = 255)
+    String map2DUrl
+) {
+
+    public static GymInfoResponseDto from(GymEntity gym) {
+        return GymInfoResponseDto.builder()
+            .gymId(gym.gymId())
+            .name(gym.name())
+            .latitude(gym.latitude())
+            .longitude(gym.longitude())
+            .address(gym.address())
+            .phoneNumber(gym.phoneNumber())
+            .description(gym.description())
+            .openTime(gym.openTime())
+            .closeTime(gym.closeTime())
+            .map2DUrl(gym.map2DUrl())
+            .build();
+    }
+}
