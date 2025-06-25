@@ -3,6 +3,7 @@ package com.climbx.climbx.submission.entity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.video.entity.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,8 +40,20 @@ public class SubmissionEntity extends BaseTimeEntity {
     @JoinColumn(name = "video_id")
     private VideoEntity videoEntity; // 비디오 엔티티
 
+    @Column(name = "user_id", updatable = false, nullable = false)
+    private Long userId; // 사용자 ID, UserAccountEntity와 동일한 ID 사용
+
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private UserAccountEntity userAccountEntity;
+
     @Column(name = "problem_id", updatable = false, nullable = false)
     private Long problemId; // 문제 ID, ProblemEntity와 동일한 ID 사용
+
+    @Builder.Default
+    @Column(name = "difficulty", nullable = false)
+    private Long difficulty = 1000L; // 문제 난이도, 예: 1~10 등
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)

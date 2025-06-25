@@ -1,7 +1,11 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.problem.repository.ProblemRepository;
+import com.climbx.climbx.submission.entity.SubmissionEntity;
+import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
+import com.climbx.climbx.user.dto.UserTopProblemLevelsResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
@@ -11,6 +15,7 @@ import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +26,8 @@ class UserService {
 
     private final UserAccountRepository userAccountRepository;
     private final UserStatRepository userStatRepository;
+    private final ProblemRepository problemRepository;
+    private final SubmissionRepository submissionRepository;
 
     @Transactional(readOnly = true)
     public UserProfileResponseDto getUserById(Long userId) {
@@ -59,6 +66,23 @@ class UserService {
         userAccountRepository.save(userAccountEntity);
 
         return getUserById(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public UserTopProblemLevelsResponseDto getUserTopProblems(String nickname, Integer limit) {
+        UserAccountEntity userAccount = findUserByNickname(nickname);
+
+        List<Long> problemLevels = submissionRepository.findTopProblemsByUserId(
+                userAccount.userId(),
+                limit
+            ).stream()
+                .map(SubmissionEntity::difficulty)
+                .toList();
+
+        return UserTopProblemLevelsResponseDto.builder()
+            .problemCount((long) problemLevels.size())
+            .problemLevels(problemLevels)
+            .build();
     }
 
     private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {

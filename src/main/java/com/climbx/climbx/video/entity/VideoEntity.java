@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -37,10 +36,12 @@ public class VideoEntity extends BaseTimeEntity {
     @Column(name = "video_id", updatable = false, nullable = false)
     private Long videoId;
 
-    @MapsId
+    @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
+    private Long userId; // 사용자 ID, UserAccountEntity와 동일한 ID 사용
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
-    private  UserAccountEntity userAccountEntity;
+    private UserAccountEntity userAccountEntity;
 
     @OneToOne(mappedBy = "videoEntity", fetch = FetchType.LAZY)
     private SubmissionEntity submissionEntity; // 비디오 제출 엔티티

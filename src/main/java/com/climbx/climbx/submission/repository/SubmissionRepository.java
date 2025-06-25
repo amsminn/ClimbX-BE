@@ -1,16 +1,19 @@
 package com.climbx.climbx.submission.repository;
 
+import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
-import com.climbx.climbx.submission.repository.custom.SubmissionRepositoryCustom;
+import java.util.List;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SubmissionRepository extends SubmissionRepositoryCustom,
-    JpaRepository<SubmissionEntity, Long> {
+public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Long> {
 
-    // Define custom query methods here if needed
-    // For example, you might want to add methods for finding submissions by user, route, etc.
-    // Example:
-    // List<SubmissionEntity> findByUserId(Long userId);
-    // List<SubmissionEntity> findByRouteId(Long routeId);
+    List<SubmissionEntity> findAllByUserIdAndStatusOrderByDifficultyDesc(Long userId, StatusType status, Pageable pageable);
 
+    default List<SubmissionEntity> findTopProblemsByUserId(Long userId, Integer limit) {
+        return findAllByUserIdAndStatusOrderByDifficultyDesc(userId, StatusType.ACCEPTED, Pageable.ofSize(limit))
+            .stream()
+            .limit(limit)
+            .toList();
+    }
 }

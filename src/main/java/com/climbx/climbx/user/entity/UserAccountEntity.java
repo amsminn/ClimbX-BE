@@ -66,6 +66,9 @@ public class UserAccountEntity extends BaseTimeEntity {
     @OneToMany(mappedBy = "userAccountEntity", fetch = FetchType.LAZY)
     private List<VideoEntity> videoEntityList; // 비디오 엔티티와의 관계 (추가 예시)
 
+    @OneToMany(mappedBy = "userAccountEntity", fetch = FetchType.LAZY)
+    private List<VideoEntity> submissionEntityList; // 제출 엔티티와의 관계 (추가 예시)
+
     public void markLogin() {
         this.lastLoginDate = LocalDate.now(); // 현재 날짜로 마지막 접속 날짜 갱신
     }
