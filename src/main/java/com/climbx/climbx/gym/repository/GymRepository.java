@@ -11,10 +11,8 @@ public interface GymRepository extends JpaRepository<GymEntity, Long> {
     @Query(value =
         "SELECT *, " +
             "(6371 * acos(cos(radians(:latitude)) * cos(radians(latitude)) * cos(radians(longitude) - "
-            +
-            "radians(:longitude)) + sin(radians(:latitude)) * sin(radians(latitude)))) AS distance "
-            +
-            "FROM gyms ORDER BY distance ASC",
+            + "radians(:longitude)) + sin(radians(:latitude)) * sin(radians(latitude)))) AS distance "
+            + "FROM gyms ORDER BY distance ASC",
         nativeQuery = true
     )
     List<GymEntity> findAllByLocationOrderByDistance(
