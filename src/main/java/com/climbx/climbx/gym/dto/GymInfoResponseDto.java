@@ -33,12 +33,6 @@ public record GymInfoResponseDto(
     @Size(max = 200)
     String description,
 
-    @Size(max = 30)
-    String openTime,
-
-    @Size(max = 30)
-    String closeTime,
-
     @Size(max = 255)
     String map2DUrl
 ) {
@@ -52,8 +46,6 @@ public record GymInfoResponseDto(
             .address(gym.address())
             .phoneNumber(gym.phoneNumber())
             .description(gym.description())
-            .openTime(gym.openTime())
-            .closeTime(gym.closeTime())
             .map2DUrl(gym.map2DUrl())
             .build();
     }

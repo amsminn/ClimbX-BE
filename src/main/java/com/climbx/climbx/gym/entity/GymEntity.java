@@ -57,12 +57,6 @@ public class GymEntity extends BaseTimeEntity {
     @Column(name = "description", length = 200)
     private String description; // 상세 설명
 
-    @Column(name = "open_time", length = 30)
-    private String openTime; // 오픈 시간
-
-    @Column(name = "close_time", length = 30)
-    private String closeTime; // 마감 시간
-
     @Column(name = "2d_map_url", length = 255)
     private String map2DUrl; // 2D 지도 URL
 
