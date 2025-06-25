@@ -1,6 +1,7 @@
 package com.climbx.climbx.gym;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.times;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.gym.dto.GymInfoResponseDto;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.exception.InvalidLocationException;
 import com.climbx.climbx.gym.repository.GymRepository;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -86,6 +88,24 @@ public class GymServiceTest {
             assertThat(result).hasSize(2);
             assertThat(result.get(0).gymId()).isEqualTo(firstId);
             assertThat(result.get(1).gymId()).isEqualTo(secondId);
+        }
+
+        @DisplayName("잘못된 위치 정보가 주어졌을 때, InvalidLocationException을 발생시킨다")
+        @ParameterizedTest
+        @CsvSource({
+            "-91.0, 50.0", // 위도 범위 초과
+            "0.0, -181.0", // 경도 범위 초과
+            "91.0, 300.0"  // 위도, 경도 모두 초과
+        })
+        void throwInvalidLocationException_whenInvalidLocation(Double latitude, Double longitude) {
+
+            assertThatThrownBy(() -> gymService.getGymListByDistance(latitude, longitude))
+                .isInstanceOf(InvalidLocationException.class)
+                .hasMessage(String.format(
+                    "Invalid location: latitude '%s' and longitude '%s' must be between -90 to 90 and -180 to 180 respectively.",
+                    latitude, longitude));
+
+            then(gymRepository).shouldHaveNoInteractions();
         }
 
         @DisplayName("keyword가 주어졌을 때, 해당 키워드로 클라이밍장 목록을 필터링한다")
