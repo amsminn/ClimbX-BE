@@ -1,7 +1,5 @@
 package com.climbx.climbx.user;
 
-import static java.util.stream.Collectors.toList;
-
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -71,9 +69,8 @@ class UserService {
             userProfileDto.newStatusMessage(),
             userProfileDto.newProfileImageUrl()
         );
-        userAccountRepository.save(userAccountEntity);
 
-        return getUserById(userId);
+        return buildProfile(userAccountEntity);
     }
 
     @Transactional(readOnly = true)

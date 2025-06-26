@@ -25,7 +25,6 @@ import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -251,8 +250,6 @@ public class UserServiceTest {
             UserProfileResponseDto expected = UserFixture.userProfileResponseDtoFrom(
                 newNickname, newStatusMessage, newProfileImageUrl, ratingRank, rating, 3L, 10L, 15L, 2L);
             assertThat(result).isEqualTo(expected);
-
-            then(userAccountRepository).should().save(userAccountEntity);
         }
 
         @Test
@@ -351,7 +348,6 @@ public class UserServiceTest {
             // then
             assertThat(result).isNotNull();
             then(userAccountRepository).should(never()).existsByNickname(any());
-            then(userAccountRepository).should().save(userAccountEntity);
         }
 
         @Test
@@ -378,8 +374,6 @@ public class UserServiceTest {
             assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
                 .isInstanceOf(UserStatNotFoundException.class)
                 .hasMessage("User stats not found for user: " + userId);
-
-            then(userAccountRepository).should().save(userAccountEntity);
         }
     }
 

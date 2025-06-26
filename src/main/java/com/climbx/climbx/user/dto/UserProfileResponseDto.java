@@ -50,6 +50,7 @@ public record UserProfileResponseDto(
         UserStatEntity stat,
         Long ranking,
         Map<String, Long> categoryRatings) {
+
         return UserProfileResponseDto.builder()
             .nickname(account.nickname())
             .statusMessage(account.statusMessage())
