@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -17,7 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Table(name = "gyms")
@@ -40,11 +41,13 @@ public class GymEntity extends BaseTimeEntity {
     private String name; // 클라이밍장 이름
 
     @Column(name = "latitude")
-    @Range(min = -90, max = 90)
+    @DecimalMin(value = "-90.0")
+    @DecimalMax(value = "90.0")
     private Double latitude; // 위도
 
     @Column(name = "longitude")
-    @Range(min = -180, max = 180)
+    @DecimalMin(value = "-180.0")
+    @DecimalMax(value = "180.0")
     private Double longitude; // 경도
 
     @Column(name = "address", length = 100)
