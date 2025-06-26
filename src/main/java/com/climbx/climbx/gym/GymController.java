@@ -2,6 +2,8 @@ package com.climbx.climbx.gym;
 
 import com.climbx.climbx.gym.dto.GymInfoResponseDto;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -20,9 +22,18 @@ public class GymController {
 
     @GetMapping
     public List<@Valid GymInfoResponseDto> getGymList(
-        @RequestParam(required = false) Double latitude,
-        @RequestParam(required = false) Double longitude,
-        @RequestParam(required = false) String keyword
+        @RequestParam(required = false)
+        @DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
+        @DecimalMax(value = "90.0", message = "Latitude must be between -90 and 90")
+        Double latitude,
+
+        @RequestParam(required = false)
+        @DecimalMin(value = "-180.0", message = "Longitude must be between -180 and 180")
+        @DecimalMax(value = "180.0", message = "Longitude must be between -180 and 180")
+        Double longitude,
+
+        @RequestParam(required = false)
+        String keyword
     ) {
 
         if (latitude != null && longitude != null) {
@@ -31,5 +42,4 @@ public class GymController {
 
         return gymService.getGymList(keyword);
     }
-
 }

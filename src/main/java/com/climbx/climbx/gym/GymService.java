@@ -1,7 +1,6 @@
 package com.climbx.climbx.gym;
 
 import com.climbx.climbx.gym.dto.GymInfoResponseDto;
-import com.climbx.climbx.gym.exception.InvalidLocationException;
 import com.climbx.climbx.gym.repository.GymRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +30,6 @@ public class GymService {
         String keyword
     ) {
 
-        assertValidCoordinate(latitude, longitude);
-
         if (keyword == null || keyword.isBlank()) {
             return gymRepository.findAllByLocationOrderByDistance(latitude, longitude).stream()
                 .map(GymInfoResponseDto::from)
@@ -42,12 +39,5 @@ public class GymService {
                 latitude, longitude, keyword).stream()
             .map(GymInfoResponseDto::from)
             .toList();
-    }
-
-    private void assertValidCoordinate(Double latitude, Double longitude) {
-        if (latitude == null || longitude == null
-            || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-            throw new InvalidLocationException(latitude, longitude);
-        }
     }
 }
