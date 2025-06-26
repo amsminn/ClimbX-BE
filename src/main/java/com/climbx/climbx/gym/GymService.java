@@ -1,6 +1,7 @@
 package com.climbx.climbx.gym;
 
 import com.climbx.climbx.gym.dto.GymInfoResponseDto;
+import com.climbx.climbx.gym.exception.GymNotFoundException;
 import com.climbx.climbx.gym.repository.GymRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,12 @@ import org.springframework.stereotype.Service;
 public class GymService {
 
     private final GymRepository gymRepository;
+
+    public GymInfoResponseDto getGymById(Long gymId) {
+        return gymRepository.findById(gymId)
+            .map(GymInfoResponseDto::from)
+            .orElseThrow(() -> new GymNotFoundException(gymId));
+    }
 
     public List<GymInfoResponseDto> getGymList(String keyword) {
 

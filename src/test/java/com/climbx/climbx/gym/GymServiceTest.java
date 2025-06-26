@@ -1,6 +1,7 @@
 package com.climbx.climbx.gym;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -8,8 +9,10 @@ import static org.mockito.Mockito.times;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.gym.dto.GymInfoResponseDto;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.exception.GymNotFoundException;
 import com.climbx.climbx.gym.repository.GymRepository;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -28,6 +31,47 @@ public class GymServiceTest {
 
     @InjectMocks
     private GymService gymService;
+
+    @Nested
+    @DisplayName("클라이밍장 단일 조회")
+    class GetGymDetails {
+
+        @Test
+        @DisplayName("존재하는 클라이밍장 ID가 주어지면, 해당 클라이밍장 정보를 반환한다")
+        void getGymById_whenGymExists() {
+            // given
+            Long gymId = 1L;
+            GymEntity gymEntity = GymFixture.createGymEntity(gymId, "Test Gym", 37.0, 126.0);
+            GymInfoResponseDto expectedDto = GymInfoResponseDto.from(gymEntity);
+
+            given(gymRepository.findById(gymId))
+                .willReturn(Optional.of(gymEntity));
+
+            // when
+            GymInfoResponseDto result = gymService.getGymById(gymId);
+
+            // then
+            then(gymRepository).should(times(1)).findById(gymId);
+            assertThat(result).isEqualTo(expectedDto);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 클라이밍장 ID가 주어지면, GymNotFoundException을 발생시킨다")
+        void throwGymNotFoundException_whenGymDoesNotExist() {
+            // given
+            Long gymId = 999L;
+
+            given(gymRepository.findById(gymId))
+                .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> gymService.getGymById(gymId))
+                .isInstanceOf(GymNotFoundException.class)
+                .hasMessage("Gym not found with id: " + gymId);
+
+            then(gymRepository).should(times(1)).findById(gymId);
+        }
+    }
 
     @Nested
     @DisplayName("클라이밍장 조회")

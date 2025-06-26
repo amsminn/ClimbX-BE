@@ -60,7 +60,7 @@ public class GymEntity extends BaseTimeEntity {
     @Column(name = "description", length = 200)
     private String description; // 상세 설명
 
-    @Column(name = "2d_map_url", length = 255)
+    @Column(name = "map_2d_url", length = 255)
     private String map2DUrl; // 2D 지도 URL
 
     // Todo : 매장 메타데이터 json 컬럼
