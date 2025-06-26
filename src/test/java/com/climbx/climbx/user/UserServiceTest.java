@@ -3,10 +3,17 @@ package com.climbx.climbx.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
+import com.climbx.climbx.fixture.ProblemFixture;
+import com.climbx.climbx.fixture.UserFixture;
+import com.climbx.climbx.problem.dto.ProblemResponseDto;
+import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.repository.ProblemRepository;
+import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -17,6 +24,7 @@ import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,6 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -35,8 +44,77 @@ public class UserServiceTest {
     @Mock
     private UserStatRepository userStatRepository;
 
+    @Mock
+    private ProblemRepository problemRepository;
+
+    @Mock
+    private SubmissionRepository submissionRepository;
+
     @InjectMocks
     private UserService userService;
+
+    @Nested
+    @DisplayName("사용자 ID로 프로필 조회")
+    class GetUserById {
+
+        @Test
+        @DisplayName("사용자 ID로 프로필을 정상 조회")
+        void getUserById_Success() {
+            // given
+            Long userId = 1L;
+            Long ratingRank = 10L;
+
+            UserAccountEntity userAccountEntity = UserFixture.from(userId);
+            UserStatEntity userStatEntity = UserFixture.userStatEntityFrom(userId);
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+            given(userStatRepository.findByUserId(userId))
+                .willReturn(Optional.of(userStatEntity));
+            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+                .willReturn(ratingRank);
+
+            // when
+            UserProfileResponseDto result = userService.getUserById(userId);
+
+            // then
+            UserProfileResponseDto expected = UserFixture.userProfileResponseDtoFrom(
+                UserFixture.DEFAULT_NICKNAME, ratingRank);
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 사용자 ID로 조회")
+        void getUserById_UserNotFound() {
+            // given
+            Long userId = 999L;
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> userService.getUserById(userId))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("User not found with id: " + userId);
+        }
+
+        @Test
+        @DisplayName("사용자는 존재하지만 통계 정보가 없음")
+        void getUserById_UserStatNotFound() {
+            // given
+            Long userId = 1L;
+            UserAccountEntity userAccountEntity = UserFixture.from(userId);
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+            given(userStatRepository.findByUserId(userId))
+                .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> userService.getUserById(userId))
+                .isInstanceOf(UserStatNotFoundException.class)
+                .hasMessage("User stats not found for user: " + userId);
+        }
+    }
 
     @Nested
     @DisplayName("사용자 닉네임으로 프로필 조회")
@@ -48,47 +126,24 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            Long rating = 1500L;
             Long ratingRank = 10L;
 
-            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
-                .userId(userId)
-                .nickname(nickname)
-                .statusMessage("Test status")
-                .profileImageUrl("test.jpg")
-                .build();
-
-            UserStatEntity userStatEntity = UserStatEntity.builder()
-                .userId(userId)
-                .rating(rating)
-                .currentStreak(5L)
-                .longestStreak(15L)
-                .solvedProblemsCount(25L)
-                .rivalCount(3L)
-                .build();
+            UserAccountEntity userAccountEntity = UserFixture.userAccountEntityFrom(userId, nickname);
+            UserStatEntity userStatEntity = UserFixture.userStatEntityFrom(userId);
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(rating))
+            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
                 .willReturn(ratingRank);
 
             // when
             UserProfileResponseDto result = userService.getUserByNickname(nickname);
 
             // then
-            assertThat(result).isNotNull();
-            assertThat(result.nickname()).isEqualTo(nickname);
-            assertThat(result.statusMessage()).isEqualTo("Test status");
-            assertThat(result.profileImageUrl()).isEqualTo("test.jpg");
-            assertThat(result.ranking()).isEqualTo(ratingRank);
-            assertThat(result.rating()).isEqualTo(rating);
-            assertThat(result.currentStreak()).isEqualTo(5L);
-            assertThat(result.longestStreak()).isEqualTo(15L);
-            assertThat(result.solvedProblemsCount()).isEqualTo(25L);
-            assertThat(result.rivalCount()).isEqualTo(3L);
-            assertThat(result.categoryRatings()).isEmpty();
+            UserProfileResponseDto expected = UserFixture.userProfileResponseDtoFrom(nickname, ratingRank);
+            assertThat(result).isEqualTo(expected);
         }
 
         @Test
@@ -112,10 +167,7 @@ public class UserServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
 
-            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
-                .userId(userId)
-                .nickname(nickname)
-                .build();
+            UserAccountEntity userAccountEntity = UserFixture.userAccountEntityFrom(userId, nickname);
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccountEntity));
@@ -127,236 +179,6 @@ public class UserServiceTest {
                 .isInstanceOf(UserStatNotFoundException.class)
                 .hasMessage("User stats not found for user: " + userId);
         }
-    }
-
-    @Nested
-    @DisplayName("사용자 프로필 수정")
-    class ModifyUserProfile {
-
-        @Test
-        @DisplayName("사용자 프로필 정상 수정")
-        void modifyUserProfile_Success() {
-            // given
-            Long userId = 1L;
-            String currentNickname = "oldNickname";
-            String newNickname = "newNickname";
-            String newStatusMessage = "New status";
-            String newProfileImageUrl = "new.jpg";
-            Long rating = 1200L;
-            Long ratingRank = 20L;
-
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
-                .newNickname(newNickname)
-                .newStatusMessage(newStatusMessage)
-                .newProfileImageUrl(newProfileImageUrl)
-                .build();
-
-            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
-                .userId(userId)
-                .nickname(currentNickname)
-                .statusMessage("Old status")
-                .profileImageUrl("old.jpg")
-                .build();
-
-            UserStatEntity userStatEntity = UserStatEntity.builder()
-                .userId(userId)
-                .rating(rating)
-                .currentStreak(3L)
-                .longestStreak(10L)
-                .solvedProblemsCount(15L)
-                .rivalCount(2L)
-                .build();
-
-            given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccountEntity));
-            given(userAccountRepository.existsByNickname(newNickname))
-                .willReturn(false);
-            given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(rating))
-                .willReturn(ratingRank);
-
-            // when
-            UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname, requestDto);
-
-            // then
-            assertThat(result).isNotNull();
-            assertThat(result.nickname()).isEqualTo(newNickname);
-            assertThat(result.statusMessage()).isEqualTo(newStatusMessage);
-            assertThat(result.profileImageUrl()).isEqualTo(newProfileImageUrl);
-            assertThat(result.ranking()).isEqualTo(ratingRank);
-            assertThat(result.rating()).isEqualTo(rating);
-            assertThat(result.currentStreak()).isEqualTo(3L);
-            assertThat(result.longestStreak()).isEqualTo(10L);
-            assertThat(result.solvedProblemsCount()).isEqualTo(15L);
-            assertThat(result.rivalCount()).isEqualTo(2L);
-
-            verify(userAccountRepository).save(userAccountEntity);
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 사용자 ID로 수정 시도")
-        void modifyUserProfile_UserNotFound() {
-            // given
-            Long userId = 999L;
-            String currentNickname = "oldNickname";
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
-                .newNickname("newNickname")
-                .newStatusMessage("New status")
-                .newProfileImageUrl("new.jpg")
-                .build();
-
-            given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with id: " + userId);
-
-            verify(userAccountRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("현재 닉네임과 요청 닉네임이 일치하지 않음")
-        void modifyUserProfile_NicknameMismatch() {
-            // given
-            Long userId = 1L;
-            String currentNickname = "oldNickname";
-            String actualNickname = "actualNickname";
-
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
-                .newNickname("newNickname")
-                .newStatusMessage("New status")
-                .newProfileImageUrl("new.jpg")
-                .build();
-
-            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
-                .userId(userId)
-                .nickname(actualNickname)
-                .build();
-
-            given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccountEntity));
-
-            // when & then
-            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
-                .isInstanceOf(NicknameMismatchException.class);
-
-            verify(userAccountRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("중복된 닉네임으로 수정 시도")
-        void modifyUserProfile_DuplicateNickname() {
-            // given
-            Long userId = 1L;
-            String currentNickname = "oldNickname";
-            String duplicateNickname = "existingNickname";
-
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
-                .newNickname(duplicateNickname)
-                .newStatusMessage("New status")
-                .newProfileImageUrl("new.jpg")
-                .build();
-
-            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
-                .userId(userId)
-                .nickname(currentNickname)
-                .build();
-
-            given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccountEntity));
-            given(userAccountRepository.existsByNickname(duplicateNickname))
-                .willReturn(true);
-
-            // when & then
-            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
-                .isInstanceOf(DuplicateNicknameException.class)
-                .hasMessage("Nickname already in use: " + duplicateNickname);
-
-            verify(userAccountRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("같은 닉네임으로 수정하는 경우 중복 체크 안함")
-        void modifyUserProfile_SameNickname_NoDuplicateCheck() {
-            // given
-            Long userId = 1L;
-            String currentNickname = "sameNickname";
-
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
-                .newNickname(currentNickname)
-                .newStatusMessage("New status")
-                .newProfileImageUrl("new.jpg")
-                .build();
-
-            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
-                .userId(userId)
-                .nickname(currentNickname)
-                .statusMessage("Old status")
-                .profileImageUrl("old.jpg")
-                .build();
-
-            UserStatEntity userStatEntity = UserStatEntity.builder()
-                .userId(userId)
-                .rating(1000L)
-                .build();
-
-            given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccountEntity));
-            given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(1000L))
-                .willReturn(50L);
-
-            // when
-            UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname, requestDto);
-
-            // then
-            assertThat(result).isNotNull();
-            verify(userAccountRepository, never()).existsByNickname(any());
-            verify(userAccountRepository).save(userAccountEntity);
-        }
-
-        @Test
-        @DisplayName("프로필 수정 후 사용자 통계 조회 실패")
-        void modifyUserProfile_UserStatNotFoundAfterUpdate() {
-            // given
-            Long userId = 1L;
-            String currentNickname = "oldNickname";
-            String newNickname = "newNickname";
-
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
-                .newNickname(newNickname)
-                .newStatusMessage("New status")
-                .newProfileImageUrl("new.jpg")
-                .build();
-
-            UserAccountEntity userAccountEntity = UserAccountEntity.builder()
-                .userId(userId)
-                .nickname(currentNickname)
-                .build();
-
-            given(userAccountRepository.findByUserId(userId))
-                .willReturn(Optional.of(userAccountEntity));
-            given(userAccountRepository.existsByNickname(newNickname))
-                .willReturn(false);
-            given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
-                .isInstanceOf(UserStatNotFoundException.class)
-                .hasMessage("User stats not found for user: " + userId);
-
-            verify(userAccountRepository).save(userAccountEntity);
-        }
-    }
-
-    @Nested
-    @DisplayName("엣지 케이스 테스트")
-    class EdgeCases {
 
         @Test
         @DisplayName("닉네임이 null인 사용자 조회")
@@ -383,6 +205,310 @@ public class UserServiceTest {
             assertThatThrownBy(() -> userService.getUserByNickname(emptyNickname))
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("User not found with newNickname: ");
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 프로필 수정")
+    class ModifyUserProfile {
+
+        @Test
+        @DisplayName("사용자 프로필 정상 수정")
+        void modifyUserProfile_Success() {
+            // given
+            Long userId = 1L;
+            String currentNickname = "oldNickname";
+            String newNickname = "newNickname";
+            String newStatusMessage = "New status";
+            String newProfileImageUrl = "new.jpg";
+            Long rating = 1200L;
+            Long ratingRank = 20L;
+
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
+                newNickname, newStatusMessage, newProfileImageUrl);
+
+            UserAccountEntity userAccountEntity = UserFixture.userAccountEntityFrom(
+                userId, currentNickname, "Old status", "old.jpg");
+            UserStatEntity userStatEntity = UserFixture.userStatEntityFrom(
+                userId, rating, 3L, 10L, 15L, 2L);
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+            given(userAccountRepository.existsByNickname(newNickname))
+                .willReturn(false);
+            given(userStatRepository.findByUserId(userId))
+                .willReturn(Optional.of(userStatEntity));
+            given(userStatRepository.findRatingRank(rating))
+                .willReturn(ratingRank);
+
+            // when
+            UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname, requestDto);
+
+            // then
+            UserProfileResponseDto expected = UserFixture.userProfileResponseDtoFrom(
+                newNickname, newStatusMessage, newProfileImageUrl, ratingRank, rating, 3L, 10L, 15L, 2L);
+            assertThat(result).isEqualTo(expected);
+
+            then(userAccountRepository).should().save(userAccountEntity);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 사용자 ID로 수정 시도")
+        void modifyUserProfile_UserNotFound() {
+            // given
+            Long userId = 999L;
+            String currentNickname = "oldNickname";
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
+                "newNickname", "New status", "new.jpg");
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("User not found with id: " + userId);
+
+            then(userAccountRepository).should(never()).save(any());
+        }
+
+        @Test
+        @DisplayName("현재 닉네임과 요청 닉네임이 일치하지 않음")
+        void modifyUserProfile_NicknameMismatch() {
+            // given
+            Long userId = 1L;
+            String currentNickname = "oldNickname";
+            String actualNickname = "actualNickname";
+
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
+                "newNickname", "New status", "new.jpg");
+
+            UserAccountEntity userAccountEntity = UserFixture.userAccountEntityFrom(userId, actualNickname);
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+
+            // when & then
+            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                .isInstanceOf(NicknameMismatchException.class);
+
+            then(userAccountRepository).should(never()).save(any());
+        }
+
+        @Test
+        @DisplayName("중복된 닉네임으로 수정 시도")
+        void modifyUserProfile_DuplicateNickname() {
+            // given
+            Long userId = 1L;
+            String currentNickname = "oldNickname";
+            String duplicateNickname = "existingNickname";
+
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
+                duplicateNickname, "New status", "new.jpg");
+
+            UserAccountEntity userAccountEntity = UserFixture.userAccountEntityFrom(userId, currentNickname);
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+            given(userAccountRepository.existsByNickname(duplicateNickname))
+                .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                .isInstanceOf(DuplicateNicknameException.class)
+                .hasMessage("Nickname already in use: " + duplicateNickname);
+
+            then(userAccountRepository).should(never()).save(any());
+        }
+
+        @Test
+        @DisplayName("같은 닉네임으로 수정하는 경우 중복 체크 안함")
+        void modifyUserProfile_SameNickname_NoDuplicateCheck() {
+            // given
+            Long userId = 1L;
+            String currentNickname = "sameNickname";
+
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
+                currentNickname, "New status", "new.jpg");
+
+            UserAccountEntity userAccountEntity = UserFixture.userAccountEntityFrom(
+                userId, currentNickname, "Old status", "old.jpg");
+            UserStatEntity userStatEntity = UserFixture.userStatEntityFrom(userId, 1000L);
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+            given(userStatRepository.findByUserId(userId))
+                .willReturn(Optional.of(userStatEntity));
+            given(userStatRepository.findRatingRank(1000L))
+                .willReturn(50L);
+
+            // when
+            UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname, requestDto);
+
+            // then
+            assertThat(result).isNotNull();
+            then(userAccountRepository).should(never()).existsByNickname(any());
+            then(userAccountRepository).should().save(userAccountEntity);
+        }
+
+        @Test
+        @DisplayName("프로필 수정 후 사용자 통계 조회 실패")
+        void modifyUserProfile_UserStatNotFoundAfterUpdate() {
+            // given
+            Long userId = 1L;
+            String currentNickname = "oldNickname";
+            String newNickname = "newNickname";
+
+            UserProfileModifyRequestDto requestDto = new UserProfileModifyRequestDto(
+                newNickname, "New status", "new.jpg");
+
+            UserAccountEntity userAccountEntity = UserFixture.userAccountEntityFrom(userId, currentNickname);
+
+            given(userAccountRepository.findByUserId(userId))
+                .willReturn(Optional.of(userAccountEntity));
+            given(userAccountRepository.existsByNickname(newNickname))
+                .willReturn(false);
+            given(userStatRepository.findByUserId(userId))
+                .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                .isInstanceOf(UserStatNotFoundException.class)
+                .hasMessage("User stats not found for user: " + userId);
+
+            then(userAccountRepository).should().save(userAccountEntity);
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 상위 문제 조회")
+    class GetUserTopProblems {
+
+        @Test
+        @DisplayName("사용자의 상위 문제를 정상 조회")
+        void getUserTopProblems_Success() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            Integer limit = 5;
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+            
+            ProblemEntity problem1 = ProblemFixture.problemEntityFrom(1L, "Hard Problem", 1800L);
+            ProblemEntity problem2 = ProblemFixture.problemEntityFrom(2L, "Medium Problem", 1500L);
+            ProblemEntity problem3 = ProblemFixture.problemEntityFrom(3L, "Easy Problem", 1200L);
+            
+            List<ProblemEntity> problemEntities = List.of(problem1, problem2, problem3);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserSubmissionProblems(eq(userId), any(Pageable.class)))
+                .willReturn(problemEntities);
+
+            // when
+            List<ProblemResponseDto> result = userService.getUserTopProblems(nickname, limit);
+
+            // then
+            List<ProblemResponseDto> expected = List.of(
+                ProblemFixture.problemResponseDtoFrom(1L),
+                ProblemFixture.problemResponseDtoFrom(2L),
+                ProblemFixture.problemResponseDtoFrom(3L)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should().getUserSubmissionProblems(eq(userId), any(Pageable.class));
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 닉네임으로 상위 문제 조회")
+        void getUserTopProblems_UserNotFound() {
+            // given
+            String nickname = "nonexistentUser";
+            Integer limit = 5;
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("User not found with newNickname: " + nickname);
+
+            then(submissionRepository).should(never()).getUserSubmissionProblems(any(), any());
+        }
+
+        @Test
+        @DisplayName("사용자에게 문제 제출 기록이 없는 경우")
+        void getUserTopProblems_NoSubmissions() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            Integer limit = 5;
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+            List<ProblemEntity> emptyProblems = List.of();
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserSubmissionProblems(eq(userId), any(Pageable.class)))
+                .willReturn(emptyProblems);
+
+            // when
+            List<ProblemResponseDto> result = userService.getUserTopProblems(nickname, limit);
+
+            // then
+            assertThat(result).isEmpty();
+            then(submissionRepository).should().getUserSubmissionProblems(eq(userId), any(Pageable.class));
+        }
+
+        @Test
+        @DisplayName("limit이 0인 경우 예외 발생")
+        void getUserTopProblems_ZeroLimit() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            Integer limit = 0;
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+
+            // when & then
+            assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Page size must not be less than one");
+        }
+
+        @Test
+        @DisplayName("요청한 limit보다 적은 문제가 있는 경우")
+        void getUserTopProblems_LessProblemsThanlimit() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            Integer limit = 10;
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+            
+            ProblemEntity problem1 = ProblemFixture.problemEntityFrom(1L, "Problem 1", 1600L);
+            ProblemEntity problem2 = ProblemFixture.problemEntityFrom(2L, "Problem 2", 1400L);
+            
+            List<ProblemEntity> problemEntities = List.of(problem1, problem2);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserSubmissionProblems(eq(userId), any(Pageable.class)))
+                .willReturn(problemEntities);
+
+            // when
+            List<ProblemResponseDto> result = userService.getUserTopProblems(nickname, limit);
+
+            // then
+            List<ProblemResponseDto> expected = List.of(
+                ProblemFixture.problemResponseDtoFrom(1L),
+                ProblemFixture.problemResponseDtoFrom(2L)
+            );
+            assertThat(result).isEqualTo(expected);
         }
     }
 }

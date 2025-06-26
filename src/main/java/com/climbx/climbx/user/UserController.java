@@ -48,7 +48,7 @@ class UserController {
     @GetMapping("/{nickname}/top-problems")
     public List<@Valid ProblemResponseDto> getUserTopProblems(
         @PathVariable @NotBlank String nickname,
-        @RequestParam(name = "limit", required = false, defaultValue = "20") @Min(0) @Max(20) Integer limit
+        @RequestParam(name = "limit", required = false, defaultValue = "20") @Min(1) @Max(20) Integer limit
     ) {
         return userService.getUserTopProblems(nickname, limit);
     }
