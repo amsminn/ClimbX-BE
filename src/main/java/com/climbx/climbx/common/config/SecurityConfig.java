@@ -23,7 +23,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(
+                session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
                 auth
                     .requestMatchers("/api/auth/me", "/api/auth/oauth2/refresh").authenticated()

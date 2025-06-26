@@ -7,8 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,9 +29,4 @@ public class ProblemEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "problem_id", updatable = false, nullable = false)
     private Long problemId;
-
-    @Column(name = "problem_rating")
-    @NotNull
-    @Min(0)
-    private Long problemRating; // 문제의 난이도, 예: 1000, 1500 등
 }
