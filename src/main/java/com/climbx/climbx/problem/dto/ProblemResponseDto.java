@@ -24,10 +24,6 @@ public record ProblemResponseDto(
     String localLevel,
 
     @NotBlank
-    @Min(0)
-    Long difficulty,
-
-    @NotBlank
     String standardLevel
 ) {
 
@@ -40,7 +36,6 @@ public record ProblemResponseDto(
             .gymName("temp-gym-name")
             .clusterId(1L)
             .localLevel("temp-local-level")
-            .difficulty(5L)
             .standardLevel("temp-standard-level")
             .build();
     }
