@@ -20,14 +20,22 @@ public class GymController {
 
     private final GymService gymService;
 
-    @GetMapping
+    @GetMapping(params = {"!latitude", "!longitude"})
     public List<@Valid GymInfoResponseDto> getGymList(
         @RequestParam(required = false)
+        String keyword
+    ) {
+        return gymService.getGymList(keyword);
+    }
+
+    @GetMapping(params = {"latitude", "longitude"})
+    public List<GymInfoResponseDto> getGymListByDistance(
+        @RequestParam
         @DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
         @DecimalMax(value = "90.0", message = "Latitude must be between -90 and 90")
         Double latitude,
 
-        @RequestParam(required = false)
+        @RequestParam
         @DecimalMin(value = "-180.0", message = "Longitude must be between -180 and 180")
         @DecimalMax(value = "180.0", message = "Longitude must be between -180 and 180")
         Double longitude,
@@ -35,11 +43,6 @@ public class GymController {
         @RequestParam(required = false)
         String keyword
     ) {
-
-        if (latitude != null && longitude != null) {
-            return gymService.getGymListByDistance(latitude, longitude, keyword);
-        }
-
-        return gymService.getGymList(keyword);
+        return gymService.getGymListByDistance(latitude, longitude, keyword);
     }
 }
