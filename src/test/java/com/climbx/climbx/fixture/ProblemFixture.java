@@ -9,7 +9,6 @@ public class ProblemFixture {
     public static final String DEFAULT_GYM_NAME = "temp-gym-name";
     public static final Long DEFAULT_CLUSTER_ID = 1L;
     public static final String DEFAULT_LOCAL_LEVEL = "temp-local-level";
-    public static final Long DEFAULT_DIFFICULTY = 5L;
     public static final String DEFAULT_STANDARD_LEVEL = "temp-standard-level";
 
     public static ProblemEntity problemEntityFrom(Long problemId) {
@@ -33,7 +32,6 @@ public class ProblemFixture {
             .gymName(DEFAULT_GYM_NAME)
             .clusterId(DEFAULT_CLUSTER_ID)
             .localLevel(DEFAULT_LOCAL_LEVEL)
-            .difficulty(DEFAULT_DIFFICULTY)
             .standardLevel(DEFAULT_STANDARD_LEVEL)
             .build();
     }

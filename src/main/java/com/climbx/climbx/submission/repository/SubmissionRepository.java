@@ -3,6 +3,7 @@ package com.climbx.climbx.submission.repository;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.data.domain.Pageable;
@@ -31,5 +32,26 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
     List<ProblemEntity> getUserSubmissionProblems(
         @Param("userId") Long userId,
         Pageable pageable
+    );
+
+    /**
+     * 사용자가 특정 기간 동안 일별로 푼 문제 수를 조회
+     * from, to가 null이면 모든 기간
+     */
+    @Query("""
+        SELECT DATE(s.createdAt) as date, COUNT(DISTINCT s.problemId) as solvedCount
+          FROM SubmissionEntity s
+          JOIN s.videoEntity v
+         WHERE v.userId = :userId
+           AND s.status = com.climbx.climbx.common.enums.StatusType.ACCEPTED
+           AND (:from is Null OR DATE(s.createdAt) >= :from)
+           AND (:to is NULL OR DATE(s.createdAt) <= :to)
+         GROUP BY DATE(s.createdAt)
+         ORDER BY DATE(s.createdAt) ASC
+        """)
+    List<Object[]> getUserDateSolvedCount(
+        @Param("userId") Long userId,
+        @Param("from") LocalDate from,
+        @Param("to") LocalDate to
     );
 }

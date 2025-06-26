@@ -1,10 +1,12 @@
 package com.climbx.climbx.user;
 
+import static java.util.stream.Collectors.toList;
+
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.repository.ProblemRepository;
-import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.dto.DailySolvedCountResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -15,6 +17,7 @@ import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +89,25 @@ class UserService {
 
         return problemEntities.stream()
             .map(ProblemResponseDto::from)
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailySolvedCountResponseDto> getUserStreak(
+        String nickname,
+        LocalDate from,
+        LocalDate to
+    ) {
+        UserAccountEntity userAccount = findUserByNickname(nickname);
+        
+        List<Object[]> results = submissionRepository.getUserDateSolvedCount(
+            userAccount.userId(),
+            from,
+            to
+        );
+        
+        return results.stream()
+            .map(DailySolvedCountResponseDto::from)
             .toList();
     }
 

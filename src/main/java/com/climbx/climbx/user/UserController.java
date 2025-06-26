@@ -1,14 +1,19 @@
 package com.climbx.climbx.user;
 
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
+import com.climbx.climbx.user.dto.DailySolvedCountResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,4 +57,20 @@ class UserController {
     ) {
         return userService.getUserTopProblems(nickname, limit);
     }
+
+    @GetMapping("/{nickname}/streak")
+    // query parameter
+    // - criteria: ranking, rating, solvedCount
+    // - order: asc, desc
+    // - page: 0, 1, 2, ...
+    // - per_page: 10, 20, 30, ...
+    public List<@Valid DailySolvedCountResponseDto> getUserStreak(
+        @PathVariable @NotBlank String nickname,
+        @RequestParam(name = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @RequestParam(name = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+    ) {
+        return userService.getUserStreak(nickname, from, to);
+    }
+
+
 }

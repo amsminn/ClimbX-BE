@@ -14,6 +14,7 @@ import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.dto.DailySolvedCountResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -24,6 +25,8 @@ import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -509,6 +512,280 @@ public class UserServiceTest {
                 ProblemFixture.problemResponseDtoFrom(2L)
             );
             assertThat(result).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 스트릭 조회")
+    class GetUserStreak {
+
+        @Test
+        @DisplayName("사용자의 일별 해결 문제 수를 정상 조회")
+        void getUserStreak_Success() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 3);
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+
+            Object[] result1 = {LocalDate.of(2024, 1, 1), 3L};
+            Object[] result2 = {LocalDate.of(2024, 1, 2), 5L};
+            Object[] result3 = {LocalDate.of(2024, 1, 3), 2L};
+            List<Object[]> queryResults = List.<Object[]>of(result1, result2, result3);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                .willReturn(queryResults);
+
+            // when
+            List<DailySolvedCountResponseDto> result = userService.getUserStreak(nickname, from, to);
+
+            // then
+            List<DailySolvedCountResponseDto> expected = List.of(
+                DailySolvedCountResponseDto.from(result1),
+                DailySolvedCountResponseDto.from(result2),
+                DailySolvedCountResponseDto.from(result3)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should().getUserDateSolvedCount(userId, from, to);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 닉네임으로 스트릭 조회")
+        void getUserStreak_UserNotFound() {
+            // given
+            String nickname = "nonexistentUser";
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 31);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> userService.getUserStreak(nickname, from, to))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("User not found with newNickname: " + nickname);
+
+            then(submissionRepository).should(never()).getUserDateSolvedCount(any(), any(), any());
+        }
+
+        @Test
+        @DisplayName("해당 기간에 해결한 문제가 없는 경우")
+        void getUserStreak_NoSolvedProblems() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 31);
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+            List<Object[]> emptyResults = List.<Object[]>of();
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                .willReturn(emptyResults);
+
+            // when
+            List<DailySolvedCountResponseDto> result = userService.getUserStreak(nickname, from, to);
+
+            // then
+            assertThat(result).isEmpty();
+            then(submissionRepository).should().getUserDateSolvedCount(userId, from, to);
+        }
+
+        @Test
+        @DisplayName("하루만 조회하는 경우")
+        void getUserStreak_SingleDay() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate singleDate = LocalDate.of(2024, 1, 15);
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+
+            Object[] result1 = {LocalDate.of(2024, 1, 15), 7L};
+            List<Object[]> queryResults = List.<Object[]>of(result1);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, singleDate, singleDate))
+                .willReturn(queryResults);
+
+            // when
+            List<DailySolvedCountResponseDto> result = userService.getUserStreak(nickname, singleDate, singleDate);
+
+            // then
+            List<DailySolvedCountResponseDto> expected = List.of(
+                DailySolvedCountResponseDto.from(result1)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should().getUserDateSolvedCount(userId, singleDate, singleDate);
+        }
+
+        @Test
+        @DisplayName("날짜 순서가 잘못된 경우 (from > to)")
+        void getUserStreak_InvalidDateRange() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 31);
+            LocalDate to = LocalDate.of(2024, 1, 1);
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+            List<Object[]> emptyResults = List.<Object[]>of();
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                .willReturn(emptyResults);
+
+            // when
+            List<DailySolvedCountResponseDto> result = userService.getUserStreak(nickname, from, to);
+
+            // then
+            assertThat(result).isEmpty();
+            then(submissionRepository).should().getUserDateSolvedCount(userId, from, to);
+        }
+
+        @Test
+        @DisplayName("연속되지 않은 날짜의 데이터 조회")
+        void getUserStreak_NonConsecutiveDates() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 10);
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+
+            // 1일, 5일, 9일에만 문제를 해결
+            Object[] result1 = {LocalDate.of(2024, 1, 1), 2L};
+            Object[] result2 = {LocalDate.of(2024, 1, 5), 4L};
+            Object[] result3 = {LocalDate.of(2024, 1, 9), 1L};
+            List<Object[]> queryResults = List.<Object[]>of(result1, result2, result3);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                .willReturn(queryResults);
+
+            // when
+            List<DailySolvedCountResponseDto> result = userService.getUserStreak(nickname, from, to);
+
+            // then
+            List<DailySolvedCountResponseDto> expected = List.of(
+                DailySolvedCountResponseDto.from(result1),
+                DailySolvedCountResponseDto.from(result2),
+                DailySolvedCountResponseDto.from(result3)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should().getUserDateSolvedCount(userId, from, to);
+        }
+
+        @Test
+        @DisplayName("null 파라미터로 조회하는 경우")
+        void getUserStreak_WithNullParameters() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = null;
+            LocalDate to = null;
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+
+            Object[] result1 = {LocalDate.of(2024, 1, 1), 1L};
+            Object[] result2 = {LocalDate.of(2024, 1, 2), 3L};
+            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                .willReturn(queryResults);
+
+            // when
+            List<DailySolvedCountResponseDto> result = userService.getUserStreak(nickname, from, to);
+
+            // then
+            List<DailySolvedCountResponseDto> expected = List.of(
+                DailySolvedCountResponseDto.from(result1),
+                DailySolvedCountResponseDto.from(result2)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should().getUserDateSolvedCount(userId, null, null);
+        }
+
+        @Test
+        @DisplayName("from만 null인 경우")
+        void getUserStreak_WithFromNull() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = null;
+            LocalDate to = LocalDate.of(2024, 1, 31);
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+
+            Object[] result1 = {LocalDate.of(2024, 1, 30), 2L};
+            Object[] result2 = {LocalDate.of(2024, 1, 31), 4L};
+            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                .willReturn(queryResults);
+
+            // when
+            List<DailySolvedCountResponseDto> result = userService.getUserStreak(nickname, from, to);
+
+            // then
+            List<DailySolvedCountResponseDto> expected = List.of(
+                DailySolvedCountResponseDto.from(result1),
+                DailySolvedCountResponseDto.from(result2)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should().getUserDateSolvedCount(userId, null, to);
+        }
+
+        @Test
+        @DisplayName("to만 null인 경우")
+        void getUserStreak_WithToNull() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = null;
+
+            UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
+
+            Object[] result1 = {LocalDate.of(2024, 1, 1), 1L};
+            Object[] result2 = {LocalDate.of(2024, 2, 1), 5L};
+            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                .willReturn(queryResults);
+
+            // when
+            List<DailySolvedCountResponseDto> result = userService.getUserStreak(nickname, from, to);
+
+            // then
+            List<DailySolvedCountResponseDto> expected = List.of(
+                DailySolvedCountResponseDto.from(result1),
+                DailySolvedCountResponseDto.from(result2)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should().getUserDateSolvedCount(userId, from, null);
         }
     }
 }
