@@ -47,7 +47,7 @@ public class GymEntity extends BaseTimeEntity {
 
     @Column(name = "longitude")
     @DecimalMin(value = "-180.0")
-    @DecimalMax(value = "180.0")
+    @DecimalMax(value = "180.0", inclusive = false)
     private Double longitude; // 경도
 
     @Column(name = "address", length = 100)

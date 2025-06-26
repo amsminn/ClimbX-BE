@@ -24,7 +24,7 @@ public record GymInfoResponseDto(
     Double latitude,
 
     @DecimalMin(value = "-180.0")
-    @DecimalMax(value = "180.0")
+    @DecimalMax(value = "180.0", inclusive = false)
     Double longitude,
 
     @Size(max = 100)

@@ -37,7 +37,7 @@ public class GymController {
 
         @RequestParam
         @DecimalMin(value = "-180.0", message = "Longitude must be between -180 and 180")
-        @DecimalMax(value = "180.0", message = "Longitude must be between -180 and 180")
+        @DecimalMax(value = "180.0", inclusive = false, message = "Longitude must be between -180 and 180")
         Double longitude,
 
         @RequestParam(required = false)
