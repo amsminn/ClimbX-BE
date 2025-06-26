@@ -29,4 +29,9 @@ public class ProblemEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "problem_id", updatable = false, nullable = false)
     private Long problemId;
+
+    @Builder.Default
+    @Column(name = "problem_rating", nullable = false)
+    private Long problemRating = 10L; // 문제 난이도, 예: 1~10 등
+
 }

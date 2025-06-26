@@ -24,7 +24,6 @@ INSERT INTO user_stats (user_id,
 VALUES (1, 2500, 10, 15, 200, 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
        (2, 1500, 3, 8, 75, 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
        (3, 1200, 0, 0, 10, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
-
 -- Gyms
 INSERT INTO gyms (gym_id, name, latitude, longitude, address, phone_number, description,
                   map_2d_url, created_at, updated_at)
@@ -40,15 +39,16 @@ VALUES (1, 'ClimbX Seoul', 37.5665, 126.9780, '123 Seoul St', '02-1234-5678', 'B
        (5, 'Urban Grip', 37.5550, 126.9700, '202 Itaewon-ro', '010-5678-9012', 'Downtown location',
         'http://map5.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO problems (created_at,
+INSERT INTO problems (problem_rating,
+                      created_at,
                       updated_at,
                       deleted_at)
-VALUES (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+VALUES (5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
 INSERT INTO videos (user_id,
                     created_at,
