@@ -1,12 +1,13 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
-import com.climbx.climbx.user.dto.UserTopProblemLevelsResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -45,7 +46,7 @@ class UserController {
     }
 
     @GetMapping("/{nickname}/top-problems")
-    public @Valid UserTopProblemLevelsResponseDto getUserTopProblems(
+    public List<@Valid ProblemResponseDto> getUserTopProblems(
         @PathVariable @NotBlank String nickname,
         @RequestParam(name = "limit", required = false, defaultValue = "20") @Min(0) @Max(20) Integer limit
     ) {

@@ -8,6 +8,7 @@ import lombok.Builder;
 
 @Builder
 public record ProblemResponseDto(
+
     @NotNull
     @Min(1)
     Long id,

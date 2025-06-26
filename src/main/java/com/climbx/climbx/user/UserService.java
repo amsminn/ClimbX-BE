@@ -1,11 +1,12 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.problem.dto.ProblemResponseDto;
+import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
-import com.climbx.climbx.user.dto.UserTopProblemLevelsResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
@@ -16,7 +17,11 @@ import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,38 +74,32 @@ class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserTopProblemLevelsResponseDto getUserTopProblems(String nickname, Integer limit) {
+    public List<ProblemResponseDto> getUserTopProblems(String nickname, Integer limit) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
+        Sort sort = Sort.by("problemEntity.problemRating").descending();
+        Pageable pageable = PageRequest.of(0, limit, sort);
 
-        List<Long> problemLevels = submissionRepository.findTopProblemsByUserId(
-                userAccount.userId(),
-                limit
-            ).stream()
-                .map(SubmissionEntity::difficulty)
-                .toList();
+        List<ProblemEntity> problemEntities = submissionRepository.getUserSubmissionProblems(
+            userAccount.userId(),
+            pageable
+        );
 
-        return UserTopProblemLevelsResponseDto.builder()
-            .problemCount((long) problemLevels.size())
-            .problemLevels(problemLevels)
-            .build();
+        return problemEntities.stream()
+            .map(ProblemResponseDto::from)
+            .toList();
     }
 
     private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
         UserStatEntity userStat = findUserStatByUserId(userAccount.userId());
         Long ratingRank = userStatRepository.findRatingRank(userStat.rating());
+        Map<String, Long> categoryRatings = Collections.emptyMap();
 
-        return UserProfileResponseDto.builder()
-            .nickname(userAccount.nickname())
-            .statusMessage(userAccount.statusMessage())
-            .profileImageUrl(userAccount.profileImageUrl())
-            .ranking(ratingRank)
-            .rating(userStat.rating())
-            .categoryRatings(Collections.emptyMap())
-            .currentStreak(userStat.currentStreak())
-            .longestStreak(userStat.longestStreak())
-            .solvedProblemsCount(userStat.solvedProblemsCount())
-            .rivalCount(userStat.rivalCount())
-            .build();
+        return UserProfileResponseDto.from(
+            userAccount,
+            userStat,
+            ratingRank,
+            categoryRatings
+        );
     }
 
     private UserAccountEntity findUserById(Long userId) {
