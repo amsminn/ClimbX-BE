@@ -1,5 +1,4 @@
-INSERT INTO user_accounts (user_id,
-                           role,
+INSERT INTO user_accounts (role,
                            nickname,
                            status_message,
                            profile_image_url,
@@ -7,12 +6,11 @@ INSERT INTO user_accounts (user_id,
                            created_at,
                            updated_at,
                            deleted_at)
-VALUES (1, 'ADMIN', 'admin', '관리자 계정', NULL, CURRENT_DATE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
-        NULL),
-       (2, 'USER', 'alice', '안녕하세요, Alice입니다!', '/images/alice.png', CURRENT_DATE,
-        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (3, 'USER', 'bob', 'Bob the builder', NULL, CURRENT_DATE, CURRENT_TIMESTAMP,
-        CURRENT_TIMESTAMP, NULL);
+VALUES ('ADMIN', 'admin', '관리자 계정', NULL, CURRENT_DATE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       ('USER', 'alice', '안녕하세요, Alice입니다!', '/images/alice.png', CURRENT_DATE, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL),
+       ('USER', 'bob', 'Bob the builder', NULL, CURRENT_DATE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+        NULL);
 
 INSERT INTO user_stats (user_id,
                         rating,
@@ -29,7 +27,7 @@ VALUES (1, 2500, 10, 15, 200, 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
 
 -- Gyms
 INSERT INTO gyms (gym_id, name, latitude, longitude, address, phone_number, description,
-                  2d_map_url, created_at, updated_at)
+                  map_2d_url, created_at, updated_at)
 VALUES (1, 'ClimbX Seoul', 37.5665, 126.9780, '123 Seoul St', '02-1234-5678', 'Best gym in Seoul',
         'http://map1.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        (2, 'Boulder Base', 37.5796, 126.9770, '456 Mapo-gu', '010-2345-6789', 'Bouldering only',
@@ -41,5 +39,33 @@ VALUES (1, 'ClimbX Seoul', 37.5665, 126.9780, '123 Seoul St', '02-1234-5678', 'B
         CURRENT_TIMESTAMP),
        (5, 'Urban Grip', 37.5550, 126.9700, '202 Itaewon-ro', '010-5678-9012', 'Downtown location',
         'http://map5.com', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO problems (created_at,
+                      updated_at,
+                      deleted_at)
+VALUES (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+
+INSERT INTO videos (user_id,
+                    created_at,
+                    updated_at,
+                    deleted_at)
+VALUES (1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+
+INSERT INTO submissions (video_id,
+                         problem_id,
+                         status,
+                         reject_reason,
+                         appeal_status,
+                         created_at,
+                         updated_at,
+                         deleted_at)
+VALUES (1, 2, 'ACCEPTED', NULL, 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       (2, 3, 'REJECTED', 'Insufficient explanation', 'REJECTED', CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL),
+       (3, 1, 'PENDING', NULL, 'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
 COMMIT;

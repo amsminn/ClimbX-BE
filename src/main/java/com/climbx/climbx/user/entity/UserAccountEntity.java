@@ -1,7 +1,8 @@
 package com.climbx.climbx.user.entity;
 
-import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
+import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.video.entity.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,12 +11,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,6 +62,9 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @OneToOne(mappedBy = "userAccountEntity", fetch = FetchType.LAZY, optional = false)
     private UserStatEntity userStatEntity;
+
+    @OneToMany(mappedBy = "userAccountEntity", fetch = FetchType.LAZY)
+    private List<VideoEntity> videoEntityList; // 비디오 엔티티와의 관계 (추가 예시)
 
     public void markLogin() {
         this.lastLoginDate = LocalDate.now(); // 현재 날짜로 마지막 접속 날짜 갱신

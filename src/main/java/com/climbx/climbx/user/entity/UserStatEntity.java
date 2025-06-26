@@ -27,10 +27,8 @@ import lombok.experimental.Accessors;
 public class UserStatEntity extends BaseTimeEntity {
 
     @Id
-    @Column(name = "user_id", updatable = false)
-    @NotNull
-    @Min(1)
-    private Long userId;
+    @Column(name = "user_id", updatable = false, nullable = false)
+    private Long userId; // 사용자 ID, UserAccountEntity와 동일한 ID 사용
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
