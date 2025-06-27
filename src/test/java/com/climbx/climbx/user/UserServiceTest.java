@@ -852,10 +852,11 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 3L};
-            Object[] result2 = {LocalDate.of(2024, 1, 2), 5L};
-            Object[] result3 = {LocalDate.of(2024, 1, 3), 2L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2, result3);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 3L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 5L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 2L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -905,7 +906,7 @@ public class UserServiceTest {
             LocalDate to = LocalDate.of(2024, 1, 31);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
-            List<Object[]> emptyResults = List.<Object[]>of();
+            List<DailyHistoryResponseDto> emptyResults = List.of();
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -930,8 +931,9 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 15), 7L};
-            List<Object[]> queryResults = List.<Object[]>of(result1);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 7L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -960,7 +962,7 @@ public class UserServiceTest {
             LocalDate to = LocalDate.of(2024, 1, 1);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
-            List<Object[]> emptyResults = List.<Object[]>of();
+            List<DailyHistoryResponseDto> emptyResults = List.of();
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -987,10 +989,11 @@ public class UserServiceTest {
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
             // 1일, 5일, 9일에만 문제를 해결
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 2L};
-            Object[] result2 = {LocalDate.of(2024, 1, 5), 4L};
-            Object[] result3 = {LocalDate.of(2024, 1, 9), 1L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2, result3);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 2L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 4L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 1L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1022,9 +1025,10 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 1L};
-            Object[] result2 = {LocalDate.of(2024, 1, 2), 3L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 3L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1055,9 +1059,10 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 30), 2L};
-            Object[] result2 = {LocalDate.of(2024, 1, 31), 4L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 2L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 4L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1088,9 +1093,10 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 1L};
-            Object[] result2 = {LocalDate.of(2024, 2, 1), 5L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 5L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1127,10 +1133,11 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 1200L};
-            Object[] result2 = {LocalDate.of(2024, 1, 2), 1250L};
-            Object[] result3 = {LocalDate.of(2024, 1, 3), 1300L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2, result3);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1200L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1250L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 1300L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1182,7 +1189,7 @@ public class UserServiceTest {
             LocalDate to = LocalDate.of(2024, 1, 31);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
-            List<Object[]> emptyResults = List.<Object[]>of();
+            List<DailyHistoryResponseDto> emptyResults = List.of();
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1209,9 +1216,10 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 100L};
-            Object[] result2 = {LocalDate.of(2024, 1, 2), 95L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 100L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 95L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1243,9 +1251,10 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 1000L};
-            Object[] result2 = {LocalDate.of(2024, 1, 2), 1050L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1050L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1276,8 +1285,9 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 15), 1400L};
-            List<Object[]> queryResults = List.<Object[]>of(result1);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 1400L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1309,10 +1319,11 @@ public class UserServiceTest {
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
             // 1일, 5일, 9일에만 히스토리가 있음
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 10L};
-            Object[] result2 = {LocalDate.of(2024, 1, 5), 15L};
-            Object[] result3 = {LocalDate.of(2024, 1, 9), 20L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2, result3);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 10L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 15L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 20L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1345,9 +1356,10 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 30), 50L};
-            Object[] result2 = {LocalDate.of(2024, 1, 31), 45L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 50L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 45L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -1379,9 +1391,10 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
-            Object[] result1 = {LocalDate.of(2024, 1, 1), 1000L};
-            Object[] result2 = {LocalDate.of(2024, 2, 1), 1100L};
-            List<Object[]> queryResults = List.<Object[]>of(result1, result2);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000L),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 1100L)
+            );
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
