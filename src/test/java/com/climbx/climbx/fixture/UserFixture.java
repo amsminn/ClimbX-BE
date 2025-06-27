@@ -1,5 +1,6 @@
 package com.climbx.climbx.fixture;
 
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
@@ -32,12 +33,22 @@ public class UserFixture {
 
     public static UserAccountEntity createUserAccountEntity(Long userId, String nickname, 
         String statusMessage, String profileImageUrl) {
+        return createUserAccountEntity(userId, nickname, statusMessage, profileImageUrl, RoleType.USER);
+    }
+
+    public static UserAccountEntity createUserAccountEntity(Long userId, String nickname, 
+        String statusMessage, String profileImageUrl, RoleType role) {
         return UserAccountEntity.builder()
             .userId(userId)
             .nickname(nickname)
             .statusMessage(statusMessage)
             .profileImageUrl(profileImageUrl)
+            .role(role)
             .build();
+    }
+
+    public static UserAccountEntity createAdminUserAccountEntity(Long userId, String nickname) {
+        return createUserAccountEntity(userId, nickname, DEFAULT_STATUS_MESSAGE, DEFAULT_PROFILE_IMAGE_URL, RoleType.ADMIN);
     }
 
     // UserStatEntity 생성 메서드들  

@@ -14,6 +14,7 @@ import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
@@ -59,6 +60,328 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
+
+    @Nested
+    @DisplayName("사용자 목록 조회 및 검색")
+    class GetUsers {
+
+        @Test
+        @DisplayName("전체 사용자 목록을 정상 조회")
+        void getUsers_Success_AllUsers() {
+            // given
+            String search = null;
+            
+            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "alice");
+            UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "bob");
+            UserAccountEntity user3 = UserFixture.createUserAccountEntity(3L, "charlie");
+            List<UserAccountEntity> userAccounts = List.of(user1, user2, user3);
+            
+            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L, 1200L);
+            UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1300L);
+            UserStatEntity userStat3 = UserFixture.createUserStatEntity(3L, 1400L);
+
+            given(userAccountRepository.findByRole(RoleType.USER))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(1L))
+                .willReturn(Optional.of(userStat1));
+            given(userStatRepository.findByUserId(2L))
+                .willReturn(Optional.of(userStat2));
+            given(userStatRepository.findByUserId(3L))
+                .willReturn(Optional.of(userStat3));
+            given(userStatRepository.findRatingRank(1200L))
+                .willReturn(30L);
+            given(userStatRepository.findRatingRank(1300L))
+                .willReturn(20L);
+            given(userStatRepository.findRatingRank(1400L))
+                .willReturn(10L);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).hasSize(3);
+            assertThat(result.get(0).nickname()).isEqualTo("alice");
+            assertThat(result.get(1).nickname()).isEqualTo("bob");
+            assertThat(result.get(2).nickname()).isEqualTo("charlie");
+            
+            then(userAccountRepository).should().findByRole(RoleType.USER);
+            then(userAccountRepository).should(never()).findByRoleAndNicknameContaining(any(), any());
+        }
+
+        @Test
+        @DisplayName("빈 문자열로 검색 시 전체 사용자 목록 조회")
+        void getUsers_Success_EmptySearch() {
+            // given
+            String search = "";
+            
+            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "test1");
+            UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "test2");
+            List<UserAccountEntity> userAccounts = List.of(user1, user2);
+            
+            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
+            UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L);
+
+            given(userAccountRepository.findByRole(RoleType.USER))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(1L))
+                .willReturn(Optional.of(userStat1));
+            given(userStatRepository.findByUserId(2L))
+                .willReturn(Optional.of(userStat2));
+            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+                .willReturn(UserFixture.DEFAULT_RANKING);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).hasSize(2);
+            then(userAccountRepository).should().findByRole(RoleType.USER);
+            then(userAccountRepository).should(never()).findByRoleAndNicknameContaining(any(), any());
+        }
+
+        @Test
+        @DisplayName("공백만 있는 검색어로 검색 시 전체 사용자 목록 조회")
+        void getUsers_Success_WhitespaceOnlySearch() {
+            // given
+            String search = "   ";
+            
+            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
+            List<UserAccountEntity> userAccounts = List.of(user1);
+            
+            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
+
+            given(userAccountRepository.findByRole(RoleType.USER))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(1L))
+                .willReturn(Optional.of(userStat1));
+            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+                .willReturn(UserFixture.DEFAULT_RANKING);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).hasSize(1);
+            then(userAccountRepository).should().findByRole(RoleType.USER);
+            then(userAccountRepository).should(never()).findByRoleAndNicknameContaining(any(), any());
+        }
+
+        @Test
+        @DisplayName("닉네임 검색으로 특정 사용자들 조회")
+        void getUsers_Success_WithSearch() {
+            // given
+            String search = "test";
+            
+            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "testuser1");
+            UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "testuser2");
+            List<UserAccountEntity> userAccounts = List.of(user1, user2);
+            
+            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L, 1100L);
+            UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1600L);
+
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "test"))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(1L))
+                .willReturn(Optional.of(userStat1));
+            given(userStatRepository.findByUserId(2L))
+                .willReturn(Optional.of(userStat2));
+            given(userStatRepository.findRatingRank(1100L))
+                .willReturn(40L);
+            given(userStatRepository.findRatingRank(1600L))
+                .willReturn(5L);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).hasSize(2);
+            assertThat(result.get(0).nickname()).isEqualTo("testuser1");
+            assertThat(result.get(1).nickname()).isEqualTo("testuser2");
+            
+            then(userAccountRepository).should().findByRoleAndNicknameContaining(RoleType.USER, "test");
+            then(userAccountRepository).should(never()).findByRole(any());
+        }
+
+        @Test
+        @DisplayName("검색 결과가 없는 경우")
+        void getUsers_Success_NoResults() {
+            // given
+            String search = "nonexistent";
+            List<UserAccountEntity> emptyUserAccounts = List.of();
+
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "nonexistent"))
+                .willReturn(emptyUserAccounts);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).isEmpty();
+            
+            then(userAccountRepository).should().findByRoleAndNicknameContaining(RoleType.USER, "nonexistent");
+            then(userStatRepository).should(never()).findByUserId(any());
+        }
+
+        @Test
+        @DisplayName("검색어 앞뒤 공백 제거 후 검색")
+        void getUsers_Success_TrimmedSearch() {
+            // given
+            String search = "  alice  ";
+            
+            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "alice123");
+            List<UserAccountEntity> userAccounts = List.of(user1);
+            
+            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
+
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "alice"))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(1L))
+                .willReturn(Optional.of(userStat1));
+            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+                .willReturn(UserFixture.DEFAULT_RANKING);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).nickname()).isEqualTo("alice123");
+            
+            then(userAccountRepository).should().findByRoleAndNicknameContaining(RoleType.USER, "alice");
+        }
+
+        @Test
+        @DisplayName("사용자는 있지만 통계 정보가 없는 경우")
+        void getUsers_UserStatNotFound() {
+            // given
+            String search = null;
+            
+            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
+            List<UserAccountEntity> userAccounts = List.of(user1);
+
+            given(userAccountRepository.findByRole(RoleType.USER))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(1L))
+                .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> userService.getUsers(search))
+                .isInstanceOf(UserStatNotFoundException.class)
+                .hasMessage("User stats not found for user: 1");
+        }
+
+        @Test
+        @DisplayName("다양한 레이팅을 가진 사용자들 조회")
+        void getUsers_Success_DifferentRatings() {
+            // given
+            String search = "pro";
+            
+            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "pro_player1");
+            UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "pro_player2");
+            UserAccountEntity user3 = UserFixture.createUserAccountEntity(3L, "pro_player3");
+            List<UserAccountEntity> userAccounts = List.of(user1, user2, user3);
+            
+            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L, 2000L, 10L, 20L, 100L, 5L);
+            UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1800L, 8L, 15L, 80L, 3L);
+            UserStatEntity userStat3 = UserFixture.createUserStatEntity(3L, 2200L, 15L, 25L, 120L, 7L);
+
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "pro"))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(1L))
+                .willReturn(Optional.of(userStat1));
+            given(userStatRepository.findByUserId(2L))
+                .willReturn(Optional.of(userStat2));
+            given(userStatRepository.findByUserId(3L))
+                .willReturn(Optional.of(userStat3));
+            given(userStatRepository.findRatingRank(2000L))
+                .willReturn(3L);
+            given(userStatRepository.findRatingRank(1800L))
+                .willReturn(8L);
+            given(userStatRepository.findRatingRank(2200L))
+                .willReturn(1L);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).hasSize(3);
+            
+            UserProfileResponseDto firstUser = result.get(0);
+            assertThat(firstUser.nickname()).isEqualTo("pro_player1");
+            assertThat(firstUser.rating()).isEqualTo(2000L);
+            assertThat(firstUser.ranking()).isEqualTo(3L);
+            assertThat(firstUser.solvedProblemsCount()).isEqualTo(100L);
+            
+            UserProfileResponseDto secondUser = result.get(1);
+            assertThat(secondUser.nickname()).isEqualTo("pro_player2");
+            assertThat(secondUser.rating()).isEqualTo(1800L);
+            assertThat(secondUser.ranking()).isEqualTo(8L);
+            
+            UserProfileResponseDto thirdUser = result.get(2);
+            assertThat(thirdUser.nickname()).isEqualTo("pro_player3");
+            assertThat(thirdUser.rating()).isEqualTo(2200L);
+            assertThat(thirdUser.ranking()).isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("ADMIN 역할 사용자는 조회되지 않음")
+        void getUsers_AdminNotIncluded() {
+            // given
+            String search = null;
+            
+            UserAccountEntity adminUser = UserFixture.createAdminUserAccountEntity(1L, "admin");
+            UserAccountEntity normalUser = UserFixture.createUserAccountEntity(2L, "user");
+            List<UserAccountEntity> userAccounts = List.of(normalUser); // admin은 포함되지 않음
+            
+            UserStatEntity userStat = UserFixture.createUserStatEntity(2L);
+
+            given(userAccountRepository.findByRole(RoleType.USER))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(2L))
+                .willReturn(Optional.of(userStat));
+            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+                .willReturn(UserFixture.DEFAULT_RANKING);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).nickname()).isEqualTo("user");
+            
+            then(userAccountRepository).should().findByRole(RoleType.USER);
+            then(userAccountRepository).should(never()).findByRole(RoleType.ADMIN);
+        }
+
+        @Test
+        @DisplayName("ADMIN 역할 사용자는 검색에서도 제외됨")
+        void getUsers_AdminNotIncludedInSearch() {
+            // given
+            String search = "admin";
+            
+            UserAccountEntity normalUser = UserFixture.createUserAccountEntity(1L, "admin_user");
+            List<UserAccountEntity> userAccounts = List.of(normalUser); // admin 역할이 아닌 사용자만 포함
+            
+            UserStatEntity userStat = UserFixture.createUserStatEntity(1L);
+
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "admin"))
+                .willReturn(userAccounts);
+            given(userStatRepository.findByUserId(1L))
+                .willReturn(Optional.of(userStat));
+            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+                .willReturn(UserFixture.DEFAULT_RANKING);
+
+            // when
+            List<UserProfileResponseDto> result = userService.getUsers(search);
+
+            // then
+            assertThat(result).hasSize(1);
+            assertThat(result.get(0).nickname()).isEqualTo("admin_user");
+            
+            then(userAccountRepository).should().findByRoleAndNicknameContaining(RoleType.USER, "admin");
+            then(userAccountRepository).should(never()).findByRole(any());
+        }
+    }
 
     @Nested
     @DisplayName("사용자 ID로 프로필 조회")

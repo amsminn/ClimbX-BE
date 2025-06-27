@@ -4,6 +4,7 @@ import static com.climbx.climbx.common.enums.UserHistoryCriteriaType.RANKING;
 import static com.climbx.climbx.common.enums.UserHistoryCriteriaType.RATING;
 import static com.climbx.climbx.common.enums.UserHistoryCriteriaType.SOLVED_COUNT;
 
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
@@ -38,9 +39,23 @@ class UserService {
 
     private final UserAccountRepository userAccountRepository;
     private final UserStatRepository userStatRepository;
-    private final ProblemRepository problemRepository;
     private final SubmissionRepository submissionRepository;
     private final UserRankingHistoryRepository userRankingHistoryRepository;
+
+    @Transactional(readOnly = true)
+    public List<UserProfileResponseDto> getUsers(String search) {
+        List<UserAccountEntity> userAccounts;
+        
+        if (search == null || search.trim().isEmpty()) {
+            userAccounts = userAccountRepository.findByRole(RoleType.USER);
+        } else {
+            userAccounts = userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, search.trim());
+        }
+        
+        return userAccounts.stream()
+            .map(this::buildProfile)
+            .toList();
+    }
 
     @Transactional(readOnly = true)
     public UserProfileResponseDto getUserById(Long userId) {

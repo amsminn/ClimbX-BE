@@ -32,6 +32,13 @@ class UserController {
 
     private final UserService userService;
 
+    @GetMapping("")
+    public List<@Valid UserProfileResponseDto> getUsers(
+        @RequestParam(name = "search", required = false) String search
+    ) {
+        return userService.getUsers(search);
+    }
+
     @GetMapping("/{nickname}")
     public @Valid UserProfileResponseDto getUserByNickname(
         @PathVariable @NotBlank String nickname
