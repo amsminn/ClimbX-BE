@@ -48,11 +48,11 @@ public class SubmissionEntity extends BaseTimeEntity {
     private ProblemEntity problemEntity; // 문제 엔티티
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 20)
+    @Column(name = "status", length = 20, nullable = false)
     @Size(max = 20)
     private SubmissionStatusType status; // 제출 상태, 예: PENDING, ACCEPTED, REJECTED 등
 
-    @Column(name = "reject_reason", length = 255)
+    @Column(name = "reject_reason", length = 255, nullable = true)
     @Size(max = 255)
     private String rejectReason; // 거절 사유, nullable
 

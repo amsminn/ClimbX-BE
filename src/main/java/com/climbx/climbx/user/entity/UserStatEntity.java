@@ -36,31 +36,31 @@ public class UserStatEntity extends BaseTimeEntity {
     private  UserAccountEntity userAccountEntity;
 
     @Builder.Default
-    @Column(name = "rating")
+    @Column(name = "rating", nullable = false)
     @NotNull
     @Min(0)
     private Long rating = 0L; // 레이팅, 기본값은 0
 
     @Builder.Default
-    @Column(name = "current_streak")
+    @Column(name = "current_streak", nullable = false)
     @NotNull
     @Min(0)
     private Long currentStreak = 0L; // 현재 출석일, 기본값은 0
 
     @Builder.Default
-    @Column(name = "longest_streak")
+    @Column(name = "longest_streak", nullable = false)
     @NotNull
     @Min(0)
     private Long longestStreak = 0L; // 가장 긴 연속 출석일, 기본값은 0
 
     @Builder.Default
-    @Column(name = "solved_problems_count")
+    @Column(name = "solved_problems_count", nullable = false)
     @NotNull
     @Min(0)
     private Long solvedProblemsCount = 0L; // 해결한 문제 수, 기본값은 0
 
     @Builder.Default
-    @Column(name = "rival_count")
+    @Column(name = "rival_count", nullable = false)
     @NotNull
     @Min(0)
     private Long rivalCount = 0L; // 라이벌 수, 기본값은 0

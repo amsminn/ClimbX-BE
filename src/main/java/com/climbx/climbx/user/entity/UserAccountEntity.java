@@ -40,24 +40,24 @@ public class UserAccountEntity extends BaseTimeEntity {
     private Long userId; // 사용자 ID
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", length = 20)
+    @Column(name = "role", length = 20, nullable = false)
     @NotNull @Size(max = 20)
     private RoleType role; // USER, ADMIN 등 권한
 
-    @Column(name = "nickname", length = 50, unique = true)
+    @Column(name = "nickname", length = 50, unique = true, nullable = false)
     @NotBlank
     @Size(min = 2, max = 50)
     private String nickname; // 사용자 닉네임
 
-    @Column(name = "status_message", length = 100)
+    @Column(name = "status_message", length = 100, nullable = true)
     @Size(max = 100) // nullable
     private String statusMessage; // 상태 메시지
 
-    @Column(name = "profile_image_url", length = 255)
+    @Column(name = "profile_image_url", length = 255, nullable = true)
     private String profileImageUrl; // 프로필 이미지 URL
 
     @Builder.Default
-    @Column(name = "last_login_date")
+    @Column(name = "last_login_date", nullable = false)
     private LocalDate lastLoginDate = LocalDate.now(); // 마지막 접속 날짜, 기본값은 현재 날짜
 
     @OneToOne(mappedBy = "userAccountEntity", fetch = FetchType.LAZY, optional = false)
