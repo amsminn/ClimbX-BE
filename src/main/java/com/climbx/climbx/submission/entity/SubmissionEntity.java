@@ -40,7 +40,7 @@ public class SubmissionEntity extends BaseTimeEntity {
     @JoinColumn(name = "video_id")
     private VideoEntity videoEntity; // 비디오 엔티티
 
-    @Column(name = "problem_id", updatable = false, nullable = false)
+    @Column(name = "problem_id", insertable = false, updatable = false, nullable = false)
     private Long problemId; // 문제 ID, ProblemEntity와 동일한 ID 사용
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)

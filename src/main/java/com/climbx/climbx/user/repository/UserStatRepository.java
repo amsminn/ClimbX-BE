@@ -1,5 +1,6 @@
 package com.climbx.climbx.user.repository;
 
+import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -27,10 +28,12 @@ public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> 
     /**
      * 특정 레이팅을 가진 사용자의 순위(1-based) 조회
      */
-    long countByRatingGreaterThan(Long rating);
+    Long countByRatingGreaterThan(Long rating);
     default Long findRatingRank(Long rating) {
         return countByRatingGreaterThan(rating) + 1;
     }
+
+    // 유저의 랭킹
 
     /**
      * 최장 스트릭, 해결한 문제 수 기준 사용자의 순위(1-based) 조회

@@ -2,6 +2,7 @@ package com.climbx.climbx.submission.repository;
 
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
+import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,10 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
      * 사용자가 특정 기간 동안 일별로 푼 문제 수를 조회 from, to가 null이면 모든 기간
      */
     @Query("""
-        SELECT DATE(s.createdAt) as date, COUNT(DISTINCT s.problemId) as solvedCount
+        SELECT  new com.climbx.climbx.user.dto.DailyHistoryResponseDto(  
+            DATE(s.createdAt),
+            COUNT(DISTINCT s.problemEntity.problemId)
+            )  
           FROM SubmissionEntity s
           JOIN s.videoEntity v
          WHERE v.userId = :userId
@@ -42,7 +46,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
          GROUP BY DATE(s.createdAt)
          ORDER BY DATE(s.createdAt) ASC
         """)
-    List<Object[]> getUserDateSolvedCount(
+    List<DailyHistoryResponseDto> getUserDateSolvedCount(
         @Param("userId") Long userId,
         @Param("from") LocalDate from,
         @Param("to") LocalDate to
