@@ -8,7 +8,7 @@ public class JwtUtil {
 
     private final String FIXED_JWT_TOKEN;
 
-    public JwtUtil(@Value("${auth.fixed-jwt}}") String FIXED_JWT_TOKEN) {
+    public JwtUtil(@Value("${auth.fixed-jwt}") String FIXED_JWT_TOKEN) {
         this.FIXED_JWT_TOKEN = FIXED_JWT_TOKEN;
     }
 

@@ -6,6 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record UserProfileModifyRequestDto(
+
     @NotBlank
     String newNickname,
 

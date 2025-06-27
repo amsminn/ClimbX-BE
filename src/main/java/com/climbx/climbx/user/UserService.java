@@ -1,5 +1,10 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.problem.dto.ProblemResponseDto;
+import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.repository.ProblemRepository;
+import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.dto.DailySolvedCountResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -10,8 +15,14 @@ import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
+import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +32,8 @@ class UserService {
 
     private final UserAccountRepository userAccountRepository;
     private final UserStatRepository userStatRepository;
+    private final ProblemRepository problemRepository;
+    private final SubmissionRepository submissionRepository;
 
     @Transactional(readOnly = true)
     public UserProfileResponseDto getUserById(Long userId) {
@@ -56,27 +69,56 @@ class UserService {
             userProfileDto.newStatusMessage(),
             userProfileDto.newProfileImageUrl()
         );
-        userAccountRepository.save(userAccountEntity);
 
-        return getUserById(userId);
+        return buildProfile(userAccountEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProblemResponseDto> getUserTopProblems(String nickname, Integer limit) {
+        UserAccountEntity userAccount = findUserByNickname(nickname);
+        Sort sort = Sort.by("problemEntity.problemRating").descending();
+        Pageable pageable = PageRequest.of(0, limit, sort);
+
+        List<ProblemEntity> problemEntities = submissionRepository.getUserSubmissionProblems(
+            userAccount.userId(),
+            pageable
+        );
+
+        return problemEntities.stream()
+            .map(ProblemResponseDto::from)
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailySolvedCountResponseDto> getUserStreak(
+        String nickname,
+        LocalDate from,
+        LocalDate to
+    ) {
+        UserAccountEntity userAccount = findUserByNickname(nickname);
+        
+        List<Object[]> results = submissionRepository.getUserDateSolvedCount(
+            userAccount.userId(),
+            from,
+            to
+        );
+        
+        return results.stream()
+            .map(DailySolvedCountResponseDto::from)
+            .toList();
     }
 
     private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
         UserStatEntity userStat = findUserStatByUserId(userAccount.userId());
         Long ratingRank = userStatRepository.findRatingRank(userStat.rating());
+        Map<String, Long> categoryRatings = Collections.emptyMap();
 
-        return UserProfileResponseDto.builder()
-            .nickname(userAccount.nickname())
-            .statusMessage(userAccount.statusMessage())
-            .profileImageUrl(userAccount.profileImageUrl())
-            .ranking(ratingRank)
-            .rating(userStat.rating())
-            .categoryRatings(Collections.emptyMap())
-            .currentStreak(userStat.currentStreak())
-            .longestStreak(userStat.longestStreak())
-            .solvedProblemsCount(userStat.solvedProblemsCount())
-            .rivalCount(userStat.rivalCount())
-            .build();
+        return UserProfileResponseDto.from(
+            userAccount,
+            userStat,
+            ratingRank,
+            categoryRatings
+        );
     }
 
     private UserAccountEntity findUserById(Long userId) {

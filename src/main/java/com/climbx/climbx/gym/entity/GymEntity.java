@@ -31,11 +31,11 @@ public class GymEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "gym_id", updatable = false)
+    @Column(name = "gym_id", updatable = false, nullable = false)
     @NotNull
     private Long gymId; // 클라이밍장 ID
 
-    @Column(name = "name", length = 30)
+    @Column(name = "name", length = 30, nullable = false)
     @NotBlank
     @Size(min = 1, max = 30)
     private String name; // 클라이밍장 이름
