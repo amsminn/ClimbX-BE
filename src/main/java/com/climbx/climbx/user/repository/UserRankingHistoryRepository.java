@@ -25,6 +25,7 @@ public interface UserRankingHistoryRepository extends
            AND h.part = :criteria
            AND (:from IS NULL OR DATE(h.createdAt) >= :from)
            AND (:to IS NULL OR DATE(h.createdAt) <= :to)
+            GROUP BY DATE(h.createdAt)
          ORDER BY DATE(h.createdAt) ASC
         """)
     List<DailyHistoryResponseDto> getUserDailyHistory(
