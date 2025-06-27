@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   pull_request:
-    branches: [ "develop"]
+    branches: [ "develop" ]
 
 jobs:
   test:
@@ -40,9 +40,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle
+      - name: Build and analyze with Gradle
         env:
           DB_URL: jdbc:mysql://localhost:3306/climbx?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
           DB_USER: test_user
           DB_PASSWORD: test_password
-        run: ./gradlew test
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew test sonarqube --info
