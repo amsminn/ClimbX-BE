@@ -1,17 +1,16 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
-import com.climbx.climbx.user.dto.DailySolvedCountResponseDto;
+import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -59,7 +58,7 @@ class UserController {
     }
 
     @GetMapping("/{nickname}/streak")
-    public List<@Valid DailySolvedCountResponseDto> getUserStreak(
+    public List<@Valid DailyHistoryResponseDto> getUserStreak(
         @PathVariable @NotBlank String nickname,
         @RequestParam(name = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
         @RequestParam(name = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
@@ -67,5 +66,13 @@ class UserController {
         return userService.getUserStreak(nickname, from, to);
     }
 
-
+    @GetMapping("/{nickname}/history")
+    public List<@Valid DailyHistoryResponseDto> getUserDailyHistory(
+        @PathVariable @NotBlank String nickname,
+        @RequestParam(name = "criteria", required = true) @NotBlank UserHistoryCriteriaType criteria,
+        @RequestParam(name = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+        @RequestParam(name = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+    ) {
+        return userService.getUserDailyHistory(nickname, criteria, from, to);
+    }
 }
