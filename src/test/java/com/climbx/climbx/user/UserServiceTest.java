@@ -391,9 +391,9 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
             
-            ProblemEntity problem1 = ProblemFixture.problemEntityFrom(1L, "Hard Problem", 1800L);
-            ProblemEntity problem2 = ProblemFixture.problemEntityFrom(2L, "Medium Problem", 1500L);
-            ProblemEntity problem3 = ProblemFixture.problemEntityFrom(3L, "Easy Problem", 1200L);
+            ProblemEntity problem1 = ProblemFixture.createProblemEntity(1L, "Hard Problem", 1800L);
+            ProblemEntity problem2 = ProblemFixture.createProblemEntity(2L, "Medium Problem", 1500L);
+            ProblemEntity problem3 = ProblemFixture.createProblemEntity(3L, "Easy Problem", 1200L);
             
             List<ProblemEntity> problemEntities = List.of(problem1, problem2, problem3);
 
@@ -407,9 +407,9 @@ public class UserServiceTest {
 
             // then
             List<ProblemResponseDto> expected = List.of(
-                ProblemFixture.problemResponseDtoFrom(1L),
-                ProblemFixture.problemResponseDtoFrom(2L),
-                ProblemFixture.problemResponseDtoFrom(3L)
+                ProblemFixture.createProblemResponseDto(1L),
+                ProblemFixture.createProblemResponseDto(2L),
+                ProblemFixture.createProblemResponseDto(3L)
             );
             assertThat(result).isEqualTo(expected);
 
@@ -487,8 +487,8 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.userAccountEntityFrom(userId, nickname);
             
-            ProblemEntity problem1 = ProblemFixture.problemEntityFrom(1L, "Problem 1", 1600L);
-            ProblemEntity problem2 = ProblemFixture.problemEntityFrom(2L, "Problem 2", 1400L);
+            ProblemEntity problem1 = ProblemFixture.createProblemEntity(1L, "Problem 1", 1600L);
+            ProblemEntity problem2 = ProblemFixture.createProblemEntity(2L, "Problem 2", 1400L);
             
             List<ProblemEntity> problemEntities = List.of(problem1, problem2);
 
@@ -502,8 +502,8 @@ public class UserServiceTest {
 
             // then
             List<ProblemResponseDto> expected = List.of(
-                ProblemFixture.problemResponseDtoFrom(1L),
-                ProblemFixture.problemResponseDtoFrom(2L)
+                ProblemFixture.createProblemResponseDto(1L),
+                ProblemFixture.createProblemResponseDto(2L)
             );
             assertThat(result).isEqualTo(expected);
         }
