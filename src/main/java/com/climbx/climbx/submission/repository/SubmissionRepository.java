@@ -34,8 +34,8 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
      */
     @Query("""
         SELECT  new com.climbx.climbx.user.dto.DailyHistoryResponseDto(  
-            DATE(s.createdAt),
-            COUNT(DISTINCT s.problemEntity.problemId)
+                DATE(s.createdAt),
+                COUNT(DISTINCT s.problemEntity.problemId)
             )  
           FROM SubmissionEntity s
           JOIN s.videoEntity v

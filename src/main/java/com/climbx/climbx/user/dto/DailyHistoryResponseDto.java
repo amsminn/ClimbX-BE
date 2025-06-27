@@ -15,4 +15,7 @@ public record DailyHistoryResponseDto(
     Long value
 ) {
 
+    public DailyHistoryResponseDto(java.sql.Date date, Long value) {
+        this(date.toLocalDate(), value);
+    }
 }
