@@ -59,11 +59,6 @@ class UserController {
     }
 
     @GetMapping("/{nickname}/streak")
-    // query parameter
-    // - criteria: ranking, rating, solvedCount
-    // - order: asc, desc
-    // - page: 0, 1, 2, ...
-    // - per_page: 10, 20, 30, ...
     public List<@Valid DailySolvedCountResponseDto> getUserStreak(
         @PathVariable @NotBlank String nickname,
         @RequestParam(name = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,

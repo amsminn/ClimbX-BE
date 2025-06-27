@@ -12,17 +12,14 @@ import lombok.NonNull;
 @Builder
 public record UserProfileResponseDto(
 
-    @NonNull
     @NotBlank
     String nickname,
 
-    @NonNull
     @NotNull
     String statusMessage,
 
     String profileImageUrl, // null 허용
 
-    @NonNull
     @NotNull @Min(1)
     Long ranking,
 
