@@ -1,10 +1,15 @@
 package com.climbx.climbx.user;
 
+import static com.climbx.climbx.common.enums.UserHistoryCriteriaType.RANKING;
+import static com.climbx.climbx.common.enums.UserHistoryCriteriaType.RATING;
+import static com.climbx.climbx.common.enums.UserHistoryCriteriaType.SOLVED_COUNT;
+
+import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
-import com.climbx.climbx.user.dto.DailySolvedCountResponseDto;
+import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -14,6 +19,7 @@ import com.climbx.climbx.user.exception.NicknameMismatchException;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.exception.UserStatNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
+import com.climbx.climbx.user.repository.UserRankingHistoryRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -34,6 +40,7 @@ class UserService {
     private final UserStatRepository userStatRepository;
     private final ProblemRepository problemRepository;
     private final SubmissionRepository submissionRepository;
+    private final UserRankingHistoryRepository userRankingHistoryRepository;
 
     @Transactional(readOnly = true)
     public UserProfileResponseDto getUserById(Long userId) {
@@ -90,7 +97,7 @@ class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<DailySolvedCountResponseDto> getUserStreak(
+    public List<DailyHistoryResponseDto> getUserStreak(
         String nickname,
         LocalDate from,
         LocalDate to
@@ -104,7 +111,28 @@ class UserService {
         );
         
         return results.stream()
-            .map(DailySolvedCountResponseDto::from)
+            .map(DailyHistoryResponseDto::from)
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<DailyHistoryResponseDto> getUserDailyHistory(
+        String nickname,
+        UserHistoryCriteriaType criteria,
+        LocalDate from,
+        LocalDate to
+    ) {
+        UserAccountEntity userAccount = findUserByNickname(nickname);
+        
+        List<Object[]> results = userRankingHistoryRepository.getUserDailyHistory(
+            userAccount.userId(),
+            criteria,
+            from,
+            to
+        );
+        
+        return results.stream()
+            .map(DailyHistoryResponseDto::from)
             .toList();
     }
 
