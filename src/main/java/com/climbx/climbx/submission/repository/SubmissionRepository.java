@@ -32,7 +32,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
      * 사용자가 특정 기간 동안 일별로 푼 문제 수를 조회 from, to가 null이면 모든 기간
      */
     @Query("""
-        SELECT DATE(s.createdAt) as date, COUNT(DISTINCT s.problemId) as solvedCount
+        SELECT DATE(s.createdAt) as date, COUNT(DISTINCT s.problemEntity.problemId) as solvedCount
           FROM SubmissionEntity s
           JOIN s.videoEntity v
          WHERE v.userId = :userId

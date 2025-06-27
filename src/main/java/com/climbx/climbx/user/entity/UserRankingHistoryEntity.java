@@ -47,7 +47,7 @@ public class UserRankingHistoryEntity extends BaseTimeEntity {
     @NotNull
     private UserHistoryCriteriaType part; // 히스토리 타입
 
-    @Column(name = "user_id", updatable = false, nullable = false)
+    @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
     @NotNull
     private Long userId; // 사용자 ID (Foreign Key)
 
