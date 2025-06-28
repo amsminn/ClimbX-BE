@@ -17,6 +17,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
     Optional<UserAccountEntity> findByNickname(String nickname);
 
     boolean existsByNicknameIgnoreCase(String nickname);
+
     boolean existsByNickname(String nickname);
 
     /*
@@ -37,13 +38,14 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
     Page<UserAccountEntity> findByNicknameContainingIgnoreCase(String nickname, Pageable pageable);
 
     // 특정 역할의 사용자들 조회
+    List<UserAccountEntity> findByRole(RoleType role);
+
     Page<UserAccountEntity> findByRole(RoleType role, Pageable pageable);
 
     // 닉네임에 특정 문자열을 포함하는 사용자들 조회 (List 반환)
     List<UserAccountEntity> findByNicknameContaining(String nickname);
 
     // 특정 역할의 모든 사용자 조회
-    List<UserAccountEntity> findByRole(RoleType role);
 
     // 특정 역할이면서 닉네임에 특정 문자열을 포함하는 사용자들 조회
     List<UserAccountEntity> findByRoleAndNicknameContaining(RoleType role, String nickname);

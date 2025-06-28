@@ -77,8 +77,8 @@ class UserService {
             throw new NicknameMismatchException(currentNickname, userAccountEntity.nickname());
         }
 
-        if (!currentNickname.equals(userProfileDto.newNickname()) &&
-            userAccountRepository.existsByNickname(userProfileDto.newNickname())) {
+        if (!currentNickname.equals(userProfileDto.newNickname())
+            && userAccountRepository.existsByNickname(userProfileDto.newNickname())) {
             throw new DuplicateNicknameException(userProfileDto.newNickname());
         }
 
