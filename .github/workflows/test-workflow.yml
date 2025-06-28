@@ -46,7 +46,7 @@ jobs:
           DB_USER: test_user
           DB_PASSWORD: test_password
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew test sonarqube --info
+        run: ./gradlew build --info
 
       - name: Add coverage to PR
         id: jacoco
