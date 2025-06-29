@@ -12,24 +12,24 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final JwtUtil jwtUtil;
     private static final Long FIXED_USER_ID = 1L;
     private static final String DUMMY_USERNAME = "dummy-user";
     private static final String DUMMY_PROVIDER = "GOOGLE";
+    private final JwtUtil jwtUtil;
 
-     public String getAuthorizationUrl(String provider) {
-         return provider; // 임시 구현: 실제로는 OAuth2 리다이렉트 URL을 반환해야 함
-     }
+    public String getAuthorizationUrl(String provider) {
+        return provider; // 임시 구현: 실제로는 OAuth2 리다이렉트 URL을 반환해야 함
+    }
 
-     public LoginResponseDto handleCallback(String provider, String code) {
-         String token = jwtUtil.generateFixedToken();
-         return LoginResponseDto.builder()
-             .tokenType("Bearer")
-             .accessToken(token)
-             .refreshToken(null)
-             .expiresIn(3600L)
-             .build();
-     }
+    public LoginResponseDto handleCallback(String provider, String code) {
+        String token = jwtUtil.generateFixedToken();
+        return LoginResponseDto.builder()
+            .tokenType("Bearer")
+            .accessToken(token)
+            .refreshToken(null)
+            .expiresIn(3600L)
+            .build();
+    }
 
     public LoginResponseDto refreshAccessToken(String sub) {
         String token = jwtUtil.generateFixedToken();

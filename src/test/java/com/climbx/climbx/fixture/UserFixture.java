@@ -28,16 +28,32 @@ public class UserFixture {
     }
 
     public static UserAccountEntity createUserAccountEntity(Long userId, String nickname) {
-        return createUserAccountEntity(userId, nickname, DEFAULT_STATUS_MESSAGE, DEFAULT_PROFILE_IMAGE_URL);
+        return createUserAccountEntity(
+            userId,
+            nickname,
+            DEFAULT_STATUS_MESSAGE,
+            DEFAULT_PROFILE_IMAGE_URL
+        );
     }
 
-    public static UserAccountEntity createUserAccountEntity(Long userId, String nickname, 
+    public static UserAccountEntity createUserAccountEntity(Long userId, String nickname,
         String statusMessage, String profileImageUrl) {
-        return createUserAccountEntity(userId, nickname, statusMessage, profileImageUrl, RoleType.USER);
+        return createUserAccountEntity(
+            userId,
+            nickname,
+            statusMessage,
+            profileImageUrl,
+            RoleType.USER
+        );
     }
 
-    public static UserAccountEntity createUserAccountEntity(Long userId, String nickname, 
-        String statusMessage, String profileImageUrl, RoleType role) {
+    public static UserAccountEntity createUserAccountEntity(
+        Long userId,
+        String nickname,
+        String statusMessage,
+        String profileImageUrl,
+        RoleType role
+    ) {
         return UserAccountEntity.builder()
             .userId(userId)
             .nickname(nickname)
@@ -48,7 +64,13 @@ public class UserFixture {
     }
 
     public static UserAccountEntity createAdminUserAccountEntity(Long userId, String nickname) {
-        return createUserAccountEntity(userId, nickname, DEFAULT_STATUS_MESSAGE, DEFAULT_PROFILE_IMAGE_URL, RoleType.ADMIN);
+        return createUserAccountEntity(
+            userId,
+            nickname,
+            DEFAULT_STATUS_MESSAGE,
+            DEFAULT_PROFILE_IMAGE_URL,
+            RoleType.ADMIN
+        );
     }
 
     // UserStatEntity 생성 메서드들  
@@ -57,12 +79,24 @@ public class UserFixture {
     }
 
     public static UserStatEntity createUserStatEntity(Long userId, Long rating) {
-        return createUserStatEntity(userId, rating, DEFAULT_CURRENT_STREAK, 
-            DEFAULT_LONGEST_STREAK, DEFAULT_SOLVED_PROBLEMS_COUNT, DEFAULT_RIVAL_COUNT);
+        return createUserStatEntity(
+            userId,
+            rating,
+            DEFAULT_CURRENT_STREAK,
+            DEFAULT_LONGEST_STREAK,
+            DEFAULT_SOLVED_PROBLEMS_COUNT,
+            DEFAULT_RIVAL_COUNT
+        );
     }
 
-    public static UserStatEntity createUserStatEntity(Long userId, Long rating, 
-        Long currentStreak, Long longestStreak, Long solvedProblemsCount, Long rivalCount) {
+    public static UserStatEntity createUserStatEntity(
+        Long userId,
+        Long rating,
+        Long currentStreak,
+        Long longestStreak,
+        Long solvedProblemsCount,
+        Long rivalCount
+    ) {
         return UserStatEntity.builder()
             .userId(userId)
             .rating(rating)
@@ -74,11 +108,18 @@ public class UserFixture {
     }
 
     // UserProfileResponseDto 생성 메서드
-    public static UserProfileResponseDto createUserProfileResponseDto(String nickname, Long ranking) {
+    public static UserProfileResponseDto createUserProfileResponseDto(
+        String nickname,
+        Long ranking
+    ) {
         return createUserProfileResponseDto(nickname, ranking, DEFAULT_RATING);
     }
 
-    public static UserProfileResponseDto createUserProfileResponseDto(String nickname, Long ranking, Long rating) {
+    public static UserProfileResponseDto createUserProfileResponseDto(
+        String nickname,
+        Long ranking,
+        Long rating
+    ) {
         return UserProfileResponseDto.builder()
             .nickname(nickname)
             .statusMessage(DEFAULT_STATUS_MESSAGE)
@@ -93,9 +134,17 @@ public class UserFixture {
             .build();
     }
 
-    public static UserProfileResponseDto createUserProfileResponseDto(String nickname, String statusMessage, 
-        String profileImageUrl, Long ranking, Long rating, Long currentStreak, Long longestStreak, 
-        Long solvedProblemsCount, Long rivalCount) {
+    public static UserProfileResponseDto createUserProfileResponseDto(
+        String nickname,
+        String statusMessage,
+        String profileImageUrl,
+        Long ranking,
+        Long rating,
+        Long currentStreak,
+        Long longestStreak,
+        Long solvedProblemsCount,
+        Long rivalCount
+    ) {
         return UserProfileResponseDto.builder()
             .nickname(nickname)
             .statusMessage(statusMessage)
@@ -111,7 +160,10 @@ public class UserFixture {
     }
 
     // DailyHistoryResponseDto 생성 메서드들
-    public static DailyHistoryResponseDto createDailyHistoryResponseDto(LocalDate date, Long value) {
+    public static DailyHistoryResponseDto createDailyHistoryResponseDto(
+        LocalDate date,
+        Long value
+    ) {
         return DailyHistoryResponseDto.builder()
             .date(date)
             .value(value)
@@ -131,8 +183,12 @@ public class UserFixture {
     }
 
     // UserRankingHistoryEntity 생성 메서드들
-    public static UserRankingHistoryEntity createUserRankingHistoryEntity(Long historyId, Long userId,
-        UserHistoryCriteriaType part, Long value) {
+    public static UserRankingHistoryEntity createUserRankingHistoryEntity(
+        Long historyId,
+        Long userId,
+        UserHistoryCriteriaType part,
+        Long value
+    ) {
         return UserRankingHistoryEntity.builder()
             .historyId(historyId)
             .userId(userId)
@@ -141,15 +197,32 @@ public class UserFixture {
             .build();
     }
 
-    public static UserRankingHistoryEntity createRatingHistoryEntity(Long historyId, Long userId, Long value) {
-        return createUserRankingHistoryEntity(historyId, userId, UserHistoryCriteriaType.RATING, value);
+    public static UserRankingHistoryEntity createRatingHistoryEntity(
+        Long historyId,
+        Long userId,
+        Long value
+    ) {
+        return createUserRankingHistoryEntity(
+            historyId, userId, UserHistoryCriteriaType.RATING, value);
     }
 
-    public static UserRankingHistoryEntity createRankingHistoryEntity(Long historyId, Long userId, Long value) {
-        return createUserRankingHistoryEntity(historyId, userId, UserHistoryCriteriaType.RANKING, value);
+    public static UserRankingHistoryEntity createRankingHistoryEntity(
+        Long historyId,
+        Long userId,
+        Long value
+    ) {
+        return createUserRankingHistoryEntity(
+            historyId, userId, UserHistoryCriteriaType.RANKING, value
+        );
     }
 
-    public static UserRankingHistoryEntity createSolvedCountHistoryEntity(Long historyId, Long userId, Long value) {
-        return createUserRankingHistoryEntity(historyId, userId, UserHistoryCriteriaType.SOLVED_COUNT, value);
+    public static UserRankingHistoryEntity createSolvedCountHistoryEntity(
+        Long historyId,
+        Long userId,
+        Long value
+    ) {
+        return createUserRankingHistoryEntity(
+            historyId, userId, UserHistoryCriteriaType.SOLVED_COUNT, value
+        );
     }
 } 

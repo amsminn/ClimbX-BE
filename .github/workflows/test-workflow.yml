@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
   pull_request:
-    branches: [ "develop"]
+    branches: [ "develop" ]
 
 jobs:
   test:
@@ -40,9 +40,18 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build with Gradle
+      - name: Build and analyze with Gradle
         env:
           DB_URL: jdbc:mysql://localhost:3306/climbx?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
           DB_USER: test_user
           DB_PASSWORD: test_password
-        run: ./gradlew test
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew build --info
+
+      - name: Add coverage to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.2
+        with:
+          paths: |
+            ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml,
+          token: ${{ secrets.GITHUB_TOKEN }}

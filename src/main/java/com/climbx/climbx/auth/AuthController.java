@@ -26,29 +26,29 @@ public class AuthController {
 
     private final AuthService authService;
 
-     @GetMapping("/oauth2/{provider}")
-     public String getOAuth2RedirectUrl(
+    @GetMapping("/oauth2/{provider}")
+    public String getOAuth2RedirectUrl(
         @PathVariable("provider") @NotBlank String provider
-     ) {
-         // 임시구현
-         // 실제로 호출되면 안됨.
-         return "redirect:" + provider;
-     }
+    ) {
+        // 임시구현
+        // 실제로 호출되면 안됨.
+        return "redirect:" + provider;
+    }
 
-     @GetMapping("/oauth2/{provider}/callback")
-     public @Valid LoginResponseDto handleOAuth2Callback(
-            @PathVariable("provider") @NotBlank String provider,
-            @RequestParam("code") @NotBlank String code
-     ) {
+    @GetMapping("/oauth2/{provider}/callback")
+    public @Valid LoginResponseDto handleOAuth2Callback(
+        @PathVariable("provider") @NotBlank String provider,
+        @RequestParam("code") @NotBlank String code
+    ) {
         return authService.handleCallback(provider, code);
-     }
+    }
 
-     @PostMapping("/oauth2/refresh")
-     public @Valid LoginResponseDto refreshAccessToken(
-         @RequestBody @Valid RefreshRequestDto request
-     ) {
-         return authService.refreshAccessToken(request.refreshToken());
-     }
+    @PostMapping("/oauth2/refresh")
+    public @Valid LoginResponseDto refreshAccessToken(
+        @RequestBody @Valid RefreshRequestDto request
+    ) {
+        return authService.refreshAccessToken(request.refreshToken());
+    }
 
     @GetMapping("/me")
     public @Valid UserOauth2InfoResponseDto getCurrentUserInfo(

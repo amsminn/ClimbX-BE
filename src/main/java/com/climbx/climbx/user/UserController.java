@@ -34,23 +34,32 @@ class UserController {
 
     @GetMapping("")
     public List<@Valid UserProfileResponseDto> getUsers(
-        @RequestParam(name = "search", required = false) String search
+        @RequestParam(name = "search", required = false)
+        String search
     ) {
         return userService.getUsers(search);
     }
 
     @GetMapping("/{nickname}")
     public @Valid UserProfileResponseDto getUserByNickname(
-        @PathVariable @NotBlank String nickname
+        @PathVariable
+        @NotBlank
+        String nickname
     ) {
         return userService.getUserByNickname(nickname);
     }
 
     @PutMapping("/{nickname}")
     public @Valid UserProfileResponseDto modifyUserProfile(
-        @AuthenticationPrincipal Long userId,
-        @PathVariable @NotBlank String nickname,
-        @RequestBody @Valid UserProfileModifyRequestDto request
+        @AuthenticationPrincipal
+        Long userId,
+
+        @PathVariable
+        @NotBlank
+        String nickname,
+
+        @RequestBody @Valid
+        UserProfileModifyRequestDto request
     ) {
         return userService.modifyUserProfile(
             userId, nickname, request
@@ -59,27 +68,52 @@ class UserController {
 
     @GetMapping("/{nickname}/top-problems")
     public List<@Valid ProblemResponseDto> getUserTopProblems(
-        @PathVariable @NotBlank String nickname,
-        @RequestParam(name = "limit", required = false, defaultValue = "20") @Min(1) @Max(20) Integer limit
+        @PathVariable
+        @NotBlank
+        String nickname,
+
+        @RequestParam(name = "limit", required = false, defaultValue = "20")
+        @Min(1)
+        @Max(20)
+        Integer limit
     ) {
         return userService.getUserTopProblems(nickname, limit);
     }
 
     @GetMapping("/{nickname}/streak")
     public List<@Valid DailyHistoryResponseDto> getUserStreak(
-        @PathVariable @NotBlank String nickname,
-        @RequestParam(name = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-        @RequestParam(name = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+        @PathVariable
+        @NotBlank
+        String nickname,
+
+        @RequestParam(name = "from", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate from,
+
+        @RequestParam(name = "to", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate to
     ) {
         return userService.getUserStreak(nickname, from, to);
     }
 
     @GetMapping("/{nickname}/history")
     public List<@Valid DailyHistoryResponseDto> getUserDailyHistory(
-        @PathVariable @NotBlank String nickname,
-        @RequestParam(name = "criteria", required = true) @NotNull UserHistoryCriteriaType criteria,
-        @RequestParam(name = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-        @RequestParam(name = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+        @PathVariable
+        @NotBlank
+        String nickname,
+
+        @RequestParam(name = "criteria", required = true)
+        @NotNull
+        UserHistoryCriteriaType criteria,
+
+        @RequestParam(name = "from", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate from,
+
+        @RequestParam(name = "to", required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate to
     ) {
         return userService.getUserDailyHistory(nickname, criteria, from, to);
     }
