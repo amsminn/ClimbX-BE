@@ -18,9 +18,18 @@ spring:
       validation-timeout: 3000
 
   jpa:
-    generate-ddl: true
     hibernate:
       ddl-auto: create-drop
+    defer-datasource-initialization: true
     properties:
       hibernate:
         globally_quoted_identifiers: true
+
+  sql:
+    init:
+        mode: always
+        platform: mysql
+        encoding: UTF-8
+        schema-locations: []
+        data-locations:
+            - classpath:db/init/*.sql
