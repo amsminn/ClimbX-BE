@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,7 +37,7 @@ public class AuthController {
     }
 
     @GetMapping("/oauth2/{provider}/callback")
-    public ApiResponseDto<@Valid LoginResponseDto> handleOAuth2Callback(
+    public ApiResponseDto<LoginResponseDto> handleOAuth2Callback(
         @PathVariable("provider") @NotBlank String provider,
         @RequestParam("code") @NotBlank String code
     ) {
@@ -47,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/oauth2/refresh")
-    public ApiResponseDto<@Valid LoginResponseDto> refreshAccessToken(
+    public ApiResponseDto<LoginResponseDto> refreshAccessToken(
         @RequestBody @Valid RefreshRequestDto request
     ) {
         LoginResponseDto refreshResponse = authService.refreshAccessToken(request.refreshToken());
@@ -55,7 +54,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ApiResponseDto<@Valid UserOauth2InfoResponseDto> getCurrentUserInfo(
+    public ApiResponseDto<UserOauth2InfoResponseDto> getCurrentUserInfo(
         @AuthenticationPrincipal Long userId
     ) {
         UserOauth2InfoResponseDto userInfo = authService.getCurrentUserInfo(userId);
@@ -67,6 +66,7 @@ public class AuthController {
         @RequestBody @Valid RefreshRequestDto request
     ) {
         // 임시 로그인에서 리프레쉬 토큰 드롭 구현 X
-        return ApiResponseDto.success(null, "로그아웃이 완료되었습니다.");
+//        return ApiResponseDto.success(null, "로그아웃이 완료되었습니다.");
+        return ApiResponseDto.success(null, HttpStatus.NO_CONTENT);
     }
 }
