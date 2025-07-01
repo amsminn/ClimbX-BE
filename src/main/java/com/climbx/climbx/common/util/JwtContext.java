@@ -1,14 +1,14 @@
-package com.climbx.climbx.common.security;
+package com.climbx.climbx.common.util;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JwtUtil {
+public class JwtContext {
 
     private final String FIXED_JWT_TOKEN;
 
-    public JwtUtil(@Value("${auth.fixed-jwt}") String FIXED_JWT_TOKEN) {
+    public JwtContext(@Value("${auth.fixed-jwt}") String FIXED_JWT_TOKEN) {
         this.FIXED_JWT_TOKEN = FIXED_JWT_TOKEN;
     }
 
