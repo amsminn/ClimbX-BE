@@ -1,5 +1,6 @@
-package com.climbx.climbx.common.security;
+package com.climbx.climbx.common.filter;
 
+import com.climbx.climbx.common.util.JwtContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,21 +19,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final JwtContext jwtUtil;
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
+        HttpServletRequest request,
+        @NonNull HttpServletResponse response,
+        @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
         String token = jwtUtil.extractTokenFromHeader(authHeader);
 
-        if (token != null && jwtUtil.validateToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (token != null && jwtUtil.validateToken(token)
+            && SecurityContextHolder.getContext().getAuthentication() == null) {
             Long userId = jwtUtil.extractSubject(token);
-            
+
             if (userId != null) {
                 UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());

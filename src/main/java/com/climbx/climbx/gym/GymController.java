@@ -1,7 +1,7 @@
 package com.climbx.climbx.gym;
 
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.gym.dto.GymInfoResponseDto;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -24,20 +24,22 @@ public class GymController {
     private final GymService gymService;
 
     @GetMapping("/{gymId}")
-    public @Valid GymInfoResponseDto getGymById(@PathVariable @NotNull @Min(1L) Long gymId) {
-        return gymService.getGymById(gymId);
+    public ApiResponseDto<GymInfoResponseDto> getGymById(@PathVariable @NotNull @Min(1L) Long gymId) {
+        GymInfoResponseDto gym = gymService.getGymById(gymId);
+        return ApiResponseDto.success(gym);
     }
 
     @GetMapping(params = {"!latitude", "!longitude"})
-    public List<@Valid GymInfoResponseDto> getGymList(
+    public ApiResponseDto<List<GymInfoResponseDto>> getGymList(
         @RequestParam(required = false)
         String keyword
     ) {
-        return gymService.getGymList(keyword);
+        List<GymInfoResponseDto> gyms = gymService.getGymList(keyword);
+        return ApiResponseDto.success(gyms);
     }
 
     @GetMapping(params = {"latitude", "longitude"})
-    public List<GymInfoResponseDto> getGymListByDistance(
+    public ApiResponseDto<List<GymInfoResponseDto>> getGymListByDistance(
         @RequestParam
         @DecimalMin(value = "-90.0", message = "Latitude must be between -90 and 90")
         @DecimalMax(value = "90.0", message = "Latitude must be between -90 and 90")
@@ -51,6 +53,7 @@ public class GymController {
         @RequestParam(required = false)
         String keyword
     ) {
-        return gymService.getGymListByDistance(latitude, longitude, keyword);
+        List<GymInfoResponseDto> gyms = gymService.getGymListByDistance(latitude, longitude, keyword);
+        return ApiResponseDto.success(gyms);
     }
 }

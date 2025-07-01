@@ -1,9 +1,10 @@
-package com.climbx.climbx.common.security;
+package com.climbx.climbx.common.filter;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import com.climbx.climbx.common.util.JwtContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,23 +23,18 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @ExtendWith(MockitoExtension.class)
 class JwtAuthenticationFilterTest {
 
+    private final String VALID_TOKEN = "VALID_TEST_TOKEN";
     @Mock
-    private JwtUtil jwtUtil;
-
+    private JwtContext jwtUtil;
     @Mock
     private HttpServletRequest request;
-
     @Mock
     private HttpServletResponse response;
-
     @Mock
     private FilterChain filterChain;
-
     @Mock
     private SecurityContext securityContext;
-
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final String VALID_TOKEN = "VALID_TEST_TOKEN";
 
     @BeforeEach
     void setUp() {

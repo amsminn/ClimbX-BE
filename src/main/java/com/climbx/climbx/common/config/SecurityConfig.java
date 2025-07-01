@@ -1,6 +1,6 @@
 package com.climbx.climbx.common.config;
 
-import com.climbx.climbx.common.security.JwtAuthenticationFilter;
+import com.climbx.climbx.common.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

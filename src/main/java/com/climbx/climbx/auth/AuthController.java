@@ -3,6 +3,7 @@ package com.climbx.climbx.auth;
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.RefreshRequestDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,41 +27,46 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/oauth2/{provider}")
-    public String getOAuth2RedirectUrl(
+    public ApiResponseDto<String> getOAuth2RedirectUrl(
         @PathVariable("provider") @NotBlank String provider
     ) {
         // 임시구현
         // 실제로 호출되면 안됨.
-        return "redirect:" + provider;
+        String redirectUrl = "redirect:" + provider;
+        return ApiResponseDto.success(redirectUrl);
     }
 
     @GetMapping("/oauth2/{provider}/callback")
-    public @Valid LoginResponseDto handleOAuth2Callback(
+    public ApiResponseDto<LoginResponseDto> handleOAuth2Callback(
         @PathVariable("provider") @NotBlank String provider,
         @RequestParam("code") @NotBlank String code
     ) {
-        return authService.handleCallback(provider, code);
+        LoginResponseDto loginResponse = authService.handleCallback(provider, code);
+        return ApiResponseDto.success(loginResponse);
     }
 
     @PostMapping("/oauth2/refresh")
-    public @Valid LoginResponseDto refreshAccessToken(
+    public ApiResponseDto<LoginResponseDto> refreshAccessToken(
         @RequestBody @Valid RefreshRequestDto request
     ) {
-        return authService.refreshAccessToken(request.refreshToken());
+        LoginResponseDto refreshResponse = authService.refreshAccessToken(request.refreshToken());
+        return ApiResponseDto.success(refreshResponse);
     }
 
     @GetMapping("/me")
-    public @Valid UserOauth2InfoResponseDto getCurrentUserInfo(
+    public ApiResponseDto<UserOauth2InfoResponseDto> getCurrentUserInfo(
         @AuthenticationPrincipal Long userId
     ) {
-        return authService.getCurrentUserInfo(userId);
+        UserOauth2InfoResponseDto userInfo = authService.getCurrentUserInfo(userId);
+        return ApiResponseDto.success(userInfo);
     }
 
     @PostMapping("/signout")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void signOut(
+    public ApiResponseDto<Void> signOut(
         @RequestBody @Valid RefreshRequestDto request
     ) {
         // 임시 로그인에서 리프레쉬 토큰 드롭 구현 X
+//        return ApiResponseDto.success(null, "로그아웃이 완료되었습니다.");
+        return ApiResponseDto.success(null, HttpStatus.NO_CONTENT);
     }
 }

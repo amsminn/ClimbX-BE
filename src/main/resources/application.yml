@@ -13,6 +13,12 @@ spring:
         globally_quoted_identifiers: true
         globally_quoted_identifiers_skip_column_definitions: true
 
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false # ISO 8601 format
+    date-format: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    time-zone: UTC
+
 server:
   port: 8080
 

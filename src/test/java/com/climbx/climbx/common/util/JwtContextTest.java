@@ -1,4 +1,4 @@
-package com.climbx.climbx.common.security;
+package com.climbx.climbx.common.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,14 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class JwtUtilTest {
+class JwtContextTest {
 
-    private JwtUtil jwtUtil;
     private final String FIXED_TOKEN = "TEST_FIXED_TOKEN_12345";
+    private JwtContext jwtContext;
 
     @BeforeEach
     void setUp() {
-        jwtUtil = new JwtUtil(FIXED_TOKEN);
+        jwtContext = new JwtContext(FIXED_TOKEN);
     }
 
     @Test
@@ -23,7 +23,7 @@ class JwtUtilTest {
         String authHeader = "Bearer " + FIXED_TOKEN;
 
         // when
-        String extractedToken = jwtUtil.extractTokenFromHeader(authHeader);
+        String extractedToken = jwtContext.extractTokenFromHeader(authHeader);
 
         // then
         assertThat(extractedToken).isEqualTo(FIXED_TOKEN);
@@ -36,7 +36,7 @@ class JwtUtilTest {
         String invalidAuthHeader = "Basic " + FIXED_TOKEN;
 
         // when
-        String extractedToken = jwtUtil.extractTokenFromHeader(invalidAuthHeader);
+        String extractedToken = jwtContext.extractTokenFromHeader(invalidAuthHeader);
 
         // then
         assertThat(extractedToken).isNull();
@@ -46,7 +46,7 @@ class JwtUtilTest {
     @DisplayName("null 헤더에서는 null을 반환한다")
     void shouldReturnNullForNullAuthHeader() {
         // when
-        String extractedToken = jwtUtil.extractTokenFromHeader(null);
+        String extractedToken = jwtContext.extractTokenFromHeader(null);
 
         // then
         assertThat(extractedToken).isNull();
@@ -56,7 +56,7 @@ class JwtUtilTest {
     @DisplayName("고정 토큰을 올바르게 반환한다")
     void shouldReturnFixedToken() {
         // when
-        String result = jwtUtil.generateFixedToken();
+        String result = jwtContext.generateFixedToken();
 
         // then
         assertThat(result).isEqualTo(FIXED_TOKEN);
@@ -66,7 +66,7 @@ class JwtUtilTest {
     @DisplayName("유효한 토큰에 대해 true를 반환한다")
     void shouldReturnTrueForValidToken() {
         // when
-        boolean isValid = jwtUtil.validateToken(FIXED_TOKEN);
+        boolean isValid = jwtContext.validateToken(FIXED_TOKEN);
 
         // then
         assertThat(isValid).isTrue();
@@ -79,7 +79,7 @@ class JwtUtilTest {
         String invalidToken = "INVALID_TOKEN";
 
         // when
-        boolean isValid = jwtUtil.validateToken(invalidToken);
+        boolean isValid = jwtContext.validateToken(invalidToken);
 
         // then
         assertThat(isValid).isFalse();
@@ -89,7 +89,7 @@ class JwtUtilTest {
     @DisplayName("null 토큰에 대해 false를 반환한다")
     void shouldReturnFalseForNullToken() {
         // when
-        boolean isValid = jwtUtil.validateToken(null);
+        boolean isValid = jwtContext.validateToken(null);
 
         // then
         assertThat(isValid).isFalse();
@@ -100,7 +100,7 @@ class JwtUtilTest {
     void shouldExtractSubjectFromValidToken() {
         // when
         Long userId = 1L;
-        Long subject = jwtUtil.extractSubject(FIXED_TOKEN);
+        Long subject = jwtContext.extractSubject(FIXED_TOKEN);
 
         // then
         assertThat(subject).isEqualTo(userId);
@@ -113,7 +113,7 @@ class JwtUtilTest {
         String invalidToken = "INVALID_TOKEN";
 
         // when
-        Long subject = jwtUtil.extractSubject(invalidToken);
+        Long subject = jwtContext.extractSubject(invalidToken);
 
         // then
         assertThat(subject).isNull();
@@ -123,7 +123,7 @@ class JwtUtilTest {
     @DisplayName("고정 토큰 값을 올바르게 반환한다")
     void shouldGetFixedToken() {
         // when
-        String token = jwtUtil.getFixedToken();
+        String token = jwtContext.getFixedToken();
 
         // then
         assertThat(token).isEqualTo(FIXED_TOKEN);

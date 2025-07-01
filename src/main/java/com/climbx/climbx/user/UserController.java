@@ -1,5 +1,6 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -33,24 +34,27 @@ class UserController {
     private final UserService userService;
 
     @GetMapping("")
-    public List<@Valid UserProfileResponseDto> getUsers(
+    public ApiResponseDto<List<UserProfileResponseDto>> getUsers(
         @RequestParam(name = "search", required = false)
         String search
     ) {
-        return userService.getUsers(search);
+        List<UserProfileResponseDto> userProfiles = userService.getUsers(search);
+        return ApiResponseDto.success(userProfiles);
     }
 
     @GetMapping("/{nickname}")
-    public @Valid UserProfileResponseDto getUserByNickname(
+    public ApiResponseDto<UserProfileResponseDto> getUserByNickname(
         @PathVariable
         @NotBlank
         String nickname
     ) {
-        return userService.getUserByNickname(nickname);
+        return ApiResponseDto.success(
+            userService.getUserByNickname(nickname)
+        );
     }
 
     @PutMapping("/{nickname}")
-    public @Valid UserProfileResponseDto modifyUserProfile(
+    public ApiResponseDto<UserProfileResponseDto> modifyUserProfile(
         @AuthenticationPrincipal
         Long userId,
 
@@ -61,13 +65,16 @@ class UserController {
         @RequestBody @Valid
         UserProfileModifyRequestDto request
     ) {
-        return userService.modifyUserProfile(
-            userId, nickname, request
+        UserProfileResponseDto updatedProfile = userService.modifyUserProfile(
+            userId,
+            nickname,
+            request
         );
+        return ApiResponseDto.success(updatedProfile);
     }
 
     @GetMapping("/{nickname}/top-problems")
-    public List<@Valid ProblemResponseDto> getUserTopProblems(
+    public ApiResponseDto<List<ProblemResponseDto>> getUserTopProblems(
         @PathVariable
         @NotBlank
         String nickname,
@@ -77,11 +84,12 @@ class UserController {
         @Max(20)
         Integer limit
     ) {
-        return userService.getUserTopProblems(nickname, limit);
+        List<ProblemResponseDto> topProblems = userService.getUserTopProblems(nickname, limit);
+        return ApiResponseDto.success(topProblems);
     }
 
     @GetMapping("/{nickname}/streak")
-    public List<@Valid DailyHistoryResponseDto> getUserStreak(
+    public ApiResponseDto<List<DailyHistoryResponseDto>> getUserStreak(
         @PathVariable
         @NotBlank
         String nickname,
@@ -94,11 +102,16 @@ class UserController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
     ) {
-        return userService.getUserStreak(nickname, from, to);
+        List<DailyHistoryResponseDto> streaks = userService.getUserStreak(
+            nickname,
+            from,
+            to
+        );
+        return ApiResponseDto.success(streaks);
     }
 
     @GetMapping("/{nickname}/history")
-    public List<@Valid DailyHistoryResponseDto> getUserDailyHistory(
+    public ApiResponseDto<List<DailyHistoryResponseDto>> getUserDailyHistory(
         @PathVariable
         @NotBlank
         String nickname,
@@ -115,6 +128,12 @@ class UserController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
     ) {
-        return userService.getUserDailyHistory(nickname, criteria, from, to);
+        List<DailyHistoryResponseDto> history = userService.getUserDailyHistory(
+            nickname,
+            criteria,
+            from,
+            to
+        );
+        return ApiResponseDto.success(history);
     }
 }

@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.exception.UserUnauthorizedException;
-import com.climbx.climbx.common.security.JwtUtil;
+import com.climbx.climbx.common.util.JwtContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,12 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
+    private final String FIXED_TOKEN = "TEST_FIXED_TOKEN";
     @Mock
-    private JwtUtil jwtUtil;
-
+    private JwtContext jwtUtil;
     @InjectMocks
     private AuthService authService;
-    private final String FIXED_TOKEN = "TEST_FIXED_TOKEN";
 
     @Test
     @DisplayName("authorization URL을 요청하면 provider를 그대로 반환한다")
@@ -51,7 +50,7 @@ class AuthServiceTest {
         assertThat(response.accessToken()).isEqualTo(FIXED_TOKEN);
         assertThat(response.refreshToken()).isNull();
         assertThat(response.expiresIn()).isEqualTo(3600L);
-        
+
         verify(jwtUtil).generateFixedToken();
     }
 
@@ -69,7 +68,7 @@ class AuthServiceTest {
         assertThat(response.accessToken()).isEqualTo(FIXED_TOKEN);
         assertThat(response.refreshToken()).isNull();
         assertThat(response.expiresIn()).isEqualTo(3600L);
-        
+
         verify(jwtUtil).generateFixedToken();
     }
 
@@ -98,8 +97,8 @@ class AuthServiceTest {
 
         // when & then
         assertThatThrownBy(() -> authService.getCurrentUserInfo(invalidUserId))
-                .isInstanceOf(UserUnauthorizedException.class)
-                .hasMessage("Unauthorized user");
+            .isInstanceOf(UserUnauthorizedException.class)
+            .hasMessage("Unauthorized user");
     }
 
     @Test
