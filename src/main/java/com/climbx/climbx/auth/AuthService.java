@@ -3,7 +3,7 @@ package com.climbx.climbx.auth;
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.exception.UserUnauthorizedException;
-import com.climbx.climbx.common.security.JwtUtil;
+import com.climbx.climbx.common.util.JwtContext;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class AuthService {
     private static final Long FIXED_USER_ID = 1L;
     private static final String DUMMY_USERNAME = "dummy-user";
     private static final String DUMMY_PROVIDER = "GOOGLE";
-    private final JwtUtil jwtUtil;
+    private final JwtContext jwtUtil;
 
     public String getAuthorizationUrl(String provider) {
         return provider; // 임시 구현: 실제로는 OAuth2 리다이렉트 URL을 반환해야 함
