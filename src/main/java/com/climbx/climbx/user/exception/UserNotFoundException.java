@@ -1,16 +1,17 @@
 package com.climbx.climbx.user.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.climbx.climbx.common.error.BusinessException;
+import com.climbx.climbx.common.error.ErrorCode;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class UserNotFoundException extends RuntimeException {
-    
+public class UserNotFoundException extends BusinessException {
+
     public UserNotFoundException(Long userId) {
-        super("User not found with id: " + userId);
+        super(ErrorCode.USER_NOT_FOUND);
+        addContext("userId", userId.toString());
     }
 
     public UserNotFoundException(String nickname) {
-        super("User not found with newNickname: " + nickname);
+        super(ErrorCode.USER_NOT_FOUND);
+        addContext("nickname", nickname);
     }
 }

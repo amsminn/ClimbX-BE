@@ -3,7 +3,7 @@ package com.climbx.climbx.auth;
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.exception.UserUnauthorizedException;
-import com.climbx.climbx.common.util.JwtContext;
+import com.climbx.climbx.common.security.JwtContext;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

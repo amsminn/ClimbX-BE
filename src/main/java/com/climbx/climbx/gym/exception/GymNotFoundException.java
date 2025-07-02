@@ -1,12 +1,12 @@
 package com.climbx.climbx.gym.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.climbx.climbx.common.error.BusinessException;
+import com.climbx.climbx.common.error.ErrorCode;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class GymNotFoundException extends RuntimeException {
-    
+public class GymNotFoundException extends BusinessException {
+
     public GymNotFoundException(Long gymId) {
-        super("Gym not found with id: " + gymId);
+        super(ErrorCode.GYM_NOT_FOUND);
+        addContext("gymId", gymId.toString());
     }
 } 

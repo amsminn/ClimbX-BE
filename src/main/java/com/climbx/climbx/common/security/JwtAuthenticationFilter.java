@@ -1,6 +1,5 @@
-package com.climbx.climbx.common.filter;
+package com.climbx.climbx.common.security;
 
-import com.climbx.climbx.common.util.JwtContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
