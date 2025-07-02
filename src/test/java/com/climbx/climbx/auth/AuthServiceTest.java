@@ -7,7 +7,6 @@ import static org.mockito.Mockito.verify;
 
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
-import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.common.security.JwtContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

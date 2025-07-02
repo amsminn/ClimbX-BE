@@ -2,7 +2,6 @@ package com.climbx.climbx.auth;
 
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
-import com.climbx.climbx.auth.exception.UserUnauthorizedException;
 import com.climbx.climbx.common.security.JwtContext;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
@@ -42,9 +41,6 @@ public class AuthService {
     }
 
     public UserOauth2InfoResponseDto getCurrentUserInfo(Long userId) {
-        if (!userId.equals(FIXED_USER_ID)) {
-            throw new UserUnauthorizedException("Unauthorized user");
-        }
         return UserOauth2InfoResponseDto.builder()
             .id(FIXED_USER_ID)
             .nickname(DUMMY_USERNAME)
