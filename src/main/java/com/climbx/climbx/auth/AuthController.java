@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,15 +27,16 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @ResponseStatus(HttpStatus.PERMANENT_REDIRECT)
     @GetMapping("/oauth2/{provider}")
-    public ApiResponseDto<String> getOAuth2RedirectUrl(
+    public ResponseEntity<ApiResponseDto<Void>> getOAuth2RedirectUrl(
         @PathVariable("provider") @NotBlank String provider
     ) {
         // 임시구현
         // 실제로 호출되면 안됨.
-        String redirectUrl = "redirect:" + provider;
-        return ApiResponseDto.success(redirectUrl, HttpStatus.PERMANENT_REDIRECT);
+        String redirectUrl = provider;
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .location(java.net.URI.create(redirectUrl))
+            .body(ApiResponseDto.success(null, "Redirecting to OAuth2 provider"));
     }
 
     @GetMapping("/oauth2/{provider}/callback")
@@ -63,7 +64,6 @@ public class AuthController {
         return ApiResponseDto.success(userInfo);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("/signout")
     public ApiResponseDto<Void> signOut(
         @RequestBody @Valid RefreshRequestDto request
