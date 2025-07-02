@@ -1,8 +1,7 @@
-package com.climbx.climbx.common.util;
+package com.climbx.climbx.common.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.climbx.climbx.common.security.JwtContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

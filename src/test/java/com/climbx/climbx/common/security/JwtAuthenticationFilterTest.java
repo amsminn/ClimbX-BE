@@ -1,11 +1,9 @@
-package com.climbx.climbx.common.filter;
+package com.climbx.climbx.common.security;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.climbx.climbx.common.security.JwtAuthenticationFilter;
-import com.climbx.climbx.common.security.JwtContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
