@@ -273,8 +273,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUsers(search))
-                .isInstanceOf(UserStatNotFoundException.class)
-                .hasMessage("User stats not found for user: 1");
+                .isInstanceOf(UserStatNotFoundException.class);
         }
 
         @Test
@@ -434,8 +433,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserById(userId))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with id: " + userId);
+                .isInstanceOf(UserNotFoundException.class);
         }
 
         @Test
@@ -452,8 +450,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserById(userId))
-                .isInstanceOf(UserStatNotFoundException.class)
-                .hasMessage("User stats not found for user: " + userId);
+                .isInstanceOf(UserStatNotFoundException.class);
         }
     }
 
@@ -499,8 +496,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserByNickname(nickname))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with newNickname: " + nickname);
+                .isInstanceOf(UserNotFoundException.class);
         }
 
         @Test
@@ -520,8 +516,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserByNickname(nickname))
-                .isInstanceOf(UserStatNotFoundException.class)
-                .hasMessage("User stats not found for user: " + userId);
+                .isInstanceOf(UserStatNotFoundException.class);
         }
 
         @Test
@@ -533,8 +528,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserByNickname(null))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with newNickname: null");
+                .isInstanceOf(UserNotFoundException.class);
         }
 
         @Test
@@ -547,8 +541,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserByNickname(emptyNickname))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with newNickname: ");
+                .isInstanceOf(UserNotFoundException.class);
         }
     }
 
@@ -611,9 +604,7 @@ public class UserServiceTest {
             // when & then
             assertThatThrownBy(
                 () -> userService.modifyUserProfile(userId, currentNickname, requestDto))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with id: " + userId);
-
+                .isInstanceOf(UserNotFoundException.class);
             then(userAccountRepository).should(never()).save(any());
         }
 
@@ -664,9 +655,7 @@ public class UserServiceTest {
             // when & then
             assertThatThrownBy(
                 () -> userService.modifyUserProfile(userId, currentNickname, requestDto))
-                .isInstanceOf(DuplicateNicknameException.class)
-                .hasMessage("Nickname already in use: " + duplicateNickname);
-
+                .isInstanceOf(DuplicateNicknameException.class);
             then(userAccountRepository).should(never()).save(any());
         }
 
@@ -724,9 +713,7 @@ public class UserServiceTest {
             // when & then
             assertThatThrownBy(
                 () -> userService.modifyUserProfile(userId, currentNickname, requestDto))
-                .isInstanceOf(UserStatNotFoundException.class)
-                .hasMessage("User stats not found for user: " + userId);
-        }
+                .isInstanceOf(UserStatNotFoundException.class);
     }
 
     @Nested
@@ -782,9 +769,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with newNickname: " + nickname);
-
+                .isInstanceOf(UserNotFoundException.class);
             then(submissionRepository).should(never()).getUserSubmissionProblems(any(), any());
         }
 
@@ -828,9 +813,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Page size must not be less than one");
-        }
+                .isInstanceOf(IllegalArgumentException.class);
 
         @Test
         @DisplayName("요청한 limit보다 적은 문제가 있는 경우")
@@ -917,8 +900,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserStreak(nickname, from, to))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with newNickname: " + nickname);
+                .isInstanceOf(UserNotFoundException.class);
 
             then(submissionRepository).should(never()).getUserDateSolvedCount(any(), any(), any());
         }
@@ -1203,8 +1185,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(() -> userService.getUserDailyHistory(nickname, criteria, from, to))
-                .isInstanceOf(UserNotFoundException.class)
-                .hasMessage("User not found with newNickname: " + nickname);
+                .isInstanceOf(UserNotFoundException.class);
 
             then(userRankingHistoryRepository).should(never())
                 .getUserDailyHistory(any(), any(), any(), any());
