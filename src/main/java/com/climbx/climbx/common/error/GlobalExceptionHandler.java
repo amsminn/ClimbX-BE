@@ -2,6 +2,7 @@ package com.climbx.climbx.common.error;
 
 import com.climbx.climbx.common.reponse.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -51,8 +52,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleGeneralException(Exception e) {
         log.error("An unexpected error occurred: {}", e.getMessage(), e);
-        ApiResponse<Void> response = ApiResponse.success(null,
-            "An unexpected error occurred");
+        ApiResponse<Void> response = ApiResponse.error(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "An unexpected error occurred"
+        );
         return ResponseEntity.status(500).body(response);
     }
 }
