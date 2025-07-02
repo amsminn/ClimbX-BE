@@ -3,7 +3,7 @@ package com.climbx.climbx.auth;
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.RefreshRequestDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
-import com.climbx.climbx.common.reponse.ApiResponse;
+import com.climbx.climbx.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;

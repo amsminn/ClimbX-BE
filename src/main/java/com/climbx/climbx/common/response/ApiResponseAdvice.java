@@ -1,4 +1,4 @@
-package com.climbx.climbx.common.reponse;
+package com.climbx.climbx.common.response;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;

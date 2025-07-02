@@ -1,6 +1,6 @@
 package com.climbx.climbx.common.error;
 
-import com.climbx.climbx.common.reponse.ApiResponse;
+import com.climbx.climbx.common.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

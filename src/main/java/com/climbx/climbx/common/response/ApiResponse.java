@@ -1,4 +1,4 @@
-package com.climbx.climbx.common.reponse;
+package com.climbx.climbx.common.response;
 
 import com.climbx.climbx.common.timeTraking.TimeContext;
 import java.time.Instant;
