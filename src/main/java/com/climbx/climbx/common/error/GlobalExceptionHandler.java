@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
             .reduce((msg1, msg2) -> msg1 + ", " + msg2)
             .orElse("Validation failed");
         ApiResponse<Void> response = ApiResponse.error(
-            ErrorCode.INVALID_REQUEST.status(),
+            ErrorCode.VALIDATION_FAILED.status(),
             errorMessage
         );
         return ResponseEntity.badRequest().body(response);
