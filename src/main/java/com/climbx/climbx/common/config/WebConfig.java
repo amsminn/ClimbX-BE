@@ -1,6 +1,6 @@
 package com.climbx.climbx.common.config;
 
-import com.climbx.climbx.common.timeTraking.TimeTrackingInterceptor;
+import com.climbx.climbx.common.timeTracking.TimeTrackingInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

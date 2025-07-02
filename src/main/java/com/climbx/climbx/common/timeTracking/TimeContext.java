@@ -1,4 +1,4 @@
-package com.climbx.climbx.common.timeTraking;
+package com.climbx.climbx.common.timeTracking;
 
 public class TimeContext {
 

@@ -1,6 +1,6 @@
 package com.climbx.climbx.common.response;
 
-import com.climbx.climbx.common.timeTraking.TimeContext;
+import com.climbx.climbx.common.timeTracking.TimeContext;
 import java.time.Instant;
 import lombok.Builder;
 import org.springframework.http.HttpStatus;
