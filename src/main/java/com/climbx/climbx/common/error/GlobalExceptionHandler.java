@@ -23,8 +23,10 @@ public class GlobalExceptionHandler {
             e.context().toString(),
             e
         );
-        ApiResponse<Void> response = ApiResponse.error(e.errorCode().status(),
-            e.errorCode().message());
+        ApiResponse<Void> response = ApiResponse.error(
+            e.errorCode().status(),
+            e.errorCode().message()
+        );
         return ResponseEntity.status(e.errorCode().status()).body(response);
     }
 
@@ -56,6 +58,6 @@ public class GlobalExceptionHandler {
             HttpStatus.INTERNAL_SERVER_ERROR,
             "An unexpected error occurred"
         );
-        return ResponseEntity.status(500).body(response);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(response);
     }
 }

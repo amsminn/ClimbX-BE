@@ -814,6 +814,7 @@ public class UserServiceTest {
             // when & then
             assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
                 .isInstanceOf(IllegalArgumentException.class);
+        }
 
         @Test
         @DisplayName("요청한 limit보다 적은 문제가 있는 경우")
