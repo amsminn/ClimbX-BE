@@ -1,11 +1,12 @@
 package com.climbx.climbx.user.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.climbx.climbx.common.error.BusinessException;
+import com.climbx.climbx.common.error.ErrorCode;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class UserStatNotFoundException extends RuntimeException {
+public class UserStatNotFoundException extends BusinessException {
+
     public UserStatNotFoundException(Long userId) {
-        super("User stats not found for user: " + userId);
+        super(ErrorCode.USER_STAT_NOT_FOUND);
+        addContext("userId", userId.toString());
     }
 }

@@ -1,4 +1,4 @@
-package com.climbx.climbx.common.util;
+package com.climbx.climbx.common.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

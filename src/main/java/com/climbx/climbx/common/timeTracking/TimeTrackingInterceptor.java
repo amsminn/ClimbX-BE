@@ -1,6 +1,5 @@
-package com.climbx.climbx.common.interceptor;
+package com.climbx.climbx.common.timeTracking;
 
-import com.climbx.climbx.common.util.TimeContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;

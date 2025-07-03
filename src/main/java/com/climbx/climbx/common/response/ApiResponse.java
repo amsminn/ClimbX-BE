@@ -1,12 +1,12 @@
-package com.climbx.climbx.common.dto;
+package com.climbx.climbx.common.response;
 
-import com.climbx.climbx.common.util.TimeContext;
+import com.climbx.climbx.common.timeTracking.TimeContext;
 import java.time.Instant;
 import lombok.Builder;
 import org.springframework.http.HttpStatus;
 
 @Builder
-public record ApiResponseDto<T>(
+public record ApiResponse<T>(
 
     Long httpStatus,
 
@@ -21,11 +21,11 @@ public record ApiResponseDto<T>(
     T data
 ) {
 
-    public static <T> ApiResponseDto<T> success(T data) {
+    public static <T> ApiResponse<T> success(T data) {
         /*
          * success
          */
-        return ApiResponseDto.<T>builder()
+        return ApiResponse.<T>builder()
             .httpStatus((long) HttpStatus.OK.value())
             .statusMessage("SUCCESS")
             .timeStamp(Instant.now())
@@ -35,11 +35,11 @@ public record ApiResponseDto<T>(
             .build();
     }
 
-    public static <T> ApiResponseDto<T> success(T data, HttpStatus httpStatus) {
+    public static <T> ApiResponse<T> success(T data, HttpStatus httpStatus) {
         /*
          * success
          */
-        return ApiResponseDto.<T>builder()
+        return ApiResponse.<T>builder()
             .httpStatus((long) httpStatus.value())
             .statusMessage("SUCCESS")
             .timeStamp(Instant.now())
@@ -49,11 +49,11 @@ public record ApiResponseDto<T>(
             .build();
     }
 
-    public static <T> ApiResponseDto<T> success(T data, String message) {
+    public static <T> ApiResponse<T> success(T data, String message) {
         /*
          * success with custom message
          */
-        return ApiResponseDto.<T>builder()
+        return ApiResponse.<T>builder()
             .httpStatus((long) HttpStatus.OK.value())
             .statusMessage(message)
             .timeStamp(Instant.now())
@@ -64,11 +64,11 @@ public record ApiResponseDto<T>(
     }
 
 
-    public static <T> ApiResponseDto<T> error(HttpStatus httpStatus, String message) {
+    public static <T> ApiResponse<T> error(HttpStatus httpStatus, String message) {
         /*
          * error
          */
-        return ApiResponseDto.<T>builder()
+        return ApiResponse.<T>builder()
             .httpStatus((long) httpStatus.value())
             .statusMessage(message)
             .timeStamp(Instant.now())
@@ -77,4 +77,6 @@ public record ApiResponseDto<T>(
             .data(null)
             .build();
     }
+
+
 }

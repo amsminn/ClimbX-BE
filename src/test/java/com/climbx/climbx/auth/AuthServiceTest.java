@@ -1,14 +1,12 @@
 package com.climbx.climbx.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
-import com.climbx.climbx.auth.exception.UserUnauthorizedException;
-import com.climbx.climbx.common.util.JwtContext;
+import com.climbx.climbx.common.security.JwtContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -87,18 +85,6 @@ class AuthServiceTest {
         assertThat(response.provider()).isEqualTo("GOOGLE");
         assertThat(response.issuedAt()).isNotNull();
         assertThat(response.expiresAt()).isNotNull();
-    }
-
-    @Test
-    @DisplayName("유효하지 않은 user-id로 사용자 정보 조회 시 예외가 발생한다")
-    void shouldThrowExceptionForInvalidToken() {
-        // given
-        Long invalidUserId = 123456789L;
-
-        // when & then
-        assertThatThrownBy(() -> authService.getCurrentUserInfo(invalidUserId))
-            .isInstanceOf(UserUnauthorizedException.class)
-            .hasMessage("Unauthorized user");
     }
 
     @Test

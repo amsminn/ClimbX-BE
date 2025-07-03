@@ -1,4 +1,4 @@
-package com.climbx.climbx.common.util;
+package com.climbx.climbx.common.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

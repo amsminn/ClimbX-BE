@@ -3,7 +3,6 @@ package com.climbx.climbx.submission.entity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.common.enums.SubmissionStatusType;
 import com.climbx.climbx.problem.entity.ProblemEntity;
-import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.video.entity.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
