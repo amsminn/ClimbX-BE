@@ -99,10 +99,10 @@ public class DomainController {
     @PutMapping("/{id}")
     public DomainResponseDto updateDomain(
         @AuthenticationPrincipal Long userId,
-        @PathVariable @NotBlank String id,
+        @PathVariable @NotBlank String nickname,
         @RequestBody @Valid DomainUpdateRequestDto request
     ) {
-        return domainService.updateDomain(userId, id, request);
+        return domainService.updateDomain(userId, nickname, request);
     }
 }
 ```

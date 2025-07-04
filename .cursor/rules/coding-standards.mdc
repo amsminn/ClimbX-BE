@@ -64,7 +64,11 @@ public static final int MAX_LOGIN_ATTEMPTS = 3;
 ```java
 @Entity
 @Table(name = "users")
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
+@Accessors(fluent = true)
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserEntity extends BaseTimeEntity {
     // 구현
