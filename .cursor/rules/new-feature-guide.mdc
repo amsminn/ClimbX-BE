@@ -1,0 +1,345 @@
+---
+description: "How to add a new feature module to the project."
+---
+# New Feature Development Guide
+
+새로운 기능을 추가할 때 따라야 할 단계별 가이드입니다. 예시로 "Review" 기능을 추가한다고 가정합니다.
+
+## 1. 패키지 구조 생성
+
+### 기본 패키지 생성
+```
+src/main/java/com/climbx/climbx/review/
+├── ReviewController.java
+├── ReviewService.java
+├── dto/
+│   ├── ReviewCreateRequestDto.java
+│   ├── ReviewUpdateRequestDto.java
+│   └── ReviewResponseDto.java
+├── entity/
+│   └── ReviewEntity.java
+├── repository/
+│   └── ReviewRepository.java
+└── exception/
+    ├── ReviewNotFoundException.java
+    └── ReviewValidationException.java
+```
+
+### 테스트 패키지 생성
+```
+src/test/java/com/climbx/climbx/review/
+├── ReviewServiceTest.java
+├── ReviewControllerTest.java
+└── fixture/
+    └── ReviewFixture.java
+```
+
+## 2. Entity 클래스 작성
+
+### 기본 템플릿
+```java
+@Entity
+@Table(name = "reviews")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class ReviewEntity extends BaseTimeEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
+    private String title;
+    
+    @Column(columnDefinition = "TEXT")
+    private String content;
+    
+    @Column(nullable = false)
+    private Integer rating;
+    
+    // 연관관계 매핑
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserAccountEntity user;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gym_id", nullable = false)
+    private GymEntity gym;
+    
+    @Builder
+    public ReviewEntity(String title, String content, Integer rating, 
+                       UserAccountEntity user, GymEntity gym) {
+        this.title = title;
+        this.content = content;
+        this.rating = rating;
+        this.user = user;
+        this.gym = gym;
+    }
+    
+    public void update(String title, String content, Integer rating) {
+        this.title = title;
+        this.content = content;
+        this.rating = rating;
+    }
+}
+```
+
+### Entity 작성 주의사항
+- `BaseTimeEntity` 또는 `SoftDeleteTimeEntity` 상속
+- `@NoArgsConstructor(access = AccessLevel.PROTECTED)` 필수
+- Builder 패턴 사용 권장
+- 연관관계는 `FetchType.LAZY` 사용
+- 비즈니스 로직을 위한 메서드 추가 (예: `update()`)
+
+## 3. Repository 인터페이스 작성
+
+```java
+@Repository
+public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
+    
+    List<ReviewEntity> findByGymIdOrderByCreatedAtDesc(Long gymId);
+    
+    List<ReviewEntity> findByUserIdOrderByCreatedAtDesc(Long userId);
+    
+    @Query("SELECT AVG(r.rating) FROM ReviewEntity r WHERE r.gym.id = :gymId")
+    Double findAverageRatingByGymId(@Param("gymId") Long gymId);
+    
+    boolean existsByUserIdAndGymId(Long userId, Long gymId);
+}
+```
+
+### Repository 작성 가이드
+- 필요한 쿼리 메서드 정의
+- 복잡한 쿼리는 `@Query` 애노테이션 사용
+- 메서드명은 Spring Data JPA 규칙 준수
+
+## 4. DTO 클래스 작성
+
+### Request DTO 예시
+```java
+@Getter
+@NoArgsConstructor
+public class ReviewCreateRequestDto {
+    
+    @NotBlank(message = "제목은 필수입니다.")
+    @Size(max = 100, message = "제목은 100자 이하여야 합니다.")
+    private String title;
+    
+    @Size(max = 1000, message = "내용은 1000자 이하여야 합니다.")
+    private String content;
+    
+    @NotNull(message = "평점은 필수입니다.")
+    @Min(value = 1, message = "평점은 1 이상이어야 합니다.")
+    @Max(value = 5, message = "평점은 5 이하여야 합니다.")
+    private Integer rating;
+    
+    @NotNull(message = "체육관 ID는 필수입니다.")
+    private Long gymId;
+}
+```
+
+### Response DTO 예시
+```java
+@Getter
+@Builder
+public class ReviewResponseDto {
+    private Long id;
+    private String title;
+    private String content;
+    private Integer rating;
+    private String userName;
+    private String gymName;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    public static ReviewResponseDto from(ReviewEntity review) {
+        return ReviewResponseDto.builder()
+                .id(review.getId())
+                .title(review.getTitle())
+                .content(review.getContent())
+                .rating(review.getRating())
+                .userName(review.getUser().getNickname())
+                .gymName(review.getGym().getName())
+                .createdAt(review.getCreatedAt())
+                .updatedAt(review.getUpdatedAt())
+                .build();
+    }
+}
+```
+
+## 5. Service 클래스 작성
+
+```java
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class ReviewService {
+    
+    private final ReviewRepository reviewRepository;
+    private final UserAccountRepository userAccountRepository;
+    private final GymRepository gymRepository;
+    
+    @Transactional
+    public ReviewResponseDto createReview(Long userId, ReviewCreateRequestDto request) {
+        // 중복 리뷰 검증
+        if (reviewRepository.existsByUserIdAndGymId(userId, request.getGymId())) {
+            throw new ReviewValidationException("이미 해당 체육관에 리뷰를 작성했습니다.");
+        }
+        
+        UserAccountEntity user = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        
+        GymEntity gym = gymRepository.findById(request.getGymId())
+                .orElseThrow(() -> new GymNotFoundException("체육관을 찾을 수 없습니다."));
+        
+        ReviewEntity review = ReviewEntity.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .rating(request.getRating())
+                .user(user)
+                .gym(gym)
+                .build();
+        
+        ReviewEntity savedReview = reviewRepository.save(review);
+        return ReviewResponseDto.from(savedReview);
+    }
+    
+    public List<ReviewResponseDto> getReviewsByGym(Long gymId) {
+        return reviewRepository.findByGymIdOrderByCreatedAtDesc(gymId)
+                .stream()
+                .map(ReviewResponseDto::from)
+                .collect(Collectors.toList());
+    }
+}
+```
+
+### Service 작성 가이드
+- `@Transactional(readOnly = true)` 클래스 레벨 적용
+- 쓰기 작업에는 `@Transactional` 메서드 레벨 적용
+- 비즈니스 로직 검증 포함
+- 적절한 예외 처리
+
+## 6. Controller 클래스 작성
+
+```java
+@RestController
+@RequestMapping("/api/reviews")
+@RequiredArgsConstructor
+@Tag(name = "Review", description = "리뷰 API")
+public class ReviewController {
+    
+    private final ReviewService reviewService;
+    
+    @PostMapping
+    @Operation(summary = "리뷰 생성", description = "새로운 리뷰를 생성합니다.")
+    public ApiResponse<ReviewResponseDto> createReview(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @RequestBody ReviewCreateRequestDto request) {
+        
+        ReviewResponseDto response = reviewService.createReview(userPrincipal.getId(), request);
+        return ApiResponse.success(response);
+    }
+    
+    @GetMapping("/gym/{gymId}")
+    @Operation(summary = "체육관 리뷰 조회", description = "특정 체육관의 모든 리뷰를 조회합니다.")
+    public ApiResponse<List<ReviewResponseDto>> getReviewsByGym(
+            @PathVariable Long gymId) {
+        
+        List<ReviewResponseDto> reviews = reviewService.getReviewsByGym(gymId);
+        return ApiResponse.success(reviews);
+    }
+}
+```
+
+### Controller 작성 가이드
+- `ApiResponse` 래퍼 사용 필수
+- `@Valid` 애노테이션으로 DTO 검증
+- Swagger 문서화 애노테이션 추가
+- RESTful URL 설계 준수
+
+## 7. 예외 클래스 작성
+
+```java
+public class ReviewNotFoundException extends BusinessException {
+    public ReviewNotFoundException(String message) {
+        super(ErrorCode.REVIEW_NOT_FOUND, message);
+    }
+}
+
+public class ReviewValidationException extends BusinessException {
+    public ReviewValidationException(String message) {
+        super(ErrorCode.REVIEW_VALIDATION_ERROR, message);
+    }
+}
+```
+
+### ErrorCode 추가
+`ErrorCode.java`에 새로운 에러 코드 추가:
+```java
+REVIEW_NOT_FOUND(404, "R001", "리뷰를 찾을 수 없습니다."),
+REVIEW_VALIDATION_ERROR(400, "R002", "리뷰 검증 오류"),
+```
+
+## 8. 테스트 작성
+
+### Fixture 클래스
+```java
+public class ReviewFixture {
+    public static ReviewEntity createReview(UserAccountEntity user, GymEntity gym) {
+        return ReviewEntity.builder()
+                .title("테스트 리뷰")
+                .content("테스트 내용")
+                .rating(5)
+                .user(user)
+                .gym(gym)
+                .build();
+    }
+}
+```
+
+### Service 테스트
+```java
+@ExtendWith(MockitoExtension.class)
+class ReviewServiceTest {
+    
+    @Mock
+    private ReviewRepository reviewRepository;
+    
+    @Mock
+    private UserAccountRepository userAccountRepository;
+    
+    @Mock
+    private GymRepository gymRepository;
+    
+    @InjectMocks
+    private ReviewService reviewService;
+    
+    @Test
+    @DisplayName("리뷰 생성 성공")
+    void createReview_Success() {
+        // given, when, then 패턴으로 테스트 작성
+    }
+}
+```
+
+## 9. 체크리스트
+
+### 필수 구현 사항
+- [ ] Entity 클래스 작성 및 연관관계 설정
+- [ ] Repository 인터페이스 작성
+- [ ] Service 클래스 비즈니스 로직 구현
+- [ ] Controller REST API 구현
+- [ ] DTO 클래스 작성 및 검증 애노테이션 추가
+- [ ] Custom Exception 클래스 작성
+- [ ] ErrorCode 추가
+
+### 테스트 작성
+- [ ] Service 단위 테스트
+- [ ] Controller 통합 테스트
+- [ ] Fixture 클래스 작성
+
+### 문서화
+- [ ] Swagger API 문서 애노테이션 추가
+- [ ] README 업데이트 (필요시)
+
+이 가이드를 따르면 일관성 있고 유지보수하기 쉬운 새로운 기능을 추가할 수 있습니다.

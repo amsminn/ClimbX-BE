@@ -1,0 +1,242 @@
+---
+description: "How to run the application and tests."
+---
+# Running the Application and Tests
+
+## 개발 환경 설정
+
+### 필수 요구사항
+- Java 21
+- Gradle 8.x
+- Docker 및 Docker Compose
+- IDE (IntelliJ IDEA 권장)
+
+### 환경 변수 설정
+개발 환경에서 필요한 환경 변수들:
+```bash
+# JWT 설정
+JWT_SECRET=your-jwt-secret-key-here
+JWT_EXPIRATION=86400000
+```
+
+## 데이터베이스 설정
+
+### 1. Docker를 이용한 MySQL 실행 (권장)
+```bash
+# MySQL 컨테이너 시작
+cd docker/dev/mysql
+docker-compose up -d
+
+# 컨테이너 상태 확인
+docker-compose ps
+
+# 로그 확인
+docker-compose logs -f mysql
+
+# 컨테이너 중지
+docker-compose down
+```
+
+### 2. 로컬 MySQL 사용시
+- MySQL 9.3
+- 데이터베이스 생성: `CREATE DATABASE climbx_dev;`
+- `application-db-dev.yml`에서 연결 정보 수정
+
+### 3. 데이터베이스 스키마 확인
+```bash
+# 애플리케이션 실행 후 스키마 자동 생성됨
+# 초기 데이터는 src/main/resources/db/init/data.sql 실행
+```
+
+## 애플리케이션 실행
+
+### 1. IDE에서 실행 (권장)
+1. IntelliJ IDEA에서 프로젝트 열기
+2. `ClimbXApplication.java` 파일 열기
+3. main 메서드 좌측 실행 버튼 클릭
+4. 또는 `Shift + F10` (Windows) / `Ctrl + R` (Mac)
+
+### 2. Gradle을 이용한 실행
+```bash
+# 개발 환경에서 실행
+./gradlew bootRun
+
+# 특정 프로파일로 실행
+./gradlew bootRun --args='--spring.profiles.active=dev'
+
+# 디버그 모드로 실행
+./gradlew bootRun --debug-jvm
+```
+
+### 3. JAR 파일 빌드 및 실행
+```bash
+# JAR 파일 빌드
+./gradlew build
+
+# 빌드된 JAR 실행
+java -jar build/libs/climbx-0.0.1-SNAPSHOT.jar
+
+# 프로파일 지정해서 실행
+java -jar build/libs/climbx-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev
+```
+
+### 실행 확인
+- 애플리케이션 시작 후 `http://localhost:8080` 접속
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- H2 Console (테스트시): `http://localhost:8080/h2-console`
+
+## 테스트 실행
+
+### 1. 전체 테스트 실행
+```bash
+# 모든 테스트 실행
+./gradlew test
+
+# 테스트 결과 상세 출력
+./gradlew test --info
+
+# 병렬 테스트 실행
+./gradlew test --parallel
+```
+
+### 2. 특정 테스트 클래스 실행
+```bash
+# 특정 테스트 클래스 실행
+./gradlew test --tests UserServiceTest
+
+# 특정 패키지의 모든 테스트 실행
+./gradlew test --tests "com.climbx.climbx.user.*"
+
+# 특정 테스트 메서드 실행
+./gradlew test --tests UserServiceTest.testCreateUser
+```
+
+### 3. 테스트 종류별 실행
+```bash
+# 단위 테스트만 실행 (Service 레이어)
+./gradlew test --tests "*ServiceTest"
+
+# 통합 테스트만 실행 (Controller 레이어)
+./gradlew test --tests "*ControllerTest"
+
+# 보안 테스트만 실행
+./gradlew test --tests "*SecurityTest"
+```
+
+### 4. IDE에서 테스트 실행
+- 테스트 클래스나 메서드 좌측 실행 버튼 클릭
+- `Ctrl + Shift + F10` (Windows) / `Ctrl + Shift + R` (Mac)
+- 전체 테스트: 프로젝트 우클릭 > "Run All Tests"
+
+## 코드 품질 검사
+
+### 1. Checkstyle 실행
+```bash
+# 코드 스타일 검사
+./gradlew checkstyleMain checkstyleTest
+
+# 검사 결과 확인
+open build/reports/checkstyle/main.html
+```
+
+### 2. 빌드 검증
+```bash
+# 전체 빌드 (테스트 + 코드 품질 검사 포함)
+./gradlew build
+
+# 빌드 캐시 정리
+./gradlew clean build
+```
+
+## 개발 도구 및 유틸리티
+
+### 1. 애플리케이션 재시작
+```bash
+# Spring Boot DevTools 사용 (의존성 추가시)
+# 클래스 파일 변경시 자동 재시작
+
+# 수동 재시작이 필요한 경우
+# Ctrl + C로 중지 후 다시 실행
+```
+
+### 2. 로그 확인
+```bash
+# 애플리케이션 로그 실시간 확인
+tail -f logs/application.log
+
+# 특정 레벨 로그 필터링
+grep "ERROR" logs/application.log
+grep "DEBUG" logs/application.log
+```
+
+### 3. 프로파일별 설정
+- `dev`: 개발 환경 (MySQL, 로그 레벨 DEBUG)
+- `test`: 테스트 환경 (MySQL, 로그 레벨 DEBUG)
+- `prod`: 운영 환경 (추후 작성 필요)
+
+### 4. 데이터베이스 마이그레이션
+```bash
+# 개발 환경: 자동 스키마 업데이트
+# application-dev.yml의 ddl-auto: update
+
+# 운영 환경: 수동 마이그레이션 스크립트 작성 필요
+# Flyway 또는 Liquibase 도구 사용 권장
+```
+
+## 문제 해결
+
+### 일반적인 문제들
+
+#### 1. 포트 충돌 (8080 포트가 이미 사용 중)
+```bash
+# 포트 사용 중인 프로세스 확인 (Mac/Linux)
+lsof -i :8080
+
+# 프로세스 종료
+kill -9 [PID]
+
+# 또는 다른 포트 사용
+./gradlew bootRun --args='--server.port=8081'
+```
+
+#### 2. 데이터베이스 연결 실패
+```bash
+# Docker MySQL 컨테이너 상태 확인
+docker-compose ps
+
+# MySQL 컨테이너 재시작
+docker-compose restart mysql
+
+# 연결 테스트
+docker-compose exec mysql mysql -u root -p climbx_dev
+```
+
+#### 3. 메모리 부족 오류
+```bash
+# JVM 힙 메모리 늘리기
+export JAVA_OPTS="-Xmx2g -Xms1g"
+./gradlew bootRun
+
+# 또는 Gradle JVM 메모리 설정
+export GRADLE_OPTS="-Xmx2g"
+```
+
+#### 4. 빌드 실패
+```bash
+# 의존성 다시 다운로드
+./gradlew clean build --refresh-dependencies
+
+# Gradle 래퍼 업데이트
+./gradlew wrapper --gradle-version=8.5
+```
+
+### 성능 모니터링
+- `TimeTrackingInterceptor`를 통한 API 응답 시간 측정
+- 로그에서 `[TIMER]` 태그로 성능 정보 확인
+- 필요시 Spring Boot Actuator 엔드포인트 활성화
+
+### 개발 팁
+- IDE의 Live Reload 기능 활용
+- Swagger UI로 API 테스트
+- H2 Console로 테스트 데이터 확인
+- Git Hook으로 커밋 전 테스트 자동 실행

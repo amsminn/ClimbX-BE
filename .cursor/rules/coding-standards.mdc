@@ -1,0 +1,412 @@
+---
+description: "Coding standards and conventions for the project."
+---
+# Coding Standards and Conventions
+
+## Java 코딩 컨벤션
+
+### 1. 네이밍 규칙
+
+#### 클래스명
+- PascalCase 사용
+- 역할을 명확히 나타내는 이름
+```java
+// Good
+public class UserAccountEntity { }
+public class AuthController { }
+public class JwtAuthenticationFilter { }
+
+// Bad
+public class User { }  // 너무 일반적
+public class AuthCtrl { }  // 축약형 지양
+```
+
+#### 메서드명
+- camelCase 사용
+- 동사로 시작
+- 의도를 명확히 표현
+```java
+// Good
+public void createUser() { }
+public boolean isValidUser() { }
+public List<User> findActiveUsers() { }
+
+// Bad
+public void user() { }  // 동사 없음
+public void create() { }  // 대상 불명확
+```
+
+#### 변수명
+- camelCase 사용
+- 의미있는 이름 사용
+```java
+// Good
+private String userName;
+private List<UserEntity> activeUsers;
+private LocalDateTime createdAt;
+
+// Bad
+private String n;  // 의미 불명확
+private List<UserEntity> list;  // 일반적 이름
+```
+
+#### 상수명
+- UPPER_SNAKE_CASE 사용
+```java
+// Good
+public static final String DEFAULT_USER_ROLE = "USER";
+public static final int MAX_LOGIN_ATTEMPTS = 3;
+```
+
+### 2. 어노테이션 사용 규칙
+
+#### 클래스 레벨 어노테이션 순서
+```java
+@Entity
+@Table(name = "users")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class UserEntity extends BaseTimeEntity {
+    // 구현
+}
+```
+
+#### 메서드 레벨 어노테이션
+```java
+@Transactional
+@Override
+public UserResponseDto createUser(UserCreateRequestDto request) {
+    // 구현
+}
+```
+
+#### 필드 레벨 어노테이션
+```java
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long id;
+
+@Column(nullable = false, unique = true)
+@Size(min = 2, max = 50)
+private String username;
+```
+
+### 3. 패키지 구조 규칙
+
+#### 기본 패키지 구조
+```
+com.climbx.climbx.{domain}
+├── {Domain}Controller.java
+├── {Domain}Service.java
+├── dto/
+│   ├── {Domain}CreateRequestDto.java
+│   ├── {Domain}UpdateRequestDto.java
+│   └── {Domain}ResponseDto.java
+├── entity/
+│   └── {Domain}Entity.java
+├── repository/
+│   └── {Domain}Repository.java
+└── exception/
+    ├── {Domain}NotFoundException.java
+    └── {Domain}ValidationException.java
+```
+
+## Spring Boot 특화 규칙
+
+### 1. Controller 작성 규칙
+
+#### 기본 구조
+```java
+@RestController
+@RequestMapping("/api/{domain}")
+@RequiredArgsConstructor
+@Tag(name = "Domain", description = "도메인 API")
+public class DomainController {
+    
+    private final DomainService domainService;
+    
+    @PostMapping
+    @Operation(summary = "생성", description = "새로운 항목을 생성합니다.")
+    public ApiResponse<DomainResponseDto> create(
+            @Valid @RequestBody DomainCreateRequestDto request) {
+        
+        DomainResponseDto response = domainService.create(request);
+        return ApiResponse.success(response);
+    }
+}
+```
+
+#### URL 설계 규칙
+- RESTful 설계 원칙 준수
+- 명사 사용, 동사 지양
+- 계층 구조 표현
+```java
+// Good
+GET /api/users/{userId}
+POST /api/users
+PUT /api/users/{userId}
+DELETE /api/users/{userId}
+GET /api/users/{userId}/reviews
+
+// Bad
+GET /api/getUser/{userId}
+POST /api/createUser
+GET /api/user-reviews/{userId}
+```
+
+### 2. Service 작성 규칙
+
+#### 기본 구조
+```java
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class DomainService {
+    
+    private final DomainRepository domainRepository;
+    
+    @Transactional
+    public DomainResponseDto create(DomainCreateRequestDto request) {
+        // 비즈니스 로직 구현
+        DomainEntity entity = DomainEntity.builder()
+                .field1(request.getField1())
+                .field2(request.getField2())
+                .build();
+        
+        DomainEntity savedEntity = domainRepository.save(entity);
+        return DomainResponseDto.from(savedEntity);
+    }
+    
+    public DomainResponseDto findById(Long id) {
+        DomainEntity entity = domainRepository.findById(id)
+                .orElseThrow(() -> new DomainNotFoundException("항목을 찾을 수 없습니다: " + id));
+        
+        return DomainResponseDto.from(entity);
+    }
+}
+```
+
+#### 트랜잭션 규칙
+- 클래스 레벨: `@Transactional(readOnly = true)`
+- 쓰기 메서드: `@Transactional` (메서드 레벨)
+- 읽기 메서드: 어노테이션 생략 (클래스 설정 상속)
+
+### 3. Entity 작성 규칙
+
+#### 기본 구조
+```java
+@Entity
+@Table(name = "table_name")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class DomainEntity extends BaseTimeEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
+    private String requiredField;
+    
+    @Column
+    private String optionalField;
+    
+    @Builder
+    public DomainEntity(String requiredField, String optionalField) {
+        this.requiredField = requiredField;
+        this.optionalField = optionalField;
+    }
+    
+    // 비즈니스 메서드
+    public void updateField(String newValue) {
+        this.requiredField = newValue;
+    }
+}
+```
+
+#### Entity 작성 주의사항
+- `@NoArgsConstructor(access = AccessLevel.PROTECTED)` 필수
+- `@Setter` 사용 금지 (불변성 보장)
+- Builder 패턴 사용 권장
+- 비즈니스 로직 메서드 추가 권장
+
+### 4. DTO 작성 규칙
+
+#### Request DTO
+```java
+@Getter
+@NoArgsConstructor
+public class DomainCreateRequestDto {
+    
+    @NotBlank(message = "필수 필드입니다.")
+    @Size(max = 100, message = "100자 이하여야 합니다.")
+    private String requiredField;
+    
+    @Size(max = 500, message = "500자 이하여야 합니다.")
+    private String optionalField;
+    
+    @Builder
+    public DomainCreateRequestDto(String requiredField, String optionalField) {
+        this.requiredField = requiredField;
+        this.optionalField = optionalField;
+    }
+}
+```
+
+#### Response DTO
+```java
+@Getter
+@Builder
+public class DomainResponseDto {
+    private Long id;
+    private String requiredField;
+    private String optionalField;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    public static DomainResponseDto from(DomainEntity entity) {
+        return DomainResponseDto.builder()
+                .id(entity.getId())
+                .requiredField(entity.getRequiredField())
+                .optionalField(entity.getOptionalField())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
+    }
+}
+```
+
+## 예외 처리 규칙
+
+### 1. Custom Exception 구조
+```java
+// 도메인별 예외 클래스
+public class DomainNotFoundException extends BusinessException {
+    public DomainNotFoundException(String message) {
+        super(ErrorCode.DOMAIN_NOT_FOUND, message);
+    }
+}
+
+public class DomainValidationException extends BusinessException {
+    public DomainValidationException(String message) {
+        super(ErrorCode.DOMAIN_VALIDATION_ERROR, message);
+    }
+}
+```
+
+### 2. ErrorCode 정의
+```java
+// ErrorCode enum에 추가
+DOMAIN_NOT_FOUND(404, "D001", "항목을 찾을 수 없습니다."),
+DOMAIN_VALIDATION_ERROR(400, "D002", "검증 오류가 발생했습니다."),
+DOMAIN_DUPLICATE_ERROR(409, "D003", "중복된 항목입니다."),
+```
+
+## 테스트 작성 규칙
+
+### 1. 테스트 클래스 구조
+```java
+@ExtendWith(MockitoExtension.class)
+@DisplayName("DomainService 테스트")
+class DomainServiceTest {
+    
+    @Mock
+    private DomainRepository domainRepository;
+    
+    @InjectMocks
+    private DomainService domainService;
+    
+    @Test
+    @DisplayName("정상적으로 생성되어야 한다")
+    void create_Success() {
+        // given
+        DomainCreateRequestDto request = DomainCreateRequestDto.builder()
+                .requiredField("test")
+                .build();
+        
+        DomainEntity entity = DomainEntity.builder()
+                .requiredField("test")
+                .build();
+        
+        when(domainRepository.save(any(DomainEntity.class))).thenReturn(entity);
+        
+        // when
+        DomainResponseDto response = domainService.create(request);
+        
+        // then
+        assertThat(response.getRequiredField()).isEqualTo("test");
+        verify(domainRepository).save(any(DomainEntity.class));
+    }
+}
+```
+
+### 2. 테스트 메서드 네이밍
+- `메서드명_상황_예상결과` 패턴 사용
+- `@DisplayName`으로 한글 설명 추가
+
+### 3. Given-When-Then 패턴
+- given: 테스트 준비
+- when: 테스트 실행
+- then: 결과 검증
+
+## 문서화 규칙
+
+### 1. Swagger 어노테이션
+```java
+@Operation(
+    summary = "사용자 생성",
+    description = "새로운 사용자를 생성합니다.",
+    responses = {
+        @ApiResponse(responseCode = "200", description = "성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+        @ApiResponse(responseCode = "500", description = "서버 오류")
+    }
+)
+@PostMapping
+public ApiResponse<UserResponseDto> createUser(
+    @Parameter(description = "사용자 생성 요청 데이터")
+    @Valid @RequestBody UserCreateRequestDto request
+) {
+    // 구현
+}
+```
+
+### 2. 주석 작성 규칙
+- JavaDoc 형식 사용
+- 복잡한 비즈니스 로직에 대한 설명
+- TODO, FIXME 등 태그 활용
+
+```java
+/**
+ * 사용자 계정을 생성합니다.
+ * 
+ * @param request 사용자 생성 요청 데이터
+ * @return 생성된 사용자 정보
+ * @throws UserValidationException 사용자 데이터 검증 실패시
+ * @throws DuplicateNicknameException 닉네임 중복시
+ */
+@Transactional
+public UserResponseDto createUser(UserCreateRequestDto request) {
+    // TODO: 이메일 중복 검증 로직 추가 필요
+    // 구현...
+}
+```
+
+## 성능 및 보안 규칙
+
+### 1. 쿼리 최적화
+- N+1 문제 방지를 위한 Fetch Join 사용
+- 페이징 처리 필수
+- 불필요한 데이터 조회 방지
+
+```java
+@Query("SELECT u FROM UserEntity u JOIN FETCH u.userStat WHERE u.id = :id")
+Optional<UserEntity> findByIdWithStat(@Param("id") Long id);
+```
+
+### 2. 보안 규칙
+- 민감한 정보 로깅 금지
+- 사용자 입력 데이터 검증 필수
+- SQL Injection 방지를 위한 Parameterized Query 사용
+
+이러한 규칙들을 준수하여 일관성 있고 유지보수하기 쉬운 코드를 작성할 수 있습니다.
