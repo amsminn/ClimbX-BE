@@ -1,0 +1,122 @@
+---
+alwaysApply: true
+---
+# Project Structure Guide
+
+This is a Spring Boot project with a standard layered architecture following Domain-Driven Design (DDD) principles.
+
+## Main Application Entry Point
+- `src/main/java/com/climbx/climbx/ClimbXApplication.java` - Spring Boot main class
+
+## Configuration Layer
+### Java Configuration
+- `src/main/java/com/climbx/climbx/common/config/`
+  - `SecurityConfig.java` - Security and JWT settings, CORS configuration
+  - `WebConfig.java` - Web MVC configurations, interceptors
+  - `JpaConfig.java` - JPA and database configurations
+
+### Application Properties
+- `src/main/resources/application.yml` - Main configuration file
+- `src/main/resources/application-dev.yml` - Development environment settings
+- `src/main/resources/application-db-dev.yml` - Development database settings
+
+## Feature Modules (Domain-Based Architecture)
+Each feature follows a consistent package structure under `src/main/java/com/climbx/climbx/`:
+
+### Authentication (`auth`)
+- `AuthController.java` - OAuth2 login, token refresh endpoints
+- `AuthService.java` - Authentication business logic
+- `dto/` - Login/token DTOs
+
+### Gym Management (`gym`)
+- `GymController.java` - Gym CRUD operations
+- `GymService.java` - Gym business logic
+- `entity/GymEntity.java` - Gym JPA entity
+- `repository/GymRepository.java` - Data access layer
+- `dto/GymInfoResponseDto.java` - Response DTOs
+- `exception/GymNotFoundException.java` - Custom exceptions
+
+### Problem Management (`problem`)
+- `entity/ProblemEntity.java` - Climbing problem entity
+- `repository/ProblemRepository.java` - Problem data access
+- `dto/ProblemResponseDto.java` - Problem DTOs
+
+### User Management (`user`)
+- `UserController.java` - User profile, statistics endpoints
+- `UserService.java` - User business logic
+- `entity/` - User entities (UserAccountEntity, UserStatEntity, UserRankingHistoryEntity)
+- `repository/` - User data repositories
+- `dto/` - Profile, statistics DTOs
+- `exception/` - User-specific exceptions
+
+### Submission Management (`submission`)
+- `entity/SubmissionEntity.java` - User problem submissions
+- `repository/SubmissionRepository.java` - Submission data access
+
+### Video Management (`video`)
+- `entity/VideoEntity.java` - Video metadata entity
+
+## Common/Shared Layer
+Located in `src/main/java/com/climbx/climbx/common/`:
+
+### Base Entities
+- `entity/BaseTimeEntity.java` - Provides createdAt, updatedAt fields
+- `entity/SoftDeleteTimeEntity.java` - Adds soft delete functionality
+
+### Enums
+- `enums/RoleType.java` - User role definitions
+- `enums/SubmissionStatusType.java` - Submission status types
+- `enums/UserHistoryCriteriaType.java` - User history criteria
+
+### Error Handling
+- `error/GlobalExceptionHandler.java` - Centralized exception handling
+- `error/ErrorCode.java` - Standard error code definitions
+- `error/BusinessException.java` - Custom business exception
+
+### API Response
+- `response/ApiResponse.java` - Standard API response wrapper
+- `response/ApiResponseAdvice.java` - Response formatting advice
+
+### Security
+- `security/JwtAuthenticationFilter.java` - JWT token validation filter
+- `security/JwtContext.java` - JWT utility methods
+
+### Time Tracking
+- `timeTracking/TimeContext.java` - Request timing context
+- `timeTracking/TimeTrackingInterceptor.java` - Performance monitoring
+
+## Testing Structure
+### Test Location
+- `src/test/java/com/climbx/climbx/` - All test files
+
+### Test Categories
+- Unit Tests: `*ServiceTest.java` - Business logic testing
+- Integration Tests: `*ControllerTest.java` - API endpoint testing
+- Security Tests: `JwtAuthenticationFilterTest.java` - Security component testing
+
+### Test Fixtures
+- `src/test/java/com/climbx/climbx/fixture/` - Test data builders
+  - `UserFixture.java` - User test data
+  - `GymFixture.java` - Gym test data
+  - `ProblemFixture.java` - Problem test data
+
+### Test Configuration
+- `src/test/resources/application.yml` - Test environment settings
+- `src/test/resources/application-db-test.yml` - Test database configuration (H2)
+
+## Database
+### Schema Management
+- Development: Auto-update via `spring.jpa.hibernate.ddl-auto=update`
+- Production: Manual migration scripts required
+- Initial data: `src/main/resources/db/init/data.sql`
+
+### Docker Setup
+- `docker/dev/mysql/docker-compose.yml` - Development MySQL container
+
+## Package Naming Conventions
+- Controllers: `*Controller.java`
+- Services: `*Service.java`
+- Entities: `*Entity.java`
+- Repositories: `*Repository.java`
+- DTOs: `*RequestDto.java`, `*ResponseDto.java`
+- Exceptions: `*Exception.java`
