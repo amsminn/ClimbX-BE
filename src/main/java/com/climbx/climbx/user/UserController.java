@@ -5,11 +5,6 @@ import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 @Validated
 @RequiredArgsConstructor
-class UserController {
+class UserController implements UserApiDocumentation {
 
     private final UserService userService;
 
@@ -43,7 +38,6 @@ class UserController {
     @GetMapping("/{nickname}")
     public UserProfileResponseDto getUserByNickname(
         @PathVariable
-        @NotBlank
         String nickname
     ) {
         return userService.getUserByNickname(nickname);
@@ -55,10 +49,9 @@ class UserController {
         Long userId,
 
         @PathVariable
-        @NotBlank
         String nickname,
 
-        @RequestBody @Valid
+        @RequestBody
         UserProfileModifyRequestDto request
     ) {
         return userService.modifyUserProfile(
@@ -71,12 +64,9 @@ class UserController {
     @GetMapping("/{nickname}/top-problems")
     public List<ProblemResponseDto> getUserTopProblems(
         @PathVariable
-        @NotBlank
         String nickname,
 
         @RequestParam(name = "limit", required = false, defaultValue = "20")
-        @Min(1)
-        @Max(20)
         Integer limit
     ) {
         return userService.getUserTopProblems(nickname, limit);
@@ -85,7 +75,6 @@ class UserController {
     @GetMapping("/{nickname}/streak")
     public List<DailyHistoryResponseDto> getUserStreak(
         @PathVariable
-        @NotBlank
         String nickname,
 
         @RequestParam(name = "from", required = false)
@@ -106,11 +95,9 @@ class UserController {
     @GetMapping("/{nickname}/history")
     public List<DailyHistoryResponseDto> getUserDailyHistory(
         @PathVariable
-        @NotBlank
         String nickname,
 
         @RequestParam(name = "criteria", required = true)
-        @NotNull
         UserHistoryCriteriaType criteria,
 
         @RequestParam(name = "from", required = false)
