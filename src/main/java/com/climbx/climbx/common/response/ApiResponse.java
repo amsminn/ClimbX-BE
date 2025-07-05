@@ -9,15 +9,10 @@ import org.springframework.http.HttpStatus;
 public record ApiResponse<T>(
 
     Long httpStatus,
-
     String statusMessage,
-
     Instant timeStamp,
-
     Long responseTimeMs,
-
     String path,
-
     T data
 ) {
 

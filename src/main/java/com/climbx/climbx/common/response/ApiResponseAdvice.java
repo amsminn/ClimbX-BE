@@ -15,11 +15,11 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(
-        @NonNull MethodParameter _returnType,
+        @NonNull MethodParameter returnType,
         @NonNull Class<? extends HttpMessageConverter<?>> _converterType
     ) {
-        // ResponseEntity로 래핑할 필요가 있는지 결정
-        return true;
+        return !returnType.getParameterType().equals(ApiResponse.class) &&
+            !returnType.getParameterType().equals(ResponseEntity.class);
     }
 
     @Override
@@ -27,11 +27,17 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         @NonNull MethodParameter _returnType,
         @NonNull MediaType _selectedContentType,
         @NonNull Class<? extends HttpMessageConverter<?>> _selectedConverterType,
-        @NonNull ServerHttpRequest _request,
+        @NonNull ServerHttpRequest request,
         @NonNull ServerHttpResponse _response
     ) {
+        // Swagger 관련 경로는 ApiResponse로 래핑하지 않음
+        String path = request.getURI().getPath();
+        if (isSwaggerPath(path)) {
+            return body;
+        }
+
         // 1) 이미 ResponseEntity<?> 이면 그대로 돌려보내기
-        if (body instanceof ResponseEntity<?>) {
+        if (body == null || body instanceof ResponseEntity<?>) {
             return body;
         }
 
@@ -45,5 +51,13 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         // 3) 그 외 DTO 타입이면 ApiResponse.success로 래핑 후 ResponseEntity.ok
         ApiResponse<Object> wrapped = ApiResponse.success(body);
         return ResponseEntity.ok(wrapped);
+    }
+
+    private boolean isSwaggerPath(String path) {
+        return path.startsWith("/swagger-ui") ||
+            path.startsWith("/v3/api-docs") ||
+            path.startsWith("/webjars/") ||
+            path.contains("swagger") ||
+            path.contains("api-docs");
     }
 }
