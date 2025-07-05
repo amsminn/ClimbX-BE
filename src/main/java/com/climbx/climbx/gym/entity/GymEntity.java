@@ -57,9 +57,6 @@ public class GymEntity extends BaseTimeEntity {
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
     private String phoneNumber; // 전화번호, 형식: 010-1234-5678
 
-    @Column(name = "description", length = 200)
-    private String description; // 상세 설명
-
     @Column(name = "map_2d_url", length = 255)
     private String map2DUrl; // 2D 지도 URL
 

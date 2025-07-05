@@ -34,9 +34,6 @@ public record GymInfoResponseDto(
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
     String phoneNumber,
 
-    @Size(max = 200)
-    String description,
-
     @Size(max = 255)
     String map2DUrl
 ) {
@@ -49,7 +46,6 @@ public record GymInfoResponseDto(
             .longitude(gym.longitude())
             .address(gym.address())
             .phoneNumber(gym.phoneNumber())
-            .description(gym.description())
             .map2DUrl(gym.map2DUrl())
             .build();
     }
