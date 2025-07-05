@@ -23,7 +23,12 @@ public class GymController {
     private final GymService gymService;
 
     @GetMapping("/{gymId}")
-    public GymInfoResponseDto getGymById(@PathVariable @NotNull @Min(1L) Long gymId) {
+    public GymInfoResponseDto getGymById(
+        @PathVariable
+        @NotNull
+        @Min(1L)
+        Long gymId
+    ) {
         return gymService.getGymById(gymId);
     }
 
