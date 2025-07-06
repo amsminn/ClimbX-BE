@@ -18,8 +18,8 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         @NonNull MethodParameter returnType,
         @NonNull Class<? extends HttpMessageConverter<?>> _converterType
     ) {
-        return !returnType.getParameterType().equals(ApiResponse.class) &&
-            !returnType.getParameterType().equals(ResponseEntity.class);
+        return !returnType.getParameterType().equals(ApiResponse.class)
+            && !returnType.getParameterType().equals(ResponseEntity.class);
     }
 
     @Override
@@ -54,10 +54,10 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
     }
 
     private boolean isSwaggerPath(String path) {
-        return path.startsWith("/swagger-ui") ||
-            path.startsWith("/v3/api-docs") ||
-            path.startsWith("/webjars/") ||
-            path.contains("swagger") ||
-            path.contains("api-docs");
+        return path.startsWith("/swagger-ui")
+            || path.startsWith("/v3/api-docs")
+            || path.startsWith("/webjars/")
+            || path.contains("swagger")
+            || path.contains("api-docs");
     }
 }

@@ -7,6 +7,7 @@ import com.climbx.climbx.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,12 +26,42 @@ public interface AuthApiDocumentation {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "302",
             description = "OAuth2 제공자로 리다이렉트 성공",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "리다이렉트 성공",
+                    value = """
+                        {
+                          "httpStatus": 302,
+                          "statusMessage": "OAuth2 제공자로 리다이렉트합니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 45,
+                          "path": "/api/auth/oauth2/google",
+                          "data": null
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "400",
             description = "잘못된 OAuth2 제공자",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "잘못된 제공자",
+                    value = """
+                        {
+                          "httpStatus": 400,
+                          "statusMessage": "지원하지 않는 OAuth2 제공자입니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 32,
+                          "path": "/api/auth/oauth2/unknown",
+                          "data": null
+                        }
+                        """
+                )
+            )
         )
     })
     ResponseEntity<ApiResponse<Void>> getOAuth2RedirectUrl(
@@ -51,17 +82,60 @@ public interface AuthApiDocumentation {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "200",
             description = "인증 성공",
-            content = @Content(schema = @Schema(implementation = LoginResponseDto.class))
+            content = @Content(
+                schema = @Schema(implementation = LoginResponseDto.class),
+                examples = @ExampleObject(
+                    name = "인증 성공",
+                    value = """
+                        {
+                          "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                          "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                          "tokenType": "Bearer",
+                          "expiresIn": 3600
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "400",
             description = "잘못된 인증 코드",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "잘못된 인증 코드",
+                    value = """
+                        {
+                          "httpStatus": 400,
+                          "statusMessage": "유효하지 않은 인증 코드입니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 156,
+                          "path": "/api/auth/oauth2/google/callback",
+                          "data": null
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "401",
             description = "인증 실패",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "인증 실패",
+                    value = """
+                        {
+                          "httpStatus": 401,
+                          "statusMessage": "OAuth2 인증에 실패했습니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 234,
+                          "path": "/api/auth/oauth2/google/callback",
+                          "data": null
+                        }
+                        """
+                )
+            )
         )
     })
     LoginResponseDto handleOAuth2Callback(
@@ -88,17 +162,67 @@ public interface AuthApiDocumentation {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "201",
             description = "토큰 갱신 성공",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "토큰 갱신 성공",
+                    value = """
+                        {
+                          "httpStatus": 201,
+                          "statusMessage": "토큰이 성공적으로 갱신되었습니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 78,
+                          "path": "/api/auth/oauth2/refresh",
+                          "data": {
+                            "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                            "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                            "tokenType": "Bearer",
+                            "expiresIn": 3600
+                          }
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "400",
             description = "잘못된 요청",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "잘못된 요청",
+                    value = """
+                        {
+                          "httpStatus": 400,
+                          "statusMessage": "잘못된 요청 형식입니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 43,
+                          "path": "/api/auth/oauth2/refresh",
+                          "data": null
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "401",
             description = "유효하지 않은 리프레시 토큰",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "유효하지 않은 토큰",
+                    value = """
+                        {
+                          "httpStatus": 401,
+                          "statusMessage": "유효하지 않은 리프레시 토큰입니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 67,
+                          "path": "/api/auth/oauth2/refresh",
+                          "data": null
+                        }
+                        """
+                )
+            )
         )
     })
     ApiResponse<LoginResponseDto> refreshAccessToken(
@@ -118,22 +242,82 @@ public interface AuthApiDocumentation {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "200",
             description = "사용자 정보 조회 성공",
-            content = @Content(schema = @Schema(implementation = UserOauth2InfoResponseDto.class))
+            content = @Content(
+                schema = @Schema(implementation = UserOauth2InfoResponseDto.class),
+                examples = @ExampleObject(
+                    name = "사용자 정보",
+                    value = """
+                        {
+                          "id": 1,
+                          "email": "user@example.com",
+                          "name": "홍길동",
+                          "nickname": "클라이머123",
+                          "provider": "google",
+                          "role": "USER"
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "401",
             description = "인증되지 않은 사용자",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "인증되지 않은 사용자",
+                    value = """
+                        {
+                          "httpStatus": 401,
+                          "statusMessage": "인증이 필요합니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 23,
+                          "path": "/api/auth/me",
+                          "data": null
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "403",
             description = "권한이 없는 사용자",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "권한 없음",
+                    value = """
+                        {
+                          "httpStatus": 403,
+                          "statusMessage": "접근 권한이 없습니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 34,
+                          "path": "/api/auth/me",
+                          "data": null
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "사용자 없음",
+                    value = """
+                        {
+                          "httpStatus": 404,
+                          "statusMessage": "사용자를 찾을 수 없습니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 56,
+                          "path": "/api/auth/me",
+                          "data": null
+                        }
+                        """
+                )
+            )
         )
     })
     UserOauth2InfoResponseDto getCurrentUserInfo(
@@ -150,17 +334,47 @@ public interface AuthApiDocumentation {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "204",
             description = "로그아웃 성공",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "로그아웃 성공",
+                    value = """
+                        {
+                          "httpStatus": 204,
+                          "statusMessage": "로그아웃이 완료되었습니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 89,
+                          "path": "/api/auth/signout",
+                          "data": null
+                        }
+                        """
+                )
+            )
         ),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
             responseCode = "400",
             description = "잘못된 요청",
-            content = @Content(schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class))
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "잘못된 요청",
+                    value = """
+                        {
+                          "httpStatus": 400,
+                          "statusMessage": "잘못된 요청 형식입니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 45,
+                          "path": "/api/auth/signout",
+                          "data": null
+                        }
+                        """
+                )
+            )
         )
     })
     ApiResponse<Void> signOut(
         @Parameter(
-            description = "리프레시 토큰 요청",
+            description = "리프레시 토큰 요청 (임시 API)",
             required = true
         )
         @jakarta.validation.Valid RefreshRequestDto request

@@ -26,7 +26,7 @@ public class GymController implements GymApiDocumentation {
         return gymService.getGymById(gymId);
     }
 
-    @GetMapping(params = {"!latitude", "!longitude"})
+    @GetMapping("/search")
     public List<GymInfoResponseDto> getGymList(
         @RequestParam(required = false)
         String keyword
@@ -34,7 +34,7 @@ public class GymController implements GymApiDocumentation {
         return gymService.getGymList(keyword);
     }
 
-    @GetMapping(params = {"latitude", "longitude"})
+    @GetMapping("/nearby")
     public List<GymInfoResponseDto> getGymListByDistance(
         @RequestParam
         Double latitude,
