@@ -4,6 +4,7 @@ spring:
     group:
       dev:
         - db-dev
+        - auth-dev
 
   jpa:
     open-in-view: false

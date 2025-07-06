@@ -1,0 +1,45 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${KAKAO_REST_API_KEY}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            # (필요 없으면 빈 문자열로 두어도 무방)
+            authorization-grant-type: authorization_code
+            # "인가 코드" 방식 사용
+            redirect-uri: "{baseUrl}/api/auth/oauth2/kakao/callback"
+            # 모바일 앱을 위한 커스텀 콜백 URI
+            scope: openid, profile_nickname, account_email
+            # OpenID Connect를 위해 openid scope 추가
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            # 사용자 인가(로그인) 화면 URL
+            token-uri: https://kauth.kakao.com/oauth/token
+            # 인가 코드를 액세스 토큰으로 교환할 엔드포인트
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            # 토큰으로 사용자 정보를 조회할 엔드포인트
+            jwk-set-uri: https://kauth.kakao.com/.well-known/jwks.json
+            # OpenID Connect를 위한 JWK Set URI (카카오는 현재 미지원이지만 향후 대비)
+            user-name-attribute: id
+            user-info-authentication-method: header
+            # 토큰을 헤더로 전송하도록 설정
+
+# JWT 토큰 관련 설정
+auth:
+  jwt:
+    secret: ${JWT_SECRET:default-secret-key-for-development-only-change-in-production}
+    access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:3600} # 1시간 (초 단위)
+    refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:1209600} # 2주 (초 단위)
+    issuer: ${JWT_ISSUER:climbx-api}
+  
+  # 카카오 API 관련 설정
+  kakao:
+    admin-key: ${KAKAO_ADMIN_KEY} # 카카오 관리자 키 (사용자 정보 조회용)
+    unlink-uri: https://kapi.kakao.com/v1/user/unlink
+    # 사용자 연결 해제 URI
+    user-info-uri: https://kapi.kakao.com/v2/user/me
+    # 사용자 정보 조회 URI
