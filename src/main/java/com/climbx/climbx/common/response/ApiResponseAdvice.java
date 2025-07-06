@@ -37,7 +37,7 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         }
 
         // 1) 이미 ResponseEntity<?> 이면 그대로 돌려보내기
-        if (body == null || body instanceof ResponseEntity<?>) {
+        if (body instanceof ResponseEntity<?>) {
             return body;
         }
 
@@ -55,9 +55,6 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 
     private boolean isSwaggerPath(String path) {
         return path.startsWith("/swagger-ui")
-            || path.startsWith("/v3/api-docs")
-            || path.startsWith("/webjars/")
-            || path.contains("swagger")
-            || path.contains("api-docs");
+            || path.startsWith("/v3/api-docs");
     }
 }

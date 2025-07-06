@@ -83,15 +83,22 @@ public interface AuthApiDocumentation {
             responseCode = "200",
             description = "인증 성공",
             content = @Content(
-                schema = @Schema(implementation = LoginResponseDto.class),
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
                     name = "인증 성공",
                     value = """
                         {
-                          "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-                          "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-                          "tokenType": "Bearer",
-                          "expiresIn": 3600
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 156,
+                          "path": "/api/auth/oauth2/google/callback",
+                          "data": {
+                            "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                            "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTYiLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImlhdCI6MTcxNzY2ODAwMCwiZXhwIjoxNzE4MjczNjAwfQ.2mvWMa_AJeIk_2q1VCEB14IJKL5TrHUzO1yk30ByI9I",
+                            "tokenType": "Bearer",
+                            "expiresIn": 3600
+                          }
                         }
                         """
                 )
@@ -243,17 +250,24 @@ public interface AuthApiDocumentation {
             responseCode = "200",
             description = "사용자 정보 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = UserOauth2InfoResponseDto.class),
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
                     name = "사용자 정보",
                     value = """
                         {
-                          "id": 1,
-                          "email": "user@example.com",
-                          "name": "홍길동",
-                          "nickname": "클라이머123",
-                          "provider": "google",
-                          "role": "USER"
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 78,
+                          "path": "/api/auth/me",
+                          "data": {
+                            "id": 1,
+                            "email": "user@example.com",
+                            "name": "홍길동",
+                            "nickname": "클라이머123",
+                            "provider": "google",
+                            "role": "USER"
+                          }
                         }
                         """
                 )

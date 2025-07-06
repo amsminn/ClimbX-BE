@@ -33,28 +33,35 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "사용자 목록 조회 성공",
             content = @Content(
-                array = @ArraySchema(schema = @Schema(implementation = UserProfileResponseDto.class)),
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
                     name = "사용자 목록",
                     value = """
-                        [
-                          {
-                            "id": 1,
-                            "nickname": "클라이머123",
-                            "email": "user1@example.com",
-                            "name": "홍길동",
-                            "profileImageUrl": null,
-                            "createdAt": "2024-01-01T10:00:00Z"
-                          },
-                          {
-                            "id": 2,
-                            "nickname": "클라이머456",
-                            "email": "user2@example.com",
-                            "name": "김철수",
-                            "profileImageUrl": null,
-                            "createdAt": "2024-01-02T10:00:00Z"
-                          }
-                        ]
+                        {
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 123,
+                          "path": "/api/users",
+                          "data": [
+                            {
+                              "id": 1,
+                              "nickname": "클라이머123",
+                              "email": "user1@example.com",
+                              "name": "홍길동",
+                              "profileImageUrl": null,
+                              "createdAt": "2024-01-01T10:00:00Z"
+                            },
+                            {
+                              "id": 2,
+                              "nickname": "클라이머456",
+                              "email": "user2@example.com",
+                              "name": "김철수",
+                              "profileImageUrl": null,
+                              "createdAt": "2024-01-02T10:00:00Z"
+                            }
+                          ]
+                        }
                         """
                 )
             )
@@ -99,22 +106,29 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "사용자 프로필 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = UserProfileResponseDto.class),
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
                     name = "사용자 프로필",
                     value = """
                         {
-                          "id": 1,
-                          "nickname": "클라이머123",
-                          "email": "user@example.com",
-                          "name": "홍길동",
-                          "profileImageUrl": null,
-                          "createdAt": "2024-01-01T10:00:00Z",
-                          "statistics": {
-                            "totalProblems": 156,
-                            "totalAttempts": 342,
-                            "averageGrade": "V4",
-                            "streakDays": 14
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 156,
+                          "path": "/api/users/클라이머123",
+                          "data": {
+                            "id": 1,
+                            "nickname": "클라이머123",
+                            "email": "user@example.com",
+                            "name": "홍길동",
+                            "profileImageUrl": null,
+                            "createdAt": "2024-01-01T10:00:00Z",
+                            "statistics": {
+                              "totalProblems": 156,
+                              "totalAttempts": 342,
+                              "averageGrade": "V4",
+                              "streakDays": 14
+                            }
                           }
                         }
                         """
@@ -183,18 +197,25 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "프로필 수정 성공",
             content = @Content(
-                schema = @Schema(implementation = UserProfileResponseDto.class),
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
                     name = "프로필 수정 성공",
                     value = """
                         {
-                          "id": 1,
-                          "nickname": "새로운닉네임",
-                          "email": "user@example.com",
-                          "name": "홍길동",
-                          "profileImageUrl": "https://example.com/profile.jpg",
-                          "createdAt": "2024-01-01T10:00:00Z",
-                          "updatedAt": "2024-01-15T10:00:00Z"
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-15T10:00:00Z",
+                          "responseTimeMs": 134,
+                          "path": "/api/users/클라이머123",
+                          "data": {
+                            "id": 1,
+                            "nickname": "새로운닉네임",
+                            "email": "user@example.com",
+                            "name": "홍길동",
+                            "profileImageUrl": "https://example.com/profile.jpg",
+                            "createdAt": "2024-01-01T10:00:00Z",
+                            "updatedAt": "2024-01-15T10:00:00Z"
+                          }
                         }
                         """
                 )
@@ -328,30 +349,37 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "최고 난이도 문제 조회 성공",
             content = @Content(
-                array = @ArraySchema(schema = @Schema(implementation = ProblemResponseDto.class)),
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
                     name = "최고 난이도 문제 목록",
                     value = """
-                        [
-                          {
-                            "id": 1,
-                            "name": "Red Wall Challenge",
-                            "grade": "V8",
-                            "gymId": 1,
-                            "gymName": "클라이밍 파크",
-                            "completedAt": "2024-01-10T15:30:00Z",
-                            "attempts": 15
-                          },
-                          {
-                            "id": 2,
-                            "name": "Overhang Master",
-                            "grade": "V7",
-                            "gymId": 2,
-                            "gymName": "더 클라임",
-                            "completedAt": "2024-01-08T14:20:00Z",
-                            "attempts": 22
-                          }
-                        ]
+                        {
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 189,
+                          "path": "/api/users/클라이머123/top-problems",
+                          "data": [
+                            {
+                              "id": 1,
+                              "name": "Red Wall Challenge",
+                              "grade": "V8",
+                              "gymId": 1,
+                              "gymName": "클라이밍 파크",
+                              "completedAt": "2024-01-10T15:30:00Z",
+                              "attempts": 15
+                            },
+                            {
+                              "id": 2,
+                              "name": "Overhang Master",
+                              "grade": "V7",
+                              "gymId": 2,
+                              "gymName": "더 클라임",
+                              "completedAt": "2024-01-08T14:20:00Z",
+                              "attempts": 22
+                            }
+                          ]
+                        }
                         """
                 )
             )
@@ -426,26 +454,33 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "연속 등반 기록 조회 성공",
             content = @Content(
-                array = @ArraySchema(schema = @Schema(implementation = DailyHistoryResponseDto.class)),
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
                     name = "연속 등반 기록",
                     value = """
-                        [
-                          {
-                            "date": "2024-01-15",
-                            "problemsCompleted": 5,
-                            "totalAttempts": 12,
-                            "averageGrade": "V5",
-                            "timeSpent": 180
-                          },
-                          {
-                            "date": "2024-01-14",
-                            "problemsCompleted": 3,
-                            "totalAttempts": 8,
-                            "averageGrade": "V4",
-                            "timeSpent": 120
-                          }
-                        ]
+                        {
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 167,
+                          "path": "/api/users/클라이머123/streak",
+                          "data": [
+                            {
+                              "date": "2024-01-15",
+                              "problemsCompleted": 5,
+                              "totalAttempts": 12,
+                              "averageGrade": "V5",
+                              "timeSpent": 180
+                            },
+                            {
+                              "date": "2024-01-14",
+                              "problemsCompleted": 3,
+                              "totalAttempts": 8,
+                              "averageGrade": "V4",
+                              "timeSpent": 120
+                            }
+                          ]
+                        }
                         """
                 )
             )
@@ -525,28 +560,35 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "일별 기록 조회 성공",
             content = @Content(
-                array = @ArraySchema(schema = @Schema(implementation = DailyHistoryResponseDto.class)),
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
                     name = "일별 기록",
                     value = """
-                        [
-                          {
-                            "date": "2024-01-15",
-                            "problemsCompleted": 8,
-                            "totalAttempts": 15,
-                            "averageGrade": "V6",
-                            "timeSpent": 240,
-                            "gymVisited": "클라이밍 파크"
-                          },
-                          {
-                            "date": "2024-01-14",
-                            "problemsCompleted": 6,
-                            "totalAttempts": 12,
-                            "averageGrade": "V5",
-                            "timeSpent": 180,
-                            "gymVisited": "더 클라임"
-                          }
-                        ]
+                        {
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 198,
+                          "path": "/api/users/클라이머123/history",
+                          "data": [
+                            {
+                              "date": "2024-01-15",
+                              "problemsCompleted": 8,
+                              "totalAttempts": 15,
+                              "averageGrade": "V6",
+                              "timeSpent": 240,
+                              "gymVisited": "클라이밍 파크"
+                            },
+                            {
+                              "date": "2024-01-14",
+                              "problemsCompleted": 6,
+                              "totalAttempts": 12,
+                              "averageGrade": "V5",
+                              "timeSpent": 180,
+                              "gymVisited": "더 클라임"
+                            }
+                          ]
+                        }
                         """
                 )
             )
