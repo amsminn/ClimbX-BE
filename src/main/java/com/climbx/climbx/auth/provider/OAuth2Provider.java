@@ -5,7 +5,7 @@ import com.climbx.climbx.auth.dto.OAuth2UserInfo;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 
 public interface OAuth2Provider {
-    
+
     /**
      * 인가 코드를 액세스 토큰으로 교환합니다.
      *
@@ -13,7 +13,7 @@ public interface OAuth2Provider {
      * @return 토큰 응답
      */
     OAuth2TokenResponse exchangeCodeForToken(String code);
-    
+
     /**
      * 액세스 토큰으로 사용자 정보를 조회합니다.
      *
@@ -21,7 +21,7 @@ public interface OAuth2Provider {
      * @return 사용자 정보
      */
     OAuth2UserInfo fetchUserInfo(String accessToken);
-    
+
     /**
      * 제공자 타입을 반환합니다.
      *

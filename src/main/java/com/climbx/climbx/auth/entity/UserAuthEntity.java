@@ -34,7 +34,7 @@ import lombok.experimental.Accessors;
             columnNames = {"provider", "provider_id"}
         ),
         @UniqueConstraint(
-            name = "uk_user_auths_user_provider", 
+            name = "uk_user_auths_user_provider",
             columnNames = {"user_id", "provider"}
         )
     }
