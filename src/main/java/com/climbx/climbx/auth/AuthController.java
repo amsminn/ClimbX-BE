@@ -8,7 +8,6 @@ import com.climbx.climbx.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,23 +26,21 @@ public class AuthController implements AuthApiDocumentation {
     private final AuthService authService;
 
     /**
-     * OAuth2 인증 URL을 조회합니다. 모바일 앱을 위한 OAuth2 인증 URL을 반환합니다. 실제로는 SDK에서 처리되므로 참고용입니다.
+     * OAuth2 콜백을 처리합니다. 모든 OAuth2 제공자의 인가 코드를 받아 사용자 인증을 완료하고 JWT 토큰을 발급합니다. URL 생성, 반드시 dev 환경에서
+     * 소셜 로그인 테스트 시에만 사용
      */
-    @GetMapping("/oauth2/{provider}")
-    public ResponseEntity<ApiResponse<Void>> getOAuth2RedirectUrl(
-        @PathVariable("provider") String provider
-    ) {
-        log.info("OAuth2 인증 URL 요청: provider={}", provider);
+    @GetMapping("/oauth2/kakao/authorize-url")
+    public ApiResponse<String> getKakaoAuthorizeUrl() {
+        log.info("카카오 OAuth2 인증 URL 요청");
 
-        String authUrl = authService.getAuthorizationUrl(provider);
+        String authorizeUrl = authService.generateKakaoAuthorizeUrl();
 
-        return ResponseEntity.status(HttpStatus.FOUND)
-            .header("Location", authUrl)
-            .body(ApiResponse.success(null, HttpStatus.FOUND));
+        log.info("카카오 OAuth2 인증 URL 생성 완료");
+        return ApiResponse.success(authorizeUrl, HttpStatus.OK);
     }
 
     /**
-     * OAuth2 콜백을 처리합니다. 모든 OAuth2 제공자의 인가 코드를 받아 사용자 인증을 완료하고 JWT 토큰을 발급합니다.
+     * provider의 인가 code를 받아 인증하고 토큰 발급
      */
     @GetMapping("/oauth2/{provider}/callback")
     @SuccessStatus(value = HttpStatus.OK)
@@ -51,8 +48,14 @@ public class AuthController implements AuthApiDocumentation {
         @PathVariable("provider") String provider,
         @RequestParam("code") String code
     ) {
-        log.info("{} OAuth2 콜백 처리 시작: code={}", provider.toUpperCase(),
-            code.substring(0, Math.min(code.length(), 10)) + "...");
+        /*
+         * code를 로깅하지 않도록 주의해야함
+         */
+        log.info(
+            "{} OAuth2 콜백 처리 시작: code={}",
+            provider.toUpperCase(),
+            code.substring(0, Math.min(code.length(), 10)) + "..."
+        );
 
         LoginResponseDto response = authService.handleCallback(provider, code);
 
@@ -75,7 +78,7 @@ public class AuthController implements AuthApiDocumentation {
     }
 
     /**
-     * 현재 사용자 정보를 조회합니다. 인증된 사용자의 기본 정보를 조회합니다.
+     * 현재 사용자의 SSO 관련 정보만 조회
      */
     @GetMapping("/me")
     @SuccessStatus(value = HttpStatus.OK)
@@ -91,7 +94,7 @@ public class AuthController implements AuthApiDocumentation {
     }
 
     /**
-     * 사용자 로그아웃을 처리합니다. 클라이언트에서 토큰을 삭제해주세요.
+     * 사용자 로그아웃을 처리합니다. 클라이언트에서 토큰을 삭제해주세요. 클라이언트에서도 토큰 삭제 필요
      */
     @PostMapping("/signout")
     @SuccessStatus(value = HttpStatus.NO_CONTENT)
