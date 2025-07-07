@@ -1,5 +1,6 @@
 package com.climbx.climbx.common.response;
 
+import com.climbx.climbx.common.annotation.SuccessStatus;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,13 +21,13 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         @NonNull MethodParameter returnType,
         @NonNull Class<? extends HttpMessageConverter<?>> _converterType
     ) {
-        return !returnType.getParameterType().equals(ApiResponse.class)
-            && !returnType.getParameterType().equals(ResponseEntity.class);
+        return !returnType.getParameterType().equals(ResponseEntity.class);
     }
 
     @Override
-    public Object beforeBodyWrite(Object body,
-        @NonNull MethodParameter _returnType,
+    public Object beforeBodyWrite(
+        Object body,
+        @NonNull MethodParameter returnType,
         @NonNull MediaType _selectedContentType,
         @NonNull Class<? extends HttpMessageConverter<?>> _selectedConverterType,
         @NonNull ServerHttpRequest request,
@@ -38,12 +39,7 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
-        // 1) 이미 ResponseEntity<?> 이면 그대로 돌려보내기
-        if (body instanceof ResponseEntity<?>) {
-            return body;
-        }
-
-        // 2) ApiResponse<?> 타입이면, HttpStatusCode를 설정하고 그대로 돌려보내기
+        // ApiResponse<?> 타입이면, HttpStatusCode를 설정하고 그대로 돌려보내기
         if (body instanceof ApiResponse<?>) {
             response.setStatusCode(
                 HttpStatusCode.valueOf(((ApiResponse<?>) body).httpStatus().intValue())
@@ -51,9 +47,13 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
-        // 3) 그 외의 경우 ApiResponse로 래핑
-        response.setStatusCode(HttpStatus.OK);
-        return ApiResponse.success(body);
+        // @SuccessStatus 어노테이션이 있는지 확인
+        SuccessStatus successStatus = returnType.getMethodAnnotation(SuccessStatus.class);
+        HttpStatus httpStatus = successStatus != null ? successStatus.value() : HttpStatus.OK;
+
+        response.setStatusCode(HttpStatusCode.valueOf(httpStatus.value()));
+        // 그 외의 경우 ApiResponse로 래핑
+        return ApiResponse.success(body, httpStatus);
     }
 
     private boolean isSwaggerPath(String path) {

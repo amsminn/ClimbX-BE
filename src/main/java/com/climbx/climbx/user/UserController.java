@@ -1,5 +1,6 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,7 @@ class UserController implements UserApiDocumentation {
     private final UserService userService;
 
     @GetMapping("")
+    @SuccessStatus(value = HttpStatus.OK)
     public List<UserProfileResponseDto> getUsers(
         @RequestParam(name = "search", required = false)
         String search
@@ -34,14 +37,13 @@ class UserController implements UserApiDocumentation {
     }
 
     @GetMapping("/{nickname}")
-    public UserProfileResponseDto getUserByNickname(
-        @PathVariable
-        String nickname
-    ) {
+    @SuccessStatus(value = HttpStatus.OK)
+    public UserProfileResponseDto getUserByNickname(@PathVariable String nickname) {
         return userService.getUserByNickname(nickname);
     }
 
     @PutMapping("/{nickname}")
+    @SuccessStatus(value = HttpStatus.OK)
     public UserProfileResponseDto modifyUserProfile(
         @AuthenticationPrincipal
         Long userId,
@@ -60,6 +62,7 @@ class UserController implements UserApiDocumentation {
     }
 
     @GetMapping("/{nickname}/top-problems")
+    @SuccessStatus(value = HttpStatus.OK)
     public List<ProblemResponseDto> getUserTopProblems(
         @PathVariable
         String nickname,
@@ -71,6 +74,7 @@ class UserController implements UserApiDocumentation {
     }
 
     @GetMapping("/{nickname}/streak")
+    @SuccessStatus(value = HttpStatus.OK)
     public List<DailyHistoryResponseDto> getUserStreak(
         @PathVariable
         String nickname,
@@ -83,14 +87,11 @@ class UserController implements UserApiDocumentation {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
     ) {
-        return userService.getUserStreak(
-            nickname,
-            from,
-            to
-        );
+        return userService.getUserStreak(nickname, from, to);
     }
 
     @GetMapping("/{nickname}/history")
+    @SuccessStatus(value = HttpStatus.OK)
     public List<DailyHistoryResponseDto> getUserDailyHistory(
         @PathVariable
         String nickname,
@@ -106,11 +107,6 @@ class UserController implements UserApiDocumentation {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
     ) {
-        return userService.getUserDailyHistory(
-            nickname,
-            criteria,
-            from,
-            to
-        );
+        return userService.getUserDailyHistory(nickname, criteria, from, to);
     }
 }

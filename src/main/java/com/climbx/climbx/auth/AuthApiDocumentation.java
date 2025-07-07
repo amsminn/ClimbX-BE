@@ -234,7 +234,7 @@ public interface AuthApiDocumentation {
             )
         )
     })
-    ApiResponse<LoginResponseDto> refreshAccessToken(
+    LoginResponseDto refreshAccessToken(
         @Parameter(
             description = "리프레시 토큰 요청",
             required = true
@@ -388,7 +388,7 @@ public interface AuthApiDocumentation {
             )
         )
     })
-    ApiResponse<Void> signOut(
+    void signOut(
         @Parameter(
             description = "리프레시 토큰 요청 (임시 API)",
             required = true
