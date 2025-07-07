@@ -1,6 +1,8 @@
 package com.climbx.climbx.common.response;
 
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -28,7 +30,7 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         @NonNull MediaType _selectedContentType,
         @NonNull Class<? extends HttpMessageConverter<?>> _selectedConverterType,
         @NonNull ServerHttpRequest request,
-        @NonNull ServerHttpResponse _response
+        @NonNull ServerHttpResponse response
     ) {
         // Swagger 관련 경로는 ApiResponse로 래핑하지 않음
         String path = request.getURI().getPath();
@@ -41,16 +43,17 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             return body;
         }
 
-        // 2) ApiResponse<?> 타입이면, 바로 ResponseEntity에 담아서 리턴
+        // 2) ApiResponse<?> 타입이면, HttpStatusCode를 설정하고 그대로 돌려보내기
         if (body instanceof ApiResponse<?>) {
-            return ResponseEntity
-                .status(((ApiResponse<?>) body).httpStatus().intValue())
-                .body(body);
+            response.setStatusCode(
+                HttpStatusCode.valueOf(((ApiResponse<?>) body).httpStatus().intValue())
+            );
+            return body;
         }
 
-        // 3) 그 외 DTO 타입이면 ApiResponse.success로 래핑 후 ResponseEntity.ok
-        ApiResponse<Object> wrapped = ApiResponse.success(body);
-        return ResponseEntity.ok(wrapped);
+        // 3) 그 외의 경우 ApiResponse로 래핑
+        response.setStatusCode(HttpStatus.OK);
+        return ApiResponse.success(body);
     }
 
     private boolean isSwaggerPath(String path) {
