@@ -31,8 +31,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+<<<<<<< HEAD
         try {
             String token = jwtContext.extractTokenFromRequest(request);
+=======
+        Optional<String> tokenOptional = jwtContext.extractTokenFromRequest(request);
+
+        if (tokenOptional.isPresent()) {
+            String token = tokenOptional.get();
+            jwtContext.validateToken(token); // 유효하지 않으면 InvalidToken 또는 TokenExpired 예외 throw
+
+            extractAuthenticationInfo(token)
+                .ifPresent(this::setAuthentication);
+        }
+>>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
 
             Long userId = jwtContext.extractSubject(token);
             String role = jwtContext.extractRole(token);
@@ -46,6 +58,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
+<<<<<<< HEAD
+=======
+    private Optional<AuthenticationInfo> extractAuthenticationInfo(String validToken) {
+        return jwtContext.extractSubject(validToken)
+            .map(userId -> new AuthenticationInfo(
+                userId,
+                jwtContext.getRole(validToken).orElse(RoleType.USER)
+            ));
+    }
+
+>>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
     private void setAuthentication(AuthenticationInfo authInfo) {
         List<GrantedAuthority> authorities = Collections.singletonList(
             new SimpleGrantedAuthority(authInfo.role)

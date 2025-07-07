@@ -119,6 +119,7 @@ public class JwtContext {
         } catch (Exception e) {
             throw new InvalidTokenException();
         }
+
     }
 
     /**

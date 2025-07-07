@@ -21,6 +21,16 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
 
     /*
      * 사용자 이메일로 조회, 중복 검사
+<<<<<<< HEAD
+=======
+     */
+    Optional<UserAccountEntity> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    /*
+     * 복수 사용자 조회
+>>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
      */
     Optional<UserAccountEntity> findByEmail(String email);
 

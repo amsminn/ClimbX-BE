@@ -225,6 +225,8 @@ class ComcodeServiceTest {
         void getCode_NonExistentCode_ThrowsException() {
             // when & then
             assertThatThrownBy(() -> comcodeService.getCodeDto("NON_EXISTENT_CODE"))
+                .isInstanceOf(ComcodeNotFound.class)
+                .hasMessageContaining("NON_EXISTENT_CODE");
         }
 
         @Test
@@ -240,6 +242,7 @@ class ComcodeServiceTest {
         void getCode_EmptyCode_ThrowsException() {
             // when & then
             assertThatThrownBy(() -> comcodeService.getCodeDto(""))
+                .isInstanceOf(ComcodeNotFound.class);
         }
     }
 
