@@ -59,7 +59,11 @@ public record ApiResponse<T>(
             .build();
     }
 
+<<<<<<< HEAD
     public static <T> ApiResponse<T> error(ErrorCode errorCode) {
+=======
+    public static <T> ApiResponse<T> error(com.climbx.climbx.common.error.ErrorCode errorCode) {
+>>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
         return ApiResponse.<T>builder()
             .httpStatus((long) errorCode.status().value())
             .statusMessage(errorCode.message())

@@ -1,10 +1,15 @@
 package com.climbx.climbx.common.security;
 
 import com.climbx.climbx.common.enums.RoleType;
+<<<<<<< HEAD
 import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
 import com.climbx.climbx.common.security.exception.TokenExpiredException;
 import com.climbx.climbx.common.util.OptionalUtils;
+=======
+import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.common.security.exception.TokenExpiredException;
+>>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -88,25 +93,40 @@ public class JwtContext {
             .compact();
     }
 
+<<<<<<< HEAD
     /**
      * 토큰 Payload 추출
      */
     private Claims extractClaims(String token) {
         if (token == null) {
             throw new InvalidTokenException("Token is null");
+=======
+    public void validateToken(String token) {
+        if (token == null) {
+            throw new InvalidTokenException("토큰이 존재하지 않습니다.");
+>>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
         }
 
         try {
             return Jwts.parserBuilder()
                 .setSigningKey(signingKey)
                 .build()
+<<<<<<< HEAD
                 .parseClaimsJws(token)
                 .getBody();
         } catch (ExpiredJwtException e) {
             throw new TokenExpiredException();
         } catch (Exception e) {
             throw new InvalidTokenException();
+=======
+                .parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
+        } catch (Exception e) {
+            throw new InvalidTokenException("유효하지 않은 토큰입니다: " + e.getMessage());
+>>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
         }
+
     }
 
     /**
@@ -164,6 +184,33 @@ public class JwtContext {
             .orElseThrow(() -> new InvalidTokenException("Valid role not found in payload"));
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * 토큰 Payload 추출
+     */
+    private Optional<Claims> extractClaims(String token) {
+        if (token == null) {
+            return Optional.empty();
+        }
+
+        try {
+            Claims claims = Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+            return Optional.of(claims);
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰에서도 클레임은 추출 가능
+            return Optional.of(e.getClaims());
+        } catch (Exception e) {
+            // 유효하지 않은 토큰에서는 클레임을 추출하지 않음
+            return Optional.empty();
+        }
+    }
+
+>>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
     public Long getAccessTokenExpiration() {
         return accessTokenExpiration;
     }
