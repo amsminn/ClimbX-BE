@@ -297,6 +297,10 @@
       <property name="lineWrappingIndentation" value="4"/>
       <property name="arrayInitIndent" value="4"/>
     </module>
+    <module name="SuppressionXpathSingleFilter">
+      <property name="checks" value="Indentation"/>
+      <property name="message" value="'annotation array initialization' child has incorrect indentation level"/>
+    </module>
 
     <!--    <module name="AbbreviationAsWordInName">-->
     <!--      <property name="ignoreFinal" value="false"/>-->

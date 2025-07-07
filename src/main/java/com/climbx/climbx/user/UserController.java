@@ -1,21 +1,17 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,13 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
-@Validated
 @RequiredArgsConstructor
-class UserController {
+class UserController implements UserApiDocumentation {
 
     private final UserService userService;
 
     @GetMapping("")
+    @SuccessStatus(value = HttpStatus.OK)
     public List<UserProfileResponseDto> getUsers(
         @RequestParam(name = "search", required = false)
         String search
@@ -41,24 +37,21 @@ class UserController {
     }
 
     @GetMapping("/{nickname}")
-    public UserProfileResponseDto getUserByNickname(
-        @PathVariable
-        @NotBlank
-        String nickname
-    ) {
+    @SuccessStatus(value = HttpStatus.OK)
+    public UserProfileResponseDto getUserByNickname(@PathVariable String nickname) {
         return userService.getUserByNickname(nickname);
     }
 
     @PutMapping("/{nickname}")
+    @SuccessStatus(value = HttpStatus.OK)
     public UserProfileResponseDto modifyUserProfile(
         @AuthenticationPrincipal
         Long userId,
 
         @PathVariable
-        @NotBlank
         String nickname,
 
-        @RequestBody @Valid
+        @RequestBody
         UserProfileModifyRequestDto request
     ) {
         return userService.modifyUserProfile(
@@ -69,23 +62,21 @@ class UserController {
     }
 
     @GetMapping("/{nickname}/top-problems")
+    @SuccessStatus(value = HttpStatus.OK)
     public List<ProblemResponseDto> getUserTopProblems(
         @PathVariable
-        @NotBlank
         String nickname,
 
         @RequestParam(name = "limit", required = false, defaultValue = "20")
-        @Min(1)
-        @Max(20)
         Integer limit
     ) {
         return userService.getUserTopProblems(nickname, limit);
     }
 
     @GetMapping("/{nickname}/streak")
+    @SuccessStatus(value = HttpStatus.OK)
     public List<DailyHistoryResponseDto> getUserStreak(
         @PathVariable
-        @NotBlank
         String nickname,
 
         @RequestParam(name = "from", required = false)
@@ -96,21 +87,16 @@ class UserController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
     ) {
-        return userService.getUserStreak(
-            nickname,
-            from,
-            to
-        );
+        return userService.getUserStreak(nickname, from, to);
     }
 
     @GetMapping("/{nickname}/history")
+    @SuccessStatus(value = HttpStatus.OK)
     public List<DailyHistoryResponseDto> getUserDailyHistory(
         @PathVariable
-        @NotBlank
         String nickname,
 
         @RequestParam(name = "criteria", required = true)
-        @NotNull
         UserHistoryCriteriaType criteria,
 
         @RequestParam(name = "from", required = false)
@@ -121,11 +107,6 @@ class UserController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
     ) {
-        return userService.getUserDailyHistory(
-            nickname,
-            criteria,
-            from,
-            to
-        );
+        return userService.getUserDailyHistory(nickname, criteria, from, to);
     }
 }

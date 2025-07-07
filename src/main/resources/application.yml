@@ -29,3 +29,14 @@ logging:
   level:
     root: INFO
     com.climbx: INFO
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  packages-to-scan: com.climbx.climbx
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json

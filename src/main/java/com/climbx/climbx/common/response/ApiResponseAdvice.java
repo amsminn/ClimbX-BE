@@ -1,6 +1,9 @@
 package com.climbx.climbx.common.response;
 
+import com.climbx.climbx.common.annotation.SuccessStatus;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -15,35 +18,46 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(
-        @NonNull MethodParameter _returnType,
+        @NonNull MethodParameter returnType,
         @NonNull Class<? extends HttpMessageConverter<?>> _converterType
     ) {
-        // ResponseEntity로 래핑할 필요가 있는지 결정
-        return true;
+        return !returnType.getParameterType().equals(ResponseEntity.class);
     }
 
     @Override
-    public Object beforeBodyWrite(Object body,
-        @NonNull MethodParameter _returnType,
+    public Object beforeBodyWrite(
+        Object body,
+        @NonNull MethodParameter returnType,
         @NonNull MediaType _selectedContentType,
         @NonNull Class<? extends HttpMessageConverter<?>> _selectedConverterType,
-        @NonNull ServerHttpRequest _request,
-        @NonNull ServerHttpResponse _response
+        @NonNull ServerHttpRequest request,
+        @NonNull ServerHttpResponse response
     ) {
-        // 1) 이미 ResponseEntity<?> 이면 그대로 돌려보내기
-        if (body instanceof ResponseEntity<?>) {
+        // Swagger 관련 경로는 ApiResponse로 래핑하지 않음
+        String path = request.getURI().getPath();
+        if (isSwaggerPath(path)) {
             return body;
         }
 
-        // 2) ApiResponse<?> 타입이면, 바로 ResponseEntity에 담아서 리턴
+        // ApiResponse<?> 타입이면, HttpStatusCode를 설정하고 그대로 돌려보내기
         if (body instanceof ApiResponse<?>) {
-            return ResponseEntity
-                .status(((ApiResponse<?>) body).httpStatus().intValue())
-                .body(body);
+            response.setStatusCode(
+                HttpStatusCode.valueOf(((ApiResponse<?>) body).httpStatus().intValue())
+            );
+            return body;
         }
 
-        // 3) 그 외 DTO 타입이면 ApiResponse.success로 래핑 후 ResponseEntity.ok
-        ApiResponse<Object> wrapped = ApiResponse.success(body);
-        return ResponseEntity.ok(wrapped);
+        // @SuccessStatus 어노테이션이 있는지 확인
+        SuccessStatus successStatus = returnType.getMethodAnnotation(SuccessStatus.class);
+        HttpStatus httpStatus = successStatus != null ? successStatus.value() : HttpStatus.OK;
+
+        response.setStatusCode(HttpStatusCode.valueOf(httpStatus.value()));
+        // 그 외의 경우 ApiResponse로 래핑
+        return ApiResponse.success(body, httpStatus);
+    }
+
+    private boolean isSwaggerPath(String path) {
+        return path.startsWith("/swagger-ui")
+            || path.startsWith("/v3/api-docs");
     }
 }
