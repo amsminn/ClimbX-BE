@@ -71,7 +71,6 @@ class AuthServiceTest {
         @DisplayName("새로운 사용자에 대해 콜백을 성공적으로 처리한다")
         void shouldHandleCallbackForNewUser() {
             // given
-            String provider = "kakao";
             String code = "test-code";
             String providerId = "12345";
             String email = "test@example.com";
@@ -120,6 +119,7 @@ class AuthServiceTest {
                 mock(UserStatEntity.class));
 
             // when
+            String provider = "kakao";
             LoginResponseDto result = authService.handleCallback(provider, code);
 
             // then
@@ -137,7 +137,6 @@ class AuthServiceTest {
         @DisplayName("기존 사용자에 대해 콜백을 성공적으로 처리한다")
         void shouldHandleCallbackForExistingUser() {
             // given
-            String provider = "kakao";
             String code = "test-code";
             String providerId = "12345";
 
@@ -174,6 +173,7 @@ class AuthServiceTest {
                 .willReturn(Optional.of(existingAuth));
 
             // when
+            String provider = "kakao";
             LoginResponseDto result = authService.handleCallback(provider, code);
 
             // then
@@ -187,7 +187,7 @@ class AuthServiceTest {
         @DisplayName("기존 사용자에게 새 OAuth2 제공자를 연결한다")
         void shouldLinkNewOAuth2ProviderToExistingUser() {
             // given
-            String provider = "kakao";
+            final String provider = "kakao";
             String code = "test-code";
             String providerId = "new-provider-id";
             String email = "test@example.com";
@@ -263,7 +263,7 @@ class AuthServiceTest {
             // given
             String refreshToken = "valid-refresh-token";
             Long userId = 1L;
-            String provider = "KAKAO";
+            final String provider = "KAKAO";
 
             UserAccountEntity user = UserFixture.createUser();
 
@@ -437,7 +437,6 @@ class AuthServiceTest {
         @DisplayName("검증되지 않은 이메일로는 계정 연결을 하지 않는다")
         void shouldNotLinkAccountWithUnverifiedEmail() {
             // given
-            String provider = "kakao";
             String code = "test-code";
             String providerId = "12345";
             String email = "test@example.com";
@@ -480,6 +479,7 @@ class AuthServiceTest {
                 mock(UserStatEntity.class));
 
             // when
+            String provider = "kakao";
             authService.handleCallback(provider, code);
 
             // then
@@ -493,7 +493,6 @@ class AuthServiceTest {
         @DisplayName("이미 연결된 제공자로 로그인 시 추가 저장 없이 로그인된다")
         void shouldLoginWithoutAdditionalSaveWhenProviderAlreadyLinked() {
             // given
-            String provider = "kakao";
             String code = "test-code";
             String providerId = "new-provider-id";
             String email = "test@example.com";
@@ -536,6 +535,7 @@ class AuthServiceTest {
                 .willReturn(true);
 
             // when
+            String provider = "kakao";
             LoginResponseDto result = authService.handleCallback(provider, code);
 
             // then
