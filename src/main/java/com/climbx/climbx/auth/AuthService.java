@@ -302,10 +302,10 @@ public class AuthService {
      */
     private boolean isValidEmailForLinking(String email, Boolean emailVerified) {
         // 이메일이 있고, 비어있지 않으며, 검증된 경우에만 연결 허용
-        return email != null &&
-            !email.trim().isEmpty() &&
-            emailVerified != null &&
-            emailVerified;
+        return email != null
+            && !email.trim().isEmpty()
+            && emailVerified != null
+            && emailVerified;
     }
 
     /**
