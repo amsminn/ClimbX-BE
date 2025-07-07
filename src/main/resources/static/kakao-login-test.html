@@ -442,17 +442,19 @@
             try {
                 showResult('🔄 토큰 교환 요청 중...', 'info');
                 
-                const response = await fetch(`${config.serverUrl}/api/auth/oauth2/kakao/callback?code=${authCode}`);
-                
+                const response = await fetch(`${config.serverUrl}/api/auth/oauth2/kakao/callback?code=${authCode}`, {
+                    method: 'POST',
+                });
+
                 if (response.ok) {
-                    tokens = await response.json();
-                    displayTokenInfo();
-                    showResult(`✅ 토큰 교환 성공!
-                    
-- Token Type: ${tokens.tokenType}
-- Expires In: ${tokens.expiresIn}초
-- Access Token: ${tokens.accessToken.substring(0, 50)}...
-- Refresh Token: ${tokens.refreshToken.substring(0, 50)}...`, 'success');
+                    const apiResponse = await response.json();
+                    if (apiResponse.data) {
+                        tokens = apiResponse.data;
+                        displayTokenInfo();
+                        showResult(`✅ 토큰 교환 성공!\n\n- Token Type: ${tokens.tokenType}\n- Expires In: ${tokens.expiresIn}초\n- Access Token: ${tokens.accessToken.substring(0, 50)}...\n- Refresh Token: ${tokens.refreshToken.substring(0, 50)}...`, 'success');
+                    } else {
+                        showResult(`❌ 토큰 교환 실패: 응답 데이터가 올바르지 않습니다.`, 'error');
+                    }
                 } else {
                     const errorText = await response.text();
                     showResult(`❌ 토큰 교환 실패 (${response.status})\n\n${errorText}`, 'error');
