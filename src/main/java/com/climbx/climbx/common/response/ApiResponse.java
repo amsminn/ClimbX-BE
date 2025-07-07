@@ -58,6 +58,16 @@ public record ApiResponse<T>(
             .build();
     }
 
+    public static <T> ApiResponse<T> error(com.climbx.climbx.common.error.ErrorCode errorCode) {
+        return ApiResponse.<T>builder()
+            .httpStatus((long) errorCode.status().value())
+            .statusMessage(errorCode.message())
+            .timeStamp(Instant.now())
+            .responseTimeMs(TimeContext.getResponseTime())
+            .path(TimeContext.getPath())
+            .data(null)
+            .build();
+    }
 
     public static <T> ApiResponse<T> error(HttpStatus httpStatus, String message) {
         /*
@@ -72,6 +82,5 @@ public record ApiResponse<T>(
             .data(null)
             .build();
     }
-
 
 }

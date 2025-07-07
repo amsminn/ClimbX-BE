@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,14 +32,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        jwtContext.extractTokenFromRequest(request)
-            .filter(jwtContext::validateToken)  // 토큰 검증
-            .flatMap(this::extractAuthenticationInfo)  // 인증 정보 추출
-            .ifPresent(this::setAuthentication);  // 인증 설정
+        Optional<String> tokenOptional = jwtContext.extractTokenFromRequest(request);
+
+        if (tokenOptional.isPresent()) {
+            String token = tokenOptional.get();
+            jwtContext.validateToken(token); // 유효하지 않으면 InvalidToken 또는 TokenExpired 예외 throw
+
+            extractAuthenticationInfo(token)
+                .ifPresent(this::setAuthentication);
+        }
 
         filterChain.doFilter(request, response);
     }
-    
+
     private Optional<AuthenticationInfo> extractAuthenticationInfo(String validToken) {
         return jwtContext.extractSubject(validToken)
             .map(userId -> new AuthenticationInfo(
@@ -48,28 +52,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtContext.getRole(validToken).orElse(RoleType.USER)
             ));
     }
-    
+
     private void setAuthentication(AuthenticationInfo authInfo) {
         List<GrantedAuthority> authorities = Collections.singletonList(
             new SimpleGrantedAuthority("ROLE_" + authInfo.role.name())
         );
-        
-        UsernamePasswordAuthenticationToken authentication = 
+
+        UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(
                 authInfo.userId,
                 null,
                 authorities
             );
-        
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.debug("사용자 인증 완료: userId={}, role={}", authInfo.userId, authInfo.role);
     }
-    
+
     private static class AuthenticationInfo {
 
         final Long userId;
         final RoleType role;
-        
+
         AuthenticationInfo(Long userId, RoleType role) {
             this.userId = userId;
             this.role = role;

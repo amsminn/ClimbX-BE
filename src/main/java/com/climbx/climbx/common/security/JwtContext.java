@@ -1,7 +1,10 @@
 package com.climbx.climbx.common.security;
 
 import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.common.security.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -45,8 +48,7 @@ public class JwtContext {
     }
 
     /**
-     * Bearer 토큰 사용
-     * Spring Security DefaultBearerTokenResolver 사용
+     * Bearer 토큰 사용 Spring Security DefaultBearerTokenResolver 사용
      */
     public Optional<String> extractTokenFromRequest(HttpServletRequest request) {
         return Optional.ofNullable(bearerTokenResolver.resolve(request));
@@ -82,9 +84,9 @@ public class JwtContext {
             .compact();
     }
 
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         if (token == null) {
-            return false;
+            throw new InvalidTokenException("토큰이 존재하지 않습니다.");
         }
 
         try {
@@ -92,10 +94,12 @@ public class JwtContext {
                 .setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(token);
-            return true;
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
         } catch (Exception e) {
-            return false;
+            throw new InvalidTokenException("유효하지 않은 토큰입니다: " + e.getMessage());
         }
+
     }
 
     /**
@@ -150,12 +154,16 @@ public class JwtContext {
                 .parseClaimsJws(token)
                 .getBody();
             return Optional.of(claims);
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰에서도 클레임은 추출 가능
+            return Optional.of(e.getClaims());
         } catch (Exception e) {
+            // 유효하지 않은 토큰에서는 클레임을 추출하지 않음
             return Optional.empty();
         }
     }
 
-    public long getAccessTokenExpiration() {
+    public Long getAccessTokenExpiration() {
         return accessTokenExpiration;
     }
-} 
+}

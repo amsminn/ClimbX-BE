@@ -28,6 +28,13 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
     boolean existsByUserId(Long userId);
 
     /*
+     * 사용자 이메일로 조회, 중복 검사
+     */
+    Optional<UserAccountEntity> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    /*
      * 복수 사용자 조회
      */
     Page<UserAccountEntity> findByLastLoginDateAfter(LocalDate since, Pageable pageable);
@@ -49,4 +56,6 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
 
     // 특정 역할이면서 닉네임에 특정 문자열을 포함하는 사용자들 조회
     List<UserAccountEntity> findByRoleAndNicknameContaining(RoleType role, String nickname);
+
+    List<UserAccountEntity> findByNicknameIn(List<String> nicknames);
 }

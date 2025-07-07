@@ -22,6 +22,26 @@ public class UserFixture {
     public static final Long DEFAULT_RIVAL_COUNT = 3L;
     public static final Long DEFAULT_RANKING = 10L;
 
+    // 편의 메서드들 (createUser 형태)
+    public static UserAccountEntity createUser() {
+        return createUserAccountEntity(1L);
+    }
+
+    public static UserAccountEntity createUser(String email, String nickname) {
+        return UserAccountEntity.builder()
+            .userId(1L)
+            .nickname(nickname)
+            .email(email)
+            .statusMessage(DEFAULT_STATUS_MESSAGE)
+            .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
+            .role(RoleType.USER)
+            .build();
+    }
+
+    public static UserAccountEntity createUser(Long userId) {
+        return createUserAccountEntity(userId);
+    }
+
     // UserAccountEntity 생성 메서드들
     public static UserAccountEntity createUserAccountEntity(Long userId) {
         return createUserAccountEntity(userId, DEFAULT_NICKNAME);

@@ -4,14 +4,15 @@ import lombok.Builder;
 
 @Builder
 public record OAuth2UserInfo(
+
     String providerId,     // 제공자별 고유 ID
     String email,
     String nickname,
-    String profileImageUrl,
-    String name,           // 실명 (Apple에서 제공)
-    boolean emailVerified
+    String name,
+    String profileImageUrl, // 프로필 이미지 URL
+    Boolean emailVerified   // 이메일 검증 여부
 ) {
-    
+
     public String getDisplayName() {
         return nickname != null ? nickname : name;
     }

@@ -12,6 +12,8 @@ public record UserOauth2InfoResponseDto(
 
     String provider,
 
+    String providerEmail,
+
     Instant issuedAt, // 액세스 토큰 발급 시간
 
     Instant expiresAt // 액세스 토큰 만료 시간

@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record OAuth2TokenResponse(
+
     String accessToken,
     String refreshToken,
     String tokenType,
@@ -11,4 +12,5 @@ public record OAuth2TokenResponse(
     String scope,
     String idToken // OpenID Connect용 (Apple, Google)
 ) {
-} 
+
+}
