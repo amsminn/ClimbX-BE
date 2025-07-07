@@ -13,7 +13,9 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 @Tag(name = "Gym", description = "클라이밍장 관련 API")
 public interface GymApiDocumentation {
 

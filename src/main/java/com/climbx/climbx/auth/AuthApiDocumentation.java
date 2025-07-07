@@ -14,7 +14,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 @Tag(name = "Authentication", description = "인증 관련 API")
 public interface AuthApiDocumentation {
 
