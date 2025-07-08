@@ -91,7 +91,7 @@ public class JwtContext {
     /**
      * 토큰 Payload 추출
      */
-    public Claims extractClaims(String token) {
+    private Claims extractClaims(String token) {
         if (token == null) {
             throw new InvalidTokenException("토큰이 존재하지 않습니다.");
         }

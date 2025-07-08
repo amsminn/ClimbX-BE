@@ -31,14 +31,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = jwtContext.extractTokenFromRequest(request);
+        try {
+            String token = jwtContext.extractTokenFromRequest(request);
 
-        Long userId = jwtContext.extractSubject(token);
-        RoleType role = jwtContext.extractRole(token);
+            Long userId = jwtContext.extractSubject(token);
+            RoleType role = jwtContext.extractRole(token);
 
-        setAuthentication(new AuthenticationInfo(userId, role));
-
-        filterChain.doFilter(request, response);
+            setAuthentication(new AuthenticationInfo(userId, role));
+        } catch (Exception e) {
+            log.warn("인증되지 않은 요청: {}");
+            SecurityContextHolder.clearContext();
+        } finally {
+            filterChain.doFilter(request, response);
+        }
     }
 
     private void setAuthentication(AuthenticationInfo authInfo) {
