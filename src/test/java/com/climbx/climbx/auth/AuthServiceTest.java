@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -20,6 +21,7 @@ import com.climbx.climbx.auth.exception.InvalidRefreshTokenException;
 import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
+import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.security.JwtContext;
 import com.climbx.climbx.fixture.UserAuthFixture;
 import com.climbx.climbx.fixture.UserFixture;
@@ -251,12 +253,6 @@ class AuthServiceTest {
     @DisplayName("토큰 갱신 테스트")
     class RefreshAccessTokenTest {
 
-        @BeforeEach
-        void setUp() {
-            // 모든 테스트에서 토큰 검증은 성공한다고 가정
-            doNothing().when(jwtContext).validateToken(anyString());
-        }
-
         @Test
         @DisplayName("유효한 리프레시 토큰으로 액세스 토큰을 갱신한다")
         void shouldRefreshAccessTokenWithValidRefreshToken() {
@@ -267,9 +263,9 @@ class AuthServiceTest {
 
             UserAccountEntity user = UserFixture.createUser();
 
-            given(jwtContext.getTokenType(refreshToken)).willReturn(Optional.of("refresh"));
-            given(jwtContext.extractSubject(refreshToken)).willReturn(Optional.of(userId));
-            given(jwtContext.getProvider(refreshToken)).willReturn(Optional.of(provider));
+            given(jwtContext.extractTokenType(refreshToken)).willReturn(TokenType.REFRESH);
+            given(jwtContext.extractSubject(refreshToken)).willReturn(userId);
+            given(jwtContext.extractProvider(refreshToken)).willReturn(provider);
             given(userAccountRepository.findByUserId(userId)).willReturn(Optional.of(user));
             given(jwtContext.generateAccessToken(userId, provider, user.role())).willReturn(
                 "new-access-token");
@@ -285,7 +281,9 @@ class AuthServiceTest {
             assertThat(result.refreshToken()).isEqualTo("new-refresh-token");
             assertThat(result.expiresIn()).isEqualTo(3600L);
 
-            then(jwtContext).should().validateToken(refreshToken);
+            then(jwtContext).should().extractTokenType(refreshToken);
+            then(jwtContext).should().extractSubject(refreshToken);
+            then(jwtContext).should().extractProvider(refreshToken);
             then(jwtContext).should().generateAccessToken(userId, provider, user.role());
             then(jwtContext).should().generateRefreshToken(userId);
         }
@@ -296,14 +294,14 @@ class AuthServiceTest {
             // given
             String refreshToken = "invalid-type-token";
 
-            given(jwtContext.getTokenType(refreshToken)).willReturn(Optional.of("access"));
+            given(jwtContext.extractTokenType(refreshToken)).willReturn(TokenType.ACCESS);
 
             // when & then
             assertThatThrownBy(() -> authService.refreshAccessToken(refreshToken))
-                .isInstanceOf(InvalidRefreshTokenException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("유효하지 않은 리프레시 토큰입니다.");
 
-            then(jwtContext).should().validateToken(refreshToken);
+            then(jwtContext).should().extractTokenType(refreshToken);
         }
 
         @Test
@@ -312,14 +310,14 @@ class AuthServiceTest {
             // given
             String refreshToken = "invalid-token";
 
-            given(jwtContext.getTokenType(refreshToken)).willReturn(Optional.empty());
+            given(jwtContext.extractTokenType(refreshToken))
+                .willThrow(new RuntimeException("Invalid token"));
 
             // when & then
             assertThatThrownBy(() -> authService.refreshAccessToken(refreshToken))
-                .isInstanceOf(InvalidRefreshTokenException.class)
-                .hasMessage("유효하지 않은 리프레시 토큰입니다.");
+                .isInstanceOf(RuntimeException.class);
 
-            then(jwtContext).should().validateToken(refreshToken);
+            then(jwtContext).should().extractTokenType(refreshToken);
         }
 
         @Test
@@ -328,15 +326,16 @@ class AuthServiceTest {
             // given
             String refreshToken = "invalid-token";
 
-            given(jwtContext.getTokenType(refreshToken)).willReturn(Optional.of("refresh"));
-            given(jwtContext.extractSubject(refreshToken)).willReturn(Optional.empty());
+            given(jwtContext.extractTokenType(refreshToken)).willReturn(TokenType.REFRESH);
+            given(jwtContext.extractSubject(refreshToken))
+                .willThrow(new RuntimeException("Invalid token"));
 
             // when & then
             assertThatThrownBy(() -> authService.refreshAccessToken(refreshToken))
-                .isInstanceOf(InvalidRefreshTokenException.class)
-                .hasMessage("유효하지 않은 리프레시 토큰입니다.");
+                .isInstanceOf(RuntimeException.class);
 
-            then(jwtContext).should().validateToken(refreshToken);
+            then(jwtContext).should().extractTokenType(refreshToken);
+            then(jwtContext).should().extractSubject(refreshToken);
         }
 
         @Test
@@ -346,8 +345,8 @@ class AuthServiceTest {
             String refreshToken = "valid-refresh-token";
             Long userId = 999L;
 
-            given(jwtContext.getTokenType(refreshToken)).willReturn(Optional.of("refresh"));
-            given(jwtContext.extractSubject(refreshToken)).willReturn(Optional.of(userId));
+            given(jwtContext.extractTokenType(refreshToken)).willReturn(TokenType.REFRESH);
+            given(jwtContext.extractSubject(refreshToken)).willReturn(userId);
             given(userAccountRepository.findByUserId(userId)).willReturn(Optional.empty());
 
             // when & then
@@ -355,7 +354,9 @@ class AuthServiceTest {
                 .isInstanceOf(UserNotFoundException.class)
                 .hasMessage("사용자를 찾을 수 없습니다.");
 
-            then(jwtContext).should().validateToken(refreshToken);
+            then(jwtContext).should().extractTokenType(refreshToken);
+            then(jwtContext).should().extractSubject(refreshToken);
+            // extractProvider는 UserNotFoundException 발생으로 호출되지 않음
         }
     }
 
@@ -407,8 +408,8 @@ class AuthServiceTest {
         }
 
         @Test
-        @DisplayName("주 인증 수단이 없는 사용자의 provider는 UNKNOWN으로 반환된다")
-        void shouldReturnUnknownProviderWhenNoPrimaryAuth() {
+        @DisplayName("주 인증 수단이 없는 사용자 조회 시 예외를 던진다")
+        void shouldThrowExceptionWhenNoPrimaryAuth() {
             // given
             Long userId = 1L;
             UserAccountEntity user = UserFixture.createUser();
@@ -416,13 +417,11 @@ class AuthServiceTest {
             given(userAccountRepository.findByUserId(userId)).willReturn(Optional.of(user));
             given(userAuthRepository.findByUserIdAndIsPrimaryTrue(userId)).willReturn(
                 Optional.empty());
-            given(jwtContext.getAccessTokenExpiration()).willReturn(3600L);
 
-            // when
-            UserOauth2InfoResponseDto result = authService.getCurrentUserInfo(userId);
-
-            // then
-            assertThat(result.provider()).isEqualTo("UNKNOWN");
+            // when & then
+            assertThatThrownBy(() -> authService.getCurrentUserInfo(userId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("no primary provider found for userId: " + userId);
 
             then(userAccountRepository).should().findByUserId(userId);
             then(userAuthRepository).should().findByUserIdAndIsPrimaryTrue(userId);
