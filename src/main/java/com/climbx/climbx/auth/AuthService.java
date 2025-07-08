@@ -6,11 +6,11 @@ import com.climbx.climbx.auth.dto.OAuth2UserInfo;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
-import com.climbx.climbx.auth.exception.InvalidRefreshTokenException;
 import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.security.JwtContext;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
@@ -102,24 +102,18 @@ public class AuthService {
      */
     @Transactional
     public LoginResponseDto refreshAccessToken(String refreshToken) {
-        jwtContext.validateToken(refreshToken);
+        Optional.of(jwtContext.extractTokenType(refreshToken))
+            .filter(type -> type == TokenType.REFRESH)
+            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다."));
 
-        String tokenType = jwtContext.getTokenType(refreshToken)
-            .orElseThrow(() -> new InvalidRefreshTokenException("토큰 타입을 확인할 수 없습니다."));
-
-        if (!"refresh".equals(tokenType)) {
-            throw new InvalidRefreshTokenException("리프레시 토큰이 아닙니다.");
-        }
-
-        Long userId = jwtContext.extractSubject(refreshToken)
-            .orElseThrow(() -> new InvalidRefreshTokenException("토큰에서 사용자 정보를 추출할 수 없습니다."));
+        Long userId = jwtContext.extractSubject(refreshToken);
 
         // 사용자 존재 확인
         UserAccountEntity user = userAccountRepository.findByUserId(userId)
             .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
-        // 기존 토큰에서 provider 정보 추출 (기본값: KAKAO)
-        String provider = jwtContext.getProvider(refreshToken).orElse("KAKAO");
+        // 기존 토큰에서 provider 정보 추출
+        String provider = jwtContext.extractProvider(refreshToken);
 
         // 새로운 토큰 생성
         String newAccessToken = jwtContext.generateAccessToken(userId, provider, user.role());
@@ -145,7 +139,9 @@ public class AuthService {
         // 사용자 주 인증 수단 조회
         String provider = userAuthsRepository.findByUserIdAndIsPrimaryTrue(userId)
             .map(userAuth -> userAuth.provider().name())
-            .orElse("UNKNOWN");
+            .orElseThrow(
+                () -> new IllegalStateException("no primary provider found for userId: " + userId)
+            );
 
         return UserOauth2InfoResponseDto.builder()
             .id(user.userId())

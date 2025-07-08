@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -28,34 +27,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-        HttpServletRequest request,
+        @NonNull HttpServletRequest request,
         @NonNull HttpServletResponse response,
         @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-        Optional<String> tokenOptional = jwtContext.extractTokenFromRequest(request);
+        String token = jwtContext.extractTokenFromRequest(request);
 
-        if (tokenOptional.isPresent()) {
-            String token = tokenOptional.get();
-            jwtContext.validateToken(token); // 유효하지 않으면 InvalidToken 또는 TokenExpired 예외 throw
+        Long userId = jwtContext.extractSubject(token);
+        RoleType role = jwtContext.extractRole(token);
 
-            extractAuthenticationInfo(token)
-                .ifPresent(this::setAuthentication);
-        }
+        setAuthentication(new AuthenticationInfo(userId, role));
 
         filterChain.doFilter(request, response);
     }
 
-    private Optional<AuthenticationInfo> extractAuthenticationInfo(String validToken) {
-        return jwtContext.extractSubject(validToken)
-            .map(userId -> new AuthenticationInfo(
-                userId,
-                jwtContext.getRole(validToken).orElse(RoleType.USER)
-            ));
-    }
-
     private void setAuthentication(AuthenticationInfo authInfo) {
         List<GrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority("ROLE_" + authInfo.role.name())
+            new SimpleGrantedAuthority(authInfo.role.name())
         );
 
         UsernamePasswordAuthenticationToken authentication =
