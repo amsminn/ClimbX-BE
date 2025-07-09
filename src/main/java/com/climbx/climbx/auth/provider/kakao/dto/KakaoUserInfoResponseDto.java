@@ -11,6 +11,7 @@ public record KakaoUserInfoResponseDto(
     KakaoAccount kakaoAccount
 ) {
 
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record KakaoAccount(
 
         Boolean profileNicknameNeedsAgreement,
@@ -24,13 +25,30 @@ public record KakaoUserInfoResponseDto(
 
     }
 
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public record Profile(
-
+        
         String nickname,
         String profileImageUrl,
         String thumbnailImageUrl,
         Boolean isDefaultImage
     ) {
 
+    }
+
+    public static String getNickname(KakaoUserInfoResponseDto kakaoUser) {
+        return kakaoUser.kakaoAccount().profile().nickname();
+    }
+
+    public static String getProfileImageUrl(KakaoUserInfoResponseDto kakaoUser) {
+        return kakaoUser.kakaoAccount().profile().profileImageUrl();
+    }
+    
+    public static String getEmail(KakaoUserInfoResponseDto kakaoUser) {
+        return kakaoUser.kakaoAccount().email();
+    }
+
+    public static Boolean isEmailVerified(KakaoUserInfoResponseDto kakaoUser) {
+        return kakaoUser.kakaoAccount().isEmailVerified();
     }
 } 

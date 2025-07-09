@@ -129,11 +129,10 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
 
             return OAuth2UserInfoDto.builder()
                 .providerId(kakaoUser.id().toString())
-                .email(extractEmail(kakaoUser))
-                .nickname(extractNickname(kakaoUser))
-                .name(extractNickname(kakaoUser)) // 카카오에서는 nickname을 name으로 사용
-                .profileImageUrl(extractProfileImageUrl(kakaoUser))
-                .emailVerified(isEmailVerified(kakaoUser))
+                .nickname(KakaoUserInfoResponseDto.getNickname(kakaoUser))
+                .profileImageUrl(KakaoUserInfoResponseDto.getProfileImageUrl(kakaoUser))
+                .email(KakaoUserInfoResponseDto.getEmail(kakaoUser))
+                .emailVerified(KakaoUserInfoResponseDto.isEmailVerified(kakaoUser))
                 .build();
 
         } catch (HttpStatusCodeException e) {
@@ -163,31 +162,5 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
     @Override
     public OAuth2ProviderType getProviderType() {
         return OAuth2ProviderType.KAKAO;
-    }
-
-    private String extractEmail(KakaoUserInfoResponseDto userInfo) {
-        return Optional.ofNullable(userInfo.kakaoAccount())
-            .map(KakaoAccount::email)
-            .orElse(null);
-    }
-
-    private String extractNickname(KakaoUserInfoResponseDto userInfo) {
-        return Optional.ofNullable(userInfo.kakaoAccount())
-            .map(KakaoAccount::profile)
-            .map(Profile::nickname)
-            .orElse(null);
-    }
-
-    private String extractProfileImageUrl(KakaoUserInfoResponseDto userInfo) {
-        return Optional.ofNullable(userInfo.kakaoAccount())
-            .map(KakaoAccount::profile)
-            .map(Profile::profileImageUrl)
-            .orElse(null);
-    }
-
-    private boolean isEmailVerified(KakaoUserInfoResponseDto userInfo) {
-        return Optional.ofNullable(userInfo.kakaoAccount())
-            .map(KakaoAccount::isEmailVerified)
-            .orElse(false);
     }
 } 
