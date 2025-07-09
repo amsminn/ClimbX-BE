@@ -1,5 +1,6 @@
 package com.climbx.climbx.common.response;
 
+import com.climbx.climbx.common.error.ErrorCode;
 import com.climbx.climbx.common.timeTracking.TimeContext;
 import java.time.Instant;
 import lombok.Builder;
@@ -58,7 +59,7 @@ public record ApiResponse<T>(
             .build();
     }
 
-    public static <T> ApiResponse<T> error(com.climbx.climbx.common.error.ErrorCode errorCode) {
+    public static <T> ApiResponse<T> error(ErrorCode errorCode) {
         return ApiResponse.<T>builder()
             .httpStatus((long) errorCode.status().value())
             .statusMessage(errorCode.message())
