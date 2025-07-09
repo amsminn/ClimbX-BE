@@ -163,8 +163,10 @@ public class AuthService {
     /**
      * OAuth2 사용자 정보로 계정을 생성하거나 업데이트합니다. 이메일 기반으로 기존 사용자를 찾아 계정을 연결합니다.
      */
-    private UserAccountEntity createOrUpdateUser(OAuth2UserInfoDto userInfo,
-        OAuth2ProviderType providerType) {
+    private UserAccountEntity createOrUpdateUser(
+        OAuth2UserInfoDto userInfo,
+        OAuth2ProviderType providerType
+    ) {
         String providerId = userInfo.providerId();
         String email = userInfo.email();
 
