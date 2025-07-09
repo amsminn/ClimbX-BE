@@ -54,7 +54,7 @@ public class AuthController implements AuthApiDocumentation {
         log.info(
             "{} OAuth2 콜백 처리 시작: code={}",
             provider.toUpperCase(),
-            code.substring(0, Math.min(code.length(), 10)) + "..."
+            "..."
         );
 
         LoginResponseDto response = authService.handleCallback(provider, code);
