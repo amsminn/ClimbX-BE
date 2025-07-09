@@ -1,6 +1,5 @@
 package com.climbx.climbx.problem;
 
-import com.climbx.climbx.common.error.ErrorCode;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.gym.exception.GymNotFoundException;
 import com.climbx.climbx.gym.repository.GymRepository;
@@ -28,12 +27,6 @@ public class ProblemService {
         String localLevel,
         String holdColor
     ) {
-
-        // 파라미터가 하나라도 null인 경우 throw
-        if (gymId == null || localLevel == null || holdColor == null) {
-            throw new IllegalArgumentException(ErrorCode.INVALID_REQUEST.message());
-        }
-
         // Gym 정보 조회
         GymEntity gym = gymRepository.findById(gymId)
             .orElseThrow(() -> new GymNotFoundException(gymId));
