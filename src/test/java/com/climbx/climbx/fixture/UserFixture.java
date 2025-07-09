@@ -32,7 +32,7 @@ public class UserFixture {
             .email(email)
             .statusMessage(DEFAULT_STATUS_MESSAGE)
             .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
-            .role(RoleType.USER)
+            .role("USER")
             .build();
     }
 

@@ -32,10 +32,14 @@ import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.climbx.climbx.common.enums.TokenType;
 =======
 import com.climbx.climbx.common.enums.RoleType;
 >>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
+=======
+import com.climbx.climbx.common.comcode.ComcodeService;
+>>>>>>> db9a594 ([SWM-130] test: update test code)
 import com.climbx.climbx.common.security.JwtContext;
 import com.climbx.climbx.fixture.UserAuthFixture;
 import com.climbx.climbx.fixture.UserFixture;
@@ -60,6 +64,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthService 테스트")
 class AuthServiceTest {
+
+    @Mock
+    private ComcodeService comcodeService;
 
     @Mock
     private JwtContext jwtContext;
@@ -403,7 +410,8 @@ class AuthServiceTest {
 
             UserAccountEntity user = UserFixture.createUser();
 
-            given(jwtContext.extractTokenType(refreshToken)).willReturn(TokenType.REFRESH);
+            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
+            given(jwtContext.extractTokenType(refreshToken)).willReturn("REFRESH");
             given(jwtContext.extractSubject(refreshToken)).willReturn(userId);
             given(jwtContext.extractProvider(refreshToken)).willReturn(provider);
             given(userAccountRepository.findByUserId(userId)).willReturn(Optional.of(user));
@@ -462,7 +470,12 @@ class AuthServiceTest {
             String refreshToken = "invalid-type-token";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             given(jwtContext.extractTokenType(refreshToken)).willReturn(TokenType.ACCESS);
+=======
+            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
+            given(jwtContext.extractTokenType(refreshToken)).willReturn("ACCESS");
+>>>>>>> db9a594 ([SWM-130] test: update test code)
 
             // when & then
             assertThatThrownBy(() -> authService.refreshAccessToken(refreshToken))
@@ -516,7 +529,12 @@ class AuthServiceTest {
             String refreshToken = "invalid-token";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             given(jwtContext.extractTokenType(refreshToken)).willReturn(TokenType.REFRESH);
+=======
+            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
+            given(jwtContext.extractTokenType(refreshToken)).willReturn("REFRESH");
+>>>>>>> db9a594 ([SWM-130] test: update test code)
             given(jwtContext.extractSubject(refreshToken))
                 .willThrow(new RuntimeException("Invalid token"));
 
@@ -547,7 +565,12 @@ class AuthServiceTest {
             Long userId = 999L;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             given(jwtContext.extractTokenType(refreshToken)).willReturn(TokenType.REFRESH);
+=======
+            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
+            given(jwtContext.extractTokenType(refreshToken)).willReturn("REFRESH");
+>>>>>>> db9a594 ([SWM-130] test: update test code)
             given(jwtContext.extractSubject(refreshToken)).willReturn(userId);
 =======
             given(jwtContext.getTokenType(refreshToken)).willReturn(Optional.of("refresh"));

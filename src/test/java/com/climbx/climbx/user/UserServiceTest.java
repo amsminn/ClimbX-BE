@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
-
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.comcode.dto.ComcodeDto;
 import com.climbx.climbx.fixture.ProblemFixture;
@@ -67,7 +66,7 @@ public class UserServiceTest {
     private UserService userService;
 
     private void setupUserRoleComcode() {
-        given(comcodeService.getCode("USER"))
+        given(comcodeService.getCodeDto("USER"))
             .willReturn(ComcodeDto.builder()
                 .codeGroup("ROLE")
                 .code("USER")
@@ -77,7 +76,7 @@ public class UserServiceTest {
     }
 
     private void setupRatingComcode() {
-        given(comcodeService.getCode("RATING"))
+        given(comcodeService.getCodeDto("RATING"))
             .willReturn(ComcodeDto.builder()
                 .codeGroup("USER_HISTORY_CRITERIA")
                 .code("RATING")
@@ -87,7 +86,7 @@ public class UserServiceTest {
     }
 
     private void setupRankingComcode() {
-        given(comcodeService.getCode("RANKING"))
+        given(comcodeService.getCodeDto("RANKING"))
             .willReturn(ComcodeDto.builder()
                 .codeGroup("USER_HISTORY_CRITERIA")
                 .code("RANKING")
@@ -97,7 +96,7 @@ public class UserServiceTest {
     }
 
     private void setupSolvedCountComcode() {
-        given(comcodeService.getCode("SOLVED_COUNT"))
+        given(comcodeService.getCodeDto("SOLVED_COUNT"))
             .willReturn(ComcodeDto.builder()
                 .codeGroup("USER_HISTORY_CRITERIA")
                 .code("SOLVED_COUNT")
@@ -1214,7 +1213,7 @@ public class UserServiceTest {
             void getUserDailyHistory_Success() {
                 // given
                 setupRatingComcode();
-                
+
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RATING";
@@ -1277,7 +1276,7 @@ public class UserServiceTest {
             void getUserDailyHistory_NoHistory() {
                 // given
                 setupSolvedCountComcode();
-                
+
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "SOLVED_COUNT";
@@ -1308,7 +1307,7 @@ public class UserServiceTest {
             void getUserDailyHistory_DifferentCriteria() {
                 // given
                 setupRankingComcode();
-                
+
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RANKING";
@@ -1348,7 +1347,7 @@ public class UserServiceTest {
             void getUserDailyHistory_WithNullParameters() {
                 // given
                 setupRatingComcode();
-                
+
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RATING";
@@ -1388,7 +1387,7 @@ public class UserServiceTest {
             void getUserDailyHistory_SingleDay() {
                 // given
                 setupRatingComcode();
-                
+
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RATING";
@@ -1426,7 +1425,7 @@ public class UserServiceTest {
             void getUserDailyHistory_NonConsecutiveDates() {
                 // given
                 setupSolvedCountComcode();
-                
+
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "SOLVED_COUNT";
@@ -1469,7 +1468,7 @@ public class UserServiceTest {
             void getUserDailyHistory_WithFromNull() {
                 // given
                 setupRankingComcode();
-                
+
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RANKING";
@@ -1509,7 +1508,7 @@ public class UserServiceTest {
             void getUserDailyHistory_WithToNull() {
                 // given
                 setupRatingComcode();
-                
+
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RATING";

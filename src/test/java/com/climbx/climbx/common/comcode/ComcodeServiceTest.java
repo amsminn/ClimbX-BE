@@ -43,13 +43,13 @@ class ComcodeServiceTest {
         );
 
         given(comcodeRepository.findAll()).willReturn(mockComcodeEntities);
-        
+
         // ComcodeService 인스턴스 생성 (생성자에서 getCodes() 호출됨)
         comcodeService = new ComcodeService(comcodeRepository);
     }
 
-    private ComcodeEntity createComcodeEntity(String groupCode, String code, String codeName, 
-                                            String description, int sortOrder) {
+    private ComcodeEntity createComcodeEntity(String groupCode, String code, String codeName,
+        String description, int sortOrder) {
         return ComcodeEntity.builder()
             .groupCode(groupCode)
             .code(code)
@@ -71,9 +71,9 @@ class ComcodeServiceTest {
 
             // then
             assertThat(result).hasSize(8);
-            assertThat(result).containsKeys("USER", "ADMIN", "PENDING", "ACCEPTED", "REJECTED", 
+            assertThat(result).containsKeys("USER", "ADMIN", "PENDING", "ACCEPTED", "REJECTED",
                 "RATING", "RANKING", "SOLVED_COUNT");
-            
+
             // 특정 코드 검증
             ComcodeDto userCode = result.get("USER");
             assertThat(userCode.codeGroup()).isEqualTo("ROLE");
@@ -182,7 +182,7 @@ class ComcodeServiceTest {
         @DisplayName("존재하는 코드를 정상 반환 - USER")
         void getCode_ExistingCode_User_Success() {
             // when
-            ComcodeDto result = comcodeService.getCode("USER");
+            ComcodeDto result = comcodeService.getCodeDto("USER");
 
             // then
             assertThat(result.codeGroup()).isEqualTo("ROLE");
@@ -195,7 +195,7 @@ class ComcodeServiceTest {
         @DisplayName("존재하는 코드를 정상 반환 - PENDING")
         void getCode_ExistingCode_Pending_Success() {
             // when
-            ComcodeDto result = comcodeService.getCode("PENDING");
+            ComcodeDto result = comcodeService.getCodeDto("PENDING");
 
             // then
             assertThat(result.codeGroup()).isEqualTo("SUBMISSION_STATUS");
@@ -208,7 +208,7 @@ class ComcodeServiceTest {
         @DisplayName("존재하는 코드를 정상 반환 - RATING")
         void getCode_ExistingCode_Rating_Success() {
             // when
-            ComcodeDto result = comcodeService.getCode("RATING");
+            ComcodeDto result = comcodeService.getCodeDto("RATING");
 
             // then
             assertThat(result.codeGroup()).isEqualTo("USER_HISTORY_CRITERIA");
@@ -221,7 +221,7 @@ class ComcodeServiceTest {
         @DisplayName("존재하지 않는 코드일 때 ComcodeNotFound 예외 발생")
         void getCode_NonExistentCode_ThrowsException() {
             // when & then
-            assertThatThrownBy(() -> comcodeService.getCode("NON_EXISTENT_CODE"))
+            assertThatThrownBy(() -> comcodeService.getCodeDto("NON_EXISTENT_CODE"))
                 .isInstanceOf(ComcodeNotFound.class);
         }
 
@@ -229,7 +229,7 @@ class ComcodeServiceTest {
         @DisplayName("null 코드일 때 ComcodeNotFound 예외 발생")
         void getCode_NullCode_ThrowsException() {
             // when & then
-            assertThatThrownBy(() -> comcodeService.getCode(null))
+            assertThatThrownBy(() -> comcodeService.getCodeDto(null))
                 .isInstanceOf(ComcodeNotFound.class);
         }
 
@@ -237,7 +237,7 @@ class ComcodeServiceTest {
         @DisplayName("빈 문자열 코드일 때 ComcodeNotFound 예외 발생")
         void getCode_EmptyCode_ThrowsException() {
             // when & then
-            assertThatThrownBy(() -> comcodeService.getCode(""))
+            assertThatThrownBy(() -> comcodeService.getCodeDto(""))
                 .isInstanceOf(ComcodeNotFound.class);
         }
     }
@@ -258,7 +258,7 @@ class ComcodeServiceTest {
             // then
             Map<String, ComcodeDto> codes = newService.getCodes();
             assertThat(codes).hasSize(8);
-            assertThat(codes).containsKeys("USER", "ADMIN", "PENDING", "ACCEPTED", "REJECTED", 
+            assertThat(codes).containsKeys("USER", "ADMIN", "PENDING", "ACCEPTED", "REJECTED",
                 "RATING", "RANKING", "SOLVED_COUNT");
         }
 
