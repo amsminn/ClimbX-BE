@@ -93,7 +93,7 @@ public class JwtContext {
      */
     private Claims extractClaims(String token) {
         if (token == null) {
-            throw new InvalidTokenException("토큰이 존재하지 않습니다.");
+            throw new InvalidTokenException("Token is null");
         }
 
         try {
@@ -105,7 +105,7 @@ public class JwtContext {
         } catch (ExpiredJwtException e) {
             throw new TokenExpiredException();
         } catch (Exception e) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다: " + e.getMessage());
+            throw new InvalidTokenException();
         }
     }
 
