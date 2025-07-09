@@ -2,6 +2,7 @@ package com.climbx.climbx.common.comcode;
 
 import com.climbx.climbx.common.comcode.dto.ComcodeDto;
 import com.climbx.climbx.common.comcode.entity.ComcodeEntity;
+import com.climbx.climbx.common.comcode.exception.ComcodeNotFound;
 import com.climbx.climbx.common.comcode.repository.ComcodeRepository;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,11 @@ public class ComcodeService {
             .collect(Collectors.toList());
     }
 
-    public Optional<ComcodeDto> getCode(String code) {
-        return Optional.ofNullable(comcodes.get(code));
+    /**
+     * 특정 코드에 대한 DTO를 반환합니다. 존재 하지 않는 코드에 대해서 exception
+     */
+    public ComcodeDto getCode(String code) {
+        return Optional.ofNullable(comcodes.get(code))
+            .orElseThrow(() -> new ComcodeNotFound(code));
     }
 }
