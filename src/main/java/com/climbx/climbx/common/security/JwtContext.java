@@ -1,15 +1,8 @@
 package com.climbx.climbx.common.security;
 
-import com.climbx.climbx.common.enums.RoleType;
-<<<<<<< HEAD
-import com.climbx.climbx.common.enums.TokenType;
+import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
-import com.climbx.climbx.common.security.exception.TokenExpiredException;
 import com.climbx.climbx.common.util.OptionalUtils;
-=======
-import com.climbx.climbx.common.security.exception.InvalidTokenException;
-import com.climbx.climbx.common.security.exception.TokenExpiredException;
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -28,6 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtContext {
 
+    private final ComcodeService comcodeService;
     private final BearerTokenResolver bearerTokenResolver;
     private final String jwtSecret;
     private final long accessTokenExpiration;
@@ -36,11 +30,14 @@ public class JwtContext {
     private final Key signingKey;
 
     public JwtContext(
+        ComcodeService comcodeService,
         @Value("${auth.jwt.secret}") String jwtSecret,
         @Value("${auth.jwt.access-token-expiration}") long accessTokenExpiration,
         @Value("${auth.jwt.refresh-token-expiration}") long refreshTokenExpiration,
         @Value("${auth.jwt.issuer}") String issuer
     ) {
+        this.comcodeService = comcodeService;
+
         // DefaultBearerTokenResolver 설정
         DefaultBearerTokenResolver resolver = new DefaultBearerTokenResolver();
         resolver.setAllowFormEncodedBodyParameter(false); // Form parameter 비활성화
@@ -63,7 +60,7 @@ public class JwtContext {
                 () -> new InvalidTokenException("Bearer token not found in request header"));
     }
 
-    public String generateAccessToken(Long userId, String provider, RoleType role) {
+    public String generateAccessToken(Long userId, String provider, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + accessTokenExpiration * 1000);
 
@@ -73,8 +70,8 @@ public class JwtContext {
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .claim("provider", provider)
-            .claim("role", role.name())
-            .claim("type", TokenType.ACCESS.name())
+            .claim("role", role)
+            .claim("type", comcodeService.getCodeValue("ACCESS"))
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact();
     }
@@ -88,45 +85,9 @@ public class JwtContext {
             .setIssuer(issuer)
             .setIssuedAt(now)
             .setExpiration(expiryDate)
-            .claim("type", TokenType.REFRESH.name())
+            .claim("type", comcodeService.getCodeValue("REFRESH"))
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact();
-    }
-
-<<<<<<< HEAD
-    /**
-     * 토큰 Payload 추출
-     */
-    private Claims extractClaims(String token) {
-        if (token == null) {
-            throw new InvalidTokenException("Token is null");
-=======
-    public void validateToken(String token) {
-        if (token == null) {
-            throw new InvalidTokenException("토큰이 존재하지 않습니다.");
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
-        }
-
-        try {
-            return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-<<<<<<< HEAD
-                .parseClaimsJws(token)
-                .getBody();
-        } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException();
-        } catch (Exception e) {
-            throw new InvalidTokenException();
-=======
-                .parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException();
-        } catch (Exception e) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다: " + e.getMessage());
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
-        }
-
     }
 
     /**
@@ -146,12 +107,12 @@ public class JwtContext {
     /**
      * 토큰 타입을 추출합니다 (access 또는 refresh)
      */
-    public TokenType extractTokenType(String token) {
+    public String extractTokenType(String token) {
         return OptionalUtils.tryOf(
                 () -> {
                     Claims claims = extractClaims(token);
                     String type = claims.get("type", String.class);
-                    return TokenType.valueOf(type.toUpperCase());
+                    return comcodeService.getCodeValue(type);
                 }
             )
             .orElseThrow(() -> new InvalidTokenException("Valid token type not found in payload"));
@@ -173,19 +134,17 @@ public class JwtContext {
     /**
      * 토큰 role 추출
      */
-    public RoleType extractRole(String token) {
+    public String extractRole(String token) {
         return OptionalUtils.tryOf(
                 () -> {
                     Claims claims = extractClaims(token);
                     String role = claims.get("role", String.class);
-                    return RoleType.valueOf(role.toUpperCase());
+                    return comcodeService.getCodeValue(role);
                 }
             )
             .orElseThrow(() -> new InvalidTokenException("Valid role not found in payload"));
     }
 
-<<<<<<< HEAD
-=======
     /**
      * 토큰 Payload 추출
      */
@@ -210,7 +169,6 @@ public class JwtContext {
         }
     }
 
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
     public Long getAccessTokenExpiration() {
         return accessTokenExpiration;
     }

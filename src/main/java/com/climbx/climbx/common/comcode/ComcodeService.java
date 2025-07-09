@@ -40,8 +40,12 @@ public class ComcodeService {
     /**
      * 특정 코드에 대한 DTO를 반환합니다. 존재 하지 않는 코드에 대해서 exception
      */
-    public ComcodeDto getCode(String code) {
+    public ComcodeDto getCodeDto(String code) {
         return Optional.ofNullable(comcodes.get(code))
             .orElseThrow(() -> new ComcodeNotFound(code));
+    }
+
+    public String getCodeValue(String code) {
+        return getCodeDto(code).codeName();
     }
 }

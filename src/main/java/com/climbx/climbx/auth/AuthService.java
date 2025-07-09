@@ -10,8 +10,7 @@ import com.climbx.climbx.auth.exception.InvalidRefreshTokenException;
 import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
-import com.climbx.climbx.common.enums.RoleType;
-import com.climbx.climbx.common.enums.TokenType;
+import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.JwtContext;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
@@ -34,6 +33,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final ComcodeService comcodeService;
     private final JwtContext jwtContext;
     private final UserAccountRepository userAccountRepository;
     private final UserAuthRepository userAuthsRepository;
@@ -104,7 +104,7 @@ public class AuthService {
     @Transactional
     public LoginResponseDto refreshAccessToken(String refreshToken) {
         Optional.of(jwtContext.extractTokenType(refreshToken))
-            .filter(type -> type == TokenType.REFRESH)
+            .filter(type -> type == comcodeService.getCodeValue("REFRESH"))
             .orElseThrow(InvalidRefreshTokenException::new);
 
         Long userId = jwtContext.extractSubject(refreshToken);
@@ -262,7 +262,7 @@ public class AuthService {
 
         // 1. 사용자 계정 생성
         UserAccountEntity newUser = UserAccountEntity.builder()
-            .role(RoleType.USER)
+            .role(comcodeService.getCodeValue("USER"))
             .nickname(nickname)
             .email(userInfo.email())
             .profileImageUrl(userInfo.profileImageUrl())

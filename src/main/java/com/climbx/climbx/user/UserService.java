@@ -41,7 +41,7 @@ class UserService {
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
 
-        String userRoleCode = comcodeService.getCode("USER").code();
+        String userRoleCode = comcodeService.getCodeDto("USER").code();
         if (search == null || search.trim().isEmpty()) {
             userAccounts = userAccountRepository.findByRole(userRoleCode);
         } else {
@@ -131,7 +131,7 @@ class UserService {
         LocalDate to
     ) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
-        criteria = comcodeService.getCode(criteria).code();
+        criteria = comcodeService.getCodeDto(criteria).code();
 
         return userRankingHistoryRepository.getUserDailyHistory(
             userAccount.userId(),
