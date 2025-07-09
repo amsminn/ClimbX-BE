@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -35,7 +36,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException e) {
+        MethodArgumentNotValidException e
+    ) {
         log.error("Validation error occurred: {}", e.getMessage(), e);
         String errorMessage = e.getBindingResult().getFieldErrors().stream()
             .map(error -> error.getField() + ": " + error.getDefaultMessage())
@@ -45,6 +47,20 @@ public class GlobalExceptionHandler {
             ErrorCode.VALIDATION_FAILED.status(),
             errorMessage
         );
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingServletRequestParameterException(
+        MissingServletRequestParameterException e
+    ) {
+        log.error("MissingServletRequestParameterException occurred: {}", e.getMessage(), e);
+
+        ApiResponse<Void> response = ApiResponse.error(
+            ErrorCode.MISSING_PARAMETER.status(),
+            e.getMessage()
+        );
+
         return ResponseEntity.badRequest().body(response);
     }
 

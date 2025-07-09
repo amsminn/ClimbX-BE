@@ -1,7 +1,12 @@
 package com.climbx.climbx.user;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
+<<<<<<< HEAD
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
+=======
+import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
+import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
+>>>>>>> 68175fa ([SWM-92] feat: 스팟별 problem 리스트 조회 API 개발)
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
@@ -66,7 +71,7 @@ class UserController implements UserApiDocumentation {
     @Override
     @GetMapping("/{nickname}/top-problems")
     @SuccessStatus(value = HttpStatus.OK)
-    public List<ProblemResponseDto> getUserTopProblems(
+    public List<ProblemDetailsResponseDto> getUserTopProblems(
         @PathVariable
         String nickname,
 
