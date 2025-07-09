@@ -27,6 +27,7 @@ class UserController implements UserApiDocumentation {
 
     private final UserService userService;
 
+    @Override
     @GetMapping("")
     @SuccessStatus(value = HttpStatus.OK)
     public List<UserProfileResponseDto> getUsers(
@@ -36,12 +37,14 @@ class UserController implements UserApiDocumentation {
         return userService.getUsers(search);
     }
 
+    @Override
     @GetMapping("/{nickname}")
     @SuccessStatus(value = HttpStatus.OK)
     public UserProfileResponseDto getUserByNickname(@PathVariable String nickname) {
         return userService.getUserByNickname(nickname);
     }
 
+    @Override
     @PutMapping("/{nickname}")
     @SuccessStatus(value = HttpStatus.OK)
     public UserProfileResponseDto modifyUserProfile(
@@ -61,6 +64,7 @@ class UserController implements UserApiDocumentation {
         );
     }
 
+    @Override
     @GetMapping("/{nickname}/top-problems")
     @SuccessStatus(value = HttpStatus.OK)
     public List<ProblemDetailsResponseDto> getUserTopProblems(
@@ -73,6 +77,7 @@ class UserController implements UserApiDocumentation {
         return userService.getUserTopProblems(nickname, limit);
     }
 
+    @Override
     @GetMapping("/{nickname}/streak")
     @SuccessStatus(value = HttpStatus.OK)
     public List<DailyHistoryResponseDto> getUserStreak(
@@ -90,6 +95,7 @@ class UserController implements UserApiDocumentation {
         return userService.getUserStreak(nickname, from, to);
     }
 
+    @Override
     @GetMapping("/{nickname}/history")
     @SuccessStatus(value = HttpStatus.OK)
     public List<DailyHistoryResponseDto> getUserDailyHistory(
