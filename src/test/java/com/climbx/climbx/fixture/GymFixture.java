@@ -18,7 +18,7 @@ public class GymFixture {
             .longitude(longitude)
             .address(ADDRESS)
             .phoneNumber(PHONE_NUMBER)
-            .map2DUrl(MAP_2D_URL)
+            .map2dUrl(MAP_2D_URL)
             .build();
     }
 
@@ -31,7 +31,7 @@ public class GymFixture {
             .longitude(longitude)
             .address(ADDRESS)
             .phoneNumber(PHONE_NUMBER)
-            .map2DUrl(MAP_2D_URL)
+            .map2dUrl(MAP_2D_URL)
             .build();
     }
 }

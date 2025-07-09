@@ -12,7 +12,7 @@ public record GymInfoResponseDto(
     Double longitude,
     String address,
     String phoneNumber,
-    String map2DUrl
+    String map2dUrl
 ) {
 
     public static GymInfoResponseDto from(GymEntity gym) {
@@ -23,7 +23,7 @@ public record GymInfoResponseDto(
             .longitude(gym.longitude())
             .address(gym.address())
             .phoneNumber(gym.phoneNumber())
-            .map2DUrl(gym.map2DUrl())
+            .map2dUrl(gym.map2dUrl())
             .build();
     }
 }
