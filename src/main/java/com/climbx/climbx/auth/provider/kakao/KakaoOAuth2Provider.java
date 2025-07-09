@@ -3,8 +3,9 @@ package com.climbx.climbx.auth.provider.kakao;
 import com.climbx.climbx.auth.dto.OAuth2TokenResponseDto;
 import com.climbx.climbx.auth.dto.OAuth2UserInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
-import com.climbx.climbx.auth.exception.OAuth2TokenExchangeFailedException;
-import com.climbx.climbx.auth.exception.OAuth2UserInfoFetchFailedException;
+import com.climbx.climbx.auth.exception.ProviderTokenExchangeFailedException;
+import com.climbx.climbx.auth.exception.ProviderTokenExpiredException;
+import com.climbx.climbx.auth.exception.ProviderUserInfoFetchFailedException;
 import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.kakao.dto.KakaoTokenResponseDto;
 import com.climbx.climbx.auth.provider.kakao.dto.KakaoUserInfoResponseDto;
@@ -17,11 +18,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -65,7 +68,7 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
 
             KakaoTokenResponseDto kakaoToken = response.getBody();
             if (kakaoToken == null) {
-                throw new OAuth2TokenExchangeFailedException("카카오 토큰 응답이 비어있습니다.");
+                throw new ProviderUserInfoFetchFailedException(OAuth2ProviderType.KAKAO);
             }
 
             log.info("카카오 토큰 교환 성공");
@@ -82,10 +85,9 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
                 .scope(kakaoToken.scope())
                 .idToken(kakaoToken.idToken())
                 .build();
-
         } catch (Exception e) {
-            log.error("카카오 토큰 교환 실패: {}", e.getMessage());
-            throw new OAuth2TokenExchangeFailedException("카카오 토큰 교환에 실패했습니다: " + e.getMessage());
+            log.error("카카오 토큰 교환 중 예기치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new ProviderTokenExchangeFailedException(OAuth2ProviderType.KAKAO);
         }
     }
 
@@ -119,10 +121,9 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
                 KakaoUserInfoResponseDto.class
             );
 
-            KakaoUserInfoResponseDto kakaoUser = response.getBody();
-            if (kakaoUser == null) {
-                throw new OAuth2UserInfoFetchFailedException("카카오 사용자 정보 응답이 비어있습니다.");
-            }
+            KakaoUserInfoResponseDto kakaoUser = Optional.ofNullable(response.getBody())
+                .orElseThrow(
+                    () -> new ProviderUserInfoFetchFailedException(OAuth2ProviderType.KAKAO));
 
             log.info("카카오 사용자 정보 조회 성공: id={}", kakaoUser.id());
 
@@ -135,10 +136,27 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
                 .emailVerified(isEmailVerified(kakaoUser))
                 .build();
 
+        } catch (HttpStatusCodeException e) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                log.error(
+                    "카카오 사용자 정보 조회 실패 - 인증 실패 (401): HTTP Status: {}, Response Body: {}, URL: {}",
+                    e.getStatusCode(),
+                    e.getResponseBodyAsString(),
+                    userInfoUri
+                );
+                throw new ProviderTokenExpiredException(OAuth2ProviderType.KAKAO);
+            } else {
+                log.error(
+                    "카카오 사용자 정보 조회 실패 - 기타 에러: HTTP Status: {}, Response Body: {}, URL: {}",
+                    e.getStatusCode(),
+                    e.getResponseBodyAsString(),
+                    userInfoUri
+                );
+                throw new ProviderUserInfoFetchFailedException(OAuth2ProviderType.KAKAO);
+            }
         } catch (Exception e) {
-            log.error("카카오 사용자 정보 조회 실패: {}", e.getMessage());
-            throw new OAuth2UserInfoFetchFailedException(
-                "카카오 사용자 정보 조회에 실패했습니다: " + e.getMessage());
+            log.error("카카오 사용자 정보 조회 중 예기치 못한 오류 발생: {}", e.getMessage(), e);
+            throw new ProviderUserInfoFetchFailedException(OAuth2ProviderType.KAKAO);
         }
     }
 

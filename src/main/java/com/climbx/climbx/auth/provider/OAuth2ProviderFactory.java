@@ -1,7 +1,7 @@
 package com.climbx.climbx.auth.provider;
 
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
-import com.climbx.climbx.auth.exception.OAuth2ProviderNotSupportedException;
+import com.climbx.climbx.auth.exception.ProviderNotSupportedException;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,7 +27,7 @@ public class OAuth2ProviderFactory {
     private OAuth2Provider getProvider(OAuth2ProviderType providerType) {
         OAuth2Provider provider = providers.get(providerType);
         if (provider == null) {
-            throw new OAuth2ProviderNotSupportedException(providerType.name());
+            throw new ProviderNotSupportedException(providerType);
         }
         return provider;
     }
@@ -37,7 +37,7 @@ public class OAuth2ProviderFactory {
      *
      * @param providerName 제공자 이름 (대소문자 구분 없음)
      * @return OAuth2Provider 구현체
-     * @throws OAuth2ProviderNotSupportedException 지원하지 않는 제공자인 경우
+     * @throws ProviderNotSupportedException 지원하지 않는 제공자인 경우
      */
     public OAuth2Provider getProvider(String providerName) {
         OAuth2ProviderType providerType = OAuth2ProviderType.fromString(providerName);
