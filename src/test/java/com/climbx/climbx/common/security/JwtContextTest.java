@@ -19,18 +19,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayName("JwtContext 테스트")
 class JwtContextTest {
 
-    @Mock
-    private ComcodeService comcodeService;
-
-    @Mock
-    private HttpServletRequest request;
-
-    private JwtContext jwtContext;
-
     private static final String JWT_SECRET = "test-secret-key-for-jwt-token-generation-that-is-long-enough-to-meet-requirements";
     private static final long ACCESS_TOKEN_EXPIRATION = 3600; // 1시간
     private static final long REFRESH_TOKEN_EXPIRATION = 86400; // 24시간
     private static final String ISSUER = "climbx-test";
+    @Mock
+    private ComcodeService comcodeService;
+    @Mock
+    private HttpServletRequest request;
+    private JwtContext jwtContext;
 
     @BeforeEach
     void setUp() {
@@ -54,7 +51,7 @@ class JwtContextTest {
             Long userId = 1L;
             String provider = "KAKAO";
             String role = "USER";
-            
+
             given(comcodeService.getCodeValue("ACCESS")).willReturn("ACCESS");
 
             // when
@@ -70,7 +67,7 @@ class JwtContextTest {
         void shouldGenerateRefreshTokenWithValidParameters() {
             // given
             Long userId = 1L;
-            
+
             given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
 
             // when

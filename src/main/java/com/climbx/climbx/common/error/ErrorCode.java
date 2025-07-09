@@ -28,7 +28,7 @@ public enum ErrorCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
     USER_AUTH_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 인증 정보를 찾을 수 없습니다."),
-    
+
     // OAuth2 Provider Specific Errors
     PROVIDER_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "지원하지 않는 OAuth2 제공자입니다."),
     PROVIDER_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "OAuth2 프로바이더 토큰이 만료되었습니다."),
