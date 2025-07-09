@@ -312,6 +312,9 @@ public class AuthService {
      * Unique한 초기 닉네임 생성
      */
     private String generateTemporaryNickname(String providerNickname) {
-        return "클라이머_" + providerNickname + "_" + UUID.randomUUID().toString().substring(0, 8);
+        return "클라이머_"
+            + Optional.ofNullable(providerNickname).orElse("초보")
+            + "_"
+            + UUID.randomUUID().toString().substring(0, 8);
     }
 }
