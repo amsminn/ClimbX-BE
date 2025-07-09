@@ -34,7 +34,7 @@ public class ComcodeService {
         return comcodes.values()
             .stream()
             .filter(code -> code.codeGroup().equals(groupCode))
-            .collect(Collectors.toList());
+            .toList(); // 필터링된 불변 리스트 반환
     }
 
     /**
