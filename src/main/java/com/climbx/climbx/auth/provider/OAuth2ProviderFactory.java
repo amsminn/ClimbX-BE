@@ -24,7 +24,7 @@ public class OAuth2ProviderFactory {
     /**
      * providerType에 따라 구현체 반환
      */
-    public OAuth2Provider getProvider(OAuth2ProviderType providerType) {
+    private OAuth2Provider getProvider(OAuth2ProviderType providerType) {
         OAuth2Provider provider = providers.get(providerType);
         if (provider == null) {
             throw new OAuth2ProviderNotSupportedException(providerType.name());
