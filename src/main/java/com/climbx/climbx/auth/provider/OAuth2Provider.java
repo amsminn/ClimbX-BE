@@ -1,7 +1,7 @@
 package com.climbx.climbx.auth.provider;
 
-import com.climbx.climbx.auth.dto.OAuth2TokenResponse;
-import com.climbx.climbx.auth.dto.OAuth2UserInfo;
+import com.climbx.climbx.auth.dto.OAuth2TokenResponseDto;
+import com.climbx.climbx.auth.dto.OAuth2UserInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 
 public interface OAuth2Provider {
@@ -12,7 +12,7 @@ public interface OAuth2Provider {
      * @param code 인가 코드
      * @return 토큰 응답
      */
-    OAuth2TokenResponse exchangeCodeForToken(String code);
+    OAuth2TokenResponseDto exchangeCodeForToken(String code);
 
     /**
      * 액세스 토큰으로 사용자 정보를 조회합니다.
@@ -20,7 +20,7 @@ public interface OAuth2Provider {
      * @param accessToken 액세스 토큰
      * @return 사용자 정보
      */
-    OAuth2UserInfo fetchUserInfo(String accessToken);
+    OAuth2UserInfoDto fetchUserInfo(String accessToken);
 
     /**
      * 제공자 타입을 반환합니다.

@@ -1,7 +1,7 @@
 package com.climbx.climbx.auth.provider.kakao;
 
-import com.climbx.climbx.auth.dto.OAuth2TokenResponse;
-import com.climbx.climbx.auth.dto.OAuth2UserInfo;
+import com.climbx.climbx.auth.dto.OAuth2TokenResponseDto;
+import com.climbx.climbx.auth.dto.OAuth2UserInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.exception.OAuth2TokenExchangeFailedException;
 import com.climbx.climbx.auth.exception.OAuth2UserInfoFetchFailedException;
@@ -47,7 +47,7 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
     private String userInfoUri;
 
     @Override
-    public OAuth2TokenResponse exchangeCodeForToken(String code) {
+    public OAuth2TokenResponseDto exchangeCodeForToken(String code) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -70,7 +70,7 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
 
             log.info("카카오 토큰 교환 성공");
 
-            return OAuth2TokenResponse.builder()
+            return OAuth2TokenResponseDto.builder()
                 .accessToken(kakaoToken.accessToken())
                 .refreshToken(kakaoToken.refreshToken())
                 .tokenType(kakaoToken.tokenType())
@@ -104,7 +104,7 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
     }
 
     @Override
-    public OAuth2UserInfo fetchUserInfo(String accessToken) {
+    public OAuth2UserInfoDto fetchUserInfo(String accessToken) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + accessToken);
@@ -126,7 +126,7 @@ public class KakaoOAuth2Provider implements OAuth2Provider {
 
             log.info("카카오 사용자 정보 조회 성공: id={}", kakaoUser.id());
 
-            return OAuth2UserInfo.builder()
+            return OAuth2UserInfoDto.builder()
                 .providerId(kakaoUser.id().toString())
                 .email(extractEmail(kakaoUser))
                 .nickname(extractNickname(kakaoUser))

@@ -1,8 +1,8 @@
 package com.climbx.climbx.auth;
 
 import com.climbx.climbx.auth.dto.LoginResponseDto;
-import com.climbx.climbx.auth.dto.OAuth2TokenResponse;
-import com.climbx.climbx.auth.dto.OAuth2UserInfo;
+import com.climbx.climbx.auth.dto.OAuth2TokenResponseDto;
+import com.climbx.climbx.auth.dto.OAuth2UserInfoDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
@@ -69,10 +69,10 @@ public class AuthService {
         OAuth2Provider oauth2Provider = providerFactory.getProvider(provider);
 
         // 인가 코드로 액세스 토큰 교환
-        OAuth2TokenResponse tokenResponse = oauth2Provider.exchangeCodeForToken(code);
+        OAuth2TokenResponseDto tokenResponse = oauth2Provider.exchangeCodeForToken(code);
 
         // 액세스 토큰으로 사용자 정보 조회
-        OAuth2UserInfo userInfo = oauth2Provider.fetchUserInfo(tokenResponse.accessToken());
+        OAuth2UserInfoDto userInfo = oauth2Provider.fetchUserInfo(tokenResponse.accessToken());
 
         // 사용자 정보로 계정 생성 또는 업데이트
         UserAccountEntity user = createOrUpdateUser(userInfo, oauth2Provider.getProviderType());
@@ -163,7 +163,7 @@ public class AuthService {
     /**
      * OAuth2 사용자 정보로 계정을 생성하거나 업데이트합니다. 이메일 기반으로 기존 사용자를 찾아 계정을 연결합니다.
      */
-    private UserAccountEntity createOrUpdateUser(OAuth2UserInfo userInfo,
+    private UserAccountEntity createOrUpdateUser(OAuth2UserInfoDto userInfo,
         OAuth2ProviderType providerType) {
         String providerId = userInfo.providerId();
         String email = userInfo.email();
@@ -208,7 +208,7 @@ public class AuthService {
      */
     private UserAccountEntity linkNewOAuth2Provider(
         UserAccountEntity existingUser,
-        OAuth2UserInfo userInfo,
+        OAuth2UserInfoDto userInfo,
         OAuth2ProviderType providerType) {
 
         String providerId = userInfo.providerId();
@@ -251,7 +251,7 @@ public class AuthService {
     /**
      * 새로운 사용자를 생성합니다.
      */
-    private UserAccountEntity createNewUser(OAuth2UserInfo userInfo,
+    private UserAccountEntity createNewUser(OAuth2UserInfoDto userInfo,
         OAuth2ProviderType providerType) {
 
         String nickname = generateTemporaryNickname(userInfo.nickname());

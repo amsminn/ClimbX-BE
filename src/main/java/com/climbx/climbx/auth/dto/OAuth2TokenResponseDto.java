@@ -3,7 +3,7 @@ package com.climbx.climbx.auth.dto;
 import lombok.Builder;
 
 @Builder
-public record OAuth2TokenResponse(
+public record OAuth2TokenResponseDto(
 
     String accessToken,
     String refreshToken,

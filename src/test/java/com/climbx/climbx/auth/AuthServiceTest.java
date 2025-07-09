@@ -3,21 +3,17 @@ package com.climbx.climbx.auth;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
 import com.climbx.climbx.auth.dto.LoginResponseDto;
-import com.climbx.climbx.auth.dto.OAuth2TokenResponse;
-import com.climbx.climbx.auth.dto.OAuth2UserInfo;
+import com.climbx.climbx.auth.dto.OAuth2TokenResponseDto;
+import com.climbx.climbx.auth.dto.OAuth2UserInfoDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
-import com.climbx.climbx.auth.exception.InvalidRefreshTokenException;
 import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
@@ -31,7 +27,6 @@ import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -77,14 +72,14 @@ class AuthServiceTest {
             String providerId = "12345";
             String email = "test@example.com";
 
-            OAuth2TokenResponse tokenResponse = OAuth2TokenResponse.builder()
+            OAuth2TokenResponseDto tokenResponse = OAuth2TokenResponseDto.builder()
                 .accessToken("access-token")
                 .refreshToken("refresh-token")
                 .tokenType("Bearer")
                 .expiresIn(3600L)
                 .build();
 
-            OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
+            OAuth2UserInfoDto userInfo = OAuth2UserInfoDto.builder()
                 .providerId(providerId)
                 .email(email)
                 .nickname("테스트유저")
@@ -142,14 +137,14 @@ class AuthServiceTest {
             String code = "test-code";
             String providerId = "12345";
 
-            OAuth2TokenResponse tokenResponse = OAuth2TokenResponse.builder()
+            OAuth2TokenResponseDto tokenResponse = OAuth2TokenResponseDto.builder()
                 .accessToken("access-token")
                 .refreshToken("refresh-token")
                 .tokenType("Bearer")
                 .expiresIn(3600L)
                 .build();
 
-            OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
+            OAuth2UserInfoDto userInfo = OAuth2UserInfoDto.builder()
                 .providerId(providerId)
                 .email("test@example.com")
                 .nickname("기존유저")
@@ -194,14 +189,14 @@ class AuthServiceTest {
             String providerId = "new-provider-id";
             String email = "test@example.com";
 
-            OAuth2TokenResponse tokenResponse = OAuth2TokenResponse.builder()
+            OAuth2TokenResponseDto tokenResponse = OAuth2TokenResponseDto.builder()
                 .accessToken("access-token")
                 .refreshToken("refresh-token")
                 .tokenType("Bearer")
                 .expiresIn(3600L)
                 .build();
 
-            OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
+            OAuth2UserInfoDto userInfo = OAuth2UserInfoDto.builder()
                 .providerId(providerId)
                 .email(email)
                 .nickname("기존유저")
@@ -440,14 +435,14 @@ class AuthServiceTest {
             String providerId = "12345";
             String email = "test@example.com";
 
-            OAuth2TokenResponse tokenResponse = OAuth2TokenResponse.builder()
+            OAuth2TokenResponseDto tokenResponse = OAuth2TokenResponseDto.builder()
                 .accessToken("access-token")
                 .refreshToken("refresh-token")
                 .tokenType("Bearer")
                 .expiresIn(3600L)
                 .build();
 
-            OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
+            OAuth2UserInfoDto userInfo = OAuth2UserInfoDto.builder()
                 .providerId(providerId)
                 .email(email)
                 .nickname("테스트유저")
@@ -496,14 +491,14 @@ class AuthServiceTest {
             String providerId = "new-provider-id";
             String email = "test@example.com";
 
-            OAuth2TokenResponse tokenResponse = OAuth2TokenResponse.builder()
+            OAuth2TokenResponseDto tokenResponse = OAuth2TokenResponseDto.builder()
                 .accessToken("access-token")
                 .refreshToken("refresh-token")
                 .tokenType("Bearer")
                 .expiresIn(3600L)
                 .build();
 
-            OAuth2UserInfo userInfo = OAuth2UserInfo.builder()
+            OAuth2UserInfoDto userInfo = OAuth2UserInfoDto.builder()
                 .providerId(providerId)
                 .email(email)
                 .nickname("기존유저")

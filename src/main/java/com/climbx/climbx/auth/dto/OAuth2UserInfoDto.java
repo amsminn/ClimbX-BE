@@ -3,7 +3,7 @@ package com.climbx.climbx.auth.dto;
 import lombok.Builder;
 
 @Builder
-public record OAuth2UserInfo(
+public record OAuth2UserInfoDto(
 
     String providerId,     // 제공자별 고유 ID
     String email,
