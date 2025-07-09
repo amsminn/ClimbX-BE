@@ -212,7 +212,8 @@ public class AuthService {
     private UserAccountEntity linkNewOAuth2Provider(
         UserAccountEntity existingUser,
         OAuth2UserInfoDto userInfo,
-        OAuth2ProviderType providerType) {
+        OAuth2ProviderType providerType
+    ) {
 
         String providerId = userInfo.providerId();
 
