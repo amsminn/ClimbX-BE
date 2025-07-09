@@ -8,30 +8,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.comcode.dto.ComcodeDto;
-=======
-import com.climbx.climbx.common.enums.RoleType;
-import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.fixture.GymFixture;
->>>>>>> 68175fa ([SWM-92] feat: 스팟별 problem 리스트 조회 API 개발)
-=======
-=======
->>>>>>> 28a981d ([SWM-130] test: update test code)
-import com.climbx.climbx.common.enums.RoleType;
-import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
-import com.climbx.climbx.fixture.GymFixture;
-=======
-
-=======
->>>>>>> 45507fe ([SWM-130] test: update test code)
-import com.climbx.climbx.common.comcode.ComcodeService;
-import com.climbx.climbx.common.comcode.dto.ComcodeDto;
->>>>>>> c290258 ([SWM-130] test: comcode test)
->>>>>>> d4af11a ([SWM-130] test: comcode test)
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.gym.entity.GymEntity;
@@ -89,15 +68,7 @@ public class UserServiceTest {
     private UserService userService;
 
     private void setupUserRoleComcode() {
-<<<<<<< HEAD
-<<<<<<< HEAD
         given(comcodeService.getCodeDto("USER"))
-=======
-        given(comcodeService.getCode("USER"))
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-        given(comcodeService.getCodeDto("USER"))
->>>>>>> 28a981d ([SWM-130] test: update test code)
             .willReturn(ComcodeDto.builder()
                 .codeGroup("ROLE")
                 .code("USER")
@@ -107,15 +78,7 @@ public class UserServiceTest {
     }
 
     private void setupRatingComcode() {
-<<<<<<< HEAD
-<<<<<<< HEAD
         given(comcodeService.getCodeDto("RATING"))
-=======
-        given(comcodeService.getCode("RATING"))
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-        given(comcodeService.getCodeDto("RATING"))
->>>>>>> 28a981d ([SWM-130] test: update test code)
             .willReturn(ComcodeDto.builder()
                 .codeGroup("USER_HISTORY_CRITERIA")
                 .code("RATING")
@@ -125,15 +88,7 @@ public class UserServiceTest {
     }
 
     private void setupRankingComcode() {
-<<<<<<< HEAD
-<<<<<<< HEAD
         given(comcodeService.getCodeDto("RANKING"))
-=======
-        given(comcodeService.getCode("RANKING"))
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-        given(comcodeService.getCodeDto("RANKING"))
->>>>>>> 28a981d ([SWM-130] test: update test code)
             .willReturn(ComcodeDto.builder()
                 .codeGroup("USER_HISTORY_CRITERIA")
                 .code("RANKING")
@@ -143,15 +98,7 @@ public class UserServiceTest {
     }
 
     private void setupSolvedCountComcode() {
-<<<<<<< HEAD
-<<<<<<< HEAD
         given(comcodeService.getCodeDto("SOLVED_COUNT"))
-=======
-        given(comcodeService.getCode("SOLVED_COUNT"))
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-        given(comcodeService.getCodeDto("SOLVED_COUNT"))
->>>>>>> 28a981d ([SWM-130] test: update test code)
             .willReturn(ComcodeDto.builder()
                 .codeGroup("USER_HISTORY_CRITERIA")
                 .code("SOLVED_COUNT")
@@ -1280,15 +1227,6 @@ public class UserServiceTest {
             void getUserDailyHistory_Success() {
                 // given
                 setupRatingComcode();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-
->>>>>>> 28a981d ([SWM-130] test: update test code)
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RATING";
@@ -1351,15 +1289,6 @@ public class UserServiceTest {
             void getUserDailyHistory_NoHistory() {
                 // given
                 setupSolvedCountComcode();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-
->>>>>>> 28a981d ([SWM-130] test: update test code)
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "SOLVED_COUNT";
@@ -1390,15 +1319,6 @@ public class UserServiceTest {
             void getUserDailyHistory_DifferentCriteria() {
                 // given
                 setupRankingComcode();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-
->>>>>>> 28a981d ([SWM-130] test: update test code)
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RANKING";
@@ -1438,15 +1358,6 @@ public class UserServiceTest {
             void getUserDailyHistory_WithNullParameters() {
                 // given
                 setupRatingComcode();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-
->>>>>>> 28a981d ([SWM-130] test: update test code)
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RATING";
@@ -1486,15 +1397,6 @@ public class UserServiceTest {
             void getUserDailyHistory_SingleDay() {
                 // given
                 setupRatingComcode();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-
->>>>>>> 28a981d ([SWM-130] test: update test code)
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RATING";
@@ -1532,15 +1434,6 @@ public class UserServiceTest {
             void getUserDailyHistory_NonConsecutiveDates() {
                 // given
                 setupSolvedCountComcode();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-
->>>>>>> 28a981d ([SWM-130] test: update test code)
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "SOLVED_COUNT";
@@ -1583,15 +1476,6 @@ public class UserServiceTest {
             void getUserDailyHistory_WithFromNull() {
                 // given
                 setupRankingComcode();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-
->>>>>>> 28a981d ([SWM-130] test: update test code)
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RANKING";
@@ -1631,15 +1515,6 @@ public class UserServiceTest {
             void getUserDailyHistory_WithToNull() {
                 // given
                 setupRatingComcode();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
-                
->>>>>>> d4af11a ([SWM-130] test: comcode test)
-=======
-
->>>>>>> 28a981d ([SWM-130] test: update test code)
                 String nickname = "testUser";
                 Long userId = 1L;
                 String criteria = "RATING";

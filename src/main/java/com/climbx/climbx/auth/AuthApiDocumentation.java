@@ -3,7 +3,6 @@ package com.climbx.climbx.auth;
 import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.RefreshRequestDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
-import com.climbx.climbx.common.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,14 +20,8 @@ import org.springframework.validation.annotation.Validated;
 public interface AuthApiDocumentation {
 
     @Operation(
-<<<<<<< HEAD
         summary = "Kakao OAuth2 인증 페이지로 리다이렉트 (개발용)",
         description = "Kakao OAuth2 인증 페이지로 자동 리다이렉트합니다. 개발 및 테스트 환경에서만 사용해야 합니다."
-=======
-<<<<<<< HEAD
-        summary = "Kakao OAuth2 인증 URL 요청 (개발용)",
-        description = "Kakao OAuth2 인증 URL을 생성하여 반환합니다. 개발 및 테스트 환경에서만 사용해야 합니다."
->>>>>>> 4d7347d (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
     )
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -53,20 +46,6 @@ public interface AuthApiDocumentation {
                 examples = @ExampleObject(
                     name = "서버 오류",
                     value = """
-=======
-            summary = "Kakao OAuth2 인증 URL 요청 (개발용)",
-            description = "Kakao OAuth2 인증 URL을 생성하여 반환합니다. 개발 및 테스트 환경에서만 사용해야 합니다."
-    )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "인증 URL 생성 성공",
-                    content = @Content(
-                            schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
-                            examples = @ExampleObject(
-                                    name = "인증 URL 생성 성공",
-                                    value = """
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
                         {
                           "httpStatus": 500,
                           "statusMessage": "서버 내부 오류가 발생했습니다.",
@@ -76,15 +55,9 @@ public interface AuthApiDocumentation {
                           "data": null
                         }
                         """
-<<<<<<< HEAD
                 )
             )
         )
-=======
-                            )
-                    )
-            )
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
     })
     ResponseEntity<Void> redirectToKakaoAuthorize();
 
