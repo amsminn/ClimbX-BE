@@ -22,7 +22,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
           FROM SubmissionEntity s
           JOIN s.videoEntity v
          WHERE v.userId = :userId
-           AND s.status = com.climbx.climbx.common.enums.SubmissionStatusType.ACCEPTED
+           AND s.status = 'ACCEPTED'
         """)
     List<ProblemEntity> getUserSubmissionProblems(
         @Param("userId") Long userId,
@@ -40,7 +40,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
           FROM SubmissionEntity s
           JOIN s.videoEntity v
          WHERE v.userId = :userId
-           AND s.status = com.climbx.climbx.common.enums.SubmissionStatusType.ACCEPTED
+           AND s.status = 'ACCEPTED'
            AND (:from is NUll OR DATE(s.createdAt) >= :from)
            AND (:to is NULL OR DATE(s.createdAt) <= :to)
          GROUP BY DATE(s.createdAt)

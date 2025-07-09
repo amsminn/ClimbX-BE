@@ -1,7 +1,6 @@
 package com.climbx.climbx.user;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
-import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
@@ -97,7 +96,7 @@ class UserController implements UserApiDocumentation {
         String nickname,
 
         @RequestParam(name = "criteria", required = true)
-        UserHistoryCriteriaType criteria,
+        String criteria,
 
         @RequestParam(name = "from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
