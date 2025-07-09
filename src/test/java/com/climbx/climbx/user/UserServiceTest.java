@@ -8,8 +8,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
-import com.climbx.climbx.common.enums.RoleType;
-import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
+
+import com.climbx.climbx.common.comcode.ComcodeService;
+import com.climbx.climbx.common.comcode.dto.ComcodeDto;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
@@ -31,6 +32,7 @@ import com.climbx.climbx.user.repository.UserStatRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -58,12 +60,60 @@ public class UserServiceTest {
     @Mock
     private UserRankingHistoryRepository userRankingHistoryRepository;
 
+    @Mock
+    private ComcodeService comcodeService;
+
     @InjectMocks
     private UserService userService;
+
+    private void setupUserRoleComcode() {
+        given(comcodeService.getCode("USER"))
+            .willReturn(ComcodeDto.builder()
+                .codeGroup("ROLE")
+                .code("USER")
+                .codeName("일반 사용자")
+                .sortOrder(1)
+                .build());
+    }
+
+    private void setupRatingComcode() {
+        given(comcodeService.getCode("RATING"))
+            .willReturn(ComcodeDto.builder()
+                .codeGroup("USER_HISTORY_CRITERIA")
+                .code("RATING")
+                .codeName("레이팅")
+                .sortOrder(1)
+                .build());
+    }
+
+    private void setupRankingComcode() {
+        given(comcodeService.getCode("RANKING"))
+            .willReturn(ComcodeDto.builder()
+                .codeGroup("USER_HISTORY_CRITERIA")
+                .code("RANKING")
+                .codeName("랭킹")
+                .sortOrder(2)
+                .build());
+    }
+
+    private void setupSolvedCountComcode() {
+        given(comcodeService.getCode("SOLVED_COUNT"))
+            .willReturn(ComcodeDto.builder()
+                .codeGroup("USER_HISTORY_CRITERIA")
+                .code("SOLVED_COUNT")
+                .codeName("해결 문제 수")
+                .sortOrder(3)
+                .build());
+    }
 
     @Nested
     @DisplayName("사용자 목록 조회 및 검색")
     class GetUsers {
+
+        @BeforeEach
+        void setUp() {
+            setupUserRoleComcode();
+        }
 
         @Test
         @DisplayName("전체 사용자 목록을 정상 조회")
@@ -80,7 +130,7 @@ public class UserServiceTest {
             UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1300L);
             UserStatEntity userStat3 = UserFixture.createUserStatEntity(3L, 1400L);
 
-            given(userAccountRepository.findByRole(RoleType.USER))
+            given(userAccountRepository.findByRole("USER"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -104,7 +154,7 @@ public class UserServiceTest {
             assertThat(result.get(1).nickname()).isEqualTo("bob");
             assertThat(result.get(2).nickname()).isEqualTo("charlie");
 
-            then(userAccountRepository).should().findByRole(RoleType.USER);
+            then(userAccountRepository).should().findByRole("USER");
             then(userAccountRepository).should(never())
                 .findByRoleAndNicknameContaining(any(), any());
         }
@@ -122,7 +172,7 @@ public class UserServiceTest {
             UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
             UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L);
 
-            given(userAccountRepository.findByRole(RoleType.USER))
+            given(userAccountRepository.findByRole("USER"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -136,7 +186,7 @@ public class UserServiceTest {
 
             // then
             assertThat(result).hasSize(2);
-            then(userAccountRepository).should().findByRole(RoleType.USER);
+            then(userAccountRepository).should().findByRole("USER");
             then(userAccountRepository).should(never())
                 .findByRoleAndNicknameContaining(any(), any());
         }
@@ -152,7 +202,7 @@ public class UserServiceTest {
 
             UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
 
-            given(userAccountRepository.findByRole(RoleType.USER))
+            given(userAccountRepository.findByRole("USER"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -164,7 +214,7 @@ public class UserServiceTest {
 
             // then
             assertThat(result).hasSize(1);
-            then(userAccountRepository).should().findByRole(RoleType.USER);
+            then(userAccountRepository).should().findByRole("USER");
             then(userAccountRepository).should(never())
                 .findByRoleAndNicknameContaining(any(), any());
         }
@@ -182,7 +232,7 @@ public class UserServiceTest {
             UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L, 1100L);
             UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1600L);
 
-            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "test"))
+            given(userAccountRepository.findByRoleAndNicknameContaining("USER", "test"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -202,7 +252,7 @@ public class UserServiceTest {
             assertThat(result.get(1).nickname()).isEqualTo("testuser2");
 
             then(userAccountRepository).should()
-                .findByRoleAndNicknameContaining(RoleType.USER, "test");
+                .findByRoleAndNicknameContaining("USER", "test");
             then(userAccountRepository).should(never()).findByRole(any());
         }
 
@@ -214,7 +264,7 @@ public class UserServiceTest {
             List<UserAccountEntity> emptyUserAccounts = List.of();
 
             given(
-                userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "nonexistent"))
+                userAccountRepository.findByRoleAndNicknameContaining("USER", "nonexistent"))
                 .willReturn(emptyUserAccounts);
 
             // when
@@ -224,7 +274,7 @@ public class UserServiceTest {
             assertThat(result).isEmpty();
 
             then(userAccountRepository).should()
-                .findByRoleAndNicknameContaining(RoleType.USER, "nonexistent");
+                .findByRoleAndNicknameContaining("USER", "nonexistent");
             then(userStatRepository).should(never()).findByUserId(any());
         }
 
@@ -239,7 +289,7 @@ public class UserServiceTest {
 
             UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
 
-            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "alice"))
+            given(userAccountRepository.findByRoleAndNicknameContaining("USER", "alice"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -254,7 +304,7 @@ public class UserServiceTest {
             assertThat(result.get(0).nickname()).isEqualTo("alice123");
 
             then(userAccountRepository).should()
-                .findByRoleAndNicknameContaining(RoleType.USER, "alice");
+                .findByRoleAndNicknameContaining("USER", "alice");
         }
 
         @Test
@@ -266,7 +316,7 @@ public class UserServiceTest {
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
             List<UserAccountEntity> userAccounts = List.of(user1);
 
-            given(userAccountRepository.findByRole(RoleType.USER))
+            given(userAccountRepository.findByRole("USER"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.empty());
@@ -294,7 +344,7 @@ public class UserServiceTest {
             UserStatEntity userStat3 = UserFixture.createUserStatEntity(3L, 2200L, 15L, 25L, 120L,
                 7L);
 
-            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "pro"))
+            given(userAccountRepository.findByRoleAndNicknameContaining("USER", "pro"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -344,7 +394,7 @@ public class UserServiceTest {
 
             UserStatEntity userStat = UserFixture.createUserStatEntity(2L);
 
-            given(userAccountRepository.findByRole(RoleType.USER))
+            given(userAccountRepository.findByRole("USER"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(2L))
                 .willReturn(Optional.of(userStat));
@@ -358,8 +408,8 @@ public class UserServiceTest {
             assertThat(result).hasSize(1);
             assertThat(result.get(0).nickname()).isEqualTo("user");
 
-            then(userAccountRepository).should().findByRole(RoleType.USER);
-            then(userAccountRepository).should(never()).findByRole(RoleType.ADMIN);
+            then(userAccountRepository).should().findByRole("USER");
+            then(userAccountRepository).should(never()).findByRole("ADMIN");
         }
 
         @Test
@@ -373,7 +423,7 @@ public class UserServiceTest {
 
             UserStatEntity userStat = UserFixture.createUserStatEntity(1L);
 
-            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "admin"))
+            given(userAccountRepository.findByRoleAndNicknameContaining("USER", "admin"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat));
@@ -388,7 +438,7 @@ public class UserServiceTest {
             assertThat(result.get(0).nickname()).isEqualTo("admin_user");
 
             then(userAccountRepository).should()
-                .findByRoleAndNicknameContaining(RoleType.USER, "admin");
+                .findByRoleAndNicknameContaining("USER", "admin");
             then(userAccountRepository).should(never()).findByRole(any());
         }
     }
@@ -1163,9 +1213,11 @@ public class UserServiceTest {
             @DisplayName("사용자의 레이팅 히스토리를 정상 조회")
             void getUserDailyHistory_Success() {
                 // given
+                setupRatingComcode();
+                
                 String nickname = "testUser";
                 Long userId = 1L;
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.RATING;
+                String criteria = "RATING";
                 LocalDate from = LocalDate.of(2024, 1, 1);
                 LocalDate to = LocalDate.of(2024, 1, 3);
 
@@ -1204,7 +1256,7 @@ public class UserServiceTest {
             void getUserDailyHistory_UserNotFound() {
                 // given
                 String nickname = "nonexistentUser";
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.RANKING;
+                String criteria = "RANKING";
                 LocalDate from = LocalDate.of(2024, 1, 1);
                 LocalDate to = LocalDate.of(2024, 1, 31);
 
@@ -1224,9 +1276,11 @@ public class UserServiceTest {
             @DisplayName("해당 기간에 히스토리가 없는 경우")
             void getUserDailyHistory_NoHistory() {
                 // given
+                setupSolvedCountComcode();
+                
                 String nickname = "testUser";
                 Long userId = 1L;
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.SOLVED_COUNT;
+                String criteria = "SOLVED_COUNT";
                 LocalDate from = LocalDate.of(2024, 1, 1);
                 LocalDate to = LocalDate.of(2024, 1, 31);
 
@@ -1253,9 +1307,11 @@ public class UserServiceTest {
             @DisplayName("다양한 criteria 타입으로 조회")
             void getUserDailyHistory_DifferentCriteria() {
                 // given
+                setupRankingComcode();
+                
                 String nickname = "testUser";
                 Long userId = 1L;
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.RANKING;
+                String criteria = "RANKING";
                 LocalDate from = LocalDate.of(2024, 1, 1);
                 LocalDate to = LocalDate.of(2024, 1, 2);
 
@@ -1291,9 +1347,11 @@ public class UserServiceTest {
             @DisplayName("null 파라미터로 조회하는 경우")
             void getUserDailyHistory_WithNullParameters() {
                 // given
+                setupRatingComcode();
+                
                 String nickname = "testUser";
                 Long userId = 1L;
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.RATING;
+                String criteria = "RATING";
                 LocalDate from = null;
                 LocalDate to = null;
 
@@ -1329,9 +1387,11 @@ public class UserServiceTest {
             @DisplayName("하루만 조회하는 경우")
             void getUserDailyHistory_SingleDay() {
                 // given
+                setupRatingComcode();
+                
                 String nickname = "testUser";
                 Long userId = 1L;
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.RATING;
+                String criteria = "RATING";
                 LocalDate singleDate = LocalDate.of(2024, 1, 15);
 
                 UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
@@ -1365,9 +1425,11 @@ public class UserServiceTest {
             @DisplayName("연속되지 않은 날짜의 히스토리 데이터 조회")
             void getUserDailyHistory_NonConsecutiveDates() {
                 // given
+                setupSolvedCountComcode();
+                
                 String nickname = "testUser";
                 Long userId = 1L;
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.SOLVED_COUNT;
+                String criteria = "SOLVED_COUNT";
                 LocalDate from = LocalDate.of(2024, 1, 1);
                 LocalDate to = LocalDate.of(2024, 1, 10);
 
@@ -1406,9 +1468,11 @@ public class UserServiceTest {
             @DisplayName("from만 null인 경우")
             void getUserDailyHistory_WithFromNull() {
                 // given
+                setupRankingComcode();
+                
                 String nickname = "testUser";
                 Long userId = 1L;
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.RANKING;
+                String criteria = "RANKING";
                 LocalDate from = null;
                 LocalDate to = LocalDate.of(2024, 1, 31);
 
@@ -1444,9 +1508,11 @@ public class UserServiceTest {
             @DisplayName("to만 null인 경우")
             void getUserDailyHistory_WithToNull() {
                 // given
+                setupRatingComcode();
+                
                 String nickname = "testUser";
                 Long userId = 1L;
-                UserHistoryCriteriaType criteria = UserHistoryCriteriaType.RATING;
+                String criteria = "RATING";
                 LocalDate from = LocalDate.of(2024, 1, 1);
                 LocalDate to = null;
 
