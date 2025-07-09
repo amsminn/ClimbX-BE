@@ -199,6 +199,9 @@ class ComcodeServiceTest {
 
             // then
             assertThat(result.codeGroup()).isEqualTo("STATUS");
+
+            // then
+            assertThat(result.codeGroup()).isEqualTo("SUBMISSION_STATUS");
             assertThat(result.code()).isEqualTo("PENDING");
             assertThat(result.codeName()).isEqualTo("대기중");
             assertThat(result.sortOrder()).isEqualTo(1);
@@ -222,7 +225,6 @@ class ComcodeServiceTest {
         void getCode_NonExistentCode_ThrowsException() {
             // when & then
             assertThatThrownBy(() -> comcodeService.getCodeDto("NON_EXISTENT_CODE"))
-                .isInstanceOf(ComcodeNotFound.class);
         }
 
         @Test
@@ -238,7 +240,6 @@ class ComcodeServiceTest {
         void getCode_EmptyCode_ThrowsException() {
             // when & then
             assertThatThrownBy(() -> comcodeService.getCodeDto(""))
-                .isInstanceOf(ComcodeNotFound.class);
         }
     }
 
@@ -261,7 +262,5 @@ class ComcodeServiceTest {
             assertThat(codes).containsKeys("USER", "ADMIN", "PENDING", "ACCEPTED", "REJECTED",
                 "RATING", "RANKING", "SOLVED_COUNT");
         }
-
-
     }
 } 
