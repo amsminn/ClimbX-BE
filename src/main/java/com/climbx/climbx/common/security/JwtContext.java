@@ -77,7 +77,7 @@ public class JwtContext {
             .compact();
     }
 
-    public String generateRefreshToken(Long userId) {
+    public String generateRefreshToken(Long userId, String provider) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpiration * 1000);
 
@@ -86,6 +86,7 @@ public class JwtContext {
             .setIssuer(issuer)
             .setIssuedAt(now)
             .setExpiration(expiryDate)
+            .claim("provider", provider)
             .claim("type", comcodeService.getCodeValue("REFRESH"))
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact();

@@ -86,7 +86,7 @@ public class AuthService {
             user.role()
         );
 
-        String refreshToken = jwtContext.generateRefreshToken(user.userId());
+        String refreshToken = jwtContext.generateRefreshToken(user.userId(), oauth2Provider.getProviderType().name());
 
         log.info("사용자 로그인 완료: userId={}, nickname={}, provider={}",
             user.userId(), user.nickname(), oauth2Provider.getProviderType().name());
@@ -105,7 +105,7 @@ public class AuthService {
     @Transactional
     public LoginResponseDto refreshAccessToken(String refreshToken) {
         Optional.of(jwtContext.extractTokenType(refreshToken))
-            .filter(type -> type == comcodeService.getCodeValue("REFRESH"))
+            .filter(type -> type.equals(comcodeService.getCodeValue("REFRESH")))
             .orElseThrow(InvalidRefreshTokenException::new);
 
         Long userId = jwtContext.extractSubject(refreshToken);
@@ -119,7 +119,7 @@ public class AuthService {
 
         // 새로운 토큰 생성
         String newAccessToken = jwtContext.generateAccessToken(userId, provider, user.role());
-        String newRefreshToken = jwtContext.generateRefreshToken(userId);
+        String newRefreshToken = jwtContext.generateRefreshToken(userId, provider);
 
         log.info("토큰 갱신 완료: userId={}", userId);
 

@@ -4,7 +4,6 @@ import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.RefreshRequestDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.common.annotation.SuccessStatus;
-import com.climbx.climbx.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,6 +31,7 @@ public class AuthController implements AuthApiDocumentation {
      * OAuth2 카카오 인증 페이지로 리다이렉트합니다. 
      * 개발 및 테스트 환경에서만 사용해야 합니다.
      */
+    @Override
     @GetMapping("/oauth2/kakao/authorize-url")
     public ResponseEntity<Void> redirectToKakaoAuthorize() {
         log.info("카카오 OAuth2 인증 URL 리다이렉트 요청");
@@ -47,6 +47,7 @@ public class AuthController implements AuthApiDocumentation {
     /**
      * provider의 인가 code를 받아 인증하고 토큰 발급
      */
+    @Override
     @GetMapping("/oauth2/{provider}/callback")
     @SuccessStatus(value = HttpStatus.OK)
     public LoginResponseDto handleOAuth2Callback(
@@ -71,6 +72,7 @@ public class AuthController implements AuthApiDocumentation {
     /**
      * 액세스 토큰을 갱신합니다. 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
      */
+    @Override
     @PostMapping("/oauth2/refresh")
     @SuccessStatus(value = HttpStatus.CREATED)
     public LoginResponseDto refreshAccessToken(@RequestBody RefreshRequestDto request) {
@@ -85,6 +87,7 @@ public class AuthController implements AuthApiDocumentation {
     /**
      * 현재 사용자의 SSO 관련 정보만 조회
      */
+    @Override
     @GetMapping("/me")
     @SuccessStatus(value = HttpStatus.OK)
     public UserOauth2InfoResponseDto getCurrentUserInfo(
@@ -101,6 +104,7 @@ public class AuthController implements AuthApiDocumentation {
     /**
      * 사용자 로그아웃을 처리합니다. 클라이언트에서 토큰을 삭제해주세요. 클라이언트에서도 토큰 삭제 필요
      */
+    @Override
     @PostMapping("/signout")
     @SuccessStatus(value = HttpStatus.NO_CONTENT)
     public void signOut(@RequestBody RefreshRequestDto request) {

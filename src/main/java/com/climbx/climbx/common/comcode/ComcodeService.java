@@ -50,6 +50,6 @@ public class ComcodeService {
     }
 
     public String getCodeValue(String code) {
-        return getCodeDto(code).codeName();
+        return getCodeDto(code).code();
     }
 }
