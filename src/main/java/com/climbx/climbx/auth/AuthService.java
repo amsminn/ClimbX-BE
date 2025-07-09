@@ -7,6 +7,7 @@ import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.exception.InvalidRefreshTokenException;
+import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
 import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
@@ -140,9 +141,7 @@ public class AuthService {
         // 사용자 주 인증 수단 조회
         String provider = userAuthsRepository.findByUserIdAndIsPrimaryTrue(userId)
             .map(userAuth -> userAuth.provider().name())
-            .orElseThrow(
-                () -> new IllegalStateException("no primary provider found for userId: " + userId)
-            );
+            .orElseThrow(() -> new UserAuthNotFoundException(userId));
 
         return UserOauth2InfoResponseDto.builder()
             .id(user.userId())

@@ -2,6 +2,7 @@ package com.climbx.climbx.common.security;
 
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.common.security.exception.TokenExpiredException;
 import com.climbx.climbx.common.util.OptionalUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -91,6 +92,27 @@ public class JwtContext {
     }
 
     /**
+     * 토큰 Payload 추출
+     */
+    private Claims extractClaims(String token) {
+        if (token == null) {
+            throw new InvalidTokenException("Token is null");
+        }
+
+        try {
+            return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
+        } catch (Exception e) {
+            throw new InvalidTokenException();
+        }
+    }
+
+    /**
      * 사용자 ID 추출
      */
     public Long extractSubject(String token) {
@@ -143,30 +165,6 @@ public class JwtContext {
                 }
             )
             .orElseThrow(() -> new InvalidTokenException("Valid role not found in payload"));
-    }
-
-    /**
-     * 토큰 Payload 추출
-     */
-    private Optional<Claims> extractClaims(String token) {
-        if (token == null) {
-            return Optional.empty();
-        }
-
-        try {
-            Claims claims = Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-            return Optional.of(claims);
-        } catch (ExpiredJwtException e) {
-            // 만료된 토큰에서도 클레임은 추출 가능
-            return Optional.of(e.getClaims());
-        } catch (Exception e) {
-            // 유효하지 않은 토큰에서는 클레임을 추출하지 않음
-            return Optional.empty();
-        }
     }
 
     public Long getAccessTokenExpiration() {
