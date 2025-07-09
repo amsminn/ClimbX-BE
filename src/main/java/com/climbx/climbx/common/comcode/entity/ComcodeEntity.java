@@ -3,6 +3,8 @@ package com.climbx.climbx.common.comcode.entity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -24,10 +26,13 @@ public class ComcodeEntity extends BaseTimeEntity {
      * 공통 코드 엔티티, is_active는 BaseTimeEntity에서 deleted_at으로 대체
      */
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "group_code", length = 50, nullable = false)
     private String groupCode;
 
-    @Id
     @Column(name = "code", length = 50, nullable = false)
     private String code;
 

@@ -8,16 +8,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ComcodeService {
 
     private final ComcodeRepository comcodeRepository;
-    Map<String, ComcodeDto> comcodes;
+    private Map<String, ComcodeDto> comcodes;
 
-    public ComcodeService(ComcodeRepository comcodeRepository) {
-        this.comcodeRepository = comcodeRepository;
+    @EventListener(ApplicationReadyEvent.class)
+    public void init() {
         this.comcodes = getCodes();
     }
 

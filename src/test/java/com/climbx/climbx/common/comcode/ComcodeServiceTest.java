@@ -34,9 +34,9 @@ class ComcodeServiceTest {
         mockComcodeEntities = List.of(
             createComcodeEntity("ROLE", "USER", "일반 사용자", "일반 사용자 권한", 1),
             createComcodeEntity("ROLE", "ADMIN", "관리자", "관리자 권한", 2),
-            createComcodeEntity("SUBMISSION_STATUS", "PENDING", "대기중", "제출 대기 상태", 1),
-            createComcodeEntity("SUBMISSION_STATUS", "ACCEPTED", "승인됨", "제출 승인 상태", 2),
-            createComcodeEntity("SUBMISSION_STATUS", "REJECTED", "거부됨", "제출 거부 상태", 3),
+            createComcodeEntity("STATUS", "PENDING", "대기중", "제출 대기 상태", 1),
+            createComcodeEntity("STATUS", "ACCEPTED", "승인됨", "제출 승인 상태", 2),
+            createComcodeEntity("STATUS", "REJECTED", "거부됨", "제출 거부 상태", 3),
             createComcodeEntity("USER_HISTORY_CRITERIA", "RATING", "레이팅", "사용자 레이팅", 1),
             createComcodeEntity("USER_HISTORY_CRITERIA", "RANKING", "랭킹", "사용자 랭킹", 2),
             createComcodeEntity("USER_HISTORY_CRITERIA", "SOLVED_COUNT", "해결 문제 수", "해결한 문제 개수", 3)
@@ -116,17 +116,17 @@ class ComcodeServiceTest {
         }
 
         @Test
-        @DisplayName("SUBMISSION_STATUS 그룹의 코드들을 정상 반환")
+        @DisplayName("STATUS 그룹의 코드들을 정상 반환")
         void getCodesByGroup_SubmissionStatusGroup_Success() {
             // when
-            List<ComcodeDto> result = comcodeService.getCodesByGroup("SUBMISSION_STATUS");
+            List<ComcodeDto> result = comcodeService.getCodesByGroup("STATUS");
 
             // then
             assertThat(result).hasSize(3);
             assertThat(result).extracting(ComcodeDto::code)
                 .containsExactlyInAnyOrder("PENDING", "ACCEPTED", "REJECTED");
             assertThat(result).extracting(ComcodeDto::codeGroup)
-                .allMatch(group -> group.equals("SUBMISSION_STATUS"));
+                .allMatch(group -> group.equals("STATUS"));
         }
 
         @Test
@@ -198,7 +198,7 @@ class ComcodeServiceTest {
             ComcodeDto result = comcodeService.getCodeDto("PENDING");
 
             // then
-            assertThat(result.codeGroup()).isEqualTo("SUBMISSION_STATUS");
+            assertThat(result.codeGroup()).isEqualTo("STATUS");
             assertThat(result.code()).isEqualTo("PENDING");
             assertThat(result.codeName()).isEqualTo("대기중");
             assertThat(result.sortOrder()).isEqualTo(1);
