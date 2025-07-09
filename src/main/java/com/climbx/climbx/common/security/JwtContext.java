@@ -1,6 +1,10 @@
 package com.climbx.climbx.common.security;
 
+<<<<<<< HEAD
 import com.climbx.climbx.common.comcode.ComcodeService;
+=======
+import com.climbx.climbx.common.enums.TokenType;
+>>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
 import com.climbx.climbx.common.security.exception.TokenExpiredException;
 import com.climbx.climbx.common.util.OptionalUtils;
@@ -72,7 +76,11 @@ public class JwtContext {
             .setExpiration(expiryDate)
             .claim("provider", provider)
             .claim("role", role)
+<<<<<<< HEAD
             .claim("type", comcodeService.getCodeValue("ACCESS"))
+=======
+            .claim("type", TokenType.ACCESS.name())
+>>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact();
     }
@@ -161,8 +169,12 @@ public class JwtContext {
         return OptionalUtils.tryOf(
                 () -> {
                     Claims claims = extractClaims(token);
+<<<<<<< HEAD
                     String role = claims.get("role", String.class);
                     return comcodeService.getCodeValue(role);
+=======
+                    return claims.get("role", String.class);
+>>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
                 }
             )
             .orElseThrow(() -> new InvalidTokenException("Valid role not found in payload"));

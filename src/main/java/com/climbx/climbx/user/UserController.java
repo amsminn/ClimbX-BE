@@ -2,11 +2,19 @@ package com.climbx.climbx.user;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 =======
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 >>>>>>> 68175fa ([SWM-92] feat: 스팟별 problem 리스트 조회 API 개발)
+=======
+import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
+import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
+=======
+import com.climbx.climbx.problem.dto.ProblemResponseDto;
+>>>>>>> 5c791be ([SWM-130] feat: replace enum with comcode)
+>>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;

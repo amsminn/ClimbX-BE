@@ -1,6 +1,7 @@
 package com.climbx.climbx.user;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.problem.dto.ProblemResponseDto;
 =======
@@ -8,6 +9,15 @@ import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 >>>>>>> 68175fa ([SWM-92] feat: 스팟별 problem 리스트 조회 API 개발)
+=======
+import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
+import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
+=======
+import com.climbx.climbx.common.comcode.ComcodeService;
+import com.climbx.climbx.problem.dto.ProblemResponseDto;
+>>>>>>> 5c791be ([SWM-130] feat: replace enum with comcode)
+>>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -47,7 +57,11 @@ class UserService {
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
 
+<<<<<<< HEAD
         String userRoleCode = comcodeService.getCodeDto("USER").code();
+=======
+        String userRoleCode = comcodeService.getCode("USER").code();
+>>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
         if (search == null || search.trim().isEmpty()) {
             userAccounts = userAccountRepository.findByRole(userRoleCode);
         } else {
@@ -137,7 +151,11 @@ class UserService {
         LocalDate to
     ) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
+<<<<<<< HEAD
         criteria = comcodeService.getCodeDto(criteria).code();
+=======
+        criteria = comcodeService.getCode(criteria).code();
+>>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
 
         return userRankingHistoryRepository.getUserDailyHistory(
             userAccount.userId(),

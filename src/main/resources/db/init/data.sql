@@ -561,5 +561,24 @@ VALUES (1, 'RATING', 2500, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
        (3, 'RANKING', 35, '2025-07-16 00:00:00', '2025-07-16 00:00:00', NULL),
        (3, 'RANKING', 16, '2025-07-23 00:00:00', '2025-07-23 00:00:00', NULL);
 
+<<<<<<< HEAD
+=======
+-- Comcodes for enum replacement
+INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at, deleted_at)
+VALUES 
+    -- RoleType
+    ('ROLE', 'USER', '일반 사용자', '일반 사용자 권한', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+    ('ROLE', 'ADMIN', '관리자', '관리자 권한', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+    
+    -- SubmissionStatusType
+    ('SUBMISSION_STATUS', 'PENDING', '대기중', '제출 대기 상태', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+    ('SUBMISSION_STATUS', 'ACCEPTED', '승인됨', '제출 승인 상태', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+    ('SUBMISSION_STATUS', 'REJECTED', '거부됨', '제출 거부 상태', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+    
+    -- UserHistoryCriteriaType
+    ('USER_HISTORY_CRITERIA', 'RANKING', '순위', '사용자 순위 히스토리', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+    ('USER_HISTORY_CRITERIA', 'RATING', '레이팅', '사용자 레이팅 히스토리', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+    ('USER_HISTORY_CRITERIA', 'SOLVED_COUNT', '해결수', '사용자 문제 해결 개수 히스토리', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+>>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
 
 COMMIT;
