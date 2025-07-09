@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<<<<<<< HEAD
+  <<<<<<< HEAD
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>🔄 카카오 로그인 처리 중 - ClimbX</title>
@@ -453,7 +453,14 @@
 
             // 오류 처리
             if (error) {
-                showError(`카카오 로그인 오류: ${error}`, errorDescription);
+                showError(`
+    카카오
+    로그인
+    오류: $
+    {
+      error
+    }
+    `, errorDescription);
                 return;
             }
 
@@ -471,7 +478,13 @@
             try {
                 updateLoadingMessage('토큰 교환 요청 중...');
 
-                const response = await fetch(`${serverUrl}/api/auth/oauth2/kakao/callback?code=${code}`);
+                const response = await fetch(`
+    $
+    {
+      serverUrl
+    }
+    /api/
+    auth / oauth2 / kakao / callback ? code = ${code}`);
                 
                 if (response.ok) {
                     const result = await response.json();
@@ -484,10 +497,26 @@
                     }
                 } else {
                     const errorText = await response.text();
-                    showError(`토큰 교환 실패 (${response.status})`, errorText);
+                    showError(`
+    토큰
+    교환
+    실패($
+    {
+      response.status
+    }
+  )
+    `, errorText);
                 }
             } catch (error) {
-                showError('네트워크 오류', `서버와 통신할 수 없습니다: ${error.message}`);
+                showError('네트워크 오류', `
+    서버와
+    통신할
+    수
+    없습니다: $
+    {
+      error.message
+    }
+    `);
             }
         }
 
@@ -495,31 +524,52 @@
             hideLoading();
             
             const resultHtml = `
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
-                <h3>✅ 카카오 로그인 성공!</h3>
-                
-                <div class="step-info">
-                    <h4>📋 단계별 처리 결과</h4>
-                    <p>1. ✅ 카카오 인증 완료</p>
-                    <p>2. ✅ 인가 코드 수신</p>
-                    <p>3. ✅ 토큰 교환 성공</p>
-                    <p>4. 🔄 사용자 정보 조회 중...</p>
-                </div>
-                
-                <div class="token-info">
-                    <strong>🔑 발급된 JWT 토큰 정보:</strong><br><br>
-                    <strong>Token Type:</strong> ${tokens.tokenType}<br>
-<<<<<<< HEAD
-                    <strong>Expires In:</strong> ${tokens.expiresIn}초 (${Math.floor(
-        tokens.expiresIn / 60)}분)<br><br>
-                    <strong>Access Token:</strong><br>
-                    ${tokens.accessToken.substring(0, 80)}...<br>
-                    <strong>Refresh Token:</strong><br>
-                    ${tokens.refreshToken.substring(0, 80)}...<br>
-                </div>
-            `;
+    >>> >>> > 8947
+    ec5(refactor
+  :
+    인증
+    관련
+    DTO, 예외
+    처리, JWT
+    필터
+    및
+    테스트
+    코드
+    리팩토링
+  )
+  <
+    h3 >✅ 카카오
+    로그인
+    성공
+    ! < /h3>
 
-    showResult(resultHtml, 'success');
+    <div class="step-info">
+      <h4>📋 단계별 처리 결과</h4>
+      <p>1. ✅ 카카오 인증 완료</p>
+      <p>2. ✅ 인가 코드 수신</p>
+      <p>3. ✅ 토큰 교환 성공</p>
+      <p>4. 🔄 사용자 정보 조회 중...</p>
+    </div>
+
+    <div class="token-info">
+      <strong>🔑 발급된 JWT 토큰 정보:</strong><br><br>
+      <strong>Token Type:</strong> ${tokens.tokenType}<br>
+      <
+      <
+      <
+      <
+      <
+      << HEAD
+      <strong>Expires In:</strong> ${tokens.expiresIn}초 (${Math.floor(
+          tokens.expiresIn / 60)}분)<br><br>
+        <strong>Access Token:</strong><br>
+        ${tokens.accessToken.substring(0, 80)}...<br>
+        <strong>Refresh Token:</strong><br>
+        ${tokens.refreshToken.substring(0, 80)}...<br>
+    </div>
+  `;
+
+  showResult(resultHtml, 'success');
   }
 
   async function autoTestUserInfo() {
@@ -552,7 +602,8 @@
     if (userInfo) {
       const userInfoHtml = `
 =======
-                    <strong>Expires In:</strong> ${tokens.expiresIn}초 (${Math.floor(tokens.expiresIn / 60)}분)<br><br>
+                    <strong>Expires In:</strong> ${tokens.expiresIn}초 (${Math.floor(
+          tokens.expiresIn / 60)}분)<br><br>
                     <strong>Access Token:</strong><br>
                     ${tokens.accessToken.substring(0, 80)}...<br>
                     <button class="btn copy-button" onclick="copyToClipboard('${tokens.accessToken}')">📋 복사</button><br><br>
@@ -562,51 +613,56 @@
                 </div>
             `;
 
-            showResult(resultHtml, 'success');
+      showResult(resultHtml, 'success');
+    }
+
+    async function autoTestUserInfo() {
+      try {
+        updateLoadingMessage('사용자 정보 조회 중...');
+
+        const response = await fetch(`${serverUrl}/api/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${tokens.accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const userInfo = await response.json();
+          appendUserInfo(userInfo);
+        } else {
+          console.error('사용자 정보 조회 실패:', response.status);
+          appendUserInfo(null, `사용자 정보 조회 실패 (${response.status})`);
         }
+      } catch (error) {
+        console.error('사용자 정보 조회 오류:', error);
+        appendUserInfo(null, `네트워크 오류: ${error.message}`);
+      }
+    }
 
-        async function autoTestUserInfo() {
-            try {
-                updateLoadingMessage('사용자 정보 조회 중...');
-                
-                const response = await fetch(`${serverUrl}/api/auth/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${tokens.accessToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+    function appendUserInfo(userInfo, errorMessage = null) {
+      const resultContainer = document.getElementById('resultContent');
 
-                if (response.ok) {
-                    const userInfo = await response.json();
-                    appendUserInfo(userInfo);
-                } else {
-                    console.error('사용자 정보 조회 실패:', response.status);
-                    appendUserInfo(null, `사용자 정보 조회 실패 (${response.status})`);
-                }
-            } catch (error) {
-                console.error('사용자 정보 조회 오류:', error);
-                appendUserInfo(null, `네트워크 오류: ${error.message}`);
-            }
-        }
-
-        function appendUserInfo(userInfo, errorMessage = null) {
-            const resultContainer = document.getElementById('resultContent');
-            
-            if (userInfo) {
-                const userInfoHtml = `
+      if (userInfo) {
+        const userInfoHtml = `
 >>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
                     <div class="user-info">
                         <strong>👤 사용자 정보:</strong><br><br>
                         <pre>${JSON.stringify(userInfo, null, 2)}</pre>
                     </div>
                 `;
-<<<<<<< HEAD
-      resultContainer.innerHTML += userInfoHtml;
+        <
+        <
+        <
+        <
+        <
+        << HEAD
+            resultContainer.innerHTML += userInfoHtml;
 
-      // 단계 정보 업데이트
-      updateStepInfo('4. ✅ 사용자 정보 조회 완료');
-    } else {
-      const errorHtml = `
+        // 단계 정보 업데이트
+        updateStepInfo('4. ✅ 사용자 정보 조회 완료');
+      } else {
+        const errorHtml = `
 =======
                 resultContainer.innerHTML += userInfoHtml;
                 
@@ -614,12 +670,34 @@
                 updateStepInfo('4. ✅ 사용자 정보 조회 완료');
             } else {
                 const errorHtml = `
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
-                    <div class="step-info">
-                        <strong>⚠️ 사용자 정보 조회 실패:</strong><br>
-                        ${errorMessage}
-                    </div>
-                `;
+            >>> >>> > 8947
+        ec5(refactor
+      :
+        인증
+        관련
+        DTO, 예외
+        처리, JWT
+        필터
+        및
+        테스트
+        코드
+        리팩토링
+      )
+      <
+        div
+
+        class
+
+        = "step-info" >
+            < strong >⚠️ 사용자
+        정보
+        조회
+        실패:</
+      strong>
+        <br>
+          ${errorMessage}
+        </div>
+            `;
 <<<<<<< HEAD
       resultContainer.innerHTML += errorHtml;
       updateStepInfo('4. ❌ 사용자 정보 조회 실패');
@@ -632,18 +710,18 @@
     const stepInfo = document.querySelector('.step-info');
     if (stepInfo) {
       stepInfo.innerHTML = `
-=======
-                resultContainer.innerHTML += errorHtml;
-                updateStepInfo('4. ❌ 사용자 정보 조회 실패');
-            }
-            
-            showActions();
-        }
+        === === =
+            resultContainer.innerHTML += errorHtml;
+        updateStepInfo('4. ❌ 사용자 정보 조회 실패');
+      }
 
-        function updateStepInfo(newStep4Text) {
-            const stepInfo = document.querySelector('.step-info');
-            if (stepInfo) {
-                stepInfo.innerHTML = `
+      showActions();
+    }
+
+    function updateStepInfo(newStep4Text) {
+      const stepInfo = document.querySelector('.step-info');
+      if (stepInfo) {
+        stepInfo.innerHTML = `
 >>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
                     <h4>📋 단계별 처리 결과</h4>
                     <p>1. ✅ 카카오 인증 완료</p>
@@ -651,14 +729,21 @@
                     <p>3. ✅ 토큰 교환 성공</p>
                     <p>${newStep4Text}</p>
                 `;
-<<<<<<< HEAD
-    }
-  }
+        <
+        <
+        <
+        <
+        <
+        << HEAD
+            }
+            }
 
-  function showError(title, description) {
-    hideLoading();
+            function showError(title, description
+      )
+        {
+          hideLoading();
 
-    const errorHtml = `
+          const errorHtml = `
 =======
             }
         }
@@ -667,23 +752,40 @@
             hideLoading();
             
             const errorHtml = `
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
-                <h3>❌ ${title}</h3>
-                <p style="margin: 1rem 0;"><strong>상세 내용:</strong></p>
-                <div class="token-info">
-                    ${description}
-                </div>
-                
-                <div class="step-info">
-                    <h4>🔧 해결 방법:</h4>
-                    <ul style="text-align: left; margin: 0.5rem 0; padding-left: 1.5rem;">
-                        <li>환경변수 설정 확인 (KAKAO_REST_API_KEY, KAKAO_CLIENT_SECRET)</li>
-                        <li>카카오 개발자 콘솔에서 Redirect URI 등록 확인</li>
-                        <li>백엔드 서버가 정상 실행 중인지 확인</li>
-                        <li>브라우저 콘솔에서 네트워크 탭 확인</li>
-                    </ul>
-                </div>
-            `;
+              >>> >>> > 8947
+          ec5(refactor
+        :
+          인증
+          관련
+          DTO, 예외
+          처리, JWT
+          필터
+          및
+          테스트
+          코드
+          리팩토링
+        )
+        <
+          h3 >❌ $
+          {
+            title
+          }
+        </h3>
+          <p style="margin: 1rem 0;"><strong>상세 내용:</strong></p>
+          <div class="token-info">
+            ${description}
+          </div>
+
+          <div class="step-info">
+            <h4>🔧 해결 방법:</h4>
+            <ul style="text-align: left; margin: 0.5rem 0; padding-left: 1.5rem;">
+              <li>환경변수 설정 확인 (KAKAO_REST_API_KEY, KAKAO_CLIENT_SECRET)</li>
+              <li>카카오 개발자 콘솔에서 Redirect URI 등록 확인</li>
+              <li>백엔드 서버가 정상 실행 중인지 확인</li>
+              <li>브라우저 콘솔에서 네트워크 탭 확인</li>
+            </ul>
+          </div>
+              `;
 
 <<<<<<< HEAD
     showResult(errorHtml, 'error');
@@ -696,7 +798,13 @@
     const container = document.getElementById('resultContainer');
     const content = document.getElementById('resultContent');
 
-    container.className = `result-container ${type}`;
+    container.className = `
+          result - container
+          $
+          {
+            type
+          }
+          `;
     content.innerHTML = html;
     container.style.display = 'block';
 
@@ -765,16 +873,33 @@
     }
 
     try {
+<<<<<<< HEAD
       console.log('사용자 정보 조회 요청 - 토큰:', tokens.accessToken.substring(0, 20) + '...');
       
       const response = await fetch('/api/auth/me', {
         method: 'GET',
+=======
+      const response = await fetch(`
+          $
+          {
+            serverUrl
+          }
+          /api/
+          auth / me`, {
+>>>>>>> b5e9961 ([SWM-130] chore: refotmat code)
         headers: {
-          'Authorization': `Bearer ${tokens.accessToken}`,
+          'Authorization': `
+          Bearer
+          $
+          {
+            tokens.accessToken
+          }
+          `,
           'Content-Type': 'application/json'
         }
       });
 
+<<<<<<< HEAD
       const result = await response.json();
       console.log('사용자 정보 응답:', result);
 
@@ -786,6 +911,45 @@
     } catch (error) {
       console.error('사용자 정보 조회 오류:', error);
       alert(`❌ 사용자 정보 조회 오류: ${error.message}`);
+=======
+      if (response.ok) {
+        const userInfo = await response.json();
+        alert(`
+          사용자
+          정보
+          조회
+          성공
+          !\n\n$
+          {
+            JSON.stringify(userInfo, null, 2)
+          }
+          `);
+      } else {
+        const errorText = await response.text();
+        alert(`
+          사용자
+          정보
+          조회
+          실패($
+          {
+            response.status
+          }
+        ):
+          $
+          {
+            errorText
+          }
+          `);
+      }
+    } catch (error) {
+      alert(`
+          네트워크
+          오류: $
+          {
+            error.message
+          }
+          `);
+>>>>>>> b5e9961 ([SWM-130] chore: refotmat code)
     }
   }
 
@@ -997,78 +1161,78 @@
   });
 </script>
 =======
-            showResult(errorHtml, 'error');
-            showActions();
-        }
+showResult(errorHtml, 'error');
+showActions();
+}
 
-        function showResult(html, type) {
-            const container = document.getElementById('resultContainer');
-            const content = document.getElementById('resultContent');
-            
-            container.className = `result-container ${type}`;
-            content.innerHTML = html;
-            container.style.display = 'block';
-        }
+function showResult(html, type) {
+const container = document.getElementById('resultContainer');
+const content = document.getElementById('resultContent');
 
-        function hideLoading() {
-            document.getElementById('loadingState').style.display = 'none';
-        }
+container.className = `result-container ${type}`;
+content.innerHTML = html;
+container.style.display = 'block';
+}
 
-        function updateLoadingMessage(message) {
-            const loadingElement = document.getElementById('loadingState');
-            const messageElement = loadingElement.querySelector('p');
-            messageElement.textContent = message;
-        }
+function hideLoading() {
+document.getElementById('loadingState').style.display = 'none';
+}
 
-        function showActions() {
-            document.getElementById('actions').style.display = 'block';
-        }
+function updateLoadingMessage(message) {
+const loadingElement = document.getElementById('loadingState');
+const messageElement = loadingElement.querySelector('p');
+messageElement.textContent = message;
+}
 
-        async function testUserInfo() {
-            if (!tokens.accessToken) {
-                alert('토큰이 없습니다. 먼저 로그인을 완료해주세요.');
-                return;
-            }
+function showActions() {
+document.getElementById('actions').style.display = 'block';
+}
 
-            try {
-                const response = await fetch(`${serverUrl}/api/auth/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${tokens.accessToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+async function testUserInfo() {
+if (!tokens.accessToken) {
+alert('토큰이 없습니다. 먼저 로그인을 완료해주세요.');
+return;
+}
 
-                if (response.ok) {
-                    const userInfo = await response.json();
-                    alert(`사용자 정보 조회 성공!\n\n${JSON.stringify(userInfo, null, 2)}`);
-                } else {
-                    const errorText = await response.text();
-                    alert(`사용자 정보 조회 실패 (${response.status}): ${errorText}`);
-                }
-            } catch (error) {
-                alert(`네트워크 오류: ${error.message}`);
-            }
-        }
+try {
+const response = await fetch(`${serverUrl}/api/auth/me`, {
+headers: {
+'Authorization': `Bearer ${tokens.accessToken}`,
+'Content-Type': 'application/json'
+}
+});
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                // 임시 알림 표시
-                const event = window.event;
-                const button = event.target;
-                const originalText = button.textContent;
-                
-                button.textContent = '✅ 복사됨';
-                button.style.background = '#28a745';
-                
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.style.background = '';
-                }, 2000);
-            }).catch(function(err) {
-                alert('클립보드 복사 실패: ' + err);
-            });
-        }
-    </script>
+if (response.ok) {
+const userInfo = await response.json();
+alert(`사용자 정보 조회 성공!\n\n${JSON.stringify(userInfo, null, 2)}`);
+} else {
+const errorText = await response.text();
+alert(`사용자 정보 조회 실패 (${response.status}): ${errorText}`);
+}
+} catch (error) {
+alert(`네트워크 오류: ${error.message}`);
+}
+}
+
+function copyToClipboard(text) {
+navigator.clipboard.writeText(text).then(function() {
+// 임시 알림 표시
+const event = window.event;
+const button = event.target;
+const originalText = button.textContent;
+
+button.textContent = '✅ 복사됨';
+button.style.background = '#28a745';
+
+setTimeout(() => {
+button.textContent = originalText;
+button.style.background = '';
+}, 2000);
+}).catch(function(err) {
+alert('클립보드 복사 실패: ' + err);
+});
+}
+</script>
 >>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
 </body>
 </html> 
