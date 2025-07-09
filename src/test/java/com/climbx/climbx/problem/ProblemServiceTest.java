@@ -1,7 +1,6 @@
 package com.climbx.climbx.problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -77,28 +76,6 @@ public class ProblemServiceTest {
                 .hasSize(2); // spotId 1에 2개 문제
             assertThat(result.spotDetailsResponseDtoList().get(1).problemDetailsResponseDtoList())
                 .hasSize(1); // spotId 2에 1개 문제
-        }
-
-        @Test
-        @DisplayName("파라미터 중 하나라도 null이면 IllegalArgumentException을 던진다")
-        void throwExceptionWhenAnyParameterIsNull() {
-            // given
-            Long gymId = 1L;
-            String localLevel = "빨강";
-            String holdColor = "파랑";
-
-            // when & then
-            assertThatThrownBy(() ->
-                problemService.getProblemSpotsWithFilters(null, localLevel, holdColor))
-                .isInstanceOf(IllegalArgumentException.class);
-
-            assertThatThrownBy(() ->
-                problemService.getProblemSpotsWithFilters(gymId, null, holdColor))
-                .isInstanceOf(IllegalArgumentException.class);
-
-            assertThatThrownBy(() ->
-                problemService.getProblemSpotsWithFilters(gymId, localLevel, null))
-                .isInstanceOf(IllegalArgumentException.class);
         }
     }
 } 

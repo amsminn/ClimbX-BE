@@ -1,6 +1,7 @@
 package com.climbx.climbx.common.error;
 
 import com.climbx.climbx.common.response.ApiResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,25 @@ public class GlobalExceptionHandler {
     }
 
     /*
+     * ConstraintViolationException 예외 처리
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(
+        ConstraintViolationException e
+    ) {
+        log.error("ConstraintViolationException occurred: {}", e.getMessage(), e);
+        String errorMessage = e.getConstraintViolations().stream()
+            .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+            .reduce((msg1, msg2) -> msg1 + ", " + msg2)
+            .orElse("Validation failed");
+        ApiResponse<Void> response = ApiResponse.error(
+            ErrorCode.VALIDATION_FAILED.status(),
+            errorMessage
+        );
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    /*
      * @Valid, @Validated 를 통한 검증 실패
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -57,7 +77,7 @@ public class GlobalExceptionHandler {
         log.error("MissingServletRequestParameterException occurred: {}", e.getMessage(), e);
 
         ApiResponse<Void> response = ApiResponse.error(
-            ErrorCode.MISSING_PARAMETER.status(),
+            ErrorCode.MISSING_REQUEST_PARAMETER.status(),
             e.getMessage()
         );
 
