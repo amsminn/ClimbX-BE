@@ -14,6 +14,7 @@ import com.climbx.climbx.auth.dto.OAuth2UserInfoDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
+import com.climbx.climbx.auth.exception.InvalidRefreshTokenException;
 import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
@@ -293,7 +294,7 @@ class AuthServiceTest {
 
             // when & then
             assertThatThrownBy(() -> authService.refreshAccessToken(refreshToken))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(InvalidRefreshTokenException.class)
                 .hasMessage("유효하지 않은 리프레시 토큰입니다.");
 
             then(jwtContext).should().extractTokenType(refreshToken);
