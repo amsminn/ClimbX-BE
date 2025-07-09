@@ -17,16 +17,6 @@ public class WebConfig implements WebMvcConfigurer {
     private final TimeTrackingInterceptor timeTrackingInterceptor;
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-            .allowedOriginPatterns("*") // TODO: 환경 변수로 관리
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(true)
-            .maxAge(3600);
-    }
-
-    @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(timeTrackingInterceptor)
             .addPathPatterns("/api/**"); // API 경로에만 적용
