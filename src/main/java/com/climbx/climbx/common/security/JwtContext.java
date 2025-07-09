@@ -1,15 +1,6 @@
 package com.climbx.climbx.common.security;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 import com.climbx.climbx.common.comcode.ComcodeService;
-=======
-import com.climbx.climbx.common.enums.TokenType;
->>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
-=======
-
-import com.climbx.climbx.common.comcode.ComcodeService;
->>>>>>> 1e1feb3 ([SWM-130] feat: apply comcode instead of enum)
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
 import com.climbx.climbx.common.security.exception.TokenExpiredException;
 import com.climbx.climbx.common.util.OptionalUtils;
@@ -81,15 +72,7 @@ public class JwtContext {
             .setExpiration(expiryDate)
             .claim("provider", provider)
             .claim("role", role)
-<<<<<<< HEAD
-<<<<<<< HEAD
             .claim("type", comcodeService.getCodeValue("ACCESS"))
-=======
-            .claim("type", TokenType.ACCESS.name())
->>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
-=======
-            .claim("type", comcodeService.getCodeValue("ACCESS"))
->>>>>>> 1e1feb3 ([SWM-130] feat: apply comcode instead of enum)
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact();
     }
@@ -103,10 +86,7 @@ public class JwtContext {
             .setIssuer(issuer)
             .setIssuedAt(now)
             .setExpiration(expiryDate)
-<<<<<<< HEAD
             .claim("provider", provider)
-=======
->>>>>>> 1e1feb3 ([SWM-130] feat: apply comcode instead of enum)
             .claim("type", comcodeService.getCodeValue("REFRESH"))
             .signWith(signingKey, SignatureAlgorithm.HS256)
             .compact();
@@ -182,22 +162,13 @@ public class JwtContext {
         return OptionalUtils.tryOf(
                 () -> {
                     Claims claims = extractClaims(token);
-<<<<<<< HEAD
-<<<<<<< HEAD
                     String role = claims.get("role", String.class);
                     return comcodeService.getCodeValue(role);
-=======
-                    return claims.get("role", String.class);
->>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
-=======
-                    String role = claims.get("role", String.class);
-                    return comcodeService.getCodeValue(role);
->>>>>>> 1e1feb3 ([SWM-130] feat: apply comcode instead of enum)
                 }
             )
             .orElseThrow(() -> new InvalidTokenException("Valid role not found in payload"));
     }
-    
+
     public Long getAccessTokenExpiration() {
         return accessTokenExpiration;
     }
