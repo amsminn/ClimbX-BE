@@ -6,6 +6,7 @@ import com.climbx.climbx.auth.dto.OAuth2UserInfoDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
+import com.climbx.climbx.auth.exception.InvalidRefreshTokenException;
 import com.climbx.climbx.auth.provider.OAuth2Provider;
 import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
@@ -104,13 +105,13 @@ public class AuthService {
     public LoginResponseDto refreshAccessToken(String refreshToken) {
         Optional.of(jwtContext.extractTokenType(refreshToken))
             .filter(type -> type == TokenType.REFRESH)
-            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다."));
+            .orElseThrow(InvalidRefreshTokenException::new);
 
         Long userId = jwtContext.extractSubject(refreshToken);
 
         // 사용자 존재 확인
         UserAccountEntity user = userAccountRepository.findByUserId(userId)
-            .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+            .orElseThrow(() -> new UserNotFoundException(userId));
 
         // 기존 토큰에서 provider 정보 추출
         String provider = jwtContext.extractProvider(refreshToken);
@@ -134,7 +135,7 @@ public class AuthService {
      */
     public UserOauth2InfoResponseDto getCurrentUserInfo(Long userId) {
         UserAccountEntity user = userAccountRepository.findByUserId(userId)
-            .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+            .orElseThrow(() -> new UserNotFoundException(userId));
 
         // 사용자 주 인증 수단 조회
         String provider = userAuthsRepository.findByUserIdAndIsPrimaryTrue(userId)

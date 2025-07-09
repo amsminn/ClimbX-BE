@@ -5,7 +5,7 @@ import com.climbx.climbx.common.error.ErrorCode;
 
 public class InvalidRefreshTokenException extends BusinessException {
 
-    public InvalidRefreshTokenException(String message) {
-        super(ErrorCode.INVALID_REFRESH_TOKEN, message);
+    public InvalidRefreshTokenException() {
+        super(ErrorCode.INVALID_REFRESH_TOKEN);
     }
 } 
