@@ -46,14 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private Optional<AuthenticationInfo> extractAuthenticationInfo(String validToken) {
-        return Optional.of(jwtContext.extractSubject(validToken))
-            .map(userId -> new AuthenticationInfo(
-                userId,
-                jwtContext.extractRole(validToken)
-            ));
-    }
-
     private void setAuthentication(AuthenticationInfo authInfo) {
         List<GrantedAuthority> authorities = Collections.singletonList(
             new SimpleGrantedAuthority(authInfo.role)

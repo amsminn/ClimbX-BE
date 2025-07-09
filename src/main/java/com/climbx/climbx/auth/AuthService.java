@@ -106,10 +106,14 @@ public class AuthService {
     public LoginResponseDto refreshAccessToken(String refreshToken) {
         Optional.of(jwtContext.extractTokenType(refreshToken))
 <<<<<<< HEAD
+<<<<<<< HEAD
             .filter(type -> type.equals(comcodeService.getCodeValue("REFRESH")))
 =======
             .filter(type -> type == comcodeService.getCodeValue("REFRESH"))
 >>>>>>> 1e1feb3 ([SWM-130] feat: apply comcode instead of enum)
+=======
+            .filter(type -> type.equals(comcodeService.getCodeValue("REFRESH")))
+>>>>>>> 658e95d ([SWM-146] chore: login test page refactor)
             .orElseThrow(InvalidRefreshTokenException::new);
 
         Long userId = jwtContext.extractSubject(refreshToken);
