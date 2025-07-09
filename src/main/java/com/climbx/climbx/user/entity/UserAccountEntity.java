@@ -1,5 +1,6 @@
 package com.climbx.climbx.user.entity;
 
+import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.video.entity.VideoEntity;
@@ -14,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -41,13 +43,18 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", length = 20, nullable = false)
-    @NotNull @Size(max = 20)
+    @NotNull
     private RoleType role; // USER, ADMIN 등 권한
 
     @Column(name = "nickname", length = 50, unique = true, nullable = false)
     @NotBlank
     @Size(min = 2, max = 50)
     private String nickname; // 사용자 닉네임
+
+    @Column(name = "email", length = 100, nullable = true)
+    @Email
+    @Size(max = 100)
+    private String email; // 사용자 이메일 (주 이메일)
 
     @Column(name = "status_message", length = 100, nullable = true)
     @Size(max = 100) // nullable
@@ -68,6 +75,9 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "userAccountEntity", fetch = FetchType.LAZY)
     private List<VideoEntity> submissionEntityList; // 제출 엔티티와의 관계 (추가 예시)
+
+    @OneToMany(mappedBy = "userAccountEntity", fetch = FetchType.LAZY)
+    private List<UserAuthEntity> userAuthEntityList; // OAuth2 인증 정보와의 관계
 
     public void markLogin() {
         this.lastLoginDate = LocalDate.now(); // 현재 날짜로 마지막 접속 날짜 갱신

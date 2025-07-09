@@ -23,6 +23,18 @@ public enum ErrorCode {
     GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "체육관을 찾을 수 없습니다."),
     NICKNAME_MISMATCH(HttpStatus.BAD_REQUEST, "닉네임이 일치하지 않습니다."),
 
+    // Auth Errors
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
+    USER_AUTH_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 인증 정보를 찾을 수 없습니다."),
+    
+    // OAuth2 Provider Specific Errors
+    PROVIDER_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "지원하지 않는 OAuth2 제공자입니다."),
+    PROVIDER_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "OAuth2 프로바이더 토큰이 만료되었습니다."),
+    PROVIDER_TOKEN_EXCHANGE_FAILED(HttpStatus.BAD_REQUEST, "OAuth2 프로바이더 토큰 교환에 실패했습니다."),
+    PRODIVDER_USER_INFO_FETCH_FAILED(HttpStatus.BAD_REQUEST, "OAuth2 사용자 정보 조회에 실패했습니다."),
+
     // 5xx : Server Errors
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 오류가 발생했습니다."),
@@ -30,7 +42,6 @@ public enum ErrorCode {
     TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "요청 시간이 초과되었습니다."),
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "서비스를 사용할 수 없습니다.");
 
-    // 에러 타입과 메시지
     private final HttpStatus status;
     private final String message;
 }

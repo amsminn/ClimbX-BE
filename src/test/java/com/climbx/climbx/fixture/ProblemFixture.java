@@ -15,7 +15,8 @@ public class ProblemFixture {
         return createProblemEntity(problemId, DEFAULT_PROBLEM_RATING);
     }
 
-    public static ProblemEntity createProblemEntity(Long problemId, String problemName, Long problemRating) {
+    public static ProblemEntity createProblemEntity(Long problemId, String problemName,
+        Long problemRating) {
         return createProblemEntity(problemId, problemRating);
     }
 

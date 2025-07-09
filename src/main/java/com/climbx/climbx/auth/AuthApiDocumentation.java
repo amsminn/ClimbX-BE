@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -21,60 +20,32 @@ import org.springframework.validation.annotation.Validated;
 public interface AuthApiDocumentation {
 
     @Operation(
-        summary = "OAuth2 인증 URL 리다이렉트",
-        description = "지정된 OAuth2 제공자의 인증 URL로 리다이렉트합니다."
+        summary = "Kakao OAuth2 인증 URL 요청 (개발용)",
+        description = "Kakao OAuth2 인증 URL을 생성하여 반환합니다. 개발 및 테스트 환경에서만 사용해야 합니다."
     )
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            responseCode = "302",
-            description = "OAuth2 제공자로 리다이렉트 성공",
+            responseCode = "200",
+            description = "인증 URL 생성 성공",
             content = @Content(
                 schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
                 examples = @ExampleObject(
-                    name = "리다이렉트 성공",
+                    name = "인증 URL 생성 성공",
                     value = """
                         {
-                          "httpStatus": 302,
-                          "statusMessage": "OAuth2 제공자로 리다이렉트합니다.",
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
                           "timeStamp": "2024-01-01T10:00:00Z",
-                          "responseTimeMs": 45,
-                          "path": "/api/auth/oauth2/google",
-                          "data": null
-                        }
-                        """
-                )
-            )
-        ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            responseCode = "400",
-            description = "잘못된 OAuth2 제공자",
-            content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
-                examples = @ExampleObject(
-                    name = "잘못된 제공자",
-                    value = """
-                        {
-                          "httpStatus": 400,
-                          "statusMessage": "지원하지 않는 OAuth2 제공자입니다.",
-                          "timeStamp": "2024-01-01T10:00:00Z",
-                          "responseTimeMs": 32,
-                          "path": "/api/auth/oauth2/unknown",
-                          "data": null
+                          "responseTimeMs": 100,
+                          "path": "/api/auth/oauth2/kakao/authorize-url",
+                          "data": "https://kauth.kakao.com/oauth/authorize?client_id=..."
                         }
                         """
                 )
             )
         )
     })
-    ResponseEntity<ApiResponse<Void>> getOAuth2RedirectUrl(
-        @Parameter(
-            name = "provider",
-            description = "OAuth2 제공자 (예: google, naver, kakao)",
-            required = true,
-            example = "google"
-        )
-        @NotBlank String provider
-    );
+    ApiResponse<String> getKakaoAuthorizeUrl();
 
     @Operation(
         summary = "OAuth2 콜백 처리",
