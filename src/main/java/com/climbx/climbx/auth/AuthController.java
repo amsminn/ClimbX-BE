@@ -8,6 +8,7 @@ import com.climbx.climbx.common.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 @Slf4j
 @RestController
@@ -26,17 +29,19 @@ public class AuthController implements AuthApiDocumentation {
     private final AuthService authService;
 
     /**
-     * OAuth2 콜백을 처리합니다. 모든 OAuth2 제공자의 인가 코드를 받아 사용자 인증을 완료하고 JWT 토큰을 발급합니다. URL 생성, 반드시 dev 환경에서
-     * 소셜 로그인 테스트 시에만 사용
+     * OAuth2 카카오 인증 페이지로 리다이렉트합니다. 
+     * 개발 및 테스트 환경에서만 사용해야 합니다.
      */
     @GetMapping("/oauth2/kakao/authorize-url")
-    public ApiResponse<String> getKakaoAuthorizeUrl() {
-        log.info("카카오 OAuth2 인증 URL 요청");
+    public ResponseEntity<Void> redirectToKakaoAuthorize() {
+        log.info("카카오 OAuth2 인증 URL 리다이렉트 요청");
 
         String authorizeUrl = authService.generateKakaoAuthorizeUrl();
 
-        log.info("카카오 OAuth2 인증 URL 생성 완료");
-        return ApiResponse.success(authorizeUrl, HttpStatus.OK);
+        log.info("카카오 OAuth2 인증 페이지로 리다이렉트: {}", authorizeUrl);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(authorizeUrl))
+                .build();
     }
 
     /**
