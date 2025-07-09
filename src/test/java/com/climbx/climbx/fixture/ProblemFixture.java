@@ -45,8 +45,8 @@ public class ProblemFixture {
         GymEntity gym,
         String localLevel,
         String holdColor,
-        Long problemRating
-        , Long spotId,
+        Long problemRating,
+        Long spotId,
         Double spotXRatio,
         Double spotYRatio
     ) {
