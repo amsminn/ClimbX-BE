@@ -254,7 +254,7 @@ public class AuthService {
     private UserAccountEntity createNewUser(OAuth2UserInfoDto userInfo,
         OAuth2ProviderType providerType) {
 
-        String nickname = generateTemporaryNickname(userInfo.nickname());
+        String nickname = generateTemporaryNickname(userInfo.getDisplayName());
 
         // 1. 사용자 계정 생성
         UserAccountEntity newUser = UserAccountEntity.builder()
