@@ -29,7 +29,9 @@ public class GlobalExceptionHandler {
             e.errorCode().status(),
             e.errorCode().message()
         );
-        return ResponseEntity.status(e.errorCode().status()).body(response);
+        return ResponseEntity
+            .status(e.errorCode().status())
+            .body(response);
     }
 
     /*
@@ -48,7 +50,9 @@ public class GlobalExceptionHandler {
             ErrorCode.VALIDATION_FAILED.status(),
             errorMessage
         );
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity
+            .status(ErrorCode.VALIDATION_FAILED.status())
+            .body(response);
     }
 
     /*
@@ -67,7 +71,9 @@ public class GlobalExceptionHandler {
             ErrorCode.VALIDATION_FAILED.status(),
             errorMessage
         );
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity
+            .status(ErrorCode.VALIDATION_FAILED.status())
+            .body(response);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -81,7 +87,9 @@ public class GlobalExceptionHandler {
             e.getMessage()
         );
 
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity
+            .status(ErrorCode.MISSING_REQUEST_PARAMETER.status())
+            .body(response);
     }
 
     /*
@@ -94,6 +102,8 @@ public class GlobalExceptionHandler {
             HttpStatus.INTERNAL_SERVER_ERROR,
             "An unexpected error occurred"
         );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(response);
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .body(response);
     }
 }
