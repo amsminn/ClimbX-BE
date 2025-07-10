@@ -2,7 +2,7 @@ package com.climbx.climbx.user;
 
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
-import com.climbx.climbx.problem.dto.ProblemResponseDto;
+import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -92,7 +92,7 @@ class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProblemResponseDto> getUserTopProblems(String nickname, Integer limit) {
+    public List<ProblemDetailsResponseDto> getUserTopProblems(String nickname, Integer limit) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
         Sort sort = Sort.by("problemEntity.problemRating").descending();
         Pageable pageable = PageRequest.of(0, limit, sort);
@@ -103,7 +103,7 @@ class UserService {
         );
 
         return problemEntities.stream()
-            .map(ProblemResponseDto::from)
+            .map(ProblemDetailsResponseDto::from)
             .toList();
     }
 

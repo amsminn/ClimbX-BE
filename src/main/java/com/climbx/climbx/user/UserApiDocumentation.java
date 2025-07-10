@@ -1,7 +1,7 @@
 package com.climbx.climbx.user;
 
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
-import com.climbx.climbx.problem.dto.ProblemResponseDto;
+import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
@@ -426,7 +426,7 @@ public interface UserApiDocumentation {
             )
         )
     })
-    List<ProblemResponseDto> getUserTopProblems(
+    List<ProblemDetailsResponseDto> getUserTopProblems(
         @Parameter(
             name = "nickname",
             description = "사용자 닉네임",

@@ -2,7 +2,7 @@ package com.climbx.climbx.user;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
-import com.climbx.climbx.problem.dto.ProblemResponseDto;
+import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
@@ -27,6 +27,7 @@ class UserController implements UserApiDocumentation {
 
     private final UserService userService;
 
+    @Override
     @GetMapping("")
     @SuccessStatus(value = HttpStatus.OK)
     public List<UserProfileResponseDto> getUsers(
@@ -36,12 +37,14 @@ class UserController implements UserApiDocumentation {
         return userService.getUsers(search);
     }
 
+    @Override
     @GetMapping("/{nickname}")
     @SuccessStatus(value = HttpStatus.OK)
     public UserProfileResponseDto getUserByNickname(@PathVariable String nickname) {
         return userService.getUserByNickname(nickname);
     }
 
+    @Override
     @PutMapping("/{nickname}")
     @SuccessStatus(value = HttpStatus.OK)
     public UserProfileResponseDto modifyUserProfile(
@@ -61,9 +64,10 @@ class UserController implements UserApiDocumentation {
         );
     }
 
+    @Override
     @GetMapping("/{nickname}/top-problems")
     @SuccessStatus(value = HttpStatus.OK)
-    public List<ProblemResponseDto> getUserTopProblems(
+    public List<ProblemDetailsResponseDto> getUserTopProblems(
         @PathVariable
         String nickname,
 
@@ -73,6 +77,7 @@ class UserController implements UserApiDocumentation {
         return userService.getUserTopProblems(nickname, limit);
     }
 
+    @Override
     @GetMapping("/{nickname}/streak")
     @SuccessStatus(value = HttpStatus.OK)
     public List<DailyHistoryResponseDto> getUserStreak(
@@ -90,6 +95,7 @@ class UserController implements UserApiDocumentation {
         return userService.getUserStreak(nickname, from, to);
     }
 
+    @Override
     @GetMapping("/{nickname}/history")
     @SuccessStatus(value = HttpStatus.OK)
     public List<DailyHistoryResponseDto> getUserDailyHistory(

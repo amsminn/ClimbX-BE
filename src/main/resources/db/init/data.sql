@@ -61,27 +61,174 @@ VALUES ('더클라임 클라이밍 B 홍대점', 37.5546882, 126.9202997, '서�
         '02-499-5014', 'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
--- 16 Problems
-INSERT INTO problems (problem_rating,
+-- 65 Problems (5 per gym)
+INSERT INTO problems (gym_id,
+                      local_level,
+                      hold_color,
+                      problem_rating,
+                      spot_id,
+                      spot_x_ratio,
+                      spot_y_ratio,
+                      image_url,
                       created_at,
                       updated_at,
                       deleted_at)
-VALUES (3837, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (123, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (24536, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (234354, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (32432, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (23123, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (1231, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (1241214, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (32525, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (43535336, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (235235, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (755, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (75222, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (24342, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (23, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-       (423, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+VALUES
+-- 더클라임 클라이밍 B 홍대점 (gym_id: 1)
+(1, '빨강', '초록', 142, 1, 15.5, 20.3, 'https://example.com/problem1.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(1, '파랑', '파랑', 876, 1, 45.2, 35.7, 'https://example.com/problem2.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(1, '초록', '노랑', 1542, 1, 75.8, 60.1, 'https://example.com/problem3.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(1, '빨강', '초록', 89, 2, 25.0, 80.5, 'https://example.com/problem4.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(1, '파랑', '보라', 1234, 2, 65.3, 40.9, 'https://example.com/problem5.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 일산점 (gym_id: 2)
+(2, '빨강', '빨강', 234, 6, 30.7, 25.4, 'https://example.com/problem6.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(2, '파랑', '파랑', 1567, 7, 55.1, 50.8, 'https://example.com/problem7.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(2, '초록', '노랑', 2345, 8, 85.9, 70.2, 'https://example.com/problem8.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(2, '빨강', '초록', 178, 9, 20.4, 15.6, 'https://example.com/problem9.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(2, '파랑', '보라', 987, 10, 60.8, 45.3, 'https://example.com/problem10.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 마곡점 (gym_id: 3)
+(3, '빨강', '빨강', 67, 11, 40.2, 30.7, 'https://example.com/problem11.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(3, '파랑', '파랑', 1456, 12, 70.5, 55.1, 'https://example.com/problem12.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(3, '초록', '노랑', 2789, 13, 90.3, 75.8, 'https://example.com/problem13.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(3, '빨강', '초록', 45, 14, 10.9, 20.4, 'https://example.com/problem14.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(3, '파랑', '보라', 1123, 15, 50.6, 40.2, 'https://example.com/problem15.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 양재점 (gym_id: 4)
+(4, '빨강', '빨강', 345, 16, 35.4, 25.9, 'https://example.com/problem16.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(4, '파랑', '파랑', 1234, 17, 65.7, 50.3, 'https://example.com/problem17.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(4, '초록', '노랑', 2156, 18, 95.1, 80.7, 'https://example.com/problem18.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(4, '빨강', '초록', 123, 19, 15.8, 10.2, 'https://example.com/problem19.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(4, '파랑', '보라', 845, 20, 55.2, 35.6, 'https://example.com/problem20.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 신림점 (gym_id: 5)
+(5, '빨강', '빨강', 78, 21, 42.8, 28.1, 'https://example.com/problem21.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(5, '파랑', '파랑', 1678, 22, 72.3, 53.5, 'https://example.com/problem22.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(5, '초록', '노랑', 2543, 23, 88.7, 78.2, 'https://example.com/problem23.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(5, '빨강', '초록', 23, 24, 18.4, 12.9, 'https://example.com/problem24.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(5, '파랑', '보라', 1345, 25, 58.1, 43.6, 'https://example.com/problem25.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 연남점 (gym_id: 6)
+(6, '빨강', '빨강', 456, 26, 33.6, 23.8, 'https://example.com/problem26.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(6, '파랑', '파랑', 1098, 27, 63.4, 48.7, 'https://example.com/problem27.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(6, '초록', '노랑', 1987, 28, 93.2, 73.4, 'https://example.com/problem28.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(6, '빨강', '초록', 267, 29, 13.5, 18.1, 'https://example.com/problem29.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(6, '파랑', '보라', 765, 30, 53.8, 38.9, 'https://example.com/problem30.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 강남점 (gym_id: 7)
+(7, '빨강', '빨강', 156, 31, 28.9, 33.2, 'https://example.com/problem31.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(7, '파랑', '파랑', 1789, 32, 58.7, 58.4, 'https://example.com/problem32.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(7, '초록', '노랑', 2698, 33, 88.5, 83.6, 'https://example.com/problem33.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(7, '빨강', '초록', 34, 34, 8.3, 8.7, 'https://example.com/problem34.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(7, '파랑', '보라', 1456, 35, 48.1, 33.9, 'https://example.com/problem35.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 사당점 (gym_id: 8)
+(8, '빨강', '빨강', 389, 36, 38.4, 28.5, 'https://example.com/problem36.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(8, '파랑', '파랑', 1298, 37, 68.2, 53.7, 'https://example.com/problem37.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(8, '초록', '노랑', 2134, 38, 98.0, 78.9, 'https://example.com/problem38.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(8, '빨강', '초록', 198, 39, 18.7, 13.2, 'https://example.com/problem39.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(8, '파랑', '보라', 934, 40, 58.5, 38.4, 'https://example.com/problem40.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 신사점 (gym_id: 9)
+(9, '빨강', '빨강', 89, 41, 23.7, 18.4, 'https://example.com/problem41.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(9, '파랑', '파랑', 1567, 42, 53.9, 43.8, 'https://example.com/problem42.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(9, '초록', '노랑', 2756, 43, 83.6, 68.5, 'https://example.com/problem43.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(9, '빨강', '초록', 12, 44, 3.8, 3.2, 'https://example.com/problem44.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(9, '파랑', '보라', 1234, 45, 43.5, 28.7, 'https://example.com/problem45.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 논현점 (gym_id: 10)
+(10, '빨강', '빨강', 467, 46, 47.2, 32.1, 'https://example.com/problem46.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(10, '파랑', '파랑', 1123, 47, 77.8, 57.3, 'https://example.com/problem47.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(10, '초록', '노랑', 2087, 48, 92.4, 82.6, 'https://example.com/problem48.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(10, '빨강', '초록', 234, 49, 27.6, 7.9, 'https://example.com/problem49.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(10, '파랑', '보라', 856, 50, 67.1, 42.8, 'https://example.com/problem50.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 문래점 (gym_id: 11)
+(11, '빨강', '빨강', 156, 51, 32.4, 27.6, 'https://example.com/problem51.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(11, '파랑', '파랑', 1789, 52, 62.7, 52.9, 'https://example.com/problem52.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(11, '초록', '노랑', 2901, 53, 87.1, 77.4, 'https://example.com/problem53.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(11, '빨강', '초록', 56, 54, 12.8, 2.1, 'https://example.com/problem54.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(11, '파랑', '보라', 1456, 55, 52.3, 37.6, 'https://example.com/problem55.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 이수점 (gym_id: 12)
+(12, '빨강', '빨강', 423, 56, 41.9, 34.2, 'https://example.com/problem56.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(12, '파랑', '파랑', 1345, 57, 71.5, 59.7, 'https://example.com/problem57.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(12, '초록', '노랑', 2234, 58, 96.8, 84.1, 'https://example.com/problem58.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(12, '빨강', '초록', 289, 59, 21.2, 9.4, 'https://example.com/problem59.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(12, '파랑', '보라', 978, 60, 61.6, 44.8, 'https://example.com/problem60.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+
+-- 더클라임 클라이밍 성수점 (gym_id: 13)
+(13, '빨강', '빨강', 101, 61, 36.3, 31.5, 'https://example.com/problem61.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(13, '파랑', '파랑', 1678, 62, 66.9, 56.8, 'https://example.com/problem62.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(13, '초록', '노랑', 2987, 63, 91.7, 81.3, 'https://example.com/problem63.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(13, '빨강', '초록', 1, 64, 1.4, 6.7, 'https://example.com/problem64.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL),
+(13, '파랑', '보라', 1567, 65, 56.8, 41.2, 'https://example.com/problem65.jpg', CURRENT_TIMESTAMP,
+ CURRENT_TIMESTAMP, NULL);
 
 
 -- 1 Admin Video, 23 Alice Videos, 17 Bob Videos

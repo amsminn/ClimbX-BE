@@ -58,7 +58,7 @@ public class GymEntity extends BaseTimeEntity {
     private String phoneNumber; // 전화번호, 형식: 010-1234-5678
 
     @Column(name = "map_2d_url", length = 255)
-    private String map2DUrl; // 2D 지도 URL
+    private String map2dUrl; // 2D 지도 URL
 
     // Todo : 매장 메타데이터 json 컬럼
 }

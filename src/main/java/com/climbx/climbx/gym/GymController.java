@@ -18,18 +18,21 @@ public class GymController implements GymApiDocumentation {
 
     private final GymService gymService;
 
+    @Override
     @GetMapping("/{gymId}")
     @SuccessStatus(value = HttpStatus.OK)
     public GymInfoResponseDto getGymById(@PathVariable Long gymId) {
         return gymService.getGymById(gymId);
     }
 
+    @Override
     @GetMapping("/search")
     @SuccessStatus(value = HttpStatus.OK)
     public List<GymInfoResponseDto> getGymList(@RequestParam(required = false) String keyword) {
         return gymService.getGymList(keyword);
     }
 
+    @Override
     @GetMapping("/nearby")
     @SuccessStatus(value = HttpStatus.OK)
     public List<GymInfoResponseDto> getGymListByDistance(
