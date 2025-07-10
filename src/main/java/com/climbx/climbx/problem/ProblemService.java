@@ -3,7 +3,7 @@ package com.climbx.climbx.problem;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.gym.exception.GymNotFoundException;
 import com.climbx.climbx.gym.repository.GymRepository;
-import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
+import com.climbx.climbx.problem.dto.ProblemInfoInSpotResponseDto;
 import com.climbx.climbx.problem.dto.SpotDetailsResponseDto;
 import com.climbx.climbx.problem.dto.SpotResponseDto;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -32,16 +32,16 @@ public class ProblemService {
             .orElseThrow(() -> new GymNotFoundException(gymId));
 
         // 필터링된 문제들 조회
-        List<ProblemDetailsResponseDto> problems = problemRepository
+        List<ProblemInfoInSpotResponseDto> problems = problemRepository
             .findByGym_GymIdAndLocalLevelAndHoldColor(gymId, localLevel, holdColor)
             .stream()
-            .map(ProblemDetailsResponseDto::from)
+            .map(ProblemInfoInSpotResponseDto::from)
             .toList();
 
         // 문제들을 spotId로 그룹화
         // {spotId, [problem1, problem2, ...]}
-        Map<Long, List<ProblemDetailsResponseDto>> groupedProblems = problems.stream()
-            .collect(Collectors.groupingBy(ProblemDetailsResponseDto::spotId));
+        Map<Long, List<ProblemInfoInSpotResponseDto>> groupedProblems = problems.stream()
+            .collect(Collectors.groupingBy(ProblemInfoInSpotResponseDto::spotId));
 
         // 그룹화된 문제들을 SpotDetailsResponseDto로 변환
         // [{spotId, [problem1, problem2, ...]}, {spotId, [problem3, problem4, ...]}]
@@ -49,10 +49,10 @@ public class ProblemService {
             .stream()
             .map(entry -> {
                 Long spotId = entry.getKey();
-                List<ProblemDetailsResponseDto> problemDetailsResponseDtoList = entry.getValue();
+                List<ProblemInfoInSpotResponseDto> problemInfoInSpotResponseDtoList = entry.getValue();
                 return SpotDetailsResponseDto.builder()
                     .spotId(spotId)
-                    .problemDetailsResponseDtoList(problemDetailsResponseDtoList)
+                    .problemDetailsResponseDtoList(problemInfoInSpotResponseDtoList)
                     .build();
             }).toList();
 

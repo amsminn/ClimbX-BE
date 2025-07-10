@@ -5,17 +5,18 @@ import lombok.Builder;
 
 @Builder
 public record SpotDetailsResponseDto(
+
     Long spotId,
-    List<ProblemDetailsResponseDto> problemDetailsResponseDtoList
+    List<ProblemInfoInSpotResponseDto> problemDetailsResponseDtoList
 ) {
 
     public static SpotDetailsResponseDto from(
         Long spotId,
-        List<ProblemDetailsResponseDto> problemDetailsResponseDtoList
+        List<ProblemInfoInSpotResponseDto> problemInfoInSpotResponseDtoList
     ) {
         return SpotDetailsResponseDto.builder()
             .spotId(spotId)
-            .problemDetailsResponseDtoList(problemDetailsResponseDtoList)
+            .problemDetailsResponseDtoList(problemInfoInSpotResponseDtoList)
             .build();
     }
 }
