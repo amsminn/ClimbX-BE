@@ -3,37 +3,48 @@
 -- ========================================
 
 -- 토큰 타입 관련 ComCode
-INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at, deleted_at)
-VALUES 
-    ('TOKEN_TYPE', 'ACCESS', '액세스 토큰', 'JWT 액세스 토큰 타입', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('TOKEN_TYPE', 'REFRESH', '리프레시 토큰', 'JWT 리프레시 토큰 타입', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at,
+                      deleted_at)
+VALUES ('TOKEN_TYPE', 'ACCESS', '액세스 토큰', 'JWT 액세스 토큰 타입', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+        NULL),
+       ('TOKEN_TYPE', 'REFRESH', '리프레시 토큰', 'JWT 리프레시 토큰 타입', 2, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL);
 
 -- 사용자 역할 관련 ComCode
-INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at, deleted_at)
-VALUES 
-    ('USER_ROLE', 'USER', '일반 사용자', '일반 사용자 권한', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('USER_ROLE', 'ADMIN', '관리자', '관리자 권한', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at,
+                      deleted_at)
+VALUES ('USER_ROLE', 'USER', '일반 사용자', '일반 사용자 권한', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       ('USER_ROLE', 'ADMIN', '관리자', '관리자 권한', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
 -- 제출 상태 관련 ComCode
-INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at, deleted_at)
-VALUES 
-    ('STATUS', 'PENDING', '검토 대기', '제출된 영상이 검토 대기 중인 상태', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('STATUS', 'ACCEPTED', '승인됨', '제출된 영상이 승인된 상태', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('STATUS', 'REJECTED', '거부됨', '제출된 영상이 거부된 상태', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at,
+                      deleted_at)
+VALUES ('STATUS', 'PENDING', '검토 대기', '제출된 영상이 검토 대기 중인 상태', 1, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL),
+       ('STATUS', 'ACCEPTED', '승인됨', '제출된 영상이 승인된 상태', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+        NULL),
+       ('STATUS', 'REJECTED', '거부됨', '제출된 영상이 거부된 상태', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
+        NULL);
 
 -- 사용자 히스토리 기준 타입 관련 ComCode
-INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at, deleted_at)
-VALUES 
-    ('USER_HISTORY_CRITERIA', 'RATING', '레이팅', '사용자 레이팅 히스토리', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('USER_HISTORY_CRITERIA', 'STREAK', '연속 해결', '사용자 연속 문제 해결 히스토리', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('USER_HISTORY_CRITERIA', 'SOLVED_COUNT', '해결 문제 수', '사용자 해결한 총 문제 수 히스토리', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at,
+                      deleted_at)
+VALUES ('USER_HISTORY_CRITERIA', 'RATING', '레이팅', '사용자 레이팅 히스토리', 1, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL),
+       ('USER_HISTORY_CRITERIA', 'STREAK', '연속 해결', '사용자 연속 문제 해결 히스토리', 2, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL),
+       ('USER_HISTORY_CRITERIA', 'SOLVED_COUNT', '해결 문제 수', '사용자 해결한 총 문제 수 히스토리', 3,
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
 -- OAuth2 제공자 타입 관련 ComCode
-INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at, deleted_at)
-VALUES 
-    ('OAUTH2_PROVIDER', 'KAKAO', '카카오', '카카오 OAuth2 인증 제공자', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('OAUTH2_PROVIDER', 'GOOGLE', '구글', '구글 OAuth2 인증 제공자', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('OAUTH2_PROVIDER', 'APPLE', '애플', '애플 OAuth2 인증 제공자', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
+INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at,
+                      deleted_at)
+VALUES ('OAUTH2_PROVIDER', 'KAKAO', '카카오', '카카오 OAuth2 인증 제공자', 1, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL),
+       ('OAUTH2_PROVIDER', 'GOOGLE', '구글', '구글 OAuth2 인증 제공자', 2, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL),
+       ('OAUTH2_PROVIDER', 'APPLE', '애플', '애플 OAuth2 인증 제공자', 3, CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP, NULL);
 
 -- ========================================
 -- 기존 사용자 및 관련 데이터
@@ -560,38 +571,5 @@ VALUES (1, 'RATING', 2500, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
        (3, 'RANKING', 1, '2025-07-09 00:00:00', '2025-07-09 00:00:00', NULL),
        (3, 'RANKING', 35, '2025-07-16 00:00:00', '2025-07-16 00:00:00', NULL),
        (3, 'RANKING', 16, '2025-07-23 00:00:00', '2025-07-23 00:00:00', NULL);
-
-<<<<<<< HEAD
-=======
--- Comcodes for enum replacement
-INSERT INTO comcodes (group_code, code, code_name, description, sort_order, created_at, updated_at,
-                      deleted_at)
-VALUES
-    -- RoleType
-    ('ROLE', 'USER', '일반 사용자', '일반 사용자 권한', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('ROLE', 'ADMIN', '관리자', '관리자 권한', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-
-    -- SubmissionStatusType
-    ('SUBMISSION_STATUS', 'PENDING', '대기중', '제출 대기 상태', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
-     NULL),
-    ('SUBMISSION_STATUS', 'ACCEPTED', '승인됨', '제출 승인 상태', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
-     NULL),
-    ('SUBMISSION_STATUS', 'REJECTED', '거부됨', '제출 거부 상태', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
-     NULL),
-
-    -- UserHistoryCriteriaType
-<<<<<<< HEAD
-    ('USER_HISTORY_CRITERIA', 'RANKING', '순위', '사용자 순위 히스토리', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('USER_HISTORY_CRITERIA', 'RATING', '레이팅', '사용자 레이팅 히스토리', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-    ('USER_HISTORY_CRITERIA', 'SOLVED_COUNT', '해결수', '사용자 문제 해결 개수 히스토리', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
->>>>>>> ad00f05 ([SWM-130] feat: replace enum with comcode)
-=======
-    ('USER_HISTORY_CRITERIA', 'RANKING', '순위', '사용자 순위 히스토리', 1, CURRENT_TIMESTAMP,
-     CURRENT_TIMESTAMP, NULL),
-    ('USER_HISTORY_CRITERIA', 'RATING', '레이팅', '사용자 레이팅 히스토리', 2, CURRENT_TIMESTAMP,
-     CURRENT_TIMESTAMP, NULL),
-    ('USER_HISTORY_CRITERIA', 'SOLVED_COUNT', '해결수', '사용자 문제 해결 개수 히스토리', 3, CURRENT_TIMESTAMP,
-     CURRENT_TIMESTAMP, NULL);
->>>>>>> b5e9961 ([SWM-130] chore: refotmat code)
 
 COMMIT;

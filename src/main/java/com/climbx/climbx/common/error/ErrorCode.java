@@ -35,19 +35,7 @@ public enum ErrorCode {
     PROVIDER_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "OAuth2 프로바이더 토큰이 만료되었습니다."),
     PROVIDER_TOKEN_EXCHANGE_FAILED(HttpStatus.BAD_REQUEST, "OAuth2 프로바이더 토큰 교환에 실패했습니다."),
     PRODIVDER_USER_INFO_FETCH_FAILED(HttpStatus.BAD_REQUEST, "OAuth2 사용자 정보 조회에 실패했습니다."),
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
-=======
-    OAUTH2_PROVIDER_NOT_SUPPORTED(HttpStatus.BAD_REQUEST, "지원하지 않는 OAuth2 제공자입니다."),
-    OAUTH2_TOKEN_EXCHANGE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "OAuth2 토큰 교환에 실패했습니다."),
-    OAUTH2_USER_INFO_FETCH_FAILED(HttpStatus.BAD_REQUEST, "OAuth2 사용자 정보 조회에 실패했습니다."),
     
->>>>>>> 8947ec5 (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
->>>>>>> 4d7347d (refactor: 인증 관련 DTO, 예외 처리, JWT 필터 및 테스트 코드 리팩토링)
-=======
->>>>>>> fa8c125 ([SWM-130] test: update test code)
     // 5xx : Server Errors
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 오류가 발생했습니다."),
