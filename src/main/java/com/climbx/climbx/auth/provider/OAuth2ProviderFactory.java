@@ -2,26 +2,25 @@ package com.climbx.climbx.auth.provider;
 
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.exception.ProviderNotSupportedException;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
 @Component
 public class OAuth2ProviderFactory {
-    
+
     private final Map<OAuth2ProviderType, OAuth2Provider> providers;
-    
+
     public OAuth2ProviderFactory(List<OAuth2Provider> providerList) {
         this.providers = providerList.stream()
-                .collect(Collectors.toMap(
-                        OAuth2Provider::getProviderType,
-                        Function.identity()
-                ));
+            .collect(Collectors.toMap(
+                OAuth2Provider::getProviderType,
+                Function.identity()
+            ));
     }
-     
+
     /**
      * providerType에 따라 구현체를 반환
      */
@@ -32,7 +31,7 @@ public class OAuth2ProviderFactory {
         }
         return provider;
     }
-    
+
     /**
      * 문자열 받아서 Provider 구현체 반환
      */

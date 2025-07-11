@@ -280,11 +280,11 @@
       }
 
       tokens = tokenData;
-      
+
       // localStorage에 토큰 저장 (kakao-login-test.html에서 사용)
       localStorage.setItem('climbx_access_token', tokenData.accessToken);
       localStorage.setItem('climbx_refresh_token', tokenData.refreshToken);
-      
+
       return tokenData;
     } catch (error) {
       console.error('토큰 교환 실패:', error);
@@ -301,7 +301,7 @@
 
     try {
       console.log('사용자 정보 조회 요청 - 토큰:', tokens.accessToken.substring(0, 20) + '...');
-      
+
       const response = await fetch('/api/auth/me', {
         method: 'GET',
         headers: {
@@ -314,9 +314,11 @@
       console.log('사용자 정보 응답:', result);
 
       if (response.ok && result.httpStatus === 200 && result.statusMessage === 'SUCCESS') {
-        alert(`✅ 사용자 정보 조회 성공!\n닉네임: ${result.data.nickname}\n이메일: ${result.data.providerEmail}\n제공자: ${result.data.provider}\nID: ${result.data.id}`);
+        alert(
+            `✅ 사용자 정보 조회 성공!\n닉네임: ${result.data.nickname}\n이메일: ${result.data.providerEmail}\n제공자: ${result.data.provider}\nID: ${result.data.id}`);
       } else {
-        alert(`❌ 사용자 정보 조회 실패: ${result.statusMessage || result.message || '알 수 없는 오류'}\n상태코드: ${response.status}`);
+        alert(`❌ 사용자 정보 조회 실패: ${result.statusMessage || result.message
+        || '알 수 없는 오류'}\n상태코드: ${response.status}`);
       }
     } catch (error) {
       console.error('사용자 정보 조회 오류:', error);
@@ -333,7 +335,7 @@
 
     try {
       console.log('토큰 갱신 요청 - 리프레시 토큰:', tokens.refreshToken.substring(0, 20) + '...');
-      
+
       const response = await fetch('/api/auth/oauth2/refresh', {
         method: 'POST',
         headers: {
@@ -349,13 +351,14 @@
 
       if (response.ok && result.httpStatus === 201 && result.statusMessage === 'SUCCESS') {
         tokens = result.data; // 새 토큰으로 업데이트
-        
+
         // 화면의 토큰 정보도 업데이트
         updateTokenDisplay();
-        
+
         alert('✅ 토큰 갱신 성공! 새로운 액세스 토큰을 받았습니다.\n화면의 토큰 정보도 업데이트되었습니다.');
       } else {
-        alert(`❌ 토큰 갱신 실패: ${result.statusMessage || result.message || '알 수 없는 오류'}\n상태코드: ${response.status}\n응답: ${JSON.stringify(result)}`);
+        alert(`❌ 토큰 갱신 실패: ${result.statusMessage || result.message
+        || '알 수 없는 오류'}\n상태코드: ${response.status}\n응답: ${JSON.stringify(result)}`);
       }
     } catch (error) {
       console.error('토큰 갱신 오류:', error);
@@ -393,10 +396,10 @@
   function showCopySuccess(buttonElement) {
     const originalText = buttonElement.textContent;
     const originalBackground = buttonElement.style.background;
-    
+
     buttonElement.textContent = '✅ 복사됨!';
     buttonElement.style.background = '#28a745';
-    
+
     setTimeout(() => {
       buttonElement.textContent = originalText;
       buttonElement.style.background = originalBackground;
@@ -408,16 +411,16 @@
     console.log('updateTokenDisplay 호출됨, tokens:', tokens);
     const resultDiv = document.getElementById('resultContent');
     console.log('resultDiv 찾음:', resultDiv);
-    
+
     if (resultDiv && tokens) {
       const tokenSection = resultDiv.querySelector('.token-info pre');
       console.log('tokenSection 찾음:', tokenSection);
-      
+
       if (tokenSection) {
         // XSS 방지를 위해 텍스트를 이스케이프하면서 HTML을 생성
         const accessTokenEscaped = tokens.accessToken.replace(/'/g, "\\'");
         const refreshTokenEscaped = tokens.refreshToken.replace(/'/g, "\\'");
-        
+
         console.log('토큰 정보 업데이트 중...');
         tokenSection.innerHTML = `<strong>Access Token:</strong> ${tokens.accessToken}
 <button class="copy-button" onclick="copyToClipboard('${accessTokenEscaped}', this)">📋 복사</button>
@@ -431,9 +434,9 @@
 <div style="margin-top: 10px; padding: 8px; background-color: #e8f5e8; border: 1px solid #4caf50; border-radius: 4px; color: #2e7d32;">
   🔄 <strong>토큰이 업데이트되었습니다!</strong>
 </div>`;
-        
+
         console.log('토큰 정보 업데이트 완료!');
-        
+
         // 몇 초 후에 업데이트 메시지 제거
         setTimeout(() => {
           const updateMsg = tokenSection.querySelector('div[style*="background-color: #e8f5e8"]');

@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ComcodeRepository extends JpaRepository<ComcodeEntity, Long> {
 
     List<ComcodeEntity> findByGroupCode(String groupCode);
-    
+
     Optional<ComcodeEntity> findByGroupCodeAndCode(String groupCode, String code);
 }

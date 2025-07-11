@@ -4,6 +4,7 @@ import com.climbx.climbx.auth.dto.LoginResponseDto;
 import com.climbx.climbx.auth.dto.RefreshRequestDto;
 import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
 import com.climbx.climbx.common.annotation.SuccessStatus;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-
 @Slf4j
 @RestController
 @RequestMapping("/api/auth")
@@ -28,8 +27,7 @@ public class AuthController implements AuthApiDocumentation {
     private final AuthService authService;
 
     /**
-     * OAuth2 카카오 인증 페이지로 리다이렉트합니다. 
-     * 개발 및 테스트 환경에서만 사용해야 합니다.
+     * OAuth2 카카오 인증 페이지로 리다이렉트합니다. 개발 및 테스트 환경에서만 사용해야 합니다.
      */
     @Override
     @GetMapping("/oauth2/kakao/authorize-url")
@@ -40,8 +38,8 @@ public class AuthController implements AuthApiDocumentation {
 
         log.info("카카오 OAuth2 인증 페이지로 리다이렉트: {}", authorizeUrl);
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(authorizeUrl))
-                .build();
+            .location(URI.create(authorizeUrl))
+            .build();
     }
 
     /**

@@ -23,7 +23,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
      * 사용자 이메일로 조회, 중복 검사
      */
     Optional<UserAccountEntity> findByEmail(String email);
-    
+
     // 특정 역할의 사용자들 조회
     List<UserAccountEntity> findByRole(String role);
 

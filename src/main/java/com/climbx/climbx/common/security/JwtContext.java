@@ -167,7 +167,7 @@ public class JwtContext {
             )
             .orElseThrow(() -> new InvalidTokenException("Valid role not found in payload"));
     }
-    
+
     public Long getAccessTokenExpiration() {
         return accessTokenExpiration;
     }
