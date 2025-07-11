@@ -116,10 +116,6 @@ class AuthServiceTest {
             // 저장된 엔티티 반환
             UserAccountEntity savedUser = UserFixture.createUser(email, "클라이머_123");
             given(userAccountRepository.save(any(UserAccountEntity.class))).willReturn(savedUser);
-            given(userAuthRepository.save(any(UserAuthEntity.class))).willReturn(
-                mock(UserAuthEntity.class));
-            given(userStatRepository.save(any(UserStatEntity.class))).willReturn(
-                mock(UserStatEntity.class));
 
             // when
             given(userAuthRepository.save(any(UserAuthEntity.class))).willReturn(
@@ -433,15 +429,13 @@ class AuthServiceTest {
                 Optional.empty());
 
             // when
+            given(userAuthRepository.findByUserIdAndIsPrimaryTrue(userId)).willReturn(
+                Optional.empty());
+
+            // when
             assertThatThrownBy(() -> authService.getCurrentUserInfo(userId))
                 .isInstanceOf(UserAuthNotFoundException.class)
                 .hasMessage("사용자 인증 정보를 찾을 수 없습니다.");
-            given(userAuthRepository.findByUserIdAndIsPrimaryTrue(userId)).willReturn(
-                Optional.empty());
-            given(jwtContext.getAccessTokenExpiration()).willReturn(3600L);
-
-            // when
-            UserOauth2InfoResponseDto result = authService.getCurrentUserInfo(userId);
 
             // then
             then(userAccountRepository).should().findByUserId(userId);
@@ -493,11 +487,6 @@ class AuthServiceTest {
                 .willReturn(Optional.empty());
 
             UserAccountEntity savedUser = UserFixture.createUser(email, "클라이머_123");
-            given(userAccountRepository.save(any(UserAccountEntity.class))).willReturn(savedUser);
-            given(userAuthRepository.save(any(UserAuthEntity.class))).willReturn(
-                mock(UserAuthEntity.class));
-            given(userStatRepository.save(any(UserStatEntity.class))).willReturn(
-                mock(UserStatEntity.class));
 
             // when
             given(userAuthRepository.findByProviderAndProviderId(OAuth2ProviderType.KAKAO,

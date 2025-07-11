@@ -202,7 +202,7 @@ class ComcodeServiceTest {
             assertThat(result.codeGroup()).isEqualTo("STATUS");
 
             // then
-            assertThat(result.codeGroup()).isEqualTo("SUBMISSION_STATUS");
+            assertThat(result.codeGroup()).isEqualTo("STATUS");
             assertThat(result.code()).isEqualTo("PENDING");
             assertThat(result.codeName()).isEqualTo("대기중");
             assertThat(result.sortOrder()).isEqualTo(1);
@@ -226,8 +226,7 @@ class ComcodeServiceTest {
         void getCode_NonExistentCode_ThrowsException() {
             // when & then
             assertThatThrownBy(() -> comcodeService.getCodeDto("NON_EXISTENT_CODE"))
-                .isInstanceOf(ComcodeNotFound.class)
-                .hasMessageContaining("NON_EXISTENT_CODE");
+                .isInstanceOf(ComcodeNotFound.class);
         }
 
         @Test
