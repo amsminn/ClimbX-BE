@@ -46,6 +46,7 @@ class ComcodeServiceTest {
 
         // ComcodeService 인스턴스 생성 (생성자에서 getCodes() 호출됨)
         comcodeService = new ComcodeService(comcodeRepository);
+        comcodeService.init();
     }
 
     private ComcodeEntity createComcodeEntity(String groupCode, String code, String codeName,
