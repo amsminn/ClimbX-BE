@@ -52,7 +52,7 @@ class JwtContextTest {
         void shouldGenerateAccessTokenWithValidParameters() {
             // given
             Long userId = 1L;
-            String provider = "KAKAO";
+            final String provider = "KAKAO";
             String role = "USER";
 
             given(comcodeService.getCodeValue("ACCESS")).willReturn("ACCESS");
