@@ -9,7 +9,6 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
 import com.climbx.climbx.common.comcode.ComcodeService;
-import com.climbx.climbx.common.comcode.dto.ComcodeDto;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
@@ -788,7 +787,8 @@ public class UserServiceTest {
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
                 given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class)))
+                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"),
+                        any(Pageable.class)))
                     .willReturn(problemEntities);
 
                 // when
@@ -820,7 +820,8 @@ public class UserServiceTest {
                 // when & then
                 assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
                     .isInstanceOf(UserNotFoundException.class);
-                then(submissionRepository).should(never()).getUserSubmissionProblems(any(), any(), any());
+                then(submissionRepository).should(never())
+                    .getUserSubmissionProblems(any(), any(), any());
             }
 
             @Test
@@ -839,7 +840,8 @@ public class UserServiceTest {
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
                 given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class)))
+                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"),
+                        any(Pageable.class)))
                     .willReturn(emptyProblems);
 
                 // when
@@ -896,7 +898,8 @@ public class UserServiceTest {
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
                 given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class)))
+                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"),
+                        any(Pageable.class)))
                     .willReturn(problemEntities);
 
                 // when
@@ -952,7 +955,8 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, to);
+                then(submissionRepository).should()
+                    .getUserDateSolvedCount(userId, "ACCEPTED", from, to);
             }
 
             @Test
@@ -999,7 +1003,8 @@ public class UserServiceTest {
 
                 // then
                 assertThat(result).isEmpty();
-                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, to);
+                then(submissionRepository).should()
+                    .getUserDateSolvedCount(userId, "ACCEPTED", from, to);
             }
 
             @Test
@@ -1020,7 +1025,8 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", singleDate, singleDate))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", singleDate,
+                    singleDate))
                     .willReturn(queryResults);
 
                 // when
@@ -1063,7 +1069,8 @@ public class UserServiceTest {
 
                 // then
                 assertThat(result).isEmpty();
-                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, to);
+                then(submissionRepository).should()
+                    .getUserDateSolvedCount(userId, "ACCEPTED", from, to);
             }
 
             @Test
@@ -1103,7 +1110,8 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, to);
+                then(submissionRepository).should()
+                    .getUserDateSolvedCount(userId, "ACCEPTED", from, to);
             }
 
             @Test
@@ -1140,7 +1148,8 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", null, null);
+                then(submissionRepository).should()
+                    .getUserDateSolvedCount(userId, "ACCEPTED", null, null);
             }
 
             @Test
@@ -1177,7 +1186,8 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", null, to);
+                then(submissionRepository).should()
+                    .getUserDateSolvedCount(userId, "ACCEPTED", null, to);
             }
 
             @Test
@@ -1214,7 +1224,8 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, null);
+                then(submissionRepository).should()
+                    .getUserDateSolvedCount(userId, "ACCEPTED", from, null);
             }
         }
 
