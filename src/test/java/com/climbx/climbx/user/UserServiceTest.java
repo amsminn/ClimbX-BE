@@ -33,7 +33,6 @@ import com.climbx.climbx.user.repository.UserStatRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -68,58 +67,39 @@ public class UserServiceTest {
     private UserService userService;
 
     private void setupUserRoleComcode() {
-        given(comcodeService.getCodeDto("USER"))
-            .willReturn(ComcodeDto.builder()
-                .codeGroup("ROLE")
-                .code("USER")
-                .codeName("일반 사용자")
-                .sortOrder(1)
-                .build());
+        given(comcodeService.getCodeValue("USER"))
+            .willReturn("USER");
     }
 
     private void setupRatingComcode() {
-        given(comcodeService.getCodeDto("RATING"))
-            .willReturn(ComcodeDto.builder()
-                .codeGroup("USER_HISTORY_CRITERIA")
-                .code("RATING")
-                .codeName("레이팅")
-                .sortOrder(1)
-                .build());
+        given(comcodeService.getCodeValue("RATING"))
+            .willReturn("RATING");
     }
 
     private void setupRankingComcode() {
-        given(comcodeService.getCodeDto("RANKING"))
-            .willReturn(ComcodeDto.builder()
-                .codeGroup("USER_HISTORY_CRITERIA")
-                .code("RANKING")
-                .codeName("랭킹")
-                .sortOrder(2)
-                .build());
+        given(comcodeService.getCodeValue("RANKING"))
+            .willReturn("RANKING");
     }
 
     private void setupSolvedCountComcode() {
-        given(comcodeService.getCodeDto("SOLVED_COUNT"))
-            .willReturn(ComcodeDto.builder()
-                .codeGroup("USER_HISTORY_CRITERIA")
-                .code("SOLVED_COUNT")
-                .codeName("해결 문제 수")
-                .sortOrder(3)
-                .build());
+        given(comcodeService.getCodeValue("SOLVED_COUNT"))
+            .willReturn("SOLVED_COUNT");
+    }
+
+    private void setupAcceptedComcode() {
+        given(comcodeService.getCodeValue("ACCEPTED"))
+            .willReturn("ACCEPTED");
     }
 
     @Nested
     @DisplayName("사용자 목록 조회 및 검색")
     class GetUsers {
 
-        @BeforeEach
-        void setUp() {
-            setupUserRoleComcode();
-        }
-
         @Test
         @DisplayName("전체 사용자 목록을 정상 조회")
         void getUsers_Success_AllUsers() {
             // given
+            setupUserRoleComcode();
             String search = null;
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "alice");
@@ -164,6 +144,7 @@ public class UserServiceTest {
         @DisplayName("빈 문자열로 검색 시 전체 사용자 목록 조회")
         void getUsers_Success_EmptySearch() {
             // given
+            setupUserRoleComcode();
             String search = "";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "test1");
@@ -196,6 +177,7 @@ public class UserServiceTest {
         @DisplayName("공백만 있는 검색어로 검색 시 전체 사용자 목록 조회")
         void getUsers_Success_WhitespaceOnlySearch() {
             // given
+            setupUserRoleComcode();
             String search = "   ";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
@@ -224,6 +206,7 @@ public class UserServiceTest {
         @DisplayName("닉네임 검색으로 특정 사용자들 조회")
         void getUsers_Success_WithSearch() {
             // given
+            setupUserRoleComcode();
             String search = "test";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "testuser1");
@@ -261,6 +244,7 @@ public class UserServiceTest {
         @DisplayName("검색 결과가 없는 경우")
         void getUsers_Success_NoResults() {
             // given
+            setupUserRoleComcode();
             String search = "nonexistent";
             List<UserAccountEntity> emptyUserAccounts = List.of();
 
@@ -283,6 +267,7 @@ public class UserServiceTest {
         @DisplayName("검색어 앞뒤 공백 제거 후 검색")
         void getUsers_Success_TrimmedSearch() {
             // given
+            setupUserRoleComcode();
             String search = "  alice  ";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "alice123");
@@ -312,6 +297,7 @@ public class UserServiceTest {
         @DisplayName("사용자는 있지만 통계 정보가 없는 경우")
         void getUsers_UserStatNotFound() {
             // given
+            setupUserRoleComcode();
             String search = null;
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
@@ -331,6 +317,7 @@ public class UserServiceTest {
         @DisplayName("다양한 레이팅을 가진 사용자들 조회")
         void getUsers_Success_DifferentRatings() {
             // given
+            setupUserRoleComcode();
             String search = "pro";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "pro_player1");
@@ -387,6 +374,7 @@ public class UserServiceTest {
         @DisplayName("ADMIN 역할 사용자는 조회되지 않음")
         void getUsers_AdminNotIncluded() {
             // given
+            setupUserRoleComcode();
             String search = null;
 
             UserAccountEntity adminUser = UserFixture.createAdminUserAccountEntity(1L, "admin");
@@ -417,6 +405,7 @@ public class UserServiceTest {
         @DisplayName("ADMIN 역할 사용자는 검색에서도 제외됨")
         void getUsers_AdminNotIncludedInSearch() {
             // given
+            setupUserRoleComcode();
             String search = "admin";
 
             UserAccountEntity normalUser = UserFixture.createUserAccountEntity(1L, "admin_user");
@@ -775,6 +764,7 @@ public class UserServiceTest {
             @DisplayName("사용자의 상위 문제를 정상 조회")
             void getUserTopProblems_Success() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 Integer limit = 5;
@@ -798,7 +788,7 @@ public class UserServiceTest {
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
                 given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), any(Pageable.class)))
+                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class)))
                     .willReturn(problemEntities);
 
                 // when
@@ -814,7 +804,7 @@ public class UserServiceTest {
                 assertThat(result).isEqualTo(expected);
 
                 then(submissionRepository).should()
-                    .getUserSubmissionProblems(eq(userId), any(Pageable.class));
+                    .getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class));
             }
 
             @Test
@@ -830,13 +820,14 @@ public class UserServiceTest {
                 // when & then
                 assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
                     .isInstanceOf(UserNotFoundException.class);
-                then(submissionRepository).should(never()).getUserSubmissionProblems(any(), any());
+                then(submissionRepository).should(never()).getUserSubmissionProblems(any(), any(), any());
             }
 
             @Test
             @DisplayName("사용자에게 문제 제출 기록이 없는 경우")
             void getUserTopProblems_NoSubmissions() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 Integer limit = 5;
@@ -848,7 +839,7 @@ public class UserServiceTest {
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
                 given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), any(Pageable.class)))
+                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class)))
                     .willReturn(emptyProblems);
 
                 // when
@@ -858,7 +849,7 @@ public class UserServiceTest {
                 // then
                 assertThat(result).isEmpty();
                 then(submissionRepository).should()
-                    .getUserSubmissionProblems(eq(userId), any(Pageable.class));
+                    .getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class));
             }
 
             @Test
@@ -884,6 +875,7 @@ public class UserServiceTest {
             @DisplayName("요청한 limit보다 적은 문제가 있는 경우")
             void getUserTopProblems_LessProblemsThanlimit() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 Integer limit = 10;
@@ -904,7 +896,7 @@ public class UserServiceTest {
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
                 given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), any(Pageable.class)))
+                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class)))
                     .willReturn(problemEntities);
 
                 // when
@@ -928,6 +920,7 @@ public class UserServiceTest {
             @DisplayName("사용자의 일별 해결 문제 수를 정상 조회")
             void getUserStreak_Success() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 1);
@@ -944,7 +937,7 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
                     .willReturn(queryResults);
 
                 // when
@@ -959,7 +952,7 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, from, to);
+                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, to);
             }
 
             @Test
@@ -978,13 +971,14 @@ public class UserServiceTest {
                     .isInstanceOf(UserNotFoundException.class);
 
                 then(submissionRepository).should(never())
-                    .getUserDateSolvedCount(any(), any(), any());
+                    .getUserDateSolvedCount(any(), any(), any(), any());
             }
 
             @Test
             @DisplayName("해당 기간에 해결한 문제가 없는 경우")
             void getUserStreak_NoSolvedProblems() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 1);
@@ -996,7 +990,7 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
                     .willReturn(emptyResults);
 
                 // when
@@ -1005,13 +999,14 @@ public class UserServiceTest {
 
                 // then
                 assertThat(result).isEmpty();
-                then(submissionRepository).should().getUserDateSolvedCount(userId, from, to);
+                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, to);
             }
 
             @Test
             @DisplayName("하루만 조회하는 경우")
             void getUserStreak_SingleDay() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate singleDate = LocalDate.of(2024, 1, 15);
@@ -1025,7 +1020,7 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, singleDate, singleDate))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", singleDate, singleDate))
                     .willReturn(queryResults);
 
                 // when
@@ -1040,13 +1035,14 @@ public class UserServiceTest {
                 assertThat(result).isEqualTo(expected);
 
                 then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, singleDate, singleDate);
+                    .getUserDateSolvedCount(userId, "ACCEPTED", singleDate, singleDate);
             }
 
             @Test
             @DisplayName("날짜 순서가 잘못된 경우 (from > to)")
             void getUserStreak_InvalidDateRange() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 31);
@@ -1058,7 +1054,7 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
                     .willReturn(emptyResults);
 
                 // when
@@ -1067,13 +1063,14 @@ public class UserServiceTest {
 
                 // then
                 assertThat(result).isEmpty();
-                then(submissionRepository).should().getUserDateSolvedCount(userId, from, to);
+                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, to);
             }
 
             @Test
             @DisplayName("연속되지 않은 날짜의 데이터 조회")
             void getUserStreak_NonConsecutiveDates() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 1);
@@ -1091,7 +1088,7 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
                     .willReturn(queryResults);
 
                 // when
@@ -1106,13 +1103,14 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, from, to);
+                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, to);
             }
 
             @Test
             @DisplayName("null 파라미터로 조회하는 경우")
             void getUserStreak_WithNullParameters() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = null;
@@ -1128,7 +1126,7 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
                     .willReturn(queryResults);
 
                 // when
@@ -1142,13 +1140,14 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, null, null);
+                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", null, null);
             }
 
             @Test
             @DisplayName("from만 null인 경우")
             void getUserStreak_WithFromNull() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = null;
@@ -1164,7 +1163,7 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
                     .willReturn(queryResults);
 
                 // when
@@ -1178,13 +1177,14 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, null, to);
+                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", null, to);
             }
 
             @Test
             @DisplayName("to만 null인 경우")
             void getUserStreak_WithToNull() {
                 // given
+                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 1);
@@ -1200,7 +1200,7 @@ public class UserServiceTest {
 
                 given(userAccountRepository.findByNickname(nickname))
                     .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, from, to))
+                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
                     .willReturn(queryResults);
 
                 // when
@@ -1214,7 +1214,7 @@ public class UserServiceTest {
                 );
                 assertThat(result).isEqualTo(expected);
 
-                then(submissionRepository).should().getUserDateSolvedCount(userId, from, null);
+                then(submissionRepository).should().getUserDateSolvedCount(userId, "ACCEPTED", from, null);
             }
         }
 

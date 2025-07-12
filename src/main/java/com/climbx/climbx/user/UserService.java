@@ -41,7 +41,7 @@ class UserService {
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
 
-        String userRoleCode = comcodeService.getCodeDto("USER").code();
+        String userRoleCode = comcodeService.getCodeValue("USER");
 
         if (search == null || search.trim().isEmpty()) {
             userAccounts = userAccountRepository.findByRole(userRoleCode);
@@ -101,6 +101,7 @@ class UserService {
 
         List<ProblemEntity> problemEntities = submissionRepository.getUserSubmissionProblems(
             userAccount.userId(),
+            comcodeService.getCodeValue("ACCEPTED"),
             pageable
         );
 
@@ -119,6 +120,7 @@ class UserService {
 
         return submissionRepository.getUserDateSolvedCount(
             userAccount.userId(),
+            comcodeService.getCodeValue("ACCEPTED"),
             from,
             to
         );
@@ -132,7 +134,7 @@ class UserService {
         LocalDate to
     ) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
-        criteria = comcodeService.getCodeDto(criteria).code();
+        criteria = comcodeService.getCodeValue(criteria);
 
         return userRankingHistoryRepository.getUserDailyHistory(
             userAccount.userId(),
