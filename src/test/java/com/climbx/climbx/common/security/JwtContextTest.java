@@ -3,11 +3,9 @@ package com.climbx.climbx.common.security;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.dto.JwtTokenInfo;
@@ -55,7 +53,7 @@ class JwtContextTest {
         );
         // jwtContextSpy = spy(jwtContext); // 제거
     }
-    
+
     @Nested
     @DisplayName("토큰 생성 테스트")
     class GenerateTokenTest {

@@ -39,19 +39,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Bearer 토큰 추출
             String token = jwtContext.extractTokenFromRequest(request);
             JwtTokenInfo tokenInfo = jwtContext.parseToken(token);
-            
+
             // ACCESS 토큰인지 확인
             String accessTokenType = comcodeService.getCodeValue("ACCESS");
             if (!accessTokenType.equals(tokenInfo.tokenType())) {
-                log.debug("Invalid token type: expected={}, actual={}", accessTokenType, tokenInfo.tokenType());
+                log.debug("Invalid token type: expected={}, actual={}", accessTokenType,
+                    tokenInfo.tokenType());
                 throw new InvalidTokenException();
             }
-            
+
             // Spring Security 인증 정보 설정
             setAuthentication(tokenInfo.userId(), comcodeService.getCodeValue(tokenInfo.role()));
-            
+
             log.debug("JWT authentication successful for user: {}", tokenInfo.userId());
-            
+
         } catch (Exception e) {
             log.error("JWT authentication error", e);
             // 예상치 못한 오류 발생 시에도 인증 없이 계속 진행
@@ -67,13 +68,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         List<GrantedAuthority> authorities = Collections.singletonList(
             new SimpleGrantedAuthority(role)
         );
-        
+
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
             userId, // principal로 userId 사용
             null,   // credentials는 null (JWT는 이미 검증됨)
             authorities
         );
-        
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 } 

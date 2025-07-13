@@ -4,28 +4,28 @@ import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.dto.JwtTokenInfo;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
 import com.climbx.climbx.common.security.exception.TokenExpiredException;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.security.oauth2.jwt.JwtValidators;
-import org.springframework.security.oauth2.jwt.JwtException; 
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder; 
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtAudienceValidator;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
-import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
-import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
-import org.springframework.stereotype.Component;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
-import javax.crypto.spec.SecretKeySpec;
+import jakarta.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import javax.crypto.spec.SecretKeySpec;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtAudienceValidator;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtContext {
@@ -36,7 +36,7 @@ public class JwtContext {
     private final JwtEncoder jwtEncoder;
     private final long accessTokenExpiration;
     private final long refreshTokenExpiration;
-    private final String issuer;    
+    private final String issuer;
     private final String audience;
 
     public JwtContext(
@@ -63,21 +63,21 @@ public class JwtContext {
 
         // SecretKeySpec 생성
         SecretKeySpec secretKey = new SecretKeySpec(
-            jwtSecret.getBytes(StandardCharsets.UTF_8), 
-            jwsAlgorithm 
+            jwtSecret.getBytes(StandardCharsets.UTF_8),
+            jwsAlgorithm
         );
 
         // NimbusJwtDecoder 설정
         NimbusJwtDecoder decoder = NimbusJwtDecoder
             .withSecretKey(secretKey)
             .build();
-        
-         // 표준 검증기 설정 (issuer 검증 포함)
+
+        // 표준 검증기 설정 (issuer 검증 포함)
         OAuth2TokenValidator<Jwt> defaultValidators = JwtValidators.createDefaultWithIssuer(issuer);
         OAuth2TokenValidator<Jwt> audienceValidator = new JwtAudienceValidator(audience);
 
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
-            defaultValidators,  
+            defaultValidators,
             audienceValidator
         ));
 
@@ -140,7 +140,7 @@ public class JwtContext {
     public JwtTokenInfo parseToken(String token) {
         try {
             Jwt jwt = jwtDecoder.decode(token);
-            
+
             return JwtTokenInfo.from(jwt);
         } catch (JwtException e) {
             // JwtException은 토큰 만료, 서명 오류 등을 포함

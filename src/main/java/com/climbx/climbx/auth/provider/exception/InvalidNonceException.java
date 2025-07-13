@@ -5,6 +5,7 @@ import com.climbx.climbx.common.error.BusinessException;
 import com.climbx.climbx.common.error.ErrorCode;
 
 public class InvalidNonceException extends BusinessException {
+
     public InvalidNonceException(OAuth2ProviderType providerType) {
         super(ErrorCode.INVALID_TOKEN);
         addContext("providerType", providerType.name());

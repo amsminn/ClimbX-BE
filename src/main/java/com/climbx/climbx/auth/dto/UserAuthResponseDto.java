@@ -15,7 +15,7 @@ public record UserAuthResponseDto(
     String providerId,
     boolean isPrimary
 ) {
-    
+
     public static UserAuthResponseDto from(UserAuthEntity userAuth) {
         return UserAuthResponseDto.builder()
             .id(userAuth.userId())
