@@ -376,7 +376,6 @@ public class UserServiceTest {
             setupUserRoleComcode();
             String search = null;
 
-            UserAccountEntity adminUser = UserFixture.createAdminUserAccountEntity(1L, "admin");
             UserAccountEntity normalUser = UserFixture.createUserAccountEntity(2L, "user");
             List<UserAccountEntity> userAccounts = List.of(normalUser); // admin은 포함되지 않음
 

@@ -2,17 +2,28 @@
 spring:
   security:
     oauth2:
+      # Kakao OAuth2 설정
       kakao:
         client:
           client-id: ${KAKAO_REST_API_KEY}
-          client-secret: ${KAKAO_CLIENT_SECRET}
-          # 개발 테스트용 redirect-uri
-          redirect-uri: "http://localhost:8080/test-callback.html"
-          # 실제 적용될 형태
-          # redirect-uri: "myapp://callback"
-        provider:
-          token-uri: https://kauth.kakao.com/oauth/token
-          user-info-uri: https://kapi.kakao.com/v2/user/me
+          jwks-uri: https://kauth.kakao.com/.well-known/jwks.json
+          issuer: https://kauth.kakao.com
+      
+      # Google OAuth2 설정 예시 (주석 해제 후 사용)
+      # google:
+      #   client:
+      #     client-id: ${GOOGLE_CLIENT_ID}
+      #     client-secret: ${GOOGLE_CLIENT_SECRET}
+      #     jwks-uri: https://www.googleapis.com/oauth2/v3/certs
+      #     issuer: https://accounts.google.com
+      
+      # Naver OAuth2 설정 예시 (주석 해제 후 사용)
+      # naver:
+      #   client:
+      #     client-id: ${NAVER_CLIENT_ID}
+      #     client-secret: ${NAVER_CLIENT_SECRET}
+      #     jwks-uri: https://nid.naver.com/.well-known/jwks.json
+      #     issuer: https://nid.naver.com 
 
 # JWT 설정
 auth:
@@ -21,9 +32,12 @@ auth:
     access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:3600} # 1시간 (초 단위)
     refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:1209600} # 2주 (초 단위)
     issuer: ${JWT_ISSUER:climbx-api-dev}
+    audience: ${JWT_AUDIENCE:climbx-client}
+    jws-algorithm: ${JWT_JWS_ALGORITHM:HmacSHA256}
 
 # 로깅 설정
 logging:
   level:
+    org.springframework.web.client.RestTemplate: DEBUG
     org.springframework.security.oauth2: DEBUG
     com.climbx.climbx.auth: DEBUG
