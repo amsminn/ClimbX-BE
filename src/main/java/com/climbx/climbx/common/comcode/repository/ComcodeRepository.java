@@ -10,4 +10,6 @@ public interface ComcodeRepository extends JpaRepository<ComcodeEntity, Long> {
     List<ComcodeEntity> findByGroupCode(String groupCode);
 
     Optional<ComcodeEntity> findByGroupCodeAndCode(String groupCode, String code);
+
+    Optional<ComcodeEntity> findByCode(String code);
 }
