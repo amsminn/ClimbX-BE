@@ -1,32 +1,30 @@
 package com.climbx.climbx.auth;
 
-import com.climbx.climbx.auth.dto.LoginResponseDto;
-import com.climbx.climbx.auth.dto.OAuth2TokenResponseDto;
-import com.climbx.climbx.auth.dto.OAuth2UserInfoDto;
-import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
+import com.climbx.climbx.auth.dto.CallbackRequestDto;
+import com.climbx.climbx.auth.dto.CallbackResponseDto;
+import com.climbx.climbx.auth.dto.RefreshResponseDto;
+import com.climbx.climbx.auth.dto.UserAuthResponseDto;
+import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
-import com.climbx.climbx.auth.exception.InvalidRefreshTokenException;
 import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
-import com.climbx.climbx.auth.provider.OAuth2Provider;
-import com.climbx.climbx.auth.provider.OAuth2ProviderFactory;
+import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.JwtContext;
+import com.climbx.climbx.common.security.dto.JwtTokenInfo;
+import com.climbx.climbx.common.security.exception.InvalidTokenException;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -39,60 +37,46 @@ public class AuthService {
     private final UserAccountRepository userAccountRepository;
     private final UserAuthRepository userAuthsRepository;
     private final UserStatRepository userStatRepository;
-    private final OAuth2ProviderFactory providerFactory;
-
-    @Value("${spring.security.oauth2.kakao.client.client-id}")
-    private String kakaoClientId;
-
-    @Value("${spring.security.oauth2.kakao.client.redirect-uri}")
-    private String kakaoRedirectUri;
-
-    /**
-     * 카카오 OAuth2 인증 URL 생성
-     */
-    public String generateKakaoAuthorizeUrl() {
-        log.info("카카오 OAuth2 인증 URL 생성: client-id={}, redirect-uri={}",
-            kakaoClientId, kakaoRedirectUri);
-
-        return UriComponentsBuilder
-            .fromUriString("https://kauth.kakao.com/oauth/authorize")
-            .queryParam("response_type", "code")
-            .queryParam("client_id", kakaoClientId)
-            .queryParam("redirect_uri", kakaoRedirectUri)
-            .build()
-            .toUriString();
-    }
+    private final ProviderIdTokenService oauth2IdTokenService;
 
     /**
      * OAuth2 콜백
      */
     @Transactional
-    public LoginResponseDto handleCallback(String provider, String code) {
-        OAuth2Provider oauth2Provider = providerFactory.getProvider(provider);
+    public CallbackResponseDto handleCallback(String provider, CallbackRequestDto request) {
+        // Provider 타입 검증
+        OAuth2ProviderType providerType;
+        try {
+            providerType = OAuth2ProviderType.valueOf(provider.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("지원하지 않는 OAuth2 Provider: " + provider);
+        }
 
-        // 인가 코드로 액세스 토큰 교환
-        OAuth2TokenResponseDto tokenResponse = oauth2Provider.exchangeCodeForToken(code);
+        // ID Token 검증 및 사용자 정보 추출
+        ValidatedTokenInfoDto tokenInfo = oauth2IdTokenService.verifyIdToken(
+            provider,
+            request.idToken(),
+            request.nonce()
+        );
 
-        // 액세스 토큰으로 사용자 정보 조회
-        OAuth2UserInfoDto userInfo = oauth2Provider.fetchUserInfo(tokenResponse.accessToken());
+        log.info("OAuth2 idToken 검증 성공: provider={}, providerId={}, email={}",
+            provider, tokenInfo.providerId(), tokenInfo.email());
 
         // 사용자 정보로 계정 생성 또는 업데이트
-        UserAccountEntity user = createOrUpdateUser(userInfo, oauth2Provider.getProviderType());
+        UserAccountEntity user = createOrUpdateUser(tokenInfo, providerType);
 
         // JWT 토큰 생성
         String accessToken = jwtContext.generateAccessToken(
             user.userId(),
-            oauth2Provider.getProviderType().name(),
             user.role()
         );
 
-        String refreshToken = jwtContext.generateRefreshToken(user.userId(),
-            oauth2Provider.getProviderType().name());
+        String refreshToken = jwtContext.generateRefreshToken(user.userId());
 
         log.info("사용자 로그인 완료: userId={}, nickname={}, provider={}",
-            user.userId(), user.nickname(), oauth2Provider.getProviderType().name());
+            user.userId(), user.nickname(), providerType.name());
 
-        return LoginResponseDto.builder()
+        return CallbackResponseDto.builder()
             .tokenType("Bearer")
             .accessToken(accessToken)
             .refreshToken(refreshToken)
@@ -104,53 +88,46 @@ public class AuthService {
      * 리프레시 토큰으로 새로운 액세스 토큰을 발급합니다.
      */
     @Transactional
-    public LoginResponseDto refreshAccessToken(String refreshToken) {
-        Optional.of(jwtContext.extractTokenType(refreshToken))
-            .filter(type -> type.equals(comcodeService.getCodeValue("REFRESH")))
-            .orElseThrow(InvalidRefreshTokenException::new);
+    public RefreshResponseDto refreshAccessToken(String refreshToken) {
+        // 토큰에서 모든 정보를 한 번에 파싱 및 검증
+        JwtTokenInfo tokenInfo = jwtContext.parseToken(refreshToken);
 
-        Long userId = jwtContext.extractSubject(refreshToken);
+        // REFRESH 토큰인지 확인
+        String refreshTokenType = comcodeService.getCodeValue("REFRESH");
+        if (!refreshTokenType.equals(tokenInfo.tokenType().toUpperCase())) {
+            log.debug("Invalid token type: expected={}, actual={}", refreshTokenType,
+                tokenInfo.tokenType());
+            throw new InvalidTokenException();
+        }
 
         // 사용자 존재 확인
-        UserAccountEntity user = userAccountRepository.findByUserId(userId)
-            .orElseThrow(() -> new UserNotFoundException(userId));
+        UserAccountEntity user = userAccountRepository.findById(tokenInfo.userId())
+            .orElseThrow(() -> new UserNotFoundException(tokenInfo.userId()));
 
-        // 기존 토큰에서 provider 정보 추출
-        String provider = jwtContext.extractProvider(refreshToken);
+        // 새로운 액세스 토큰 생성
+        String newAccessToken = jwtContext.generateAccessToken(
+            tokenInfo.userId(),
+            user.role()
+        );
 
-        // 새로운 토큰 생성
-        String newAccessToken = jwtContext.generateAccessToken(userId, provider, user.role());
-        String newRefreshToken = jwtContext.generateRefreshToken(userId, provider);
+        log.info("토큰 갱신 완료: userId={}", tokenInfo.userId());
 
-        log.info("토큰 갱신 완료: userId={}", userId);
-
-        return LoginResponseDto.builder()
+        return RefreshResponseDto.builder()
             .tokenType("Bearer")
             .accessToken(newAccessToken)
-            .refreshToken(newRefreshToken)
             .expiresIn(jwtContext.getAccessTokenExpiration())
             .build();
     }
 
     /**
-     * 현재 사용자 SSO 정보 반환
+     * 현재 사용자 정보를 조회합니다.
      */
-    public UserOauth2InfoResponseDto getCurrentUserInfo(Long userId) {
-        UserAccountEntity user = userAccountRepository.findByUserId(userId)
-            .orElseThrow(() -> new UserNotFoundException(userId));
-
+    public UserAuthResponseDto getCurrentUserInfo(Long userId) {
         // 사용자 주 인증 수단 조회
-        String provider = userAuthsRepository.findByUserIdAndIsPrimaryTrue(userId)
-            .map(userAuth -> userAuth.provider().name())
+        UserAuthEntity userAuth = userAuthsRepository.findByUserIdAndIsPrimaryTrue(userId)
             .orElseThrow(() -> new UserAuthNotFoundException(userId));
 
-        return UserOauth2InfoResponseDto.builder()
-            .id(user.userId())
-            .nickname(user.nickname())
-            .provider(provider)
-            .issuedAt(Instant.now())
-            .expiresAt(Instant.now().plusSeconds(jwtContext.getAccessTokenExpiration()))
-            .build();
+        return UserAuthResponseDto.from(userAuth);
     }
 
     /**
@@ -162,159 +139,72 @@ public class AuthService {
     }
 
     /**
-     * OAuth2 사용자 정보로 계정을 생성하거나 업데이트합니다. 이메일 기반으로 기존 사용자를 찾아 계정을 연결합니다.
+     * 사용자 정보로 계정을 생성하거나 업데이트합니다.
      */
     private UserAccountEntity createOrUpdateUser(
-        OAuth2UserInfoDto userInfo,
+        ValidatedTokenInfoDto tokenInfo,
         OAuth2ProviderType providerType
     ) {
-        String providerId = userInfo.providerId();
-        String email = userInfo.email();
-
-        // 기존 사용자 인증 정보 찾기
-        Optional<UserAuthEntity> existingUserAuth
-            = userAuthsRepository.findByProviderAndProviderId(providerType, providerId);
+        // 기존 인증 정보 확인
+        Optional<UserAuthEntity> existingUserAuth = userAuthsRepository
+            .findByProviderAndProviderId(providerType, tokenInfo.providerId());
 
         if (existingUserAuth.isPresent()) {
-            // 기존 사용자 로그인
-            log.info(
-                "기존 사용자 로그인: userId={}, email={}, provider={}",
-                existingUserAuth.get().userAccountEntity().userId(),
-                existingUserAuth.get().providerEmail(),
-                providerType.name()
-            );
-            return existingUserAuth.get().userAccountEntity();
-        }
-
-        // 이메일로 기존 사용자 찾기 (이메일이 있고 검증된 경우)
-        if (isValidEmailForLinking(email, userInfo.emailVerified())) {
-            Optional<UserAccountEntity> linkedUser = userAccountRepository.findByEmail(email)
-                .map(
-                    existingUser -> linkNewOAuth2Provider(
-                        existingUser,
-                        userInfo,
-                        providerType
-                    )
-                );
-
-            if (linkedUser.isPresent()) {
-                return linkedUser.get();
-            }
-        }
-
-        // 사용자 생성
-        return createNewUser(userInfo, providerType);
-    }
-
-    /**
-     * 기존 사용자에게 새 OAuth2 제공자를 연결합니다.
-     */
-    private UserAccountEntity linkNewOAuth2Provider(
-        UserAccountEntity existingUser,
-        OAuth2UserInfoDto userInfo,
-        OAuth2ProviderType providerType
-    ) {
-
-        String providerId = userInfo.providerId();
-
-        // 이미 연결된 제공자인지 확인
-        boolean alreadyLinked = userAuthsRepository.existsByUserAccountEntity_UserIdAndProvider(
-            existingUser.userId(),
-            providerType
-        );
-
-        if (!alreadyLinked) {
-            // 새 provider 연결
-            UserAuthEntity newAuth = UserAuthEntity.builder()
-                .userAccountEntity(existingUser)
-                .provider(providerType)
-                .providerId(providerId)
-                .providerEmail(userInfo.email())
-                .isPrimary(false)
-                .build();
-
-            userAuthsRepository.save(newAuth);
-
-            log.info(
-                "기존 사용자에게 새 OAuth2 제공자 연결: userId={}, email={}, newProvider={}",
-                existingUser.userId(),
-                userInfo.email(),
-                providerType.name()
-            );
+            // 기존 사용자 정보 업데이트
+            UserAccountEntity user = existingUserAuth.get().userAccountEntity();
+            log.info("기존 사용자 로그인: userId={}, providerId={}", user.userId(), tokenInfo.providerId());
+            return user;
         } else {
-            log.info(
-                "이미 연결된 OAuth2 제공자로 로그인: userId={}, provider={}",
-                existingUser.userId(),
-                providerType.name())
-            ;
+            // 새로운 사용자 생성
+            return createNewUser(tokenInfo, providerType);
         }
-
-        return existingUser;
     }
 
     /**
      * 새로운 사용자를 생성합니다.
      */
-    private UserAccountEntity createNewUser(OAuth2UserInfoDto userInfo,
+    private UserAccountEntity createNewUser(ValidatedTokenInfoDto tokenInfo,
         OAuth2ProviderType providerType) {
 
-        String nickname = generateTemporaryNickname(userInfo.getDisplayName());
+        // 임시 닉네임 생성 (중복 방지)
+        String temporaryNickname = generateTemporaryNickname(tokenInfo.nickname());
 
-        // 1. 사용자 계정 생성
-        UserAccountEntity newUser = UserAccountEntity.builder()
+        // 사용자 계정 생성
+        UserAccountEntity userAccount = UserAccountEntity.builder()
+            .nickname(temporaryNickname)
             .role(comcodeService.getCodeValue("USER"))
-            .nickname(nickname)
-            .email(userInfo.email())
-            .profileImageUrl(userInfo.profileImageUrl())
-            .statusMessage("안녕하세요!")
             .build();
-        userAccountRepository.save(newUser);
 
-        // 2. 사용자 인증 정보 생성 및 연결
-        UserAuthEntity newUserAuth = UserAuthEntity.builder()
-            .userAccountEntity(newUser)
+        UserAccountEntity savedUser = userAccountRepository.save(userAccount);
+
+        // 사용자 인증 정보 생성
+        UserAuthEntity userAuth = UserAuthEntity.builder()
+            .userAccountEntity(savedUser)
             .provider(providerType)
-            .providerId(userInfo.providerId())
-            .providerEmail(userInfo.email())
-            .isPrimary(true) // 첫 인증이므로 주 인증 수단으로 설정
+            .providerId(tokenInfo.providerId())
+            .providerEmail(tokenInfo.email())
+            .isPrimary(true)
             .build();
-        userAuthsRepository.save(newUserAuth);
 
-        // 3. 사용자 통계 정보 생성
-        UserStatEntity newUserStat = UserStatEntity.builder()
-            .userAccountEntity(newUser)
+        userAuthsRepository.save(userAuth);
+
+        // 사용자 통계 정보 초기화
+        UserStatEntity userStat = UserStatEntity.builder()
+            .userAccountEntity(savedUser)
             .build();
-        userStatRepository.save(newUserStat);
 
-        log.info(
-            "새로운 사용자 생성: userId={}, email={}, nickname={}, provider={}",
-            newUser.userId(),
-            newUser.email(),
-            newUser.nickname(),
-            providerType.name()
-        );
+        userStatRepository.save(userStat);
 
-        return newUser;
+        log.info("새로운 사용자 생성 완료: userId={}, nickname={}, providerId={}",
+            savedUser.userId(), temporaryNickname, tokenInfo.providerId());
+
+        return savedUser;
     }
 
     /**
-     * 이메일이 계정 연결에 유효한지 확인합니다.
-     */
-    private boolean isValidEmailForLinking(String email, Boolean emailVerified) {
-        // 이메일이 있고, 비어있지 않으며, 검증된 경우에만 연결 허용
-        return email != null
-            && !email.trim().isEmpty()
-            && emailVerified != null
-            && emailVerified;
-    }
-
-    /**
-     * Unique한 초기 닉네임 생성
+     * 임시 닉네임을 생성합니다.
      */
     private String generateTemporaryNickname(String providerNickname) {
-        return "클라이머_"
-            + Optional.ofNullable(providerNickname).orElse("초보")
-            + "_"
-            + UUID.randomUUID().toString().substring(0, 8);
+        return "USER_" + UUID.randomUUID().toString().substring(0, 8);
     }
 }

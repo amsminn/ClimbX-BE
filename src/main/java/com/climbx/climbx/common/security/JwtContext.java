@@ -1,41 +1,52 @@
 package com.climbx.climbx.common.security;
 
 import com.climbx.climbx.common.comcode.ComcodeService;
+import com.climbx.climbx.common.security.dto.JwtTokenInfo;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
 import com.climbx.climbx.common.security.exception.TokenExpiredException;
-import com.climbx.climbx.common.util.OptionalUtils;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.util.Date;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.JwtException; 
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder; 
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtAudienceValidator;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.stereotype.Component;
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 
 @Component
 public class JwtContext {
 
     private final ComcodeService comcodeService;
     private final BearerTokenResolver bearerTokenResolver;
-    private final String jwtSecret;
+    private final NimbusJwtDecoder jwtDecoder;
+    private final JwtEncoder jwtEncoder;
     private final long accessTokenExpiration;
     private final long refreshTokenExpiration;
-    private final String issuer;
-    private final Key signingKey;
+    private final String issuer;    
+    private final String audience;
 
     public JwtContext(
         ComcodeService comcodeService,
         @Value("${auth.jwt.secret}") String jwtSecret,
         @Value("${auth.jwt.access-token-expiration}") long accessTokenExpiration,
         @Value("${auth.jwt.refresh-token-expiration}") long refreshTokenExpiration,
-        @Value("${auth.jwt.issuer}") String issuer
+        @Value("${auth.jwt.issuer}") String issuer,
+        @Value("${auth.jwt.audience}") String audience,
+        @Value("${auth.jwt.jws-algorithm}") String jwsAlgorithm
     ) {
         this.comcodeService = comcodeService;
 
@@ -45,127 +56,99 @@ public class JwtContext {
         resolver.setAllowUriQueryParameter(false); // Query parameter 비활성화 (보안상 권장)
         this.bearerTokenResolver = resolver;
 
-        this.jwtSecret = jwtSecret;
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
         this.issuer = issuer;
-        this.signingKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        this.audience = audience;
+
+        // SecretKeySpec 생성
+        SecretKeySpec secretKey = new SecretKeySpec(
+            jwtSecret.getBytes(StandardCharsets.UTF_8), 
+            jwsAlgorithm 
+        );
+
+        // NimbusJwtDecoder 설정
+        NimbusJwtDecoder decoder = NimbusJwtDecoder
+            .withSecretKey(secretKey)
+            .build();
+        
+         // 표준 검증기 설정 (issuer 검증 포함)
+        OAuth2TokenValidator<Jwt> defaultValidators = JwtValidators.createDefaultWithIssuer(issuer);
+        OAuth2TokenValidator<Jwt> audienceValidator = new JwtAudienceValidator(audience);
+
+        decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
+            defaultValidators,  
+            audienceValidator
+        ));
+
+        this.jwtDecoder = decoder;
+
+        // NimbusJwtEncoder 설정 (토큰 생성용)
+        this.jwtEncoder = new NimbusJwtEncoder(new ImmutableSecret<>(secretKey));
     }
 
     /**
-     * Bearer 토큰 사용 Spring Security DefaultBearerTokenResolver 사용
+     * Bearer 토큰 추출 - Spring Security DefaultBearerTokenResolver 사용
      */
     public String extractTokenFromRequest(HttpServletRequest request) {
         return Optional.ofNullable(bearerTokenResolver.resolve(request))
-            .orElseThrow(
-                () -> new InvalidTokenException("Bearer token not found in request header"));
-    }
-
-    public String generateAccessToken(Long userId, String provider, String role) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + accessTokenExpiration * 1000);
-
-        return Jwts.builder()
-            .setSubject(String.valueOf(userId))
-            .setIssuer(issuer)
-            .setIssuedAt(now)
-            .setExpiration(expiryDate)
-            .claim("provider", provider)
-            .claim("role", role)
-            .claim("type", comcodeService.getCodeValue("ACCESS"))
-            .signWith(signingKey, SignatureAlgorithm.HS256)
-            .compact();
-    }
-
-    public String generateRefreshToken(Long userId, String provider) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + refreshTokenExpiration * 1000);
-
-        return Jwts.builder()
-            .setSubject(String.valueOf(userId))
-            .setIssuer(issuer)
-            .setIssuedAt(now)
-            .setExpiration(expiryDate)
-            .claim("provider", provider)
-            .claim("type", comcodeService.getCodeValue("REFRESH"))
-            .signWith(signingKey, SignatureAlgorithm.HS256)
-            .compact();
+            .orElseThrow(InvalidTokenException::new);
     }
 
     /**
-     * 토큰 Payload 추출
+     * Access Token 생성
      */
-    private Claims extractClaims(String token) {
-        if (token == null) {
-            throw new InvalidTokenException("Token is null");
-        }
+    public String generateAccessToken(Long userId, String role) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusSeconds(accessTokenExpiration);
 
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+            .issuer(issuer)
+            .audience(List.of(audience))
+            .subject(String.valueOf(userId))
+            .issuedAt(now)
+            .expiresAt(expiresAt)
+            .claim("role", comcodeService.getCodeValue(role))
+            .claim("type", comcodeService.getCodeValue("ACCESS"))
+            .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    /**
+     * Refresh Token 생성
+     */
+    public String generateRefreshToken(Long userId) {
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusSeconds(refreshTokenExpiration);
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+            .issuer(issuer)
+            .audience(List.of(audience))
+            .subject(String.valueOf(userId))
+            .issuedAt(now)
+            .expiresAt(expiresAt)
+            .claim("type", comcodeService.getCodeValue("REFRESH"))
+            .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    /**
+     * 토큰에서 모든 정보를 한 번에 파싱
+     */
+    public JwtTokenInfo parseToken(String token) {
         try {
-            return Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException();
-        } catch (Exception e) {
+            Jwt jwt = jwtDecoder.decode(token);
+            
+            return JwtTokenInfo.from(jwt);
+        } catch (JwtException e) {
+            // JwtException은 토큰 만료, 서명 오류 등을 포함
+            if (e.getMessage().contains("expired")) {
+                throw new TokenExpiredException();
+            }
             throw new InvalidTokenException();
         }
-    }
-
-    /**
-     * 사용자 ID 추출
-     */
-    public Long extractSubject(String token) {
-        return OptionalUtils.tryOf(
-                () -> {
-                    Claims claims = extractClaims(token);
-                    String subject = claims.getSubject();
-                    return Long.parseLong(subject);
-                }
-            )
-            .orElseThrow(() -> new InvalidTokenException("user id not found in payload"));
-    }
-
-    /**
-     * 토큰 타입을 추출합니다 (access 또는 refresh)
-     */
-    public String extractTokenType(String token) {
-        return OptionalUtils.tryOf(
-                () -> {
-                    Claims claims = extractClaims(token);
-                    String type = claims.get("type", String.class);
-                    return comcodeService.getCodeValue(type);
-                }
-            )
-            .orElseThrow(() -> new InvalidTokenException("Valid token type not found in payload"));
-    }
-
-    /**
-     * 토큰 Provider 추출
-     */
-    public String extractProvider(String token) {
-        return OptionalUtils.tryOf(
-                () -> {
-                    Claims claims = extractClaims(token);
-                    return claims.get("provider", String.class);
-                }
-            )
-            .orElseThrow(() -> new InvalidTokenException("Valid provider not found in payload"));
-    }
-
-    /**
-     * 토큰 role 추출
-     */
-    public String extractRole(String token) {
-        return OptionalUtils.tryOf(
-                () -> {
-                    Claims claims = extractClaims(token);
-                    String role = claims.get("role", String.class);
-                    return comcodeService.getCodeValue(role);
-                }
-            )
-            .orElseThrow(() -> new InvalidTokenException("Valid role not found in payload"));
     }
 
     public Long getAccessTokenExpiration() {
