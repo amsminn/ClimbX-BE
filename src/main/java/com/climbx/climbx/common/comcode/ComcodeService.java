@@ -35,10 +35,12 @@ public class ComcodeService {
     }
 
     public List<ComcodeDto> getCodesByGroup(String groupCode) {
-        return comcodes.values()
-            .stream()
-            .filter(code -> code.codeGroup().equals(groupCode))
-            .toList(); // 필터링된 불변 리스트 반환
+        return OptionalUtils.tryOf(
+            () -> comcodes.values()
+                .stream()
+                .filter(code -> code.codeGroup().equals(groupCode.toUpperCase()))
+                .toList()
+        ).orElse(List.of());
     }
 
     /**
@@ -48,7 +50,7 @@ public class ComcodeService {
         return OptionalUtils.tryOf(
             () -> comcodes.computeIfAbsent(
                 code,
-                c -> comcodeRepository.findByCode(c)
+                c -> comcodeRepository.findByCode(c.toUpperCase())
                     .map(ComcodeDto::from)
                     .orElseThrow(() -> new ComcodeNotFound(c))
             )
