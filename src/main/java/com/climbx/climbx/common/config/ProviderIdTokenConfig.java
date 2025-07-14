@@ -84,23 +84,20 @@ public class ProviderIdTokenConfig {
      * Audience 검증을 위한 커스텀 Validator 생성 재사용 가능한 검증기입니다.
      */
     private OAuth2TokenValidator<Jwt> createAudienceValidator(String expectedAudience) {
-        return new OAuth2TokenValidator<Jwt>() {
-            @Override
-            public OAuth2TokenValidatorResult validate(Jwt jwt) {
-                List<String> audiences = jwt.getAudience();
+        return jwt -> {
+            List<String> audiences = jwt.getAudience();
 
-                if (audiences != null && audiences.contains(expectedAudience)) {
-                    return OAuth2TokenValidatorResult.success();
-                }
-
-                return OAuth2TokenValidatorResult.failure(
-                    new OAuth2Error(
-                        "invalid_audience",
-                        "The required audience is missing. Expected: " + expectedAudience,
-                        null
-                    )
-                );
+            if (audiences != null && audiences.contains(expectedAudience)) {
+                return OAuth2TokenValidatorResult.success();
             }
+
+            return OAuth2TokenValidatorResult.failure(
+                new OAuth2Error(
+                    "invalid_audience",
+                    "The required audience is missing. Expected: " + expectedAudience,
+                    null
+                )
+            );
         };
     }
 } 
