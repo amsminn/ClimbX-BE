@@ -1,8 +1,8 @@
 package com.climbx.climbx.auth;
 
+import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
-import com.climbx.climbx.auth.dto.CallbackResponseDto;
-import com.climbx.climbx.auth.dto.RefreshResponseDto;
+import com.climbx.climbx.auth.dto.TokenGenerationResponseDto;
 import com.climbx.climbx.auth.dto.UserAuthResponseDto;
 import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
@@ -43,7 +43,7 @@ public class AuthService {
      * OAuth2 콜백
      */
     @Transactional
-    public CallbackResponseDto handleCallback(String provider, CallbackRequestDto request) {
+    public TokenGenerationResponseDto handleCallback(String provider, CallbackRequestDto request) {
         // Provider 타입 검증
         OAuth2ProviderType providerType;
         try {
@@ -66,21 +66,19 @@ public class AuthService {
         UserAccountEntity user = createOrUpdateUser(tokenInfo, providerType);
 
         // JWT 토큰 생성
-        String accessToken = jwtContext.generateAccessToken(
+        AccessTokenResponseDto accessToken = jwtContext.generateAccessToken(
             user.userId(),
             user.role()
         );
 
-        String refreshToken = jwtContext.generateRefreshToken(user.userId());
+        RefreshTokenDto refreshToken = jwtContext.generateRefreshToken(user.userId());
 
         log.info("사용자 로그인 완료: userId={}, nickname={}, provider={}",
             user.userId(), user.nickname(), providerType.name());
 
-        return CallbackResponseDto.builder()
-            .tokenType("Bearer")
+        return TokenGenerationResponseDto.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken)
-            .expiresIn(jwtContext.getAccessTokenExpiration())
             .build();
     }
 
@@ -88,7 +86,7 @@ public class AuthService {
      * 리프레시 토큰으로 새로운 액세스 토큰을 발급합니다.
      */
     @Transactional
-    public RefreshResponseDto refreshAccessToken(String refreshToken) {
+    public TokenGenerationResponseDto refreshAccessToken(String refreshToken) {
         // 토큰에서 모든 정보를 한 번에 파싱 및 검증
         JwtTokenInfo tokenInfo = jwtContext.parseToken(refreshToken);
 
@@ -105,7 +103,7 @@ public class AuthService {
             .orElseThrow(() -> new UserNotFoundException(tokenInfo.userId()));
 
         // 새로운 액세스 토큰 생성
-        String newAccessToken = jwtContext.generateAccessToken(
+        AccessTokenResponseDto newAccessToken = jwtContext.generateAccessToken(
             tokenInfo.userId(),
             user.role()
         );
@@ -116,11 +114,9 @@ public class AuthService {
 
         log.info("토큰 갱신 완료: userId={}", tokenInfo.userId());
 
-        return RefreshResponseDto.builder()
-            .tokenType("Bearer")
+        return TokenGenerationResponseDto.builder()
             .accessToken(newAccessToken)
             .refreshToken(newRefreshToken)
-            .expiresIn(jwtContext.getAccessTokenExpiration())
             .build();
     }
 

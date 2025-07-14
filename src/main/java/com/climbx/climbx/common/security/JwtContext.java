@@ -1,5 +1,7 @@
 package com.climbx.climbx.common.security;
 
+import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
+import com.climbx.climbx.auth.dto.RefreshTokenDto;
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.dto.JwtTokenInfo;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
@@ -98,7 +100,7 @@ public class JwtContext {
     /**
      * Access Token 생성
      */
-    public String generateAccessToken(Long userId, String role) {
+    public AccessTokenResponseDto generateAccessToken(Long userId, String role) {
         Instant now = Instant.now();
         Instant expiresAt = now.plusSeconds(accessTokenExpiration);
 
@@ -112,7 +114,10 @@ public class JwtContext {
             .claim("type", comcodeService.getCodeValue("ACCESS"))
             .build();
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return AccessTokenResponseDto.builder()
+            .accessToken(jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue())
+            .expiresIn(accessTokenExpiration)
+            .build();
     }
 
     /**
@@ -153,5 +158,9 @@ public class JwtContext {
 
     public Long getAccessTokenExpiration() {
         return accessTokenExpiration;
+    }
+
+    public long getRefreshTokenExpiration() {
+        return refreshTokenExpiration;
     }
 }

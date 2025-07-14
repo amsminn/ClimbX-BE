@@ -1,9 +1,7 @@
 package com.climbx.climbx.auth;
 
+import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
-import com.climbx.climbx.auth.dto.CallbackResponseDto;
-import com.climbx.climbx.auth.dto.RefreshRequestDto;
-import com.climbx.climbx.auth.dto.RefreshResponseDto;
 import com.climbx.climbx.auth.dto.UserAuthResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.validation.annotation.Validated;
 
@@ -41,8 +40,6 @@ public interface AuthApiDocumentation {
                           "path": "/api/auth/oauth2/{provider}/callback",
                           "data": {
                             "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-                            "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTYiLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImlhdCI6MTcxNzY2ODAwMCwiZXhwIjoxNzE4MjczNjAwfQ.2mvWMa_AJeIk_2q1VCEB14IJKL5TrHUzO1yk30ByI9I",
-                            "tokenType": "Bearer",
                             "expiresIn": 3600
                           }
                         }
@@ -91,7 +88,7 @@ public interface AuthApiDocumentation {
             )
         )
     })
-    CallbackResponseDto handleOAuth2Callback(
+    AccessTokenResponseDto handleCallback(
         @Parameter(
             name = "provider",
             description = "OAuth2 제공자",
@@ -113,12 +110,14 @@ public interface AuthApiDocumentation {
                     """
             )
         )
-        @jakarta.validation.Valid CallbackRequestDto request
+        @jakarta.validation.Valid CallbackRequestDto request,
+        @Parameter(hidden = true)
+        HttpServletResponse response
     );
 
     @Operation(
         summary = "액세스 토큰 갱신",
-        description = "리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다."
+        description = "HTTP Only 쿠키에 저장된 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다."
     )
     @ApiResponses(value = {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -137,8 +136,6 @@ public interface AuthApiDocumentation {
                           "path": "/api/auth/oauth2/refresh",
                           "data": {
                             "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-                            "refreshToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-                            "tokenType": "Bearer",
                             "expiresIn": 3600
                           }
                         }
@@ -156,7 +153,7 @@ public interface AuthApiDocumentation {
                     value = """
                         {
                           "httpStatus": 400,
-                          "statusMessage": "잘못된 요청 형식입니다.",
+                          "statusMessage": "리프레시 토큰이 없습니다.",
                           "timeStamp": "2024-01-01T10:00:00Z",
                           "responseTimeMs": 43,
                           "path": "/api/auth/oauth2/refresh",
@@ -187,12 +184,15 @@ public interface AuthApiDocumentation {
             )
         )
     })
-    RefreshResponseDto refreshAccessToken(
+    AccessTokenResponseDto refreshAccessToken(
         @Parameter(
-            description = "리프레시 토큰 요청",
+            name = "refreshToken",
+            description = "HTTP Only 쿠키에 저장된 리프레시 토큰",
             required = true
         )
-        @jakarta.validation.Valid RefreshRequestDto request
+        @NotBlank String refreshToken,
+        @Parameter(hidden = true)
+        HttpServletResponse response
     );
 
     @Operation(
@@ -343,9 +343,12 @@ public interface AuthApiDocumentation {
     })
     void signOut(
         @Parameter(
-            description = "리프레시 토큰 요청 (임시 API)",
+            name = "refreshToken",
+            description = "HTTP Only 쿠키에 저장된 리프레시 토큰",
             required = true
         )
-        @jakarta.validation.Valid RefreshRequestDto request
+        @NotBlank String refreshToken,
+        @Parameter(hidden = true)
+        HttpServletResponse response
     );
 } 
