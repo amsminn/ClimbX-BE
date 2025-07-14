@@ -1,7 +1,6 @@
 package com.climbx.climbx.common.security;
 
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
-import com.climbx.climbx.auth.dto.RefreshTokenDto;
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.dto.JwtTokenInfo;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;

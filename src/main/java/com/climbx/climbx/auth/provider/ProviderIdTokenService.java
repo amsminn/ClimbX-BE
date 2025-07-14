@@ -2,6 +2,8 @@ package com.climbx.climbx.auth.provider;
 
 import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
+import com.climbx.climbx.auth.provider.exception.InvalidNonceException;
+import com.climbx.climbx.auth.service.NonceService;
 import com.climbx.climbx.common.error.BusinessException;
 import com.climbx.climbx.common.error.ErrorCode;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
@@ -27,13 +29,15 @@ public class ProviderIdTokenService {
 
     private final Map<String, JwtDecoder> idTokenDecoders;
     private final Map<OAuth2ProviderType, UserInfoExtractor> extractorMap;
+    private final NonceService nonceService;
 
     /**
      * UserInfoExtractor 목록을 Map으로 변환하여 빠른 조회 지원
      */
     public ProviderIdTokenService(
         @Qualifier("oauth2IdTokenDecoders") Map<String, JwtDecoder> idTokenDecoders,
-        List<UserInfoExtractor> userInfoExtractors
+        List<UserInfoExtractor> userInfoExtractors,
+        NonceService nonceService
     ) {
         this.idTokenDecoders = idTokenDecoders;
         this.extractorMap = userInfoExtractors.stream()
@@ -41,6 +45,7 @@ public class ProviderIdTokenService {
                 UserInfoExtractor::getProviderType,
                 Function.identity()
             ));
+        this.nonceService = nonceService;
 
         log.info("OAuth2IdTokenService 초기화 완료. 지원 Provider: {}",
             extractorMap.keySet());
@@ -119,6 +124,13 @@ public class ProviderIdTokenService {
         OptionalUtils.tryOf(
                 () -> jwt.getClaimAsString("nonce")
             ).filter(nonce -> !nonce.isBlank() && nonce.equals(expectedNonce))
-            .orElseThrow(() -> new InvalidTokenException("nonce claim not found"));
+            .ifPresentOrElse(
+                nonce -> nonceService.validateAndUseNonce(nonce),
+                () -> {
+                    log.warn("{} ID Token nonce 검증 실패: nonce={}", providerType.name(),
+                        expectedNonce);
+                    throw new InvalidNonceException(providerType);
+                }
+            );
     }
 } 

@@ -10,6 +10,8 @@ import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
+import com.climbx.climbx.auth.service.NonceService;
+import com.climbx.climbx.auth.service.RefreshTokenBlacklistService;
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.JwtContext;
 import com.climbx.climbx.common.security.dto.JwtTokenInfo;
@@ -38,6 +40,8 @@ public class AuthService {
     private final UserAuthRepository userAuthsRepository;
     private final UserStatRepository userStatRepository;
     private final ProviderIdTokenService oauth2IdTokenService;
+    private final NonceService nonceService;
+    private final RefreshTokenBlacklistService refreshTokenBlacklistService;
 
     /**
      * OAuth2 콜백
@@ -51,6 +55,9 @@ public class AuthService {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("지원하지 않는 OAuth2 Provider: " + provider);
         }
+
+        // Nonce 일회성 검증
+        nonceService.validateAndUseNonce(request.nonce());
 
         // ID Token 검증 및 사용자 정보 추출
         ValidatedTokenInfoDto tokenInfo = oauth2IdTokenService.verifyIdToken(
@@ -71,7 +78,7 @@ public class AuthService {
             user.role()
         );
 
-        RefreshTokenDto refreshToken = jwtContext.generateRefreshToken(user.userId());
+        String refreshToken = jwtContext.generateRefreshToken(user.userId());
 
         log.info("사용자 로그인 완료: userId={}, nickname={}, provider={}",
             user.userId(), user.nickname(), providerType.name());
@@ -87,37 +94,47 @@ public class AuthService {
      */
     @Transactional
     public TokenGenerationResponseDto refreshAccessToken(String refreshToken) {
-        // 토큰에서 모든 정보를 한 번에 파싱 및 검증
-        JwtTokenInfo tokenInfo = jwtContext.parseToken(refreshToken);
+        try {
+            // 1. 블랙리스트 확인
+            refreshTokenBlacklistService.validateTokenNotBlacklisted(refreshToken);
 
-        // REFRESH 토큰인지 확인
-        String refreshTokenType = comcodeService.getCodeValue("REFRESH");
-        if (!refreshTokenType.equals(tokenInfo.tokenType().toUpperCase())) {
-            log.debug("Invalid token type: expected={}, actual={}", refreshTokenType,
-                tokenInfo.tokenType());
-            throw new InvalidTokenException();
+            // 2. 토큰에서 모든 정보를 한 번에 파싱 및 검증
+            JwtTokenInfo tokenInfo = jwtContext.parseToken(refreshToken);
+
+            // 3. REFRESH 토큰인지 확인
+            String refreshTokenType = comcodeService.getCodeValue("REFRESH");
+            if (!refreshTokenType.equals(tokenInfo.tokenType().toUpperCase())) {
+                log.debug("Invalid token type: expected={}, actual={}", refreshTokenType,
+                    tokenInfo.tokenType());
+                throw new InvalidTokenException();
+            }
+
+            // 4. 사용자 존재 확인
+            UserAccountEntity user = userAccountRepository.findById(tokenInfo.userId())
+                .orElseThrow(() -> new UserNotFoundException(tokenInfo.userId()));
+
+            // 5. 기존 토큰을 블랙리스트에 추가 (로테이션)
+            refreshTokenBlacklistService.addToBlacklist(refreshToken);
+
+            // 6. 새로운 액세스 토큰 생성
+            AccessTokenResponseDto newAccessToken = jwtContext.generateAccessToken(
+                tokenInfo.userId(),
+                user.role()
+            );
+
+            // 7. 새로운 리프레시 토큰 생성
+            String newRefreshToken = jwtContext.generateRefreshToken(tokenInfo.userId());
+
+            log.info("토큰 갱신 완료: userId={}", tokenInfo.userId());
+
+            return TokenGenerationResponseDto.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
+        } catch (Exception e) {
+            log.error("리프레시 토큰 갱신 실패", e);
+            throw new InvalidTokenException("리프레시 토큰 갱신에 실패했습니다.");
         }
-
-        // 사용자 존재 확인
-        UserAccountEntity user = userAccountRepository.findById(tokenInfo.userId())
-            .orElseThrow(() -> new UserNotFoundException(tokenInfo.userId()));
-
-        // 새로운 액세스 토큰 생성
-        AccessTokenResponseDto newAccessToken = jwtContext.generateAccessToken(
-            tokenInfo.userId(),
-            user.role()
-        );
-
-        // 새로운 리프레시 토큰 생성
-        String newRefreshToken = jwtContext.generateRefreshToken(tokenInfo.userId());
-        // TODO: drop old refresh token
-
-        log.info("토큰 갱신 완료: userId={}", tokenInfo.userId());
-
-        return TokenGenerationResponseDto.builder()
-            .accessToken(newAccessToken)
-            .refreshToken(newRefreshToken)
-            .build();
     }
 
     /**
@@ -132,11 +149,12 @@ public class AuthService {
     }
 
     /**
-     * 사용자 로그아웃을 처리합니다. 현재는 클라이언트에서 토큰 삭제로 처리됩니다.
+     * 사용자 로그아웃을 처리합니다.
      */
-    public void signOut(String token) {
-        // TODO: 추후 토큰 블랙리스트 기능 구현 시 추가
-        log.info("사용자 로그아웃 요청");
+    public void signOut(String refreshToken) {
+        // 리프레시 토큰을 블랙리스트에 추가
+        refreshTokenBlacklistService.addToBlacklist(refreshToken);
+        log.info("사용자 로그아웃 완료");
     }
 
     /**
