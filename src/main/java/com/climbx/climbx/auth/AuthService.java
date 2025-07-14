@@ -110,11 +110,16 @@ public class AuthService {
             user.role()
         );
 
+        // 새로운 리프레시 토큰 생성
+        String newRefreshToken = jwtContext.generateRefreshToken(tokenInfo.userId());
+        // TODO: drop old refresh token
+
         log.info("토큰 갱신 완료: userId={}", tokenInfo.userId());
 
         return RefreshResponseDto.builder()
             .tokenType("Bearer")
             .accessToken(newAccessToken)
+            .refreshToken(newRefreshToken)
             .expiresIn(jwtContext.getAccessTokenExpiration())
             .build();
     }
