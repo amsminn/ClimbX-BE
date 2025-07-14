@@ -20,7 +20,7 @@ public record JwtTokenInfo(
         return JwtTokenInfo.builder()
             .userId(Long.parseLong(jwt.getSubject()))
             .issuer(jwt.getIssuer().toString())
-            .audience(jwt.getAudience().get(0).toString())
+            .audience(jwt.getAudience().stream().findFirst().orElse(null))
             .role(jwt.getClaimAsString("role"))
             .tokenType(jwt.getClaimAsString("type"))
             .build();
