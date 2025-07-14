@@ -2,12 +2,13 @@ package com.climbx.climbx.auth.provider;
 
 import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
-import com.climbx.climbx.auth.provider.exception.InvalidNonceException;
 import com.climbx.climbx.common.error.BusinessException;
 import com.climbx.climbx.common.error.ErrorCode;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.common.util.OptionalUtils;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -94,32 +95,30 @@ public class ProviderIdTokenService {
      * Provider에 해당하는 JwtDecoder를 가져옵니다.
      */
     private JwtDecoder getJwtDecoder(String provider) {
-        JwtDecoder decoder = idTokenDecoders.get(provider.toLowerCase());
-        if (decoder == null) {
-            throw new IllegalArgumentException("지원하지 않는 OAuth2 Provider: " + provider);
-        }
-        return decoder;
+        return Optional.ofNullable(idTokenDecoders.get(provider.toLowerCase()))
+            .orElseThrow(() -> new InvalidTokenException("provider claim not found"));
     }
 
     /**
      * Provider에 해당하는 UserInfoExtractor를 가져옵니다.
      */
     private UserInfoExtractor getExtractor(OAuth2ProviderType providerType) {
-        UserInfoExtractor extractor = extractorMap.get(providerType);
-        if (extractor == null) {
-            throw new IllegalArgumentException("지원하지 않는 OAuth2 Provider: " + providerType);
-        }
-        return extractor;
+        return Optional.ofNullable(extractorMap.get(providerType))
+            .orElseThrow(
+                () -> new InvalidTokenException(
+                    "provider extractor not found for "
+                        + providerType.name()
+                )
+            );
     }
 
     /**
      * nonce 클레임을 검증합니다.
      */
     private void validateNonce(Jwt jwt, String expectedNonce, OAuth2ProviderType providerType) {
-        String actualNonce = jwt.getClaimAsString("nonce");
-
-        if (expectedNonce == null || !expectedNonce.equals(actualNonce)) {
-            throw new InvalidNonceException(providerType);
-        }
+        OptionalUtils.tryOf(
+                () -> jwt.getClaimAsString("nonce")
+            ).filter(nonce -> !nonce.isBlank() && nonce.equals(expectedNonce))
+            .orElseThrow(() -> new InvalidTokenException("nonce claim not found"));
     }
 } 
