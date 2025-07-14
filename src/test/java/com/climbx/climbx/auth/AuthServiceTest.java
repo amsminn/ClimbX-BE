@@ -7,22 +7,24 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 
+import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
-import com.climbx.climbx.auth.dto.CallbackResponseDto;
-import com.climbx.climbx.auth.dto.RefreshRequestDto;
-import com.climbx.climbx.auth.dto.RefreshResponseDto;
+import com.climbx.climbx.auth.dto.TokenGenerationResponseDto;
 import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
+import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
+import com.climbx.climbx.auth.service.NonceService;
+import com.climbx.climbx.auth.service.RefreshTokenBlacklistService;
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.JwtContext;
 import com.climbx.climbx.common.security.dto.JwtTokenInfo;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
 import com.climbx.climbx.user.entity.UserAccountEntity;
-import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import java.util.Optional;
@@ -56,6 +58,12 @@ class AuthServiceTest {
     @Mock
     private ProviderIdTokenService providerIdTokenService;
 
+    @Mock
+    private NonceService nonceService;
+
+    @Mock
+    private RefreshTokenBlacklistService refreshTokenBlacklistService;
+
     @InjectMocks
     private AuthService authService;
 
@@ -67,7 +75,6 @@ class AuthServiceTest {
         @DisplayName("기존 사용자에 대해 콜백을 성공적으로 처리한다")
         void shouldHandleCallbackForExistingUser() {
             // given
-            // comcodeService.getCodeValue 관련 stubbing 제거
             UserAccountEntity user = UserAccountEntity.builder()
                 .userId(1L)
                 .nickname("테스트유저")
@@ -75,13 +82,20 @@ class AuthServiceTest {
                 .build();
             UserAuthEntity userAuth = UserAuthEntity.builder()
                 .userAccountEntity(user)
-                .provider(com.climbx.climbx.auth.enums.OAuth2ProviderType.KAKAO)
+                .provider(OAuth2ProviderType.KAKAO)
                 .providerId("12345")
                 .providerEmail("test@example.com")
                 .isPrimary(true)
                 .build();
+
+            AccessTokenResponseDto accessTokenResponse = AccessTokenResponseDto.builder()
+                .accessToken("access-token-1")
+                .expiresIn(3600L)
+                .build();
+
+            doNothing().when(nonceService).validateAndUseNonce("test-nonce");
             given(userAuthRepository.findByProviderAndProviderId(
-                com.climbx.climbx.auth.enums.OAuth2ProviderType.KAKAO, "12345")
+                OAuth2ProviderType.KAKAO, "12345")
             ).willReturn(Optional.of(userAuth));
             given(providerIdTokenService.verifyIdToken("kakao", "valid-id-token",
                 "test-nonce")).willReturn(
@@ -91,23 +105,24 @@ class AuthServiceTest {
                     .nickname("테스트유저")
                     .build()
             );
-            given(jwtContext.generateAccessToken(1L, "USER")).willReturn("access-token-1");
+            given(jwtContext.generateAccessToken(1L, "USER")).willReturn(accessTokenResponse);
             given(jwtContext.generateRefreshToken(1L)).willReturn("refresh-token-1");
-            given(jwtContext.getAccessTokenExpiration()).willReturn(3600L);
+
             CallbackRequestDto request = CallbackRequestDto.builder()
                 .idToken("valid-id-token")
                 .nonce("test-nonce")
                 .build();
 
             // when
-            CallbackResponseDto result = authService.handleCallback("kakao", request);
+            TokenGenerationResponseDto result = authService.handleCallback("kakao", request);
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.accessToken()).isEqualTo("access-token-1");
+            assertThat(result.accessToken().accessToken()).isEqualTo("access-token-1");
+            assertThat(result.accessToken().expiresIn()).isEqualTo(3600L);
             assertThat(result.refreshToken()).isEqualTo("refresh-token-1");
-            assertThat(result.tokenType()).isEqualTo("Bearer");
-            assertThat(result.expiresIn()).isEqualTo(3600L);
+
+            then(nonceService).should().validateAndUseNonce("test-nonce");
         }
 
         @Test
@@ -115,8 +130,9 @@ class AuthServiceTest {
         void shouldCreateNewUserWhenUserNotFound() {
             // given
             given(comcodeService.getCodeValue("USER")).willReturn("USER");
+            doNothing().when(nonceService).validateAndUseNonce("test-nonce");
             given(userAuthRepository.findByProviderAndProviderId(
-                com.climbx.climbx.auth.enums.OAuth2ProviderType.KAKAO, "67890")
+                OAuth2ProviderType.KAKAO, "67890")
             ).willReturn(Optional.empty());
             given(userAccountRepository.save(any())).willAnswer(invocation -> {
                 UserAccountEntity entity = invocation.getArgument(0);
@@ -134,23 +150,30 @@ class AuthServiceTest {
                     .nickname("새유저")
                     .build()
             );
-            given(jwtContext.generateAccessToken(2L, "USER")).willReturn("access-token-2");
+
+            AccessTokenResponseDto accessTokenResponse = AccessTokenResponseDto.builder()
+                .accessToken("access-token-2")
+                .expiresIn(3600L)
+                .build();
+
+            given(jwtContext.generateAccessToken(2L, "USER")).willReturn(accessTokenResponse);
             given(jwtContext.generateRefreshToken(2L)).willReturn("refresh-token-2");
-            given(jwtContext.getAccessTokenExpiration()).willReturn(3600L);
+
             CallbackRequestDto request = CallbackRequestDto.builder()
                 .idToken("valid-id-token")
                 .nonce("test-nonce")
                 .build();
 
             // when
-            CallbackResponseDto result = authService.handleCallback("kakao", request);
+            TokenGenerationResponseDto result = authService.handleCallback("kakao", request);
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.accessToken()).isEqualTo("access-token-2");
+            assertThat(result.accessToken().accessToken()).isEqualTo("access-token-2");
+            assertThat(result.accessToken().expiresIn()).isEqualTo(3600L);
             assertThat(result.refreshToken()).isEqualTo("refresh-token-2");
-            assertThat(result.tokenType()).isEqualTo("Bearer");
-            assertThat(result.expiresIn()).isEqualTo(3600L);
+
+            then(nonceService).should().validateAndUseNonce("test-nonce");
         }
     }
 
@@ -162,43 +185,54 @@ class AuthServiceTest {
         @DisplayName("유효한 리프레시 토큰으로 액세스 토큰을 갱신한다")
         void shouldRefreshAccessTokenWithValidRefreshToken() {
             // given
+            doNothing().when(refreshTokenBlacklistService)
+                .validateTokenNotBlacklisted("valid-refresh-token");
             given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
             JwtTokenInfo tokenInfo = JwtTokenInfo.builder()
                 .userId(3L)
                 .role("USER")
                 .tokenType("REFRESH")
                 .build();
-            given(jwtContext.parseToken(anyString())).willReturn(tokenInfo);
+            given(jwtContext.parseToken("valid-refresh-token")).willReturn(tokenInfo);
+
             UserAccountEntity user = UserAccountEntity.builder()
                 .userId(3L)
                 .nickname("리프레시유저")
                 .role("USER")
                 .build();
             given(userAccountRepository.findById(3L)).willReturn(Optional.of(user));
-            given(jwtContext.generateAccessToken(3L, "USER")).willReturn("new-access-token");
-            given(jwtContext.getAccessTokenExpiration()).willReturn(3600L);
-            RefreshRequestDto request = RefreshRequestDto.builder()
-                .refreshToken("valid-refresh-token")
+            doNothing().when(refreshTokenBlacklistService).addToBlacklist("valid-refresh-token");
+
+            AccessTokenResponseDto accessTokenResponse = AccessTokenResponseDto.builder()
+                .accessToken("new-access-token")
+                .expiresIn(3600L)
                 .build();
 
+            given(jwtContext.generateAccessToken(3L, "USER")).willReturn(accessTokenResponse);
+            given(jwtContext.generateRefreshToken(3L)).willReturn("new-refresh-token");
+
             // when
-            RefreshResponseDto result = authService.refreshAccessToken(request.refreshToken());
+            TokenGenerationResponseDto result = authService.refreshAccessToken(
+                "valid-refresh-token");
 
             // then
             assertThat(result).isNotNull();
-            assertThat(result.accessToken()).isEqualTo("new-access-token");
-            assertThat(result.tokenType()).isEqualTo("Bearer");
-            assertThat(result.expiresIn()).isEqualTo(3600L);
+            assertThat(result.accessToken().accessToken()).isEqualTo("new-access-token");
+            assertThat(result.accessToken().expiresIn()).isEqualTo(3600L);
+            assertThat(result.refreshToken()).isEqualTo("new-refresh-token");
+
+            then(refreshTokenBlacklistService).should()
+                .validateTokenNotBlacklisted("valid-refresh-token");
+            then(refreshTokenBlacklistService).should().addToBlacklist("valid-refresh-token");
         }
 
         @Test
         @DisplayName("잘못된 토큰 타입일 때 예외를 던진다")
         void shouldThrowExceptionWhenTokenTypeIsNotRefresh() {
             // given
+            doNothing().when(refreshTokenBlacklistService)
+                .validateTokenNotBlacklisted("access-token");
             given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
-            RefreshRequestDto request = RefreshRequestDto.builder()
-                .refreshToken("access-token")
-                .build();
 
             JwtTokenInfo tokenInfo = JwtTokenInfo.builder()
                 .userId(1L)
@@ -209,21 +243,21 @@ class AuthServiceTest {
             given(jwtContext.parseToken("access-token")).willReturn(tokenInfo);
 
             // when & then
-            assertThatThrownBy(() -> authService.refreshAccessToken(request.refreshToken()))
+            assertThatThrownBy(() -> authService.refreshAccessToken("access-token"))
                 .isInstanceOf(InvalidTokenException.class);
 
             then(userAccountRepository).should(never()).findById(anyLong());
             then(jwtContext).should(never()).generateAccessToken(anyLong(), anyString());
+            then(refreshTokenBlacklistService).should(never()).addToBlacklist(anyString());
         }
 
         @Test
         @DisplayName("존재하지 않는 사용자일 때 예외를 던진다")
         void shouldThrowExceptionWhenUserNotFoundInRefresh() {
             // given
+            doNothing().when(refreshTokenBlacklistService)
+                .validateTokenNotBlacklisted("valid-refresh-token");
             given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
-            RefreshRequestDto request = RefreshRequestDto.builder()
-                .refreshToken("valid-refresh-token")
-                .build();
 
             JwtTokenInfo tokenInfo = JwtTokenInfo.builder()
                 .userId(999L)
@@ -235,10 +269,11 @@ class AuthServiceTest {
             given(userAccountRepository.findById(999L)).willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> authService.refreshAccessToken(request.refreshToken()))
-                .isInstanceOf(UserNotFoundException.class);
+            assertThatThrownBy(() -> authService.refreshAccessToken("valid-refresh-token"))
+                .isInstanceOf(InvalidTokenException.class);
 
             then(jwtContext).should(never()).generateAccessToken(anyLong(), anyString());
+            then(refreshTokenBlacklistService).should(never()).addToBlacklist(anyString());
         }
     }
 }

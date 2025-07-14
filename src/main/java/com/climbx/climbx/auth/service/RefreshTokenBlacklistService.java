@@ -21,13 +21,13 @@ public class RefreshTokenBlacklistService {
      */
     public void validateTokenNotBlacklisted(String refreshToken) {
         if (refreshToken == null || refreshToken.trim().isEmpty()) {
-            throw new IllegalArgumentException("리프레시 토큰은 비어있을 수 없습니다.");
+            throw new InvalidTokenException("refresh token is empty");
         }
 
         if (refreshTokenBlacklist.getIfPresent(refreshToken) != null) {
             log.warn("블랙리스트에 등록된 리프레시 토큰 사용 시도: {}",
                 refreshToken.substring(0, Math.min(refreshToken.length(), 20)) + "...");
-            throw new InvalidTokenException("블랙리스트에 등록된 리프레시 토큰입니다.");
+            throw new InvalidTokenException("refresh token is blacklisted");
         }
     }
 

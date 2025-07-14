@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 
+import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.common.comcode.ComcodeService;
 import com.climbx.climbx.common.security.dto.JwtTokenInfo;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
@@ -65,13 +66,18 @@ class JwtContextTest {
             Long userId = 1L;
             String role = "USER";
             JwtContext jwtContextStub = spy(jwtContext);
-            doReturn("mocked-access-token").when(jwtContextStub).generateAccessToken(userId, role);
+            AccessTokenResponseDto mockedResponse = AccessTokenResponseDto.builder()
+                .accessToken("mocked-access-token")
+                .expiresIn(3600L)
+                .build();
+            doReturn(mockedResponse).when(jwtContextStub).generateAccessToken(userId, role);
 
             // when
-            String token = jwtContextStub.generateAccessToken(userId, role);
+            AccessTokenResponseDto response = jwtContextStub.generateAccessToken(userId, role);
 
             // then
-            assertThat(token).isEqualTo("mocked-access-token");
+            assertThat(response.accessToken()).isEqualTo("mocked-access-token");
+            assertThat(response.expiresIn()).isEqualTo(3600L);
         }
 
         @Test
