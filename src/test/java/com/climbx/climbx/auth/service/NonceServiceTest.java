@@ -1,5 +1,13 @@
 package com.climbx.climbx.auth.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
+
 import com.climbx.climbx.auth.provider.exception.InvalidNonceException;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
@@ -10,14 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("NonceService 테스트")
@@ -60,7 +60,7 @@ class NonceServiceTest {
 
             // when & then
             assertThatThrownBy(() -> nonceService.validateAndUseNonce(usedNonce))
-                    .isInstanceOf(InvalidNonceException.class);
+                .isInstanceOf(InvalidNonceException.class);
 
             then(usedNonces).should().getIfPresent(usedNonce);
             then(usedNonces).should(never()).put(anyString(), any(Boolean.class));
@@ -71,8 +71,8 @@ class NonceServiceTest {
         void shouldThrowIllegalArgumentExceptionWhenNonceIsNull() {
             // when & then
             assertThatThrownBy(() -> nonceService.validateAndUseNonce(null))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("Nonce는 비어있을 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Nonce는 비어있을 수 없습니다.");
 
             then(usedNonces).should(never()).getIfPresent(anyString());
             then(usedNonces).should(never()).put(anyString(), any(Boolean.class));
@@ -83,8 +83,8 @@ class NonceServiceTest {
         void shouldThrowIllegalArgumentExceptionWhenNonceIsEmpty() {
             // when & then
             assertThatThrownBy(() -> nonceService.validateAndUseNonce(""))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("Nonce는 비어있을 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Nonce는 비어있을 수 없습니다.");
 
             then(usedNonces).should(never()).getIfPresent(anyString());
             then(usedNonces).should(never()).put(anyString(), any(Boolean.class));
@@ -95,8 +95,8 @@ class NonceServiceTest {
         void shouldThrowIllegalArgumentExceptionWhenNonceIsBlank() {
             // when & then
             assertThatThrownBy(() -> nonceService.validateAndUseNonce("   "))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("Nonce는 비어있을 수 없습니다.");
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Nonce는 비어있을 수 없습니다.");
 
             then(usedNonces).should(never()).getIfPresent(anyString());
             then(usedNonces).should(never()).put(anyString(), any(Boolean.class));
@@ -107,19 +107,19 @@ class NonceServiceTest {
         void shouldThrowExceptionWhenUsingSameNonceTwice() {
             // given
             String nonce = "test-nonce-12345";
-            
+
             // 첫 번째 호출 시 - 새로운 nonce
             given(usedNonces.getIfPresent(nonce)).willReturn(null);
-            
+
             // when - 첫 번째 사용은 성공
             nonceService.validateAndUseNonce(nonce);
-            
+
             // given - 두 번째 호출 시 - 이미 사용된 nonce
             given(usedNonces.getIfPresent(nonce)).willReturn(true);
-            
+
             // when & then - 두 번째 사용은 예외 발생
             assertThatThrownBy(() -> nonceService.validateAndUseNonce(nonce))
-                    .isInstanceOf(InvalidNonceException.class);
+                .isInstanceOf(InvalidNonceException.class);
 
             then(usedNonces).should().put(nonce, true);
         }
