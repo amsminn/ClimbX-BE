@@ -163,8 +163,10 @@ public class AuthService {
     /**
      * 새로운 사용자를 생성합니다.
      */
-    private UserAccountEntity createNewUser(ValidatedTokenInfoDto tokenInfo,
-        OAuth2ProviderType providerType) {
+    private UserAccountEntity createNewUser(
+        ValidatedTokenInfoDto tokenInfo,
+        OAuth2ProviderType providerType
+    ) {
 
         // 임시 닉네임 생성 (중복 방지)
         String temporaryNickname = generateTemporaryNickname(tokenInfo.nickname());
@@ -173,6 +175,8 @@ public class AuthService {
         UserAccountEntity userAccount = UserAccountEntity.builder()
             .nickname(temporaryNickname)
             .role(comcodeService.getCodeValue("USER"))
+            .email(tokenInfo.email())
+            .profileImageUrl(tokenInfo.profileImageUrl())
             .build();
 
         UserAccountEntity savedUser = userAccountRepository.save(userAccount);

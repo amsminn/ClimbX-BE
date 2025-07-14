@@ -51,14 +51,20 @@ public class KakaoUserInfoExtractor implements UserInfoExtractor {
         String providerId = jwt.getSubject(); // sub 클레임
         String email = jwt.getClaimAsString("email");
         String nickname = jwt.getClaimAsString("nickname");
+        String profileImageUrl = jwt.getClaimAsString("profile_image");
 
-        log.debug("Kakao 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",
-            providerId, email, nickname);
+        log.debug(
+            "Kakao 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",
+            providerId,
+            email,
+            nickname
+        );
 
         return ValidatedTokenInfoDto.builder()
             .providerId(providerId)
-            .email(email)
             .nickname(nickname)
+            .email(email)
+            .profileImageUrl(profileImageUrl)
             .providerType(OAuth2ProviderType.KAKAO.name())
             .build();
     }

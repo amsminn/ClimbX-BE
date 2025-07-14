@@ -9,8 +9,9 @@ import lombok.Builder;
 public record ValidatedTokenInfoDto(
 
     String providerId,
-    String email,
     String nickname,
+    String email,
+    String profileImageUrl,
     String providerType
 ) {
 
