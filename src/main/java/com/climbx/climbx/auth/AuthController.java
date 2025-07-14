@@ -45,7 +45,6 @@ public class AuthController implements AuthApiDocumentation {
 
         log.info("{} OAuth2 콜백 처리 완료", provider.toUpperCase());
         
-        // 클라이언트에는 refresh token 없이 반환
         return response;
     }
 
