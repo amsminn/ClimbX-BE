@@ -25,9 +25,9 @@ public interface UserInfoExtractor {
     String getIssuer();
 
     /**
-     * Provider의 Client ID를 반환합니다.
+     * Provider의 Audience를 반환합니다.
      */
-    String getClientId();
+    String getAudience();
 
     /**
      * JWT에서 사용자 정보를 추출합니다.

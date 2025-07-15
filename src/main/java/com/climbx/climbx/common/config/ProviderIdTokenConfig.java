@@ -66,7 +66,7 @@ public class ProviderIdTokenConfig {
 
         // audience 검증을 위한 커스텀 검증기
         OAuth2TokenValidator<Jwt> audienceValidator = createAudienceValidator(
-            extractor.getClientId());
+            extractor.getAudience());
 
         // 모든 검증기를 결합
         OAuth2TokenValidator<Jwt> combinedValidator = new DelegatingOAuth2TokenValidator<>(

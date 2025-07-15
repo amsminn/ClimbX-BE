@@ -21,8 +21,8 @@ public class KakaoUserInfoExtractor implements UserInfoExtractor {
     @Value("${spring.security.oauth2.kakao.issuer}")
     private String issuer;
 
-    @Value("${spring.security.oauth2.kakao.client-id}")
-    private String clientId;
+    @Value("${spring.security.oauth2.kakao.audience}")
+    private String audience;
 
     @Override
     public OAuth2ProviderType getProviderType() {
@@ -40,8 +40,8 @@ public class KakaoUserInfoExtractor implements UserInfoExtractor {
     }
 
     @Override
-    public String getClientId() {
-        return clientId;
+    public String getAudience() {
+        return audience;
     }
 
     @Override
