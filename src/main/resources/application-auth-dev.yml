@@ -33,7 +33,7 @@ auth:
     refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:1209600} # 2주 (초 단위)
     issuer: ${JWT_ISSUER:climbx-api-dev}
     audience: ${JWT_AUDIENCE:climbx-client}
-    jws-algorithm: ${JWT_JWS_ALGORITHM:HmacSHA256}
+    jws-algorithm: ${JWT_JWS_ALGORITHM:HS256}
 
 # 로깅 설정
 logging:

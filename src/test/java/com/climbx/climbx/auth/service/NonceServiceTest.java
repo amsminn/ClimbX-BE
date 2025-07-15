@@ -71,8 +71,7 @@ class NonceServiceTest {
         void shouldThrowIllegalArgumentExceptionWhenNonceIsNull() {
             // when & then
             assertThatThrownBy(() -> nonceService.validateAndUseNonce(null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Nonce는 비어있을 수 없습니다.");
+                .isInstanceOf(InvalidNonceException.class);
 
             then(usedNonces).should(never()).getIfPresent(anyString());
             then(usedNonces).should(never()).put(anyString(), any(Boolean.class));
@@ -83,8 +82,7 @@ class NonceServiceTest {
         void shouldThrowIllegalArgumentExceptionWhenNonceIsEmpty() {
             // when & then
             assertThatThrownBy(() -> nonceService.validateAndUseNonce(""))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Nonce는 비어있을 수 없습니다.");
+                .isInstanceOf(InvalidNonceException.class);
 
             then(usedNonces).should(never()).getIfPresent(anyString());
             then(usedNonces).should(never()).put(anyString(), any(Boolean.class));
@@ -95,8 +93,7 @@ class NonceServiceTest {
         void shouldThrowIllegalArgumentExceptionWhenNonceIsBlank() {
             // when & then
             assertThatThrownBy(() -> nonceService.validateAndUseNonce("   "))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Nonce는 비어있을 수 없습니다.");
+                .isInstanceOf(InvalidNonceException.class);
 
             then(usedNonces).should(never()).getIfPresent(anyString());
             then(usedNonces).should(never()).put(anyString(), any(Boolean.class));

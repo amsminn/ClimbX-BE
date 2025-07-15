@@ -11,10 +11,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtAudienceValidator;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -39,6 +42,8 @@ public class JwtContext {
     private final long refreshTokenExpiration;
     private final String issuer;
     private final String audience;
+    private final MacAlgorithm jwsAlgorithm;
+    private final Function<JwtClaimsSet, String> tokenEncoder;
 
     public JwtContext(
         ComcodeService comcodeService,
@@ -61,6 +66,7 @@ public class JwtContext {
         this.refreshTokenExpiration = refreshTokenExpiration;
         this.issuer = issuer;
         this.audience = audience;
+        this.jwsAlgorithm = MacAlgorithm.from(jwsAlgorithm);
 
         // SecretKeySpec 생성
         SecretKeySpec secretKey = new SecretKeySpec(
@@ -86,6 +92,14 @@ public class JwtContext {
 
         // NimbusJwtEncoder 설정 (토큰 생성용)
         this.jwtEncoder = new NimbusJwtEncoder(new ImmutableSecret<>(secretKey));
+
+        // 토큰 인코더 람다 (중복 코드 제거)
+        this.tokenEncoder = claims -> {
+            JwsHeader jwsHeader = JwsHeader.with(this.jwsAlgorithm)
+                .type("JWT")
+                .build();
+            return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+        };
     }
 
     /**
@@ -114,7 +128,7 @@ public class JwtContext {
             .build();
 
         return AccessTokenResponseDto.builder()
-            .accessToken(jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue())
+            .accessToken(tokenEncoder.apply(claims))
             .expiresIn(accessTokenExpiration)
             .build();
     }
@@ -135,7 +149,7 @@ public class JwtContext {
             .claim("type", comcodeService.getCodeValue("REFRESH"))
             .build();
 
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return tokenEncoder.apply(claims);
     }
 
     /**

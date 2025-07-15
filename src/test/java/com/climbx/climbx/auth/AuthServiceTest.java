@@ -93,7 +93,6 @@ class AuthServiceTest {
                 .expiresIn(3600L)
                 .build();
 
-            doNothing().when(nonceService).validateAndUseNonce("test-nonce");
             given(userAuthRepository.findByProviderAndProviderId(
                 OAuth2ProviderType.KAKAO, "12345")
             ).willReturn(Optional.of(userAuth));
@@ -122,7 +121,8 @@ class AuthServiceTest {
             assertThat(result.accessToken().expiresIn()).isEqualTo(3600L);
             assertThat(result.refreshToken()).isEqualTo("refresh-token-1");
 
-            then(nonceService).should().validateAndUseNonce("test-nonce");
+            then(providerIdTokenService).should()
+                .verifyIdToken("kakao", "valid-id-token", "test-nonce");
         }
 
         @Test
@@ -130,7 +130,6 @@ class AuthServiceTest {
         void shouldCreateNewUserWhenUserNotFound() {
             // given
             given(comcodeService.getCodeValue("USER")).willReturn("USER");
-            doNothing().when(nonceService).validateAndUseNonce("test-nonce");
             given(userAuthRepository.findByProviderAndProviderId(
                 OAuth2ProviderType.KAKAO, "67890")
             ).willReturn(Optional.empty());
@@ -173,7 +172,8 @@ class AuthServiceTest {
             assertThat(result.accessToken().expiresIn()).isEqualTo(3600L);
             assertThat(result.refreshToken()).isEqualTo("refresh-token-2");
 
-            then(nonceService).should().validateAndUseNonce("test-nonce");
+            then(providerIdTokenService).should()
+                .verifyIdToken("kakao", "valid-id-token", "test-nonce");
         }
     }
 
