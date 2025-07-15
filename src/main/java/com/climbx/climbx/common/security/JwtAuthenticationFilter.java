@@ -56,9 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             log.error("JWT authentication error", e);
             // 예상치 못한 오류 발생 시에도 인증 없이 계속 진행
+        } finally {
+            filterChain.doFilter(request, response);
         }
-
-        filterChain.doFilter(request, response);
     }
 
     /**
