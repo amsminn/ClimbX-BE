@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.debug("JWT authentication successful for user: {}", tokenInfo.userId());
 
         } catch (Exception e) {
-            log.error("JWT authentication error", e);
+            log.debug("JWT authentication failed: {}", e.getMessage());
             // 예상치 못한 오류 발생 시에도 인증 없이 계속 진행
         } finally {
             filterChain.doFilter(request, response);
