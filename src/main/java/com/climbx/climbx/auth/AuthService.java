@@ -56,9 +56,6 @@ public class AuthService {
             throw new IllegalArgumentException("지원하지 않는 OAuth2 Provider: " + provider);
         }
 
-        // Nonce 일회성 검증
-        nonceService.validateAndUseNonce(request.nonce());
-
         // ID Token 검증 및 사용자 정보 추출
         ValidatedTokenInfoDto tokenInfo = oauth2IdTokenService.verifyIdToken(
             provider,

@@ -23,7 +23,7 @@ public class NonceService {
      */
     public void validateAndUseNonce(String nonce) {
         if (nonce == null || nonce.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nonce는 비어있을 수 없습니다.");
+            throw new InvalidNonceException(OAuth2ProviderType.KAKAO);
         }
 
         // 이미 사용된 nonce인지 확인
