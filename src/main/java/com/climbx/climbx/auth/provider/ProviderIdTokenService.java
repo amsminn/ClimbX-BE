@@ -4,9 +4,8 @@ import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.provider.exception.InvalidNonceException;
 import com.climbx.climbx.auth.service.NonceService;
-import com.climbx.climbx.common.error.BusinessException;
-import com.climbx.climbx.common.error.ErrorCode;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.common.security.exception.TokenExpiredException;
 import com.climbx.climbx.common.util.OptionalUtils;
 import java.util.List;
 import java.util.Map;
@@ -85,11 +84,10 @@ public class ProviderIdTokenService {
         } catch (BadJwtException e) {
             if (e.getMessage().contains("expired")) {
                 log.warn("{} ID Token 만료: {}", provider.toUpperCase(), e.getMessage());
-                throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
+                throw new TokenExpiredException();
             }
             log.error("{} ID Token Invalid", provider.toUpperCase(), e);
             throw new InvalidTokenException();
-
         } catch (Exception e) {
             log.error("{} ID Token Invalid", provider.toUpperCase(), e);
             throw new InvalidTokenException();
