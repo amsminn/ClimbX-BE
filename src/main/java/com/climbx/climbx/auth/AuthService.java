@@ -9,6 +9,7 @@ import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
+import com.climbx.climbx.auth.provider.exception.ProviderNotSupportedException;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.auth.service.NonceService;
 import com.climbx.climbx.auth.service.RefreshTokenBlacklistService;
@@ -52,8 +53,8 @@ public class AuthService {
         OAuth2ProviderType providerType;
         try {
             providerType = OAuth2ProviderType.valueOf(provider.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("지원하지 않는 OAuth2 Provider: " + provider);
+        } catch (Exception e) {
+            throw new ProviderNotSupportedException(provider);
         }
 
         // ID Token 검증 및 사용자 정보 추출

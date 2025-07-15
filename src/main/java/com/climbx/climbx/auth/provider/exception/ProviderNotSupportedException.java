@@ -10,4 +10,9 @@ public class ProviderNotSupportedException extends BusinessException {
         super(ErrorCode.PROVIDER_NOT_SUPPORTED);
         addContext("provider", provider.name());
     }
+
+    public ProviderNotSupportedException(String provider) {
+        super(ErrorCode.PROVIDER_NOT_SUPPORTED);
+        addContext("provider", provider);
+    }
 }
