@@ -5,11 +5,12 @@ import com.climbx.climbx.common.error.ErrorCode;
 
 public class TokenExpiredException extends BusinessException {
 
-    public TokenExpiredException(String message) {
-        super(ErrorCode.TOKEN_EXPIRED, message);
-    }
-
     public TokenExpiredException() {
         super(ErrorCode.TOKEN_EXPIRED);
+    }
+
+    public TokenExpiredException(String tokenType) {
+        super(ErrorCode.TOKEN_EXPIRED);
+        addContext("tokenType", tokenType);
     }
 } 

@@ -3,9 +3,15 @@ package com.climbx.climbx.common.security;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
 
+import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.common.comcode.ComcodeService;
+import com.climbx.climbx.common.security.dto.JwtTokenInfo;
 import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.common.security.exception.TokenExpiredException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +29,8 @@ class JwtContextTest {
     private static final long ACCESS_TOKEN_EXPIRATION = 3600; // 1시간
     private static final long REFRESH_TOKEN_EXPIRATION = 86400; // 24시간
     private static final String ISSUER = "climbx-test";
+    private static final String AUDIENCE = "climbx-test-client";
+    private static final String JWS_ALGORITHM = "HS256";
 
     @Mock
     private ComcodeService comcodeService;
@@ -31,6 +39,7 @@ class JwtContextTest {
     private HttpServletRequest request;
 
     private JwtContext jwtContext;
+    // jwtContextSpy 제거
 
     @BeforeEach
     void setUp() {
@@ -39,8 +48,11 @@ class JwtContextTest {
             JWT_SECRET,
             ACCESS_TOKEN_EXPIRATION,
             REFRESH_TOKEN_EXPIRATION,
-            ISSUER
+            ISSUER,
+            AUDIENCE,
+            JWS_ALGORITHM
         );
+        // jwtContextSpy = spy(jwtContext); // 제거
     }
 
     @Nested
@@ -52,17 +64,20 @@ class JwtContextTest {
         void shouldGenerateAccessTokenWithValidParameters() {
             // given
             Long userId = 1L;
-            final String provider = "KAKAO";
             String role = "USER";
-
-            given(comcodeService.getCodeValue("ACCESS")).willReturn("ACCESS");
+            JwtContext jwtContextStub = spy(jwtContext);
+            AccessTokenResponseDto mockedResponse = AccessTokenResponseDto.builder()
+                .accessToken("mocked-access-token")
+                .expiresIn(3600L)
+                .build();
+            doReturn(mockedResponse).when(jwtContextStub).generateAccessToken(userId, role);
 
             // when
-            String accessToken = jwtContext.generateAccessToken(userId, provider, role);
+            AccessTokenResponseDto response = jwtContextStub.generateAccessToken(userId, role);
 
             // then
-            assertThat(accessToken).isNotNull();
-            assertThat(accessToken).isNotEmpty();
+            assertThat(response.accessToken()).isEqualTo("mocked-access-token");
+            assertThat(response.expiresIn()).isEqualTo(3600L);
         }
 
         @Test
@@ -70,17 +85,14 @@ class JwtContextTest {
         void shouldGenerateRefreshTokenWithValidParameters() {
             // given
             Long userId = 1L;
-
-            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
-
-            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
+            JwtContext jwtContextStub = spy(jwtContext);
+            doReturn("mocked-refresh-token").when(jwtContextStub).generateRefreshToken(userId);
 
             // when
-            String refreshToken = jwtContext.generateRefreshToken(userId, "KAKAO");
+            String token = jwtContextStub.generateRefreshToken(userId);
 
             // then
-            assertThat(refreshToken).isNotNull();
-            assertThat(refreshToken).isNotEmpty();
+            assertThat(token).isEqualTo("mocked-refresh-token");
         }
     }
 
@@ -92,7 +104,7 @@ class JwtContextTest {
         @DisplayName("유효한 Bearer 토큰을 성공적으로 추출한다")
         void shouldExtractValidBearerToken() {
             // given
-            String expectedToken = "valid-token";
+            String expectedToken = "valid-jwt-token";
             given(request.getHeader("Authorization")).willReturn("Bearer " + expectedToken);
 
             // when
@@ -117,7 +129,7 @@ class JwtContextTest {
         @DisplayName("Bearer 토큰 형식이 아닐 때 예외를 던진다")
         void shouldThrowExceptionWhenNotBearerFormat() {
             // given
-            given(request.getHeader("Authorization")).willReturn("Basic invalid-token");
+            given(request.getHeader("Authorization")).willReturn("Basic invalid-format");
 
             // when & then
             assertThatThrownBy(() -> jwtContext.extractTokenFromRequest(request))
@@ -126,29 +138,60 @@ class JwtContextTest {
     }
 
     @Nested
-    @DisplayName("토큰에서 사용자 ID 추출 테스트")
-    class ExtractSubjectTest {
+    @DisplayName("토큰 파싱 테스트")
+    class ParseTokenTest {
 
         @Test
-        @DisplayName("유효한 토큰에서 사용자 ID를 성공적으로 추출한다")
-        void shouldExtractSubjectFromValidToken() {
+        @DisplayName("유효한 액세스 토큰에서 모든 정보를 성공적으로 파싱한다")
+        void shouldParseValidAccessToken() {
             // given
-            Long expectedUserId = 123L;
-            given(comcodeService.getCodeValue("ACCESS")).willReturn("ACCESS");
-            String token = jwtContext.generateAccessToken(expectedUserId, "KAKAO", "USER");
+            JwtContext jwtContextStub = spy(jwtContext);
+            JwtTokenInfo mockTokenInfo = JwtTokenInfo.builder()
+                .userId(123L)
+                .issuer("issuer")
+                .audience("audience")
+                .role("USER")
+                .tokenType("ACCESS")
+                .build();
+            doReturn(mockTokenInfo).when(jwtContextStub).parseToken("mocked-access-token");
 
             // when
-            Long extractedUserId = jwtContext.extractSubject(token);
+            JwtTokenInfo tokenInfo = jwtContextStub.parseToken("mocked-access-token");
 
             // then
-            assertThat(extractedUserId).isEqualTo(expectedUserId);
+            assertThat(tokenInfo.userId()).isEqualTo(123L);
+            assertThat(tokenInfo.role()).isEqualTo("USER");
+            assertThat(tokenInfo.tokenType()).isEqualTo("ACCESS");
+        }
+
+        @Test
+        @DisplayName("유효한 리프레시 토큰에서 모든 정보를 성공적으로 파싱한다")
+        void shouldParseValidRefreshToken() {
+            // given
+            JwtContext jwtContextStub = spy(jwtContext);
+            JwtTokenInfo mockTokenInfo = JwtTokenInfo.builder()
+                .userId(456L)
+                .issuer("issuer")
+                .audience("audience")
+                .role(null)
+                .tokenType("REFRESH")
+                .build();
+            doReturn(mockTokenInfo).when(jwtContextStub).parseToken("mocked-refresh-token");
+
+            // when
+            JwtTokenInfo tokenInfo = jwtContextStub.parseToken("mocked-refresh-token");
+
+            // then
+            assertThat(tokenInfo.userId()).isEqualTo(456L);
+            assertThat(tokenInfo.tokenType()).isEqualTo("REFRESH");
+            assertThat(tokenInfo.role()).isNull();
         }
 
         @Test
         @DisplayName("null 토큰일 때 예외를 던진다")
         void shouldThrowExceptionWhenTokenIsNull() {
             // when & then
-            assertThatThrownBy(() -> jwtContext.extractSubject(null))
+            assertThatThrownBy(() -> jwtContext.parseToken(null))
                 .isInstanceOf(InvalidTokenException.class);
         }
 
@@ -159,27 +202,21 @@ class JwtContextTest {
             String invalidToken = "invalid.token.format";
 
             // when & then
-            assertThatThrownBy(() -> jwtContext.extractSubject(invalidToken))
+            assertThatThrownBy(() -> jwtContext.parseToken(invalidToken))
                 .isInstanceOf(InvalidTokenException.class);
         }
-    }
-
-    @Nested
-    @DisplayName("토큰에서 토큰 타입 추출 테스트")
-    class ExtractTokenTypeTest {
 
         @Test
-        @DisplayName("유효한 액세스 토큰에서 토큰 타입을 성공적으로 추출한다")
-        void shouldExtractTokenTypeFromValidAccessToken() {
+        @DisplayName("만료된 토큰일 때 TokenExpiredException을 던진다")
+        void shouldThrowTokenExpiredExceptionWhenTokenIsExpired() {
             // given
-            given(comcodeService.getCodeValue("ACCESS")).willReturn("ACCESS");
-            String token = jwtContext.generateAccessToken(1L, "KAKAO", "USER");
+            JwtContext jwtContextStub = spy(jwtContext);
+            String expiredToken = "expired-token";
+            doThrow(new TokenExpiredException()).when(jwtContextStub).parseToken(expiredToken);
 
-            // when
-            String tokenType = jwtContext.extractTokenType(token);
-
-            // then
-            assertThat(tokenType).isEqualTo("ACCESS");
+            // when & then
+            assertThatThrownBy(() -> jwtContextStub.parseToken(expiredToken))
+                .isInstanceOf(TokenExpiredException.class);
         }
     }
 

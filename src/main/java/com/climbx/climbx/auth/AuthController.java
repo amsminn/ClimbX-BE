@@ -1,21 +1,24 @@
 package com.climbx.climbx.auth;
 
-import com.climbx.climbx.auth.dto.LoginResponseDto;
-import com.climbx.climbx.auth.dto.RefreshRequestDto;
-import com.climbx.climbx.auth.dto.UserOauth2InfoResponseDto;
+import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
+import com.climbx.climbx.auth.dto.CallbackRequestDto;
+import com.climbx.climbx.auth.dto.TokenGenerationResponseDto;
+import com.climbx.climbx.auth.dto.UserAuthResponseDto;
 import com.climbx.climbx.common.annotation.SuccessStatus;
-import java.net.URI;
+import com.climbx.climbx.common.security.JwtContext;
+import jakarta.servlet.http.HttpServletResponse;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -25,46 +28,36 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController implements AuthApiDocumentation {
 
     private final AuthService authService;
-
-    /**
-     * OAuth2 카카오 인증 페이지로 리다이렉트합니다. 개발 및 테스트 환경에서만 사용해야 합니다.
-     */
-    @Override
-    @GetMapping("/oauth2/kakao/authorize-url")
-    public ResponseEntity<Void> redirectToKakaoAuthorize() {
-        log.info("카카오 OAuth2 인증 URL 리다이렉트 요청");
-
-        String authorizeUrl = authService.generateKakaoAuthorizeUrl();
-
-        log.info("카카오 OAuth2 인증 페이지로 리다이렉트: {}", authorizeUrl);
-        return ResponseEntity.status(HttpStatus.FOUND)
-            .location(URI.create(authorizeUrl))
-            .build();
-    }
+    private final JwtContext jwtContext;
 
     /**
      * provider의 인가 code를 받아 인증하고 토큰 발급
      */
     @Override
-    @GetMapping("/oauth2/{provider}/callback")
-    @SuccessStatus(value = HttpStatus.OK)
-    public LoginResponseDto handleOAuth2Callback(
-        @PathVariable("provider") String provider,
-        @RequestParam("code") String code
+    @PostMapping("/oauth2/{provider}/callback")
+    @SuccessStatus(value = HttpStatus.CREATED)
+    public AccessTokenResponseDto handleCallback(
+        @PathVariable String provider,
+        @RequestBody CallbackRequestDto request,
+        HttpServletResponse response
     ) {
-        /*
-         * code를 로깅하지 않도록 주의해야함
-         */
         log.info(
-            "{} OAuth2 콜백 처리 시작: code={}",
-            provider.toUpperCase(),
-            "..."
+            "{} OAuth2 콜백 처리 시작",
+            provider.toUpperCase()
         );
 
-        LoginResponseDto response = authService.handleCallback(provider, code);
+        TokenGenerationResponseDto tokenResponse = authService.handleCallback(provider, request);
+
+        // 리프레시 토큰을 HTTP Only Cookie로 설정
+        ResponseCookie refreshTokenCookie = createRefreshTokenCookie(
+            tokenResponse.refreshToken(),
+            jwtContext.getRefreshTokenExpiration()
+        );
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         log.info("{} OAuth2 콜백 처리 완료", provider.toUpperCase());
-        return response;
+
+        return tokenResponse.accessToken();
     }
 
     /**
@@ -73,13 +66,23 @@ public class AuthController implements AuthApiDocumentation {
     @Override
     @PostMapping("/oauth2/refresh")
     @SuccessStatus(value = HttpStatus.CREATED)
-    public LoginResponseDto refreshAccessToken(@RequestBody RefreshRequestDto request) {
+    public AccessTokenResponseDto refreshAccessToken(
+        @CookieValue(value = "refreshToken", required = true) String refreshToken,
+        HttpServletResponse response
+    ) {
         log.info("액세스 토큰 갱신 요청");
 
-        LoginResponseDto refreshResponse = authService.refreshAccessToken(request.refreshToken());
+        TokenGenerationResponseDto refreshResponse = authService.refreshAccessToken(refreshToken);
+
+        // 새로운 리프레시 토큰을 HTTP Only Cookie로 설정
+        ResponseCookie refreshTokenCookie = createRefreshTokenCookie(
+            refreshResponse.refreshToken(),
+            jwtContext.getRefreshTokenExpiration()
+        );
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         log.info("액세스 토큰 갱신 완료");
-        return refreshResponse;
+        return refreshResponse.accessToken();
     }
 
     /**
@@ -88,12 +91,12 @@ public class AuthController implements AuthApiDocumentation {
     @Override
     @GetMapping("/me")
     @SuccessStatus(value = HttpStatus.OK)
-    public UserOauth2InfoResponseDto getCurrentUserInfo(
+    public UserAuthResponseDto getCurrentUserInfo(
         @AuthenticationPrincipal Long userId
     ) {
         log.info("현재 사용자 정보 조회: userId={}", userId);
 
-        UserOauth2InfoResponseDto response = authService.getCurrentUserInfo(userId);
+        UserAuthResponseDto response = authService.getCurrentUserInfo(userId);
 
         log.info("현재 사용자 정보 조회 완료: nickname={}", response.nickname());
         return response;
@@ -105,11 +108,44 @@ public class AuthController implements AuthApiDocumentation {
     @Override
     @PostMapping("/signout")
     @SuccessStatus(value = HttpStatus.NO_CONTENT)
-    public void signOut(@RequestBody RefreshRequestDto request) {
+    public void signOut(
+        @CookieValue(value = "refreshToken", required = true) String refreshToken,
+        HttpServletResponse response
+    ) {
         log.info("로그아웃 요청");
 
-        authService.signOut(request.refreshToken());
+        authService.signOut(refreshToken);
+
+        // 리프레시 토큰 쿠키 삭제
+        ResponseCookie refreshTokenCookie = clearRefreshTokenCookie();
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
         log.info("로그아웃 완료");
+    }
+
+    /**
+     * 리프레시 토큰 쿠키를 생성합니다.
+     */
+    private ResponseCookie createRefreshTokenCookie(String value, long expiresIn) {
+        return ResponseCookie.from("refreshToken", value)
+            .httpOnly(true)
+            .secure(false) // TODO: 프로덕션 환경에서는 true로 변경
+            .path("/api/auth/oauth2/refresh")
+            .maxAge(Duration.ofSeconds(expiresIn))
+            .sameSite("Strict")
+            .build();
+    }
+
+    /**
+     * 리프레시 토큰 쿠키를 삭제합니다.
+     */
+    private ResponseCookie clearRefreshTokenCookie() {
+        return ResponseCookie.from("refreshToken", "")
+            .httpOnly(true)
+            .secure(false) // TODO: 프로덕션 환경에서는 true로 변경
+            .path("/api/auth/signout")
+            .maxAge(Duration.ZERO)
+            .sameSite("Strict")
+            .build();
     }
 }
