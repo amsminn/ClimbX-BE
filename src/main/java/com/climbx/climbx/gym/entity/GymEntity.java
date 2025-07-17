@@ -35,9 +35,9 @@ public class GymEntity extends BaseTimeEntity {
     @NotNull
     private Long gymId; // 클라이밍장 ID
 
-    @Column(name = "name", length = 30, nullable = false)
+    @Column(name = "name", length = 64, nullable = false)
     @NotBlank
-    @Size(min = 1, max = 30)
+    @Size(min = 1, max = 64)
     private String name; // 클라이밍장 이름
 
     @Column(name = "latitude")
@@ -50,10 +50,10 @@ public class GymEntity extends BaseTimeEntity {
     @DecimalMax(value = "180.0", inclusive = false)
     private Double longitude; // 경도
 
-    @Column(name = "address", length = 100)
+    @Column(name = "address", length = 128)
     private String address; // 주소
 
-    @Column(name = "phone_number", length = 30)
+    @Column(name = "phone_number", length = 64)
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
     private String phoneNumber; // 전화번호, 형식: 010-1234-5678
 

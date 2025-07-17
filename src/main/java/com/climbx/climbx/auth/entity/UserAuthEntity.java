@@ -60,16 +60,16 @@ public class UserAuthEntity extends BaseTimeEntity {
     private UserAccountEntity userAccountEntity;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "provider", length = 20, nullable = false)
+    @Column(name = "provider", length = 32, nullable = false)
     @NotNull
     private OAuth2ProviderType provider; // OAuth2 provider (e.g. KAKAO)
 
-    @Column(name = "provider_id", length = 100, nullable = false)
+    @Column(name = "provider_id", length = 128, nullable = false)
     @NotBlank
     @Size(max = 100)
     private String providerId; // provider 고유 user ID
 
-    @Column(name = "provider_email", length = 100, nullable = true)
+    @Column(name = "provider_email", length = 128, nullable = true)
     @Email
     @Size(max = 100)
     private String providerEmail; // provider email

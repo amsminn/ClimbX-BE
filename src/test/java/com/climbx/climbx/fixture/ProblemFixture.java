@@ -6,7 +6,7 @@ import com.climbx.climbx.problem.entity.ProblemEntity;
 
 public class ProblemFixture {
 
-    public static final Long DEFAULT_PROBLEM_RATING = 1200L;
+    public static final Integer DEFAULT_PROBLEM_RATING = 1200;
     public static final String DEFAULT_LOCAL_LEVEL = "빨강";
     public static final String DEFAULT_HOLD_COLOR = "파랑";
     public static final String DEFAULT_IMAGE_URL = "http://example.com/image.jpg";
@@ -24,7 +24,7 @@ public class ProblemFixture {
         GymEntity gym,
         String localLevel,
         String holdColor,
-        Long problemRating
+        Integer problemRating
     ) {
         return createProblemEntity(problemId, gym, localLevel, holdColor, problemRating,
             DEFAULT_SPOT_ID, DEFAULT_SPOT_X_RATIO, DEFAULT_SPOT_Y_RATIO);
@@ -45,7 +45,7 @@ public class ProblemFixture {
         GymEntity gym,
         String localLevel,
         String holdColor,
-        Long problemRating,
+        Integer problemRating,
         Long spotId,
         Double spotXRatio,
         Double spotYRatio
@@ -79,7 +79,7 @@ public class ProblemFixture {
         String gymName,
         String localLevel,
         String holdColor,
-        Long problemRating
+        Integer problemRating
     ) {
         return createProblemResponseDto(problemId, gymId, gymName, localLevel, holdColor,
             problemRating, DEFAULT_SPOT_ID, DEFAULT_SPOT_X_RATIO, DEFAULT_SPOT_Y_RATIO);
@@ -91,7 +91,7 @@ public class ProblemFixture {
         String gymName,
         String localLevel,
         String holdColor,
-        Long problemRating,
+        Integer problemRating,
         Long spotId,
         Double spotXRatio,
         Double spotYRatio

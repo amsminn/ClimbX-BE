@@ -28,6 +28,7 @@ public class UserStatEntity extends BaseTimeEntity {
 
     @Id
     @Column(name = "user_id", updatable = false, nullable = false)
+    @Min(1L)
     private Long userId; // 사용자 ID, UserAccountEntity와 동일한 ID 사용
 
     @MapsId

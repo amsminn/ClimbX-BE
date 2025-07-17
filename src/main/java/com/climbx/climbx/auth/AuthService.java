@@ -192,7 +192,6 @@ public class AuthService {
         UserAccountEntity userAccount = UserAccountEntity.builder()
             .nickname(temporaryNickname)
             .role(comcodeService.getCodeValue("USER"))
-            .email(tokenInfo.email())
             .profileImageUrl(tokenInfo.profileImageUrl())
             .build();
 

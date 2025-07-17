@@ -10,7 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,12 +34,14 @@ public class UserRankingHistoryEntity extends BaseTimeEntity {
     @NotNull
     private Long historyId; // 히스토리 ID (Primary Key)
 
-    @Column(name = "criteria", length = 20, nullable = false)
+    @Column(name = "criteria", length = 32, nullable = false)
     @NotNull
+    @Size(min = 1, max = 32)
     private String criteria; // 히스토리 종류
 
     @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
     @NotNull
+    @Min(1L)
     private Long userId; // 사용자 ID (Foreign Key)
 
     @ManyToOne(fetch = FetchType.LAZY)

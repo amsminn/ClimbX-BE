@@ -29,7 +29,6 @@ public class UserFixture {
         return UserAccountEntity.builder()
             .userId(1L)
             .nickname(nickname)
-            .email(email)
             .statusMessage(DEFAULT_STATUS_MESSAGE)
             .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
             .role("USER")
