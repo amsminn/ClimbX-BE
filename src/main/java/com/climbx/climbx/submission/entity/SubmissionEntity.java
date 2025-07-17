@@ -12,6 +12,7 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class SubmissionEntity extends BaseTimeEntity {
 
     @Id
     @Column(name = "video_id", updatable = false, nullable = false)
-    private Long videoId; // 비디오 ID, VideoEntity와 동일한 ID 사용
+    private UUID videoId; // 비디오 ID, VideoEntity와 동일한 ID 사용
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
