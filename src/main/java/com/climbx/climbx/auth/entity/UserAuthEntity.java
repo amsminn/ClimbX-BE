@@ -66,12 +66,12 @@ public class UserAuthEntity extends BaseTimeEntity {
 
     @Column(name = "provider_id", length = 128, nullable = false)
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 128)
     private String providerId; // provider 고유 user ID
 
     @Column(name = "provider_email", length = 128, nullable = true)
     @Email
-    @Size(max = 100)
+    @Size(max = 128)
     private String providerEmail; // provider email
 
     @Builder.Default
