@@ -11,7 +11,7 @@ public record ProblemDetailsResponseDto(
     String gymName,
     String localLevel,
     String holdColor,
-    Long problemRating,
+    Integer problemRating,
     Long spotId,
     Double spotXRatio,
     Double spotYRatio,

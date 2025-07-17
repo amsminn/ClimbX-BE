@@ -39,17 +39,17 @@ public class ProblemEntity extends BaseTimeEntity {
     @JoinColumn(name = "gym_id", nullable = false)
     private GymEntity gym;
 
-    @Column(name = "local_level", length = 20, nullable = false)
-    @Size(min = 1, max = 20)
+    @Column(name = "local_level", length = 32, nullable = false)
+    @Size(min = 1, max = 32)
     private String localLevel; // 클라이밍장별 레벨, 예: "빨강", "파랑", "초록" 등
 
-    @Column(name = "hold_color", length = 20, nullable = false)
-    @Size(min = 1, max = 20)
+    @Column(name = "hold_color", length = 32, nullable = false)
+    @Size(min = 1, max = 32)
     private String holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
 
     @Column(name = "problem_rating", nullable = false)
     @Min(value = 1L)
-    private Long problemRating; // 문제 난이도
+    private Integer problemRating; // 문제 난이도
 
     @Column(name = "spot_id", nullable = false)
     @Min(value = 1L)
@@ -65,8 +65,7 @@ public class ProblemEntity extends BaseTimeEntity {
     @DecimalMax("100.0")
     private Double spotYRatio; // 문제 위치 Y 좌표 비율
 
-    @Column(name = "image_url", length = 255)
-    @Size(max = 255)
+    @Column(name = "image_url", length = 256)
+    @Size(max = 256)
     private String imageUrl; // 문제 이미지 URL
-
 }

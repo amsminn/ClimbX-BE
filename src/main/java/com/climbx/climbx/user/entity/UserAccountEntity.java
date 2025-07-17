@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -38,23 +37,18 @@ public class UserAccountEntity extends BaseTimeEntity {
     @Column(name = "user_id", updatable = false, nullable = false)
     private Long userId; // 사용자 ID
 
-    @Column(name = "role", length = 20, nullable = false)
+    @Column(name = "role", length = 32, nullable = false)
     @NotNull
-    @Size(max = 20)
+    @Size(max = 32)
     private String role; // USER, ADMIN 등 권한
 
-    @Column(name = "nickname", length = 50, unique = true, nullable = false)
+    @Column(name = "nickname", length = 64, unique = true, nullable = false)
     @NotBlank
-    @Size(min = 2, max = 50)
+    @Size(min = 3, max = 64)
     private String nickname; // 사용자 닉네임
 
-    @Column(name = "email", length = 100, nullable = true)
-    @Email
-    @Size(max = 100)
-    private String email; // 사용자 이메일 (주 이메일)
-
-    @Column(name = "status_message", length = 100, nullable = true)
-    @Size(max = 100) // nullable
+    @Column(name = "status_message", length = 128, nullable = true)
+    @Size(max = 128) // nullable
     private String statusMessage; // 상태 메시지
 
     @Column(name = "profile_image_url", length = 255, nullable = true)

@@ -14,26 +14,26 @@ public record UserProfileResponseDto(
 
     String profileImageUrl, // null 허용
 
-    Long ranking,
+    Integer ranking,
 
-    Long rating,
+    Integer rating,
 
-    Map<String, Long> categoryRatings,
+    Map<String, Integer> categoryRatings,
 
-    Long currentStreak,
+    Integer currentStreak,
 
-    Long longestStreak,
+    Integer longestStreak,
 
-    Long solvedProblemsCount,
+    Integer solvedProblemsCount,
 
-    Long rivalCount
+    Integer rivalCount
 ) {
 
     public static UserProfileResponseDto from(
         UserAccountEntity account,
         UserStatEntity stat,
-        Long ranking,
-        Map<String, Long> categoryRatings) {
+        Integer ranking,
+        Map<String, Integer> categoryRatings) {
 
         return UserProfileResponseDto.builder()
             .nickname(account.nickname())

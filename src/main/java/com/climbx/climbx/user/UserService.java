@@ -146,8 +146,8 @@ class UserService {
 
     private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
         UserStatEntity userStat = findUserStatByUserId(userAccount.userId());
-        Long ratingRank = userStatRepository.findRatingRank(userStat.rating());
-        Map<String, Long> categoryRatings = Collections.emptyMap();
+        Integer ratingRank = userStatRepository.findRatingRank(userStat.rating());
+        Map<String, Integer> categoryRatings = Collections.emptyMap();
 
         return UserProfileResponseDto.from(
             userAccount,

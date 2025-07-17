@@ -47,11 +47,11 @@ public class ProblemServiceTest {
 
             GymEntity gymEntity = GymFixture.createGymEntity(gymId, "테스트 클라이밍장", 37.0, 126.0);
             ProblemEntity problemEntity1 = ProblemFixture.createProblemEntity(1L, gymEntity,
-                localLevel, holdColor, 1200L, 1L, 50.0, 30.0);
+                localLevel, holdColor, 1200, 1L, 50.0, 30.0);
             ProblemEntity problemEntity2 = ProblemFixture.createProblemEntity(2L, gymEntity,
-                localLevel, holdColor, 1300L, 1L, 55.0, 35.0);
+                localLevel, holdColor, 1300, 1L, 55.0, 35.0);
             ProblemEntity problemEntity3 = ProblemFixture.createProblemEntity(3L, gymEntity,
-                localLevel, holdColor, 1400L, 2L, 60.0, 40.0);
+                localLevel, holdColor, 1400, 2L, 60.0, 40.0);
 
             List<ProblemEntity> mockProblems = List.of(problemEntity1, problemEntity2,
                 problemEntity3);

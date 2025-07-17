@@ -43,15 +43,15 @@ public class SubmissionEntity extends BaseTimeEntity {
     @JoinColumn(name = "problem_id")
     private ProblemEntity problemEntity; // 문제 엔티티
 
-    @Column(name = "status", length = 20, nullable = false)
-    @Size(max = 20)
+    @Column(name = "status", length = 32, nullable = false)
+    @Size(min = 1, max = 32)
     private String status; // 제출 상태, 예: PENDING, ACCEPTED, REJECTED 등
 
-    @Column(name = "reject_reason", length = 255, nullable = true)
-    @Size(max = 255)
+    @Column(name = "reject_reason", length = 256, nullable = true)
+    @Size(max = 256)
     private String rejectReason; // 거절 사유, nullable
 
-    @Column(name = "appeal_status", length = 20)
-    @Size(max = 20)
+    @Column(name = "appeal_status", length = 32)
+    @Size(max = 32)
     private String appealStatus; // 항소 상태, 예: PENDING, ACCEPTED, REJECTED 등
 }

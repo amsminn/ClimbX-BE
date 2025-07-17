@@ -8,7 +8,7 @@ public record ProblemInfoInSpotResponseDto(
     Long problemId,
     String localLevel,
     String holdColor,
-    Long problemRating,
+    Integer problemRating,
     Long spotId,
     Double spotXRatio,
     Double spotYRatio,
