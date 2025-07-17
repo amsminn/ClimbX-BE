@@ -1,0 +1,354 @@
+---
+description: "Testing guidelines and best practices for unit and integration tests, including BDD-style testing with Mockito. Enforces use of then() instead of verify() for BDD consistency."
+globs: ["**/*Test.java", "**/*Tests.java", "src/test/**/*.java"]
+alwaysApply: true
+---
+
+# Testing Guidelines
+
+## Unit Testing 규칙
+
+### 1. Mock Verification - BDD 스타일 필수
+
+#### Mock 검증 규칙
+- **ALWAYS use `then()` instead of `verify()`** for BDD-style testing
+- Use `then(mock).should().method()` for verification that method was called
+- Use `then(mock).should(never()).method()` for verification that method was NOT called
+- Import `import static org.mockito.BDDMockito.then;`
+
+```java
+// Good - BDD 스타일
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+
+@Test
+void shouldCreateUserSuccessfully() {
+    // given
+    given(repository.findById(1L)).willReturn(Optional.of(user));
+    
+    // when
+    service.createUser(request);
+    
+    // then
+    then(repository).should().save(any(UserEntity.class));
+    then(emailService).should(never()).sendEmail(any());
+}
+```
+
+```java
+// Bad - 전통적인 verify 스타일
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+
+@Test
+void shouldCreateUserSuccessfully() {
+    // given
+    when(repository.findById(1L)).thenReturn(Optional.of(user));
+    
+    // when
+    service.createUser(request);
+    
+    // then
+    verify(repository).save(any(UserEntity.class));
+    verify(emailService, never()).sendEmail(any());
+}
+```
+
+### 2. Test Structure - Given-When-Then 패턴
+
+#### 기본 테스트 구조
+```java
+@ExtendWith(MockitoExtension.class)
+@DisplayName("UserService 테스트")
+class UserServiceTest {
+    
+    @Mock
+    private UserRepository userRepository;
+    
+    @Mock
+    private EmailService emailService;
+    
+    @InjectMocks
+    private UserService userService;
+    
+    @Nested
+    @DisplayName("사용자 생성 테스트")
+    class CreateUserTest {
+        
+        @Test
+        @DisplayName("유효한 요청으로 사용자를 성공적으로 생성한다")
+        void shouldCreateUserWithValidRequest() {
+            // given
+            UserCreateRequestDto request = UserCreateRequestDto.builder()
+                    .email("test@example.com")
+                    .nickname("테스트유저")
+                    .build();
+            
+            UserEntity savedUser = UserEntity.builder()
+                    .id(1L)
+                    .email("test@example.com")
+                    .nickname("테스트유저")
+                    .build();
+            
+            given(userRepository.save(any(UserEntity.class))).willReturn(savedUser);
+            
+            // when
+            UserResponseDto result = userService.createUser(request);
+            
+            // then
+            assertThat(result.id()).isEqualTo(1L);
+            assertThat(result.email()).isEqualTo("test@example.com");
+            assertThat(result.nickname()).isEqualTo("테스트유저");
+            
+            then(userRepository).should().save(any(UserEntity.class));
+            then(emailService).should().sendWelcomeEmail(savedUser.email());
+        }
+        
+        @Test
+        @DisplayName("중복된 이메일로 사용자 생성 시 예외를 던진다")
+        void shouldThrowExceptionWhenEmailAlreadyExists() {
+            // given
+            UserCreateRequestDto request = UserCreateRequestDto.builder()
+                    .email("existing@example.com")
+                    .build();
+            
+            given(userRepository.existsByEmail("existing@example.com")).willReturn(true);
+            
+            // when & then
+            assertThatThrownBy(() -> userService.createUser(request))
+                    .isInstanceOf(DuplicateEmailException.class)
+                    .hasMessage("이미 사용 중인 이메일입니다: existing@example.com");
+                    
+            then(userRepository).should(never()).save(any(UserEntity.class));
+        }
+    }
+}
+```
+
+### 3. BDD 스타일 Import 규칙
+
+#### 필수 Import 목록
+```java
+// BDD 스타일 Mockito
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.BDDMockito.willReturn;
+
+// AssertJ
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+// Mockito 매처
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
+
+// JUnit 5
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+```
+
+### 4. 테스트 데이터 생성 패턴
+
+#### Fixture 클래스 활용
+```java
+// UserFixture.java
+public class UserFixture {
+    
+    public static UserEntity createUser() {
+        return UserEntity.builder()
+                .id(1L)
+                .email("test@example.com")
+                .nickname("테스트유저")
+                .role(RoleType.USER)
+                .build();
+    }
+    
+    public static UserEntity createUser(String email, String nickname) {
+        return UserEntity.builder()
+                .id(1L)
+                .email(email)
+                .nickname(nickname)
+                .role(RoleType.USER)
+                .build();
+    }
+    
+    public static UserCreateRequestDto createUserRequest() {
+        return UserCreateRequestDto.builder()
+                .email("test@example.com")
+                .nickname("테스트유저")
+                .build();
+    }
+}
+```
+
+#### 테스트 내에서 사용
+```java
+@Test
+void shouldFindUserById() {
+    // given
+    UserEntity user = UserFixture.createUser();
+    given(userRepository.findById(1L)).willReturn(Optional.of(user));
+    
+    // when
+    UserResponseDto result = userService.findById(1L);
+    
+    // then
+    assertThat(result.email()).isEqualTo(user.email());
+}
+```
+
+## Integration Testing 규칙
+
+### 1. Controller 테스트
+
+#### WebMvcTest 구조
+```java
+@WebMvcTest(UserController.class)
+@DisplayName("UserController 통합 테스트")
+class UserControllerTest {
+    
+    @Autowired
+    private MockMvc mockMvc;
+    
+    @MockBean
+    private UserService userService;
+    
+    @Test
+    @DisplayName("GET /api/users/{id} - 사용자 조회 성공")
+    void shouldGetUserById() throws Exception {
+        // given
+        UserResponseDto response = UserResponseDto.builder()
+                .id(1L)
+                .email("test@example.com")
+                .nickname("테스트유저")
+                .build();
+        
+        given(userService.findById(1L)).willReturn(response);
+        
+        // when & then
+        mockMvc.perform(get("/api/users/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.email").value("test@example.com"));
+        
+        then(userService).should().findById(1L);
+    }
+}
+```
+
+### 2. Repository 테스트
+
+#### DataJpaTest 구조
+```java
+@DataJpaTest
+@DisplayName("UserRepository 테스트")
+class UserRepositoryTest {
+    
+    @Autowired
+    private TestEntityManager entityManager;
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Test
+    @DisplayName("이메일로 사용자를 조회한다")
+    void shouldFindUserByEmail() {
+        // given
+        UserEntity user = UserEntity.builder()
+                .email("test@example.com")
+                .nickname("테스트유저")
+                .build();
+        entityManager.persistAndFlush(user);
+        
+        // when
+        Optional<UserEntity> result = userRepository.findByEmail("test@example.com");
+        
+        // then
+        assertThat(result).isPresent();
+        assertThat(result.get().email()).isEqualTo("test@example.com");
+    }
+}
+```
+
+## 테스트 네이밍 규칙
+
+### 1. 테스트 클래스명
+- `{대상클래스명}Test` 형식
+- 예: `UserServiceTest`, `AuthControllerTest`
+
+### 2. 테스트 메서드명
+- `should{기대결과}When{조건}` 또는 `should{기대결과}` 형식
+- 한글 사용 권장 (DisplayName과 함께)
+```java
+@Test
+@DisplayName("유효하지 않은 이메일로 사용자 생성 시 예외를 던진다")
+void shouldThrowExceptionWhenCreatingUserWithInvalidEmail() {
+    // 테스트 구현
+}
+```
+
+### 3. 중첩 클래스명
+- `{기능}Test` 형식
+- 예: `CreateUserTest`, `ValidateTokenTest`
+
+## 예외 테스트 패턴
+
+### 1. 예외 발생 검증
+```java
+@Test
+@DisplayName("존재하지 않는 사용자 조회 시 예외를 던진다")
+void shouldThrowExceptionWhenUserNotFound() {
+    // given
+    given(userRepository.findById(999L)).willReturn(Optional.empty());
+    
+    // when & then
+    assertThatThrownBy(() -> userService.findById(999L))
+            .isInstanceOf(UserNotFoundException.class)
+            .hasMessage("사용자를 찾을 수 없습니다: 999");
+    
+    then(userRepository).should().findById(999L);
+}
+```
+
+### 2. 검증 실패 테스트
+```java
+@Test
+@DisplayName("유효하지 않은 이메일 형식으로 생성 시 예외를 던진다")
+void shouldThrowExceptionWhenEmailFormatInvalid() {
+    // given
+    UserCreateRequestDto request = UserCreateRequestDto.builder()
+            .email("invalid-email")
+            .nickname("테스트유저")
+            .build();
+    
+    // when & then
+    assertThatThrownBy(() -> userService.createUser(request))
+            .isInstanceOf(ValidationException.class)
+            .hasMessageContaining("이메일 형식이 올바르지 않습니다");
+}
+```
+
+## 성능 및 품질 가이드
+
+### 1. 테스트 격리
+- 각 테스트는 독립적으로 실행 가능해야 함
+- 공유 상태 사용 금지
+- `@DirtiesContext` 최소 사용
+
+### 2. Mock 사용 원칙
+- 외부 의존성만 Mock 처리
+- 테스트 대상 객체는 실제 인스턴스 사용
+- Over-mocking 지양
+
+### 3. 테스트 커버리지
+- 핵심 비즈니스 로직 100% 커버리지 목표
+- Happy path와 Edge case 모두 테스트
+- 예외 상황 테스트 필수

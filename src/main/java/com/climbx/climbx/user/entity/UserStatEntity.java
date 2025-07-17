@@ -33,7 +33,7 @@ public class UserStatEntity extends BaseTimeEntity {
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
-    private  UserAccountEntity userAccountEntity;
+    private UserAccountEntity userAccountEntity;
 
     @Builder.Default
     @Column(name = "rating", nullable = false)

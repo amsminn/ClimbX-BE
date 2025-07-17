@@ -1,12 +1,13 @@
 package com.climbx.climbx.user.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.climbx.climbx.common.error.BusinessException;
+import com.climbx.climbx.common.error.ErrorCode;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class NicknameMismatchException extends RuntimeException {
+public class NicknameMismatchException extends BusinessException {
+
     public NicknameMismatchException(String pathNickname, String bodyNickname) {
-        super(String.format("User newNickname '%s' does not match request body newNickname '%s'",
-            pathNickname, bodyNickname));
+        super(ErrorCode.NICKNAME_MISMATCH);
+        addContext("pathNickname", pathNickname);
+        addContext("bodyNickname", bodyNickname);
     }
 }

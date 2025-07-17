@@ -1,26 +1,16 @@
 package com.climbx.climbx.user.entity;
 
 import com.climbx.climbx.common.entity.BaseTimeEntity;
-import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
-import com.climbx.climbx.video.entity.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,10 +32,9 @@ public class UserRankingHistoryEntity extends BaseTimeEntity {
     @NotNull
     private Long historyId; // 히스토리 ID (Primary Key)
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "part", length = 20, nullable = false)
     @NotNull
-    private UserHistoryCriteriaType part; // 히스토리 타입
+    private String part; // 히스토리 타입
 
     @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
     @NotNull

@@ -1,8 +1,7 @@
 package com.climbx.climbx.user;
 
-import com.climbx.climbx.common.enums.RoleType;
-import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
-import com.climbx.climbx.problem.dto.ProblemResponseDto;
+import com.climbx.climbx.common.comcode.ComcodeService;
+import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -36,15 +35,18 @@ class UserService {
     private final UserStatRepository userStatRepository;
     private final SubmissionRepository submissionRepository;
     private final UserRankingHistoryRepository userRankingHistoryRepository;
+    private final ComcodeService comcodeService;
 
     @Transactional(readOnly = true)
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
 
+        String userRoleCode = comcodeService.getCodeValue("USER");
+
         if (search == null || search.trim().isEmpty()) {
-            userAccounts = userAccountRepository.findByRole(RoleType.USER);
+            userAccounts = userAccountRepository.findByRole(userRoleCode);
         } else {
-            userAccounts = userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER,
+            userAccounts = userAccountRepository.findByRoleAndNicknameContaining(userRoleCode,
                 search.trim());
         }
 
@@ -92,18 +94,19 @@ class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProblemResponseDto> getUserTopProblems(String nickname, Integer limit) {
+    public List<ProblemDetailsResponseDto> getUserTopProblems(String nickname, Integer limit) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
         Sort sort = Sort.by("problemEntity.problemRating").descending();
         Pageable pageable = PageRequest.of(0, limit, sort);
 
         List<ProblemEntity> problemEntities = submissionRepository.getUserSubmissionProblems(
             userAccount.userId(),
+            comcodeService.getCodeValue("ACCEPTED"),
             pageable
         );
 
         return problemEntities.stream()
-            .map(ProblemResponseDto::from)
+            .map(ProblemDetailsResponseDto::from)
             .toList();
     }
 
@@ -117,6 +120,7 @@ class UserService {
 
         return submissionRepository.getUserDateSolvedCount(
             userAccount.userId(),
+            comcodeService.getCodeValue("ACCEPTED"),
             from,
             to
         );
@@ -125,11 +129,12 @@ class UserService {
     @Transactional(readOnly = true)
     public List<DailyHistoryResponseDto> getUserDailyHistory(
         String nickname,
-        UserHistoryCriteriaType criteria,
+        String criteria,
         LocalDate from,
         LocalDate to
     ) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
+        criteria = comcodeService.getCodeValue(criteria);
 
         return userRankingHistoryRepository.getUserDailyHistory(
             userAccount.userId(),

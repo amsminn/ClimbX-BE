@@ -1,7 +1,5 @@
 package com.climbx.climbx.fixture;
 
-import com.climbx.climbx.common.enums.RoleType;
-import com.climbx.climbx.common.enums.UserHistoryCriteriaType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -21,6 +19,26 @@ public class UserFixture {
     public static final Long DEFAULT_SOLVED_PROBLEMS_COUNT = 25L;
     public static final Long DEFAULT_RIVAL_COUNT = 3L;
     public static final Long DEFAULT_RANKING = 10L;
+
+    // 편의 메서드들 (createUser 형태)
+    public static UserAccountEntity createUser() {
+        return createUserAccountEntity(1L);
+    }
+
+    public static UserAccountEntity createUser(String email, String nickname) {
+        return UserAccountEntity.builder()
+            .userId(1L)
+            .nickname(nickname)
+            .email(email)
+            .statusMessage(DEFAULT_STATUS_MESSAGE)
+            .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
+            .role("USER")
+            .build();
+    }
+
+    public static UserAccountEntity createUser(Long userId) {
+        return createUserAccountEntity(userId);
+    }
 
     // UserAccountEntity 생성 메서드들
     public static UserAccountEntity createUserAccountEntity(Long userId) {
@@ -43,7 +61,7 @@ public class UserFixture {
             nickname,
             statusMessage,
             profileImageUrl,
-            RoleType.USER
+            "USER"
         );
     }
 
@@ -52,7 +70,7 @@ public class UserFixture {
         String nickname,
         String statusMessage,
         String profileImageUrl,
-        RoleType role
+        String role
     ) {
         return UserAccountEntity.builder()
             .userId(userId)
@@ -69,7 +87,7 @@ public class UserFixture {
             nickname,
             DEFAULT_STATUS_MESSAGE,
             DEFAULT_PROFILE_IMAGE_URL,
-            RoleType.ADMIN
+            "ADMIN"
         );
     }
 
@@ -186,7 +204,7 @@ public class UserFixture {
     public static UserRankingHistoryEntity createUserRankingHistoryEntity(
         Long historyId,
         Long userId,
-        UserHistoryCriteriaType part,
+        String part,
         Long value
     ) {
         return UserRankingHistoryEntity.builder()
@@ -203,7 +221,7 @@ public class UserFixture {
         Long value
     ) {
         return createUserRankingHistoryEntity(
-            historyId, userId, UserHistoryCriteriaType.RATING, value);
+            historyId, userId, "RATING", value);
     }
 
     public static UserRankingHistoryEntity createRankingHistoryEntity(
@@ -212,7 +230,7 @@ public class UserFixture {
         Long value
     ) {
         return createUserRankingHistoryEntity(
-            historyId, userId, UserHistoryCriteriaType.RANKING, value
+            historyId, userId, "RANKING", value
         );
     }
 
@@ -222,7 +240,7 @@ public class UserFixture {
         Long value
     ) {
         return createUserRankingHistoryEntity(
-            historyId, userId, UserHistoryCriteriaType.SOLVED_COUNT, value
+            historyId, userId, "SOLVED_COUNT", value
         );
     }
 } 

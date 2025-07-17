@@ -44,6 +44,7 @@ out/
 *.iml
 *.ipr
 *.iws
+.run
 
 ##############################
 ## Eclipse
@@ -88,3 +89,4 @@ nb-configuration.xml
 ## Miscellaneous
 ##############################
 *.log
+!/.github/pull_request_template.md

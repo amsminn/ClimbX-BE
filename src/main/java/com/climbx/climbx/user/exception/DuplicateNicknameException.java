@@ -1,11 +1,12 @@
 package com.climbx.climbx.user.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import com.climbx.climbx.common.error.BusinessException;
+import com.climbx.climbx.common.error.ErrorCode;
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class DuplicateNicknameException extends RuntimeException {
+public class DuplicateNicknameException extends BusinessException {
+
     public DuplicateNicknameException(String nickname) {
-        super("Nickname already in use: " + nickname);
+        super(ErrorCode.DUPLICATED_NICKNAME);
+        addContext("nickname", nickname);
     }
 }

@@ -66,8 +66,7 @@ public class GymServiceTest {
 
             // when & then
             assertThatThrownBy(() -> gymService.getGymById(gymId))
-                .isInstanceOf(GymNotFoundException.class)
-                .hasMessage("Gym not found with id: " + gymId);
+                .isInstanceOf(GymNotFoundException.class);
 
             then(gymRepository).should(times(1)).findById(gymId);
         }

@@ -1,0 +1,601 @@
+---
+description: "Database design principles and JPA best practices."
+---
+# Database Design Guide
+
+## 데이터베이스 설계 원칙
+
+### 1. 테이블 명명 규칙
+
+#### 테이블명
+- 복수형 명사 사용
+- snake_case 사용
+- 도메인 의미를 명확히 표현
+
+```sql
+-- Good
+users
+user_accounts
+climbing_gyms
+problem_submissions
+user_ranking_histories
+
+-- Bad
+user               -- 단수형
+userAccount        -- camelCase
+gym_data           -- 불명확한 의미
+submission         -- 너무 일반적
+```
+
+#### 컬럼명
+- snake_case 사용
+- 약어 지양, 명확한 이름 사용
+- Boolean 컬럼은 is_ 접두사 사용
+
+```sql
+-- Good
+user_id
+created_at
+updated_at
+is_active
+is_deleted
+email_verified_at
+
+-- Bad
+userId             -- camelCase
+createdDate        -- Date vs DateTime 불명확
+active             -- Boolean임을 알기 어려움
+del_flg            -- 약어 사용
+```
+
+### 2. 기본 테이블 구조
+
+#### 공통 컬럼 (BaseTimeEntity)
+```sql
+CREATE TABLE example_table (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- 비즈니스 컬럼들
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    
+    -- 공통 메타데이터
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)
+);
+```
+
+#### Soft Delete 테이블 (SoftDeleteTimeEntity)
+```sql
+CREATE TABLE soft_delete_table (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- 비즈니스 컬럼들
+    name VARCHAR(100) NOT NULL,
+    
+    -- 공통 메타데이터
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    deleted_at DATETIME(6) NULL,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    
+    -- Soft Delete 인덱스
+    INDEX idx_is_deleted (is_deleted),
+    INDEX idx_deleted_at (deleted_at)
+);
+```
+
+## JPA Entity 설계 가이드
+
+### 1. 기본 Entity 구조
+
+#### BaseTimeEntity 활용
+```java
+@Entity
+@Table(name = "climbing_gyms")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class GymEntity extends BaseTimeEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false, length = 100)
+    private String name;
+    
+    @Column(columnDefinition = "TEXT")
+    private String description;
+    
+    @Column(nullable = false)
+    private String address;
+    
+    @Builder
+    public GymEntity(String name, String description, String address) {
+        this.name = name;
+        this.description = description;
+        this.address = address;
+    }
+}
+```
+
+#### SoftDeleteTimeEntity 활용
+```java
+@Entity
+@Table(name = "users")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE users SET is_deleted = true, deleted_at = NOW() WHERE id = ?")
+@Where(clause = "is_deleted = false")
+public class UserEntity extends SoftDeleteTimeEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false, unique = true, length = 50)
+    private String username;
+    
+    @Column(nullable = false, unique = true)
+    private String email;
+    
+    @Builder
+    public UserEntity(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
+}
+```
+
+### 2. 연관관계 매핑
+
+#### Many-to-One (다대일)
+```java
+@Entity
+@Table(name = "reviews")
+public class ReviewEntity extends BaseTimeEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @Column(nullable = false)
+    private String content;
+    
+    @Column(nullable = false)
+    private Integer rating;
+    
+    // Lazy Loading 필수
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gym_id", nullable = false)
+    private GymEntity gym;
+}
+```
+
+#### One-to-Many (일대다)
+```java
+@Entity
+@Table(name = "users")
+public class UserEntity extends SoftDeleteTimeEntity {
+    
+    // 기본 필드들...
+    
+    // 양방향 연관관계 (Lazy Loading)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReviewEntity> reviews = new ArrayList<>();
+    
+    // 연관관계 편의 메서드
+    public void addReview(ReviewEntity review) {
+        this.reviews.add(review);
+        review.setUser(this);
+    }
+    
+    public void removeReview(ReviewEntity review) {
+        this.reviews.remove(review);
+        review.setUser(null);
+    }
+}
+```
+
+#### Many-to-Many (다대다) - 중간 테이블 활용
+```java
+// 중간 엔티티 사용 (권장)
+@Entity
+@Table(name = "user_gym_memberships")
+public class UserGymMembershipEntity extends BaseTimeEntity {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gym_id")
+    private GymEntity gym;
+    
+    @Enumerated(EnumType.STRING)
+    private MembershipType membershipType;
+    
+    private LocalDate startDate;
+    private LocalDate endDate;
+}
+```
+
+### 3. 인덱스 설계
+
+#### 단일 컬럼 인덱스
+```java
+@Entity
+@Table(name = "users", indexes = {
+    @Index(name = "idx_users_email", columnList = "email"),
+    @Index(name = "idx_users_username", columnList = "username"),
+    @Index(name = "idx_users_created_at", columnList = "created_at")
+})
+public class UserEntity extends SoftDeleteTimeEntity {
+    // 구현...
+}
+```
+
+#### 복합 인덱스
+```java
+@Entity
+@Table(name = "submissions", indexes = {
+    @Index(name = "idx_submissions_user_problem", columnList = "user_id, problem_id"),
+    @Index(name = "idx_submissions_status_created", columnList = "status, created_at"),
+    @Index(name = "idx_submissions_gym_date", columnList = "gym_id, created_at")
+})
+public class SubmissionEntity extends BaseTimeEntity {
+    // 구현...
+}
+```
+
+#### 유니크 제약조건
+```java
+@Entity
+@Table(name = "user_problem_submissions",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_user_problem_daily",
+            columnNames = {"user_id", "problem_id", "submission_date"}
+        )
+    }
+)
+public class SubmissionEntity extends BaseTimeEntity {
+    // 구현...
+}
+```
+
+## 쿼리 최적화
+
+### 1. N+1 문제 해결
+
+#### Fetch Join 사용
+```java
+@Repository
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+    
+    @Query("SELECT u FROM UserEntity u JOIN FETCH u.userStat WHERE u.id = :id")
+    Optional<UserEntity> findByIdWithStat(@Param("id") Long id);
+    
+    @Query("SELECT u FROM UserEntity u JOIN FETCH u.reviews WHERE u.id IN :ids")
+    List<UserEntity> findByIdsWithReviews(@Param("ids") List<Long> ids);
+}
+```
+
+#### Entity Graph 사용
+```java
+@Repository
+public interface GymRepository extends JpaRepository<GymEntity, Long> {
+    
+    @EntityGraph(attributePaths = {"problems", "reviews"})
+    @Query("SELECT g FROM GymEntity g WHERE g.region = :region")
+    List<GymEntity> findByRegionWithProblemsAndReviews(@Param("region") String region);
+}
+```
+
+### 2. 페이징 최적화
+
+#### Count 쿼리 분리
+```java
+@Repository
+public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Long> {
+    
+    @Query(
+        value = "SELECT s FROM SubmissionEntity s JOIN FETCH s.user JOIN FETCH s.problem WHERE s.gym.id = :gymId",
+        countQuery = "SELECT COUNT(s) FROM SubmissionEntity s WHERE s.gym.id = :gymId"
+    )
+    Page<SubmissionEntity> findByGymIdWithUserAndProblem(
+        @Param("gymId") Long gymId, 
+        Pageable pageable
+    );
+}
+```
+
+#### Slice 사용 (무한 스크롤)
+```java
+@Repository
+public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
+    
+    Slice<ReviewEntity> findByGymIdOrderByCreatedAtDesc(Long gymId, Pageable pageable);
+}
+```
+
+### 3. 복잡한 쿼리 처리
+
+#### 동적 쿼리 (Querydsl)
+```java
+@Repository
+@RequiredArgsConstructor
+public class GymRepositoryCustomImpl implements GymRepositoryCustom {
+    
+    private final JPAQueryFactory queryFactory;
+    
+    @Override
+    public Page<GymEntity> findBySearchCriteria(GymSearchCriteria criteria, Pageable pageable) {
+        QGymEntity gym = QGymEntity.gymEntity;
+        
+        BooleanBuilder builder = new BooleanBuilder();
+        
+        if (StringUtils.hasText(criteria.getName())) {
+            builder.and(gym.name.containsIgnoreCase(criteria.getName()));
+        }
+        
+        if (StringUtils.hasText(criteria.getRegion())) {
+            builder.and(gym.region.eq(criteria.getRegion()));
+        }
+        
+        if (criteria.getMinRating() != null) {
+            builder.and(gym.averageRating.goe(criteria.getMinRating()));
+        }
+        
+        List<GymEntity> content = queryFactory
+                .selectFrom(gym)
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(gym.createdAt.desc())
+                .fetch();
+        
+        long total = queryFactory
+                .selectFrom(gym)
+                .where(builder)
+                .fetchCount();
+        
+        return new PageImpl<>(content, pageable, total);
+    }
+}
+```
+
+#### Native Query 사용 (최후 수단)
+```java
+@Repository
+public interface StatisticsRepository extends JpaRepository<UserStatEntity, Long> {
+    
+    @Query(nativeQuery = true, value = """
+        SELECT 
+            u.id,
+            u.username,
+            COUNT(s.id) as submission_count,
+            AVG(s.score) as average_score,
+            RANK() OVER (ORDER BY AVG(s.score) DESC) as ranking
+        FROM users u
+        LEFT JOIN submissions s ON u.id = s.user_id
+        WHERE s.created_at >= :startDate AND s.created_at <= :endDate
+        GROUP BY u.id, u.username
+        ORDER BY average_score DESC
+        LIMIT :limit
+    """)
+    List<Object[]> findTopUsersByPeriod(
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate,
+        @Param("limit") int limit
+    );
+}
+```
+
+## 트랜잭션 관리
+
+### 1. 트랜잭션 범위 설정
+
+#### Service 레이어 트랜잭션
+```java
+@Service
+@Transactional(readOnly = true)  // 기본적으로 읽기 전용
+@RequiredArgsConstructor
+public class UserService {
+    
+    private final UserRepository userRepository;
+    private final UserStatRepository userStatRepository;
+    
+    // 쓰기 작업은 명시적으로 지정
+    @Transactional
+    public UserResponseDto createUser(UserCreateRequestDto request) {
+        // 사용자 생성
+        UserEntity user = UserEntity.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .build();
+        
+        UserEntity savedUser = userRepository.save(user);
+        
+        // 사용자 통계 초기화 (같은 트랜잭션)
+        UserStatEntity userStat = UserStatEntity.builder()
+                .user(savedUser)
+                .totalSubmissions(0)
+                .successfulSubmissions(0)
+                .build();
+        
+        userStatRepository.save(userStat);
+        
+        return UserResponseDto.from(savedUser);
+    }
+    
+    // 읽기 전용은 어노테이션 생략 (클래스 설정 상속)
+    public UserResponseDto findById(Long id) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        
+        return UserResponseDto.from(user);
+    }
+}
+```
+
+### 2. 트랜잭션 전파 설정
+
+#### 새로운 트랜잭션 시작
+```java
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+public void createAuditLog(String action, Long userId) {
+    // 별도 트랜잭션으로 감사 로그 저장
+    // 메인 트랜잭션 실패해도 로그는 저장됨
+}
+```
+
+#### 트랜잭션 없이 실행
+```java
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
+public void sendNotification(String message, String email) {
+    // 외부 API 호출은 트랜잭션과 분리
+}
+```
+
+## 데이터 검증 및 제약조건
+
+### 1. Entity 레벨 검증
+
+#### JPA 검증 어노테이션
+```java
+@Entity
+@Table(name = "users")
+public class UserEntity extends SoftDeleteTimeEntity {
+    
+    @Column(nullable = false, unique = true, length = 50)
+    @Size(min = 2, max = 50, message = "사용자명은 2-50자 사이여야 합니다.")
+    @Pattern(regexp = "^[a-zA-Z0-9가-힣]+$", message = "사용자명은 영문, 숫자, 한글만 가능합니다.")
+    private String username;
+    
+    @Column(nullable = false, unique = true)
+    @Email(message = "올바른 이메일 형식이어야 합니다.")
+    private String email;
+    
+    @Column(nullable = false)
+    @Min(value = 1, message = "나이는 1 이상이어야 합니다.")
+    @Max(value = 150, message = "나이는 150 이하여야 합니다.")
+    private Integer age;
+}
+```
+
+#### 커스텀 검증
+```java
+@Entity
+@Table(name = "submissions")
+public class SubmissionEntity extends BaseTimeEntity {
+    
+    @Column(nullable = false)
+    @Range(min = 0, max = 100, message = "점수는 0-100 사이여야 합니다.")
+    private Integer score;
+    
+    @Column(nullable = false)
+    @Future(message = "예약 시간은 미래여야 합니다.")
+    private LocalDateTime reservedAt;
+    
+    // 비즈니스 로직 검증
+    @PrePersist
+    @PreUpdate
+    private void validate() {
+        if (score != null && score > 90 && submissionTime != null && submissionTime < Duration.ofMinutes(10)) {
+            throw new IllegalStateException("10분 미만으로 90점 이상은 불가능합니다.");
+        }
+    }
+}
+```
+
+### 2. 데이터베이스 제약조건
+
+#### 외래키 제약조건
+```sql
+-- 외래키 제약조건과 인덱스
+ALTER TABLE reviews 
+ADD CONSTRAINT fk_reviews_user_id 
+FOREIGN KEY (user_id) REFERENCES users(id) 
+ON DELETE CASCADE;
+
+ALTER TABLE reviews 
+ADD CONSTRAINT fk_reviews_gym_id 
+FOREIGN KEY (gym_id) REFERENCES gyms(id) 
+ON DELETE CASCADE;
+```
+
+#### 체크 제약조건
+```sql
+-- 점수 범위 체크
+ALTER TABLE submissions 
+ADD CONSTRAINT chk_submissions_score 
+CHECK (score >= 0 AND score <= 100);
+
+-- 평점 범위 체크
+ALTER TABLE reviews 
+ADD CONSTRAINT chk_reviews_rating 
+CHECK (rating >= 1 AND rating <= 5);
+
+-- 날짜 유효성 체크
+ALTER TABLE user_gym_memberships 
+ADD CONSTRAINT chk_membership_dates 
+CHECK (start_date <= end_date);
+```
+
+## 성능 모니터링
+
+### 1. 쿼리 로깅 설정
+
+#### application.yml 설정
+```yaml
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.orm.jpa: DEBUG
+```
+
+### 2. 쿼리 성능 측정
+
+#### 커스텀 인터셉터
+```java
+@Component
+@Slf4j
+public class QueryPerformanceInterceptor implements Interceptor {
+    
+    @Override
+    public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+        log.debug("Entity loaded: {} with id: {}", entity.getClass().getSimpleName(), id);
+        return false;
+    }
+    
+    @Override
+    public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
+        log.debug("Entity saved: {} with id: {}", entity.getClass().getSimpleName(), id);
+        return false;
+    }
+}
+```
+
+이러한 데이터베이스 설계 가이드를 따르면 성능이 좋고 유지보수하기 쉬운 데이터 계층을 구축할 수 있습니다.
