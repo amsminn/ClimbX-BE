@@ -32,9 +32,9 @@ public class UserRankingHistoryEntity extends BaseTimeEntity {
     @NotNull
     private Long historyId; // 히스토리 ID (Primary Key)
 
-    @Column(name = "part", length = 20, nullable = false)
+    @Column(name = "criteria", length = 20, nullable = false)
     @NotNull
-    private String part; // 히스토리 타입
+    private String criteria; // 히스토리 종류
 
     @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
     @NotNull
@@ -46,5 +46,5 @@ public class UserRankingHistoryEntity extends BaseTimeEntity {
 
     @Column(name = "value", nullable = false)
     @NotNull
-    private Long value; // 히스토리 값 (레이팅, 스트릭 등의 수치)
+    private Integer value; // 히스토리 값 (레이팅, 스트릭 등의 수치)
 }

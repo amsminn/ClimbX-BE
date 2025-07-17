@@ -2,8 +2,6 @@ package com.climbx.climbx.user.repository;
 
 import com.climbx.climbx.user.entity.UserStatEntity;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> {
@@ -13,27 +11,12 @@ public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> 
      */
     Optional<UserStatEntity> findByUserId(Long userId);
 
-    boolean existsByUserId(Long userId);
-
-    Page<UserStatEntity> findAllByOrderByRatingDesc(Pageable pageable);
-
-    Page<UserStatEntity> findAllByOrderByLongestStreakDesc(Pageable pageable);
-
-    Page<UserStatEntity> findAllByOrderByCurrentStreakDesc(Pageable pageable);
-
-    Page<UserStatEntity> findAllByOrderByRivalCountDesc(Pageable pageable);
-
-    Page<UserStatEntity> findByRatingGreaterThanEqualOrderByRatingDesc(
-        Long minRating,
-        Pageable pageable
-    );
-
     /**
      * 특정 레이팅을 가진 사용자의 순위(1-based) 조회
      */
-    Long countByRatingGreaterThan(Long rating);
+    Integer countByRatingGreaterThan(Integer rating);
 
-    default Long findRatingRank(Long rating) {
+    default Integer findRatingRank(Integer rating) {
         return countByRatingGreaterThan(rating) + 1;
     }
 

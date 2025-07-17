@@ -39,29 +39,29 @@ public class UserStatEntity extends BaseTimeEntity {
     @Column(name = "rating", nullable = false)
     @NotNull
     @Min(0)
-    private Long rating = 0L; // 레이팅, 기본값은 0
+    private Integer rating = 0; // 레이팅, 기본값은 0
 
     @Builder.Default
     @Column(name = "current_streak", nullable = false)
     @NotNull
     @Min(0)
-    private Long currentStreak = 0L; // 현재 출석일, 기본값은 0
+    private Integer currentStreak = 0; // 현재 출석일, 기본값은 0
 
     @Builder.Default
     @Column(name = "longest_streak", nullable = false)
     @NotNull
     @Min(0)
-    private Long longestStreak = 0L; // 가장 긴 연속 출석일, 기본값은 0
+    private Integer longestStreak = 0; // 가장 긴 연속 출석일, 기본값은 0
 
     @Builder.Default
     @Column(name = "solved_problems_count", nullable = false)
     @NotNull
     @Min(0)
-    private Long solvedProblemsCount = 0L; // 해결한 문제 수, 기본값은 0
+    private Integer solvedProblemsCount = 0; // 해결한 문제 수, 기본값은 0
 
     @Builder.Default
     @Column(name = "rival_count", nullable = false)
     @NotNull
     @Min(0)
-    private Long rivalCount = 0L; // 라이벌 수, 기본값은 0
+    private Integer rivalCount = 0; // 라이벌 수, 기본값은 0
 }

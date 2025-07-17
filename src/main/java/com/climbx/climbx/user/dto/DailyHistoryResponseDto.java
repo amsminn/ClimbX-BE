@@ -7,10 +7,10 @@ import lombok.Builder;
 public record DailyHistoryResponseDto(
 
     LocalDate date,
-    Long value
+    Integer value
 ) {
 
-    public DailyHistoryResponseDto(java.sql.Date date, Long value) {
+    public DailyHistoryResponseDto(java.sql.Date date, Integer value) {
         this(date.toLocalDate(), value);
     }
 }

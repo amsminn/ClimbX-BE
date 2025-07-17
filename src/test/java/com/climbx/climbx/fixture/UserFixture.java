@@ -13,12 +13,12 @@ public class UserFixture {
     public static final String DEFAULT_NICKNAME = "testUser";
     public static final String DEFAULT_STATUS_MESSAGE = "Test status message";
     public static final String DEFAULT_PROFILE_IMAGE_URL = "http://example.com/profile.jpg";
-    public static final Long DEFAULT_RATING = 1500L;
-    public static final Long DEFAULT_CURRENT_STREAK = 5L;
-    public static final Long DEFAULT_LONGEST_STREAK = 15L;
-    public static final Long DEFAULT_SOLVED_PROBLEMS_COUNT = 25L;
-    public static final Long DEFAULT_RIVAL_COUNT = 3L;
-    public static final Long DEFAULT_RANKING = 10L;
+    public static final Integer DEFAULT_RATING = 1500;
+    public static final Integer DEFAULT_CURRENT_STREAK = 5;
+    public static final Integer DEFAULT_LONGEST_STREAK = 15;
+    public static final Integer DEFAULT_SOLVED_PROBLEMS_COUNT = 25;
+    public static final Integer DEFAULT_RIVAL_COUNT = 3;
+    public static final Integer DEFAULT_RANKING = 10;
 
     // 편의 메서드들 (createUser 형태)
     public static UserAccountEntity createUser() {
@@ -96,7 +96,7 @@ public class UserFixture {
         return createUserStatEntity(userId, DEFAULT_RATING);
     }
 
-    public static UserStatEntity createUserStatEntity(Long userId, Long rating) {
+    public static UserStatEntity createUserStatEntity(Long userId, Integer rating) {
         return createUserStatEntity(
             userId,
             rating,
@@ -109,11 +109,11 @@ public class UserFixture {
 
     public static UserStatEntity createUserStatEntity(
         Long userId,
-        Long rating,
-        Long currentStreak,
-        Long longestStreak,
-        Long solvedProblemsCount,
-        Long rivalCount
+        Integer rating,
+        Integer currentStreak,
+        Integer longestStreak,
+        Integer solvedProblemsCount,
+        Integer rivalCount
     ) {
         return UserStatEntity.builder()
             .userId(userId)
@@ -128,15 +128,15 @@ public class UserFixture {
     // UserProfileResponseDto 생성 메서드
     public static UserProfileResponseDto createUserProfileResponseDto(
         String nickname,
-        Long ranking
+        Integer ranking
     ) {
         return createUserProfileResponseDto(nickname, ranking, DEFAULT_RATING);
     }
 
     public static UserProfileResponseDto createUserProfileResponseDto(
         String nickname,
-        Long ranking,
-        Long rating
+        Integer ranking,
+        Integer rating
     ) {
         return UserProfileResponseDto.builder()
             .nickname(nickname)
@@ -156,12 +156,12 @@ public class UserFixture {
         String nickname,
         String statusMessage,
         String profileImageUrl,
-        Long ranking,
-        Long rating,
-        Long currentStreak,
-        Long longestStreak,
-        Long solvedProblemsCount,
-        Long rivalCount
+        Integer ranking,
+        Integer rating,
+        Integer currentStreak,
+        Integer longestStreak,
+        Integer solvedProblemsCount,
+        Integer rivalCount
     ) {
         return UserProfileResponseDto.builder()
             .nickname(nickname)
@@ -180,7 +180,7 @@ public class UserFixture {
     // DailyHistoryResponseDto 생성 메서드들
     public static DailyHistoryResponseDto createDailyHistoryResponseDto(
         LocalDate date,
-        Long value
+        Integer value
     ) {
         return DailyHistoryResponseDto.builder()
             .date(date)
@@ -204,13 +204,13 @@ public class UserFixture {
     public static UserRankingHistoryEntity createUserRankingHistoryEntity(
         Long historyId,
         Long userId,
-        String part,
-        Long value
+        String criteria,
+        Integer value
     ) {
         return UserRankingHistoryEntity.builder()
             .historyId(historyId)
             .userId(userId)
-            .part(part)
+            .criteria(criteria)
             .value(value)
             .build();
     }
@@ -218,7 +218,7 @@ public class UserFixture {
     public static UserRankingHistoryEntity createRatingHistoryEntity(
         Long historyId,
         Long userId,
-        Long value
+        Integer value
     ) {
         return createUserRankingHistoryEntity(
             historyId, userId, "RATING", value);
@@ -227,7 +227,7 @@ public class UserFixture {
     public static UserRankingHistoryEntity createRankingHistoryEntity(
         Long historyId,
         Long userId,
-        Long value
+        Integer value
     ) {
         return createUserRankingHistoryEntity(
             historyId, userId, "RANKING", value
@@ -237,7 +237,7 @@ public class UserFixture {
     public static UserRankingHistoryEntity createSolvedCountHistoryEntity(
         Long historyId,
         Long userId,
-        Long value
+        Integer value
     ) {
         return createUserRankingHistoryEntity(
             historyId, userId, "SOLVED_COUNT", value
