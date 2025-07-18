@@ -26,8 +26,8 @@ public interface RankingApiDocumentation {
             **지원하는 랭킹 기준**:
             - `rating`: 레이팅 기준
             - `streak`: 연속 출석일 기준
-            - `longest_streak`: 최장 연속 출석일 기준
-            - `solved_count`: 해결한 문제 수 기준
+            - `longestStreak`: 최장 연속 출석일 기준
+            - `solvedProblemsCount`: 해결한 문제 수 기준
             
             **정렬 순서**:
             - `desc`: 내림차순 (기본값)
