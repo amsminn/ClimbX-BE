@@ -27,7 +27,7 @@ class UserController implements UserApiDocumentation {
     private final UserService userService;
 
     @Override
-    @GetMapping("/")
+    @GetMapping
     @SuccessStatus(value = HttpStatus.OK)
     public List<UserProfileResponseDto> getUsers(
         @RequestParam(name = "search", required = false)
