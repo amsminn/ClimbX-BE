@@ -43,7 +43,7 @@ public class RankingService {
         Page<UserStatEntity> rankingPage = rankingRepository.findAllByUserRole(pageable,
             comcodeService.getCodeValue("USER"));
 
-        Integer totalCount = (int) rankingPage.getTotalElements();
+        Long totalCount = rankingPage.getTotalElements();
         Integer totalPage = rankingPage.getTotalPages();
         List<UserRankingResponseDto> rankingList = rankingPage.getContent().stream()
             .map(UserRankingResponseDto::from)

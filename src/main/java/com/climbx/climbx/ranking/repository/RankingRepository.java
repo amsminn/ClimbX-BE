@@ -10,8 +10,8 @@ import org.springframework.data.repository.query.Param;
 public interface RankingRepository extends JpaRepository<UserStatEntity, Long> {
 
     @Query("""
-        SELECT u FROM UserStatEntity u 
-                JOIN FETCH u.userAccountEntity ua  
+        SELECT u FROM UserStatEntity u
+                JOIN FETCH u.userAccountEntity ua
                 WHERE ua.role = :role
         """)
     Page<UserStatEntity> findAllByUserRole(Pageable pageable, @Param("role") String role);
