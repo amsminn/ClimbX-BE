@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -136,6 +137,7 @@ public interface RankingApiDocumentation {
             example = "0"
         )
         @Min(value = 0, message = "페이지 번호는 0 이상이어야 합니다")
+        @Max(value = 100, message = "페이지 번호는 100 이하이어야 합니다")
         Integer page,
 
         @Parameter(
