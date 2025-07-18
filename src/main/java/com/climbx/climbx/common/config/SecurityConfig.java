@@ -29,6 +29,7 @@ public class SecurityConfig {
                 auth
                     .requestMatchers("/api/auth/me").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/api/users/*").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/videos/upload").authenticated()
                     .anyRequest().permitAll()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

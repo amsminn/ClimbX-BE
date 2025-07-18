@@ -31,7 +31,7 @@ import lombok.experimental.Accessors;
 public class VideoEntity extends BaseTimeEntity {
 
     @Id
-    @Column(name = "video_id", updatable = false, nullable = false)
+    @Column(name = "video_id", columnDefinition = "BINARY(16)", updatable = false, nullable = false)
     private UUID videoId;
 
     @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
