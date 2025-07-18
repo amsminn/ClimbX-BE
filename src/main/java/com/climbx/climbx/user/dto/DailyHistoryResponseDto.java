@@ -10,7 +10,7 @@ public record DailyHistoryResponseDto(
     Integer value
 ) {
 
-    public DailyHistoryResponseDto(java.sql.Date date, Integer value) {
-        this(date.toLocalDate(), value);
+    public DailyHistoryResponseDto(java.sql.Date date, Long value) {
+        this(date.toLocalDate(), value.intValue());
     }
 }

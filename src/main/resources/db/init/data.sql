@@ -385,7 +385,7 @@ VALUES
     (41, 16, 'ACCEPTED', NULL, 'PENDING', '2025-10-16 19:49:34', '2025-10-16 19:49:34', NULL);
 
 INSERT INTO user_ranking_histories (user_id,
-                                    part,
+                                    criteria,
                                     value,
                                     created_at,
                                     updated_at,
