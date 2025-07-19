@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 class UserService {
 
@@ -37,7 +38,6 @@ class UserService {
     private final UserRankingHistoryRepository userRankingHistoryRepository;
     private final ComcodeService comcodeService;
 
-    @Transactional(readOnly = true)
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
 
@@ -55,13 +55,11 @@ class UserService {
             .toList();
     }
 
-    @Transactional(readOnly = true)
     public UserProfileResponseDto getUserById(Long userId) {
         UserAccountEntity userAccountEntity = findUserById(userId);
         return buildProfile(userAccountEntity);
     }
 
-    @Transactional(readOnly = true)
     public UserProfileResponseDto getUserByNickname(String nickname) {
         UserAccountEntity userAccountEntity = findUserByNickname(nickname);
         return buildProfile(userAccountEntity);
@@ -93,7 +91,6 @@ class UserService {
         return buildProfile(userAccountEntity);
     }
 
-    @Transactional(readOnly = true)
     public List<ProblemDetailsResponseDto> getUserTopProblems(String nickname, Integer limit) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
         Sort sort = Sort.by("problemEntity.problemRating").descending();
@@ -110,7 +107,6 @@ class UserService {
             .toList();
     }
 
-    @Transactional(readOnly = true)
     public List<DailyHistoryResponseDto> getUserStreak(
         String nickname,
         LocalDate from,
@@ -126,7 +122,6 @@ class UserService {
         );
     }
 
-    @Transactional(readOnly = true)
     public List<DailyHistoryResponseDto> getUserDailyHistory(
         String nickname,
         String criteria,

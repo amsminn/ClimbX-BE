@@ -34,10 +34,10 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
      * 사용자가 특정 기간 동안 일별로 푼 문제 수를 조회 from, to가 null이면 모든 기간
      */
     @Query("""
-        SELECT  new com.climbx.climbx.user.dto.DailyHistoryResponseDto(  
+        SELECT new com.climbx.climbx.user.dto.DailyHistoryResponseDto(
                 DATE(s.createdAt),
                 COUNT(DISTINCT s.problemEntity.problemId)
-            )  
+            )
           FROM SubmissionEntity s
           JOIN s.videoEntity v
          WHERE v.userId = :userId

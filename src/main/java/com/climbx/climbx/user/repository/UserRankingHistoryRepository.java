@@ -21,7 +21,7 @@ public interface UserRankingHistoryRepository extends
         )
           FROM UserRankingHistoryEntity h
          WHERE h.userId = :userId
-           AND h.part = :criteria
+           AND h.criteria = :criteria
            AND (:from IS NULL OR DATE(h.createdAt) >= :from)
            AND (:to IS NULL OR DATE(h.createdAt) <= :to)
             GROUP BY DATE(h.createdAt)

@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
     private final GymRepository gymRepository;
 
-    @Transactional(readOnly = true)
     public SpotResponseDto getProblemSpotsWithFilters(
         Long gymId,
         String localLevel,

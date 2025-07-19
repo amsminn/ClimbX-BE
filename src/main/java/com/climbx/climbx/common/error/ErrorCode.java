@@ -24,6 +24,9 @@ public enum ErrorCode {
     GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "클라이밍장을 찾을 수 없습니다."),
     NICKNAME_MISMATCH(HttpStatus.BAD_REQUEST, "닉네임이 일치하지 않습니다."),
 
+    // Ranking Errors
+    INVALID_RANKING_CRITERIA(HttpStatus.BAD_REQUEST, "유효하지 않은 랭킹 기준입니다."),
+
     // Auth Errors
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
