@@ -36,6 +36,7 @@ public class S3Service {
         log.info("bucketExists: {}", bucketExists);
 
         // S3 키 생성 (videoId.mp4)
+        fileExtension = ensureDotPrefix(fileExtension);
         String s3Key = videoId + fileExtension;
 
         // S3 presigned URL 생성
@@ -55,6 +56,13 @@ public class S3Service {
         log.info("presignedUrl: {}", presignedUrl);
 
         return presignedUrl;
+    }
+
+    private String ensureDotPrefix(String fileExtension) {
+        if (fileExtension.length() >= 2 && !fileExtension.startsWith(".")) {
+            fileExtension = "." + fileExtension; // 확장자 앞에 점 추가
+        }
+        return fileExtension;
     }
 
     private boolean doesBucketExist(String bucketName) {
