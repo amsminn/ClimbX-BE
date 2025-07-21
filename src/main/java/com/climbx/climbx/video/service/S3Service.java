@@ -1,5 +1,7 @@
 package com.climbx.climbx.video.service;
 
+import com.climbx.climbx.common.error.ErrorCode;
+import com.climbx.climbx.video.exception.AwsBucketNotFoundException;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +61,7 @@ public class S3Service {
     }
 
     private String ensureDotPrefix(String fileExtension) {
-        if (fileExtension.length() >= 2 && !fileExtension.startsWith(".")) {
+        if (fileExtension != null && !fileExtension.startsWith(".")) {
             fileExtension = "." + fileExtension; // 확장자 앞에 점 추가
         }
         return fileExtension;
@@ -79,7 +81,7 @@ public class S3Service {
             if (ase.statusCode() == HttpStatusCode.NOT_FOUND) {
                 return false;
             }
-            throw ase;
+            throw new AwsBucketNotFoundException(ErrorCode.S3_BUCKET_NOT_FOUND, ase.getMessage());
         }
     }
 } 

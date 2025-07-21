@@ -41,6 +41,9 @@ public enum ErrorCode {
     PRODIVDER_USER_INFO_FETCH_FAILED(HttpStatus.BAD_REQUEST, "OAuth2 사용자 정보 조회에 실패했습니다."),
     PUBLIC_KEY_FETCH_FAILED(HttpStatus.BAD_REQUEST, "공개키 조회에 실패했습니다."),
 
+    // AWS Errors
+    S3_BUCKET_NOT_FOUND(HttpStatus.NOT_FOUND, "S3 버킷을 찾을 수 없습니다."),
+
     // 5xx : Server Errors
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
     DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터베이스 오류가 발생했습니다."),
