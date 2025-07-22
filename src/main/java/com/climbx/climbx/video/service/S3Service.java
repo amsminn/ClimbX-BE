@@ -3,9 +3,8 @@ package com.climbx.climbx.video.service;
 import com.climbx.climbx.common.error.ErrorCode;
 import com.climbx.climbx.video.exception.AwsBucketNotFoundException;
 import com.climbx.climbx.video.exception.FileExtensionNotExistsException;
+import com.github.benmanes.caffeine.cache.Cache;
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,7 @@ public class S3Service {
 
     private final S3Client s3Client;
 
-    private final Set<String> existingBuckets = new HashSet<>();
+    private final Cache<String, Boolean> existingBuckets;
 
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
@@ -45,9 +44,10 @@ public class S3Service {
             );
         }
 
-        if (!existingBuckets.contains(bucketName)) {
+        if (existingBuckets.getIfPresent(bucketName) == null) {
             if (doesBucketExist(bucketName)) {
-                existingBuckets.add(bucketName);
+                existingBuckets.put(bucketName, true);
+                log.debug("New bucket name '{}'", bucketName);
             } else {    // 버킷이 존재하지 않으면 예외 발생
                 throw new AwsBucketNotFoundException(
                     ErrorCode.S3_BUCKET_NOT_FOUND, "Bucket does not exist: " + bucketName
