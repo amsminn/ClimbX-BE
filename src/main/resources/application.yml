@@ -5,6 +5,7 @@ spring:
       dev:
         - db-dev
         - auth-dev
+        - aws-dev
 
   jpa:
     open-in-view: false
