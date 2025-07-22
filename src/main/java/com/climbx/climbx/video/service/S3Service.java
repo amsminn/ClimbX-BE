@@ -2,7 +2,10 @@ package com.climbx.climbx.video.service;
 
 import com.climbx.climbx.common.error.ErrorCode;
 import com.climbx.climbx.video.exception.AwsBucketNotFoundException;
+import com.climbx.climbx.video.exception.FileExtensionNotExistsException;
 import java.time.Duration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,8 @@ public class S3Service {
 
     private final S3Client s3Client;
 
+    private final Set<String> existingBuckets = new HashSet<>();
+
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
@@ -33,9 +38,22 @@ public class S3Service {
 
     public String generatePresignedUrl(UUID videoId, String fileExtension) {
 
-        // 버킷이 존재하지 않으면 예외 발생
-        boolean bucketExists = doesBucketExist(bucketName);
-        log.info("bucketExists: {}", bucketExists);
+        // 버킷 이름이 설정되어 있지 않으면 예외 발생
+        if (bucketName == null || bucketName.isEmpty()) {
+            throw new AwsBucketNotFoundException(
+                ErrorCode.S3_BUCKET_NOT_FOUND, "Bucket name is not configured."
+            );
+        }
+
+        if (!existingBuckets.contains(bucketName)) {
+            if (doesBucketExist(bucketName)) {
+                existingBuckets.add(bucketName);
+            } else {    // 버킷이 존재하지 않으면 예외 발생
+                throw new AwsBucketNotFoundException(
+                    ErrorCode.S3_BUCKET_NOT_FOUND, "Bucket does not exist: " + bucketName
+                );
+            }
+        }
 
         // S3 키 생성 (videoId.mp4)
         fileExtension = ensureDotPrefix(fileExtension);
@@ -55,13 +73,17 @@ public class S3Service {
         PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
         String presignedUrl = presignedRequest.url().toString();
 
-        log.info("presignedUrl: {}", presignedUrl);
+        log.debug("presignedUrl: {}", presignedUrl);
 
         return presignedUrl;
     }
 
     private String ensureDotPrefix(String fileExtension) {
-        if (fileExtension != null && !fileExtension.startsWith(".")) {
+        if (fileExtension == null) {
+            throw new FileExtensionNotExistsException(
+                ErrorCode.FILE_EXTENSION_NOT_EXISTS, "File extension is required."
+            );
+        } else if (fileExtension.startsWith(".")) {
             fileExtension = "." + fileExtension; // 확장자 앞에 점 추가
         }
         return fileExtension;

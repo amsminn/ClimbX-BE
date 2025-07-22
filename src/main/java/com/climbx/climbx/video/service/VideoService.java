@@ -41,6 +41,7 @@ public class VideoService {
             .videoId(videoId)
             .userId(userId)
             .userAccountEntity(user)
+            .fileSize(videoUploadRequestDto.fileSize())
             .status(comcodeService.getCodeValue("PENDING"))
             .build();
 

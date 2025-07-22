@@ -11,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -44,6 +46,11 @@ public class VideoEntity extends BaseTimeEntity {
     @OneToOne(mappedBy = "videoEntity", fetch = FetchType.LAZY)
     private SubmissionEntity submissionEntity; // 비디오 제출 엔티티
 
+    @Column(name = "file_size", nullable = false)
+    @Min(value = 0)
+    @Max(value = 1024 * 1024 * 1024) // 최대 1GB
+    private Long fileSize; // 비디오 파일 크기 (바이트 단위)
+
     @Column(name = "original_s3_url", length = 512)
     @Size(min = 1, max = 512)
     private String originalS3Url; // 원본 S3 URL
@@ -65,7 +72,8 @@ public class VideoEntity extends BaseTimeEntity {
     private String thumbnailCdnUrl; // 썸네일 CDN URL
 
     @Column(name = "duration_seconds")
-    private int durationSeconds; // 비디오 길이 (초 단위)
+    @Min(value = 0)
+    private Integer durationSeconds; // 비디오 길이 (초 단위)
 
     @Column(name = "job_id", length = 256)
     @Size(min = 1, max = 256)
