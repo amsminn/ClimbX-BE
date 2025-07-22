@@ -83,7 +83,7 @@ public class S3Service {
             throw new FileExtensionNotExistsException(
                 ErrorCode.FILE_EXTENSION_NOT_EXISTS, "File extension is required."
             );
-        } else if (fileExtension.startsWith(".")) {
+        } else if (!fileExtension.startsWith(".")) {
             fileExtension = "." + fileExtension; // 확장자 앞에 점 추가
         }
         return fileExtension;

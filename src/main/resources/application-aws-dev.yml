@@ -10,3 +10,7 @@ aws:
     region: ${AWS_S3_REGION:ap-northeast-2}
     access-key: ${AWS_ACCESS_KEY_ID}
     secret-key: ${AWS_SECRET_ACCESS_KEY}
+
+logging:
+  level:
+    com.climbx.climbx.video: DEBUG
