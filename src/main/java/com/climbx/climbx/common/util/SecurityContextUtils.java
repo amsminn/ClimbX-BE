@@ -6,6 +6,10 @@ public class SecurityContextUtils {
 
 
     public static Long getCurrentUserId() {
-        return (Long) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof Long) {
+            return (Long) principal;
+        }
+        throw new IllegalStateException("principal is not of type Long.");
     }
 }
