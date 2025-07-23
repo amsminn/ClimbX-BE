@@ -1,14 +1,15 @@
 package com.climbx.climbx.video.service;
 
 import com.climbx.climbx.common.comcode.ComcodeService;
-import com.climbx.climbx.common.util.SecurityContextUtils;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
+import com.climbx.climbx.video.dto.VideoListResponseDto;
 import com.climbx.climbx.video.dto.VideoUploadRequestDto;
 import com.climbx.climbx.video.dto.VideoUploadResponseDto;
 import com.climbx.climbx.video.entity.VideoEntity;
 import com.climbx.climbx.video.repository.VideoRepository;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,9 @@ public class VideoService {
 
     @Transactional
     public VideoUploadResponseDto createVideoUploadUrl(
-        VideoUploadRequestDto videoUploadRequestDto) {
-
-        Long userId = SecurityContextUtils.getCurrentUserId();
+        Long userId,
+        VideoUploadRequestDto videoUploadRequestDto
+    ) {
         UserAccountEntity user = userAccountRepository.findById(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
 
@@ -51,5 +52,12 @@ public class VideoService {
             .videoId(videoId)
             .presignedUrl(presignedUrl)
             .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<VideoListResponseDto> getVideoList(Long userId) {
+        return videoRepository.findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(userId)
+            .stream().map(VideoListResponseDto::from)
+            .toList();
     }
 }
