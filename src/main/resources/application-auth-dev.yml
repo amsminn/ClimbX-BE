@@ -13,14 +13,12 @@ spring:
         jwks-uri: https://www.googleapis.com/oauth2/v3/certs
         issuer: https://accounts.google.com
         audience: ${GOOGLE_CLIENT_ID}
-      
-      # Naver OAuth2 설정 예시 (주석 해제 후 사용)
-      # naver:
-      #   client:
-      #     client-id: ${NAVER_CLIENT_ID}
-      #     client-secret: ${NAVER_CLIENT_SECRET}
-      #     jwks-uri: https://nid.naver.com/.well-known/jwks.json
-      #     issuer: https://nid.naver.com 
+
+        # Naver OAuth2 설정
+        naver:
+          jwks-uri: https://nid.naver.com/.well-known/jwks.json
+          issuer: https://nid.naver.com
+          audience: ${NAVER_CLIENT_ID}
 
 # JWT 설정
 auth:

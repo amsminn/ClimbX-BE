@@ -4,6 +4,7 @@ import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.provider.UserInfoExtractor;
 import com.climbx.climbx.auth.provider.exception.EmailNotVerifiedException;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -33,13 +34,13 @@ public class GoogleUserInfoExtractor implements UserInfoExtractor {
     }
 
     @Override
-    public String getIssuer() {
-        return issuer;
+    public List<String> getIssuer() {
+        return List.of(issuer);
     }
 
     @Override
-    public String getAudience() {
-        return audience;
+    public List<String> getAudience() {
+        return List.of(audience);
     }
 
     @Override
