@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController implements AuthApiDocumentation {
 
+    private static final String REFRESH_TOKEN_HEADER = "Refresh-Token";
     private final AuthService authService;
 
     /**
@@ -44,7 +45,7 @@ public class AuthController implements AuthApiDocumentation {
 
         TokenGenerationResponseDto tokenResponse = authService.handleCallback(provider, request);
 
-        response.setHeader("Refresh-Token", tokenResponse.refreshToken());
+        response.setHeader(REFRESH_TOKEN_HEADER, tokenResponse.refreshToken());
 
         log.info("{} OAuth2 콜백 처리 완료", provider.toUpperCase());
 
@@ -58,14 +59,14 @@ public class AuthController implements AuthApiDocumentation {
     @PostMapping("/oauth2/refresh")
     @SuccessStatus(value = HttpStatus.CREATED)
     public AccessTokenResponseDto refreshAccessToken(
-        @RequestHeader("Refresh-Token") String refreshToken,
+        @RequestHeader(REFRESH_TOKEN_HEADER) String refreshToken,
         HttpServletResponse response
     ) {
         log.info("액세스 토큰 갱신 요청");
 
         TokenGenerationResponseDto refreshResponse = authService.refreshAccessToken(refreshToken);
 
-        response.setHeader("Refresh-Token", refreshResponse.refreshToken());
+        response.setHeader(REFRESH_TOKEN_HEADER, refreshResponse.refreshToken());
 
         log.info("액세스 토큰 갱신 완료");
         return refreshResponse.accessToken();
@@ -95,7 +96,7 @@ public class AuthController implements AuthApiDocumentation {
     @PostMapping("/signout")
     @SuccessStatus(value = HttpStatus.NO_CONTENT)
     public void signOut(
-        @RequestHeader("Refresh-Token") String refreshToken,
+        @RequestHeader(REFRESH_TOKEN_HEADER) String refreshToken,
         HttpServletResponse response
     ) {
         log.info("로그아웃 요청");
