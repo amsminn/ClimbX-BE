@@ -8,4 +8,5 @@ public record VideoUploadResponseDto(
     UUID videoId,
     String presignedUrl
 ) {
-} 
+
+}
