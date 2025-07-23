@@ -40,6 +40,7 @@ public enum ErrorCode {
     PROVIDER_TOKEN_EXCHANGE_FAILED(HttpStatus.BAD_REQUEST, "OAuth2 프로바이더 토큰 교환에 실패했습니다."),
     PRODIVDER_USER_INFO_FETCH_FAILED(HttpStatus.BAD_REQUEST, "OAuth2 사용자 정보 조회에 실패했습니다."),
     PUBLIC_KEY_FETCH_FAILED(HttpStatus.BAD_REQUEST, "공개키 조회에 실패했습니다."),
+    EMAIL_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "OAuth2 프로바이더 이메일이 인증되지 않았습니다."),
 
     // AWS Errors
     S3_BUCKET_NOT_FOUND(HttpStatus.NOT_FOUND, "S3 버킷을 찾을 수 없습니다."),

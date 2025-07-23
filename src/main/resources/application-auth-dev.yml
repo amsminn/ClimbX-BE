@@ -3,19 +3,16 @@ spring:
   security:
     oauth2:
       # Kakao OAuth2 설정
-
       kakao:
         jwks-uri: https://kauth.kakao.com/.well-known/jwks.json
         issuer: https://kauth.kakao.com
         audience: ${KAKAO_NATIVE_APP_KEY}
 
-      # Google OAuth2 설정 예시 (주석 해제 후 사용)
-      # google:
-      #   client:
-      #     client-id: ${GOOGLE_CLIENT_ID}
-      #     client-secret: ${GOOGLE_CLIENT_SECRET}
-      #     jwks-uri: https://www.googleapis.com/oauth2/v3/certs
-      #     issuer: https://accounts.google.com
+        #       Google OAuth2 설정
+      google:
+        jwks-uri: https://www.googleapis.com/oauth2/v3/certs
+        issuer: https://accounts.google.com
+        audience: ${GOOGLE_CLIENT_ID}
       
       # Naver OAuth2 설정 예시 (주석 해제 후 사용)
       # naver:
