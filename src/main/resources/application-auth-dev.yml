@@ -31,7 +31,7 @@ auth:
     secret: ${JWT_SECRET:default-secret-key-for-development-only-change-in-production}
     access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:3600} # 1시간 (초 단위)
     refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:1209600} # 2주 (초 단위)
-    issuer: ${JWT_ISSUER:climbx-api-dev}
+    issuer: ${JWT_ISSUER:https://climbx-api-dev/}
     audience: ${JWT_AUDIENCE:climbx-client}
     jws-algorithm: ${JWT_JWS_ALGORITHM:HS256}
 
