@@ -1,5 +1,6 @@
 package com.climbx.climbx.video;
 
+import com.climbx.climbx.video.dto.VideoListResponseDto;
 import com.climbx.climbx.video.dto.VideoUploadRequestDto;
 import com.climbx.climbx.video.dto.VideoUploadResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -89,5 +91,71 @@ public interface VideoApiDocumentation {
             )
         )
     })
-    VideoUploadResponseDto createVideoUploadUrl(VideoUploadRequestDto videoUploadRequestDto);
+    VideoUploadResponseDto createVideoUploadUrl(
+        Long userId,
+        VideoUploadRequestDto videoUploadRequestDto
+    );
+
+    @Operation(
+        summary = "영상 리스트 조회",
+        description = "현재 로그인한 사용자가 업로드한 영상들의 썸네일과 메타데이터를 조회합니다. 삭제되지 않은 영상들만 생성날짜 내림차순으로 반환됩니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "영상 리스트 조회 성공",
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "영상 리스트",
+                    value = """
+                        {
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 89,
+                          "path": "/api/videos",
+                          "data": [
+                            {
+                              "thumbnailCdnUrl": "https://cdn.climbx.com/thumbnails/660e8400-e29b-41d4-a716-446655440001.jpg",
+                              "hlsCdnUrl": "https://cdn.climbx.com/hls/660e8400-e29b-41d4-a716-446655440001/playlist.m3u8",
+                              "status": "COMPLETED",
+                              "durationSeconds": 40,
+                              "createdAt": "2025-07-23T20:29:52.648189"
+                            },
+                            {
+                              "thumbnailCdnUrl": "https://cdn.climbx.com/thumbnails/550e8400-e29b-41d4-a716-446655440000.jpg",
+                              "hlsCdnUrl": "https://cdn.climbx.com/hls/550e8400-e29b-41d4-a716-446655440000/playlist.m3u8",
+                              "status": "COMPLETED",
+                              "durationSeconds": 10,
+                              "createdAt": "2025-07-23T19:00:00.763233"
+                            }
+                          ]
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "인증되지 않은 사용자",
+            content = @Content(
+                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                examples = @ExampleObject(
+                    name = "인증 실패",
+                    value = """
+                        {
+                          "httpStatus": 401,
+                          "statusMessage": "인증이 필요합니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 45,
+                          "path": "/api/videos",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        )
+    })
+    List<VideoListResponseDto> getVideoList(Long userId);
 } 
