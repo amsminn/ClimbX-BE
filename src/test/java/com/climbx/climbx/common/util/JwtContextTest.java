@@ -9,6 +9,7 @@ import static org.mockito.Mockito.spy;
 
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.exception.TokenExpiredException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,7 +60,7 @@ class JwtContextTest {
         void shouldGenerateAccessTokenWithValidParameters() {
             // given
             Long userId = 1L;
-            String role = "USER";
+            RoleType role = RoleType.USER;
             JwtContext jwtContextStub = spy(jwtContext);
             AccessTokenResponseDto mockedResponse = AccessTokenResponseDto.builder()
                 .accessToken("mocked-access-token")

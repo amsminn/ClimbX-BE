@@ -8,6 +8,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
+import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
@@ -20,6 +22,7 @@ import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.enums.CriteriaType;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
 import com.climbx.climbx.user.exception.NicknameMismatchException;
 import com.climbx.climbx.user.exception.UserNotFoundException;
@@ -76,7 +79,7 @@ public class UserServiceTest {
             UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1300);
             UserStatEntity userStat3 = UserFixture.createUserStatEntity(3L, 1400);
 
-            given(userAccountRepository.findByRole("USER"))
+            given(userAccountRepository.findByRole(RoleType.USER))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -100,7 +103,7 @@ public class UserServiceTest {
             assertThat(result.get(1).nickname()).isEqualTo("bob");
             assertThat(result.get(2).nickname()).isEqualTo("charlie");
 
-            then(userAccountRepository).should().findByRole("USER");
+            then(userAccountRepository).should().findByRole(RoleType.USER);
             then(userAccountRepository).should(never())
                 .findByRoleAndNicknameContaining(any(), any());
         }
@@ -118,7 +121,7 @@ public class UserServiceTest {
             UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
             UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L);
 
-            given(userAccountRepository.findByRole("USER"))
+            given(userAccountRepository.findByRole(RoleType.USER))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -132,7 +135,7 @@ public class UserServiceTest {
 
             // then
             assertThat(result).hasSize(2);
-            then(userAccountRepository).should().findByRole("USER");
+            then(userAccountRepository).should().findByRole(RoleType.USER);
             then(userAccountRepository).should(never())
                 .findByRoleAndNicknameContaining(any(), any());
         }
@@ -148,7 +151,7 @@ public class UserServiceTest {
 
             UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
 
-            given(userAccountRepository.findByRole("USER"))
+            given(userAccountRepository.findByRole(RoleType.USER))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -160,7 +163,7 @@ public class UserServiceTest {
 
             // then
             assertThat(result).hasSize(1);
-            then(userAccountRepository).should().findByRole("USER");
+            then(userAccountRepository).should().findByRole(RoleType.USER);
             then(userAccountRepository).should(never())
                 .findByRoleAndNicknameContaining(any(), any());
         }
@@ -178,7 +181,7 @@ public class UserServiceTest {
             UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L, 1100);
             UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1600);
 
-            given(userAccountRepository.findByRoleAndNicknameContaining("USER", "test"))
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "test"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -198,7 +201,7 @@ public class UserServiceTest {
             assertThat(result.get(1).nickname()).isEqualTo("testuser2");
 
             then(userAccountRepository).should()
-                .findByRoleAndNicknameContaining("USER", "test");
+                .findByRoleAndNicknameContaining(RoleType.USER, "test");
             then(userAccountRepository).should(never()).findByRole(any());
         }
 
@@ -210,7 +213,7 @@ public class UserServiceTest {
             List<UserAccountEntity> emptyUserAccounts = List.of();
 
             given(
-                userAccountRepository.findByRoleAndNicknameContaining("USER", "nonexistent"))
+                userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "nonexistent"))
                 .willReturn(emptyUserAccounts);
 
             // when
@@ -220,7 +223,7 @@ public class UserServiceTest {
             assertThat(result).isEmpty();
 
             then(userAccountRepository).should()
-                .findByRoleAndNicknameContaining("USER", "nonexistent");
+                .findByRoleAndNicknameContaining(RoleType.USER, "nonexistent");
             then(userStatRepository).should(never()).findByUserId(any());
         }
 
@@ -235,7 +238,7 @@ public class UserServiceTest {
 
             UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
 
-            given(userAccountRepository.findByRoleAndNicknameContaining("USER", "alice"))
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "alice"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -250,7 +253,7 @@ public class UserServiceTest {
             assertThat(result.get(0).nickname()).isEqualTo("alice123");
 
             then(userAccountRepository).should()
-                .findByRoleAndNicknameContaining("USER", "alice");
+                .findByRoleAndNicknameContaining(RoleType.USER, "alice");
         }
 
         @Test
@@ -262,7 +265,7 @@ public class UserServiceTest {
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
             List<UserAccountEntity> userAccounts = List.of(user1);
 
-            given(userAccountRepository.findByRole("USER"))
+            given(userAccountRepository.findByRole(RoleType.USER))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.empty());
@@ -290,7 +293,7 @@ public class UserServiceTest {
             UserStatEntity userStat3 = UserFixture.createUserStatEntity(3L, 2200, 15, 25, 120,
                 7);
 
-            given(userAccountRepository.findByRoleAndNicknameContaining("USER", "pro"))
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "pro"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
@@ -339,7 +342,7 @@ public class UserServiceTest {
 
             UserStatEntity userStat = UserFixture.createUserStatEntity(2L);
 
-            given(userAccountRepository.findByRole("USER"))
+            given(userAccountRepository.findByRole(RoleType.USER))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(2L))
                 .willReturn(Optional.of(userStat));
@@ -353,8 +356,8 @@ public class UserServiceTest {
             assertThat(result).hasSize(1);
             assertThat(result.get(0).nickname()).isEqualTo("user");
 
-            then(userAccountRepository).should().findByRole("USER");
-            then(userAccountRepository).should(never()).findByRole("ADMIN");
+            then(userAccountRepository).should().findByRole(RoleType.USER);
+            then(userAccountRepository).should(never()).findByRole(RoleType.ADMIN);
         }
 
         @Test
@@ -368,7 +371,7 @@ public class UserServiceTest {
 
             UserStatEntity userStat = UserFixture.createUserStatEntity(1L);
 
-            given(userAccountRepository.findByRoleAndNicknameContaining("USER", "admin"))
+            given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "admin"))
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat));
@@ -383,7 +386,7 @@ public class UserServiceTest {
             assertThat(result.get(0).nickname()).isEqualTo("admin_user");
 
             then(userAccountRepository).should()
-                .findByRoleAndNicknameContaining("USER", "admin");
+                .findByRoleAndNicknameContaining(RoleType.USER, "admin");
             then(userAccountRepository).should(never()).findByRole(any());
         }
     }
@@ -711,467 +714,477 @@ public class UserServiceTest {
                 .isInstanceOf(UserStatNotFoundException.class);
         }
 
-        @Nested
-        @DisplayName("사용자 상위 문제 조회")
-        class GetUserTopProblems {
+    }
 
-            @Test
-            @DisplayName("사용자의 상위 문제를 정상 조회")
-            void getUserTopProblems_Success() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                Integer limit = 5;
+    @Nested
+    @DisplayName("사용자 상위 문제 조회")
+    class GetUserTopProblems {
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+        @Test
+        @DisplayName("사용자의 상위 문제를 정상 조회")
+        void getUserTopProblems_Success() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            Integer limit = 5;
 
-                GymEntity gym1 = GymFixture.createGymEntity(1L, "테스트 체육관1", 37.5665, 126.9780);
-                GymEntity gym2 = GymFixture.createGymEntity(2L, "테스트 체육관2", 37.5665, 126.9780);
-                GymEntity gym3 = GymFixture.createGymEntity(3L, "테스트 체육관3", 37.5665, 126.9780);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                ProblemEntity problem1 = ProblemFixture.createProblemEntity(1L, gym1, "고급", "빨강",
-                    1800);
-                ProblemEntity problem2 = ProblemFixture.createProblemEntity(2L, gym2, "중급", "파랑",
-                    1500);
-                ProblemEntity problem3 = ProblemFixture.createProblemEntity(3L, gym3, "초급", "노랑",
-                    1200);
+            GymEntity gym1 = GymFixture.createGymEntity(1L, "테스트 체육관1", 37.5665, 126.9780);
+            GymEntity gym2 = GymFixture.createGymEntity(2L, "테스트 체육관2", 37.5665, 126.9780);
+            GymEntity gym3 = GymFixture.createGymEntity(3L, "테스트 체육관3", 37.5665, 126.9780);
 
-                List<ProblemEntity> problemEntities = List.of(problem1, problem2, problem3);
+            ProblemEntity problem1 = ProblemFixture.createProblemEntity(1L, gym1, "고급", "빨강",
+                1800);
+            ProblemEntity problem2 = ProblemFixture.createProblemEntity(2L, gym2, "중급", "파랑",
+                1500);
+            ProblemEntity problem3 = ProblemFixture.createProblemEntity(3L, gym3, "초급", "노랑",
+                1200);
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"),
-                        any(Pageable.class)))
-                    .willReturn(problemEntities);
+            List<ProblemEntity> problemEntities = List.of(problem1, problem2, problem3);
 
-                // when
-                List<ProblemDetailsResponseDto> result = userService.getUserTopProblems(nickname,
-                    limit);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(
+                submissionRepository.getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                    any(Pageable.class)))
+                .willReturn(problemEntities);
 
-                // then
-                List<ProblemDetailsResponseDto> expected = List.of(
-                    ProblemFixture.createProblemResponseDto(1L, 1L, "테스트 체육관1", "고급", "빨강", 1800),
-                    ProblemFixture.createProblemResponseDto(2L, 2L, "테스트 체육관2", "중급", "파랑", 1500),
-                    ProblemFixture.createProblemResponseDto(3L, 3L, "테스트 체육관3", "초급", "노랑", 1200)
-                );
-                assertThat(result).isEqualTo(expected);
+            // when
+            List<ProblemDetailsResponseDto> result = userService.getUserTopProblems(nickname,
+                limit);
 
-                then(submissionRepository).should()
-                    .getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class));
-            }
+            // then
+            List<ProblemDetailsResponseDto> expected = List.of(
+                ProblemFixture.createProblemResponseDto(1L, 1L, "테스트 체육관1", "고급", "빨강", 1800),
+                ProblemFixture.createProblemResponseDto(2L, 2L, "테스트 체육관2", "중급", "파랑", 1500),
+                ProblemFixture.createProblemResponseDto(3L, 3L, "테스트 체육관3", "초급", "노랑", 1200)
+            );
+            assertThat(result).isEqualTo(expected);
 
-            @Test
-            @DisplayName("존재하지 않는 닉네임으로 상위 문제 조회")
-            void getUserTopProblems_UserNotFound() {
-                // given
-                String nickname = "nonexistentUser";
-                Integer limit = 5;
-
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.empty());
-
-                // when & then
-                assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
-                    .isInstanceOf(UserNotFoundException.class);
-                then(submissionRepository).should(never())
-                    .getUserSubmissionProblems(any(), any(), any());
-            }
-
-            @Test
-            @DisplayName("사용자에게 문제 제출 기록이 없는 경우")
-            void getUserTopProblems_NoSubmissions() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                Integer limit = 5;
-
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
-                List<ProblemEntity> emptyProblems = List.of();
-
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"),
-                        any(Pageable.class)))
-                    .willReturn(emptyProblems);
-
-                // when
-                List<ProblemDetailsResponseDto> result = userService.getUserTopProblems(nickname,
-                    limit);
-
-                // then
-                assertThat(result).isEmpty();
-                then(submissionRepository).should()
-                    .getUserSubmissionProblems(eq(userId), eq("ACCEPTED"), any(Pageable.class));
-            }
-
-            @Test
-            @DisplayName("limit이 0인 경우 예외 발생")
-            void getUserTopProblems_ZeroLimit() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                Integer limit = 0;
-
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
-
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-
-                // when & then
-                assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
-                    .isInstanceOf(IllegalArgumentException.class);
-            }
-
-            @Test
-            @DisplayName("요청한 limit보다 적은 문제가 있는 경우")
-            void getUserTopProblems_LessProblemsThanlimit() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                Integer limit = 10;
-
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
-
-                GymEntity gym1 = GymFixture.createGymEntity(1L, "테스트 체육관1", 37.5665, 126.9780);
-                GymEntity gym2 = GymFixture.createGymEntity(2L, "테스트 체육관2", 37.5665, 126.9780);
-
-                ProblemEntity problem1 = ProblemFixture.createProblemEntity(1L, gym1, "고급", "빨강",
-                    1600);
-                ProblemEntity problem2 = ProblemFixture.createProblemEntity(2L, gym2, "중급", "파랑",
-                    1400);
-
-                List<ProblemEntity> problemEntities = List.of(problem1, problem2);
-
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(
-                    submissionRepository.getUserSubmissionProblems(eq(userId), eq("ACCEPTED"),
-                        any(Pageable.class)))
-                    .willReturn(problemEntities);
-
-                // when
-                List<ProblemDetailsResponseDto> result = userService.getUserTopProblems(nickname,
-                    limit);
-
-                // then
-                List<ProblemDetailsResponseDto> expected = List.of(
-                    ProblemFixture.createProblemResponseDto(1L, 1L, "테스트 체육관1", "고급", "빨강", 1600),
-                    ProblemFixture.createProblemResponseDto(2L, 2L, "테스트 체육관2", "중급", "파랑", 1400)
-                );
-                assertThat(result).isEqualTo(expected);
-            }
+            then(submissionRepository).should()
+                .getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                    any(Pageable.class));
         }
 
-        @Nested
-        @DisplayName("사용자 스트릭 조회")
-        class GetUserStreak {
+        @Test
+        @DisplayName("존재하지 않는 닉네임으로 상위 문제 조회")
+        void getUserTopProblems_UserNotFound() {
+            // given
+            String nickname = "nonexistentUser";
+            Integer limit = 5;
 
-            @Test
-            @DisplayName("사용자의 일별 해결 문제 수를 정상 조회")
-            void getUserStreak_Success() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 3);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.empty());
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            // when & then
+            assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
+                .isInstanceOf(UserNotFoundException.class);
+            then(submissionRepository).should(never())
+                .getUserSubmissionProblems(any(), any(), any());
+        }
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 3),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 5),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 2)
-                );
+        @Test
+        @DisplayName("사용자에게 문제 제출 기록이 없는 경우")
+        void getUserTopProblems_NoSubmissions() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            Integer limit = 5;
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
-                    .willReturn(queryResults);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
+            List<ProblemEntity> emptyProblems = List.of();
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                    to);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(
+                submissionRepository.getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                    any(Pageable.class)))
+                .willReturn(emptyProblems);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 3),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 5),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 2)
-                );
-                assertThat(result).isEqualTo(expected);
+            // when
+            List<ProblemDetailsResponseDto> result = userService.getUserTopProblems(nickname,
+                limit);
 
-                then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, "ACCEPTED", from, to);
-            }
+            // then
+            assertThat(result).isEmpty();
+            then(submissionRepository).should()
+                .getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED), any(Pageable.class));
+        }
 
-            @Test
-            @DisplayName("존재하지 않는 닉네임으로 스트릭 조회")
-            void getUserStreak_UserNotFound() {
-                // given
-                String nickname = "nonexistentUser";
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 31);
+        @Test
+        @DisplayName("limit이 0인 경우 예외 발생")
+        void getUserTopProblems_ZeroLimit() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            Integer limit = 0;
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.empty());
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                // when & then
-                assertThatThrownBy(() -> userService.getUserStreak(nickname, from, to))
-                    .isInstanceOf(UserNotFoundException.class);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
 
-                then(submissionRepository).should(never())
-                    .getUserDateSolvedCount(any(), any(), any(), any());
-            }
+            // when & then
+            assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
+                .isInstanceOf(IllegalArgumentException.class);
+        }
 
-            @Test
-            @DisplayName("해당 기간에 해결한 문제가 없는 경우")
-            void getUserStreak_NoSolvedProblems() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 31);
+        @Test
+        @DisplayName("요청한 limit보다 적은 문제가 있는 경우")
+        void getUserTopProblems_LessProblemsThanlimit() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            Integer limit = 10;
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
-                List<DailyHistoryResponseDto> emptyResults = List.of();
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
-                    .willReturn(emptyResults);
+            GymEntity gym1 = GymFixture.createGymEntity(1L, "테스트 체육관1", 37.5665, 126.9780);
+            GymEntity gym2 = GymFixture.createGymEntity(2L, "테스트 체육관2", 37.5665, 126.9780);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                    to);
+            ProblemEntity problem1 = ProblemFixture.createProblemEntity(1L, gym1, "고급", "빨강",
+                1600);
+            ProblemEntity problem2 = ProblemFixture.createProblemEntity(2L, gym2, "중급", "파랑",
+                1400);
 
-                // then
-                assertThat(result).isEmpty();
-                then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, "ACCEPTED", from, to);
-            }
+            List<ProblemEntity> problemEntities = List.of(problem1, problem2);
 
-            @Test
-            @DisplayName("하루만 조회하는 경우")
-            void getUserStreak_SingleDay() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                LocalDate singleDate = LocalDate.of(2024, 1, 15);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(
+                submissionRepository.getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                    any(Pageable.class)))
+                .willReturn(problemEntities);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            // when
+            List<ProblemDetailsResponseDto> result = userService.getUserTopProblems(nickname,
+                limit);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 7)
-                );
+            // then
+            List<ProblemDetailsResponseDto> expected = List.of(
+                ProblemFixture.createProblemResponseDto(1L, 1L, "테스트 체육관1", "고급", "빨강", 1600),
+                ProblemFixture.createProblemResponseDto(2L, 2L, "테스트 체육관2", "중급", "파랑", 1400)
+            );
+            assertThat(result).isEqualTo(expected);
+        }
+    }
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", singleDate,
-                    singleDate))
-                    .willReturn(queryResults);
+    @Nested
+    @DisplayName("사용자 스트릭 조회")
+    class GetUserStreak {
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname,
-                    singleDate,
-                    singleDate);
+        @Test
+        @DisplayName("사용자의 일별 해결 문제 수를 정상 조회")
+        void getUserStreak_Success() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 3);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 7)
-                );
-                assertThat(result).isEqualTo(expected);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, "ACCEPTED", singleDate, singleDate);
-            }
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 3),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 5),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 2)
+            );
 
-            @Test
-            @DisplayName("날짜 순서가 잘못된 경우 (from > to)")
-            void getUserStreak_InvalidDateRange() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                LocalDate from = LocalDate.of(2024, 1, 31);
-                LocalDate to = LocalDate.of(2024, 1, 1);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
+                to))
+                .willReturn(queryResults);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
-                List<DailyHistoryResponseDto> emptyResults = List.of();
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
+                to);
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
-                    .willReturn(emptyResults);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 3),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 5),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 2)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                    to);
+            then(submissionRepository).should()
+                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, from, to);
+        }
 
-                // then
-                assertThat(result).isEmpty();
-                then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, "ACCEPTED", from, to);
-            }
+        @Test
+        @DisplayName("존재하지 않는 닉네임으로 스트릭 조회")
+        void getUserStreak_UserNotFound() {
+            // given
+            String nickname = "nonexistentUser";
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 31);
 
-            @Test
-            @DisplayName("연속되지 않은 날짜의 데이터 조회")
-            void getUserStreak_NonConsecutiveDates() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 10);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.empty());
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            // when & then
+            assertThatThrownBy(() -> userService.getUserStreak(nickname, from, to))
+                .isInstanceOf(UserNotFoundException.class);
 
-                // 1일, 5일, 9일에만 문제를 해결
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 2),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 4),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 1)
-                );
+            then(submissionRepository).should(never())
+                .getUserDateSolvedCount(any(), any(), any(), any());
+        }
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
-                    .willReturn(queryResults);
+        @Test
+        @DisplayName("해당 기간에 해결한 문제가 없는 경우")
+        void getUserStreak_NoSolvedProblems() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 31);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                    to);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
+            List<DailyHistoryResponseDto> emptyResults = List.of();
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 2),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 4),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 1)
-                );
-                assertThat(result).isEqualTo(expected);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
+                to))
+                .willReturn(emptyResults);
 
-                then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, "ACCEPTED", from, to);
-            }
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
+                to);
 
-            @Test
-            @DisplayName("null 파라미터로 조회하는 경우")
-            void getUserStreak_WithNullParameters() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                LocalDate from = null;
-                LocalDate to = null;
+            // then
+            assertThat(result).isEmpty();
+            then(submissionRepository).should()
+                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, from, to);
+        }
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+        @Test
+        @DisplayName("하루만 조회하는 경우")
+        void getUserStreak_SingleDay() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate singleDate = LocalDate.of(2024, 1, 15);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 3)
-                );
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
-                    .willReturn(queryResults);
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 7)
+            );
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                    to);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED,
+                singleDate,
+                singleDate))
+                .willReturn(queryResults);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 3)
-                );
-                assertThat(result).isEqualTo(expected);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname,
+                singleDate,
+                singleDate);
 
-                then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, "ACCEPTED", null, null);
-            }
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 7)
+            );
+            assertThat(result).isEqualTo(expected);
 
-            @Test
-            @DisplayName("from만 null인 경우")
-            void getUserStreak_WithFromNull() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                LocalDate from = null;
-                LocalDate to = LocalDate.of(2024, 1, 31);
+            then(submissionRepository).should()
+                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, singleDate, singleDate);
+        }
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+        @Test
+        @DisplayName("날짜 순서가 잘못된 경우 (from > to)")
+        void getUserStreak_InvalidDateRange() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 31);
+            LocalDate to = LocalDate.of(2024, 1, 1);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 2),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 4)
-                );
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
+            List<DailyHistoryResponseDto> emptyResults = List.of();
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
-                    .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
+                to))
+                .willReturn(emptyResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                    to);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
+                to);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 2),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 4)
-                );
-                assertThat(result).isEqualTo(expected);
+            // then
+            assertThat(result).isEmpty();
+            then(submissionRepository).should()
+                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, from, to);
+        }
 
-                then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, "ACCEPTED", null, to);
-            }
+        @Test
+        @DisplayName("연속되지 않은 날짜의 데이터 조회")
+        void getUserStreak_NonConsecutiveDates() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 10);
 
-            @Test
-            @DisplayName("to만 null인 경우")
-            void getUserStreak_WithToNull() {
-                // given
-                String nickname = "testUser";
-                Long userId = 1L;
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = null;
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            // 1일, 5일, 9일에만 문제를 해결
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 2),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 4),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 1)
+            );
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 5)
-                );
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
+                to))
+                .willReturn(queryResults);
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(submissionRepository.getUserDateSolvedCount(userId, "ACCEPTED", from, to))
-                    .willReturn(queryResults);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
+                to);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                    to);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 2),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 4),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 1)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 5)
-                );
-                assertThat(result).isEqualTo(expected);
+            then(submissionRepository).should()
+                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, from, to);
+        }
 
-                then(submissionRepository).should()
-                    .getUserDateSolvedCount(userId, "ACCEPTED", from, null);
-            }
+        @Test
+        @DisplayName("null 파라미터로 조회하는 경우")
+        void getUserStreak_WithNullParameters() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = null;
+            LocalDate to = null;
+
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
+
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 3)
+            );
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
+                to))
+                .willReturn(queryResults);
+
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
+                to);
+
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 3)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should()
+                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, null, null);
+        }
+
+        @Test
+        @DisplayName("from만 null인 경우")
+        void getUserStreak_WithFromNull() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = null;
+            LocalDate to = LocalDate.of(2024, 1, 31);
+
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
+
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 2),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 4)
+            );
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
+                to))
+                .willReturn(queryResults);
+
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
+                to);
+
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 2),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 4)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should()
+                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, null, to);
+        }
+
+        @Test
+        @DisplayName("to만 null인 경우")
+        void getUserStreak_WithToNull() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = null;
+
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
+
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 5)
+            );
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
+                to))
+                .willReturn(queryResults);
+
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
+                to);
+
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 5)
+            );
+            assertThat(result).isEqualTo(expected);
+
+            then(submissionRepository).should()
+                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, from, null);
         }
     }
 
@@ -1185,7 +1198,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            String criteria = "RATING";
+            CriteriaType criteria = CriteriaType.RATING;
             LocalDate from = LocalDate.of(2024, 1, 1);
             LocalDate to = LocalDate.of(2024, 1, 3);
 
@@ -1224,7 +1237,7 @@ public class UserServiceTest {
         void getUserDailyHistory_UserNotFound() {
             // given
             String nickname = "nonexistentUser";
-            String criteria = "RANKING";
+            CriteriaType criteria = CriteriaType.RATING;
             LocalDate from = LocalDate.of(2024, 1, 1);
             LocalDate to = LocalDate.of(2024, 1, 31);
 
@@ -1246,7 +1259,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            String criteria = "SOLVED_COUNT";
+            CriteriaType criteria = CriteriaType.SOLVED_COUNT;
             LocalDate from = LocalDate.of(2024, 1, 1);
             LocalDate to = LocalDate.of(2024, 1, 31);
 
@@ -1275,7 +1288,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            String criteria = "RATING";
+            CriteriaType criteria = CriteriaType.SOLVED_COUNT;
             LocalDate from = LocalDate.of(2024, 1, 1);
             LocalDate to = LocalDate.of(2024, 1, 2);
 
@@ -1313,7 +1326,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            String criteria = "RATING";
+            CriteriaType criteria = CriteriaType.RATING;
             LocalDate from = null;
             LocalDate to = null;
 
@@ -1351,7 +1364,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            String criteria = "RATING";
+            CriteriaType criteria = CriteriaType.RATING;
             LocalDate singleDate = LocalDate.of(2024, 1, 15);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
@@ -1387,7 +1400,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            String criteria = "SOLVED_COUNT";
+            CriteriaType criteria = CriteriaType.SOLVED_COUNT;
             LocalDate from = LocalDate.of(2024, 1, 1);
             LocalDate to = LocalDate.of(2024, 1, 10);
 
@@ -1428,7 +1441,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            String criteria = "RATING";
+            CriteriaType criteria = CriteriaType.RATING;
             LocalDate from = null;
             LocalDate to = LocalDate.of(2024, 1, 31);
 
@@ -1466,7 +1479,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            String criteria = "RATING";
+            CriteriaType criteria = CriteriaType.RATING;
             LocalDate from = LocalDate.of(2024, 1, 1);
             LocalDate to = null;
 

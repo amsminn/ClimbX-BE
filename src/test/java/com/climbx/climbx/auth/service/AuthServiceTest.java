@@ -10,7 +10,6 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 
-import com.climbx.climbx.auth.AuthService;
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
 import com.climbx.climbx.auth.dto.TokenGenerationResponseDto;
@@ -20,6 +19,7 @@ import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.util.JwtContext;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -74,7 +74,7 @@ class AuthServiceTest {
             UserAccountEntity user = UserAccountEntity.builder()
                 .userId(1L)
                 .nickname("테스트유저")
-                .role("USER")
+                .role(RoleType.USER)
                 .build();
             UserAuthEntity userAuth = UserAuthEntity.builder()
                 .userAccountEntity(user)
@@ -100,7 +100,8 @@ class AuthServiceTest {
                     .nickname("테스트유저")
                     .build()
             );
-            given(jwtContext.generateAccessToken(1L, "USER")).willReturn(accessTokenResponse);
+            given(jwtContext.generateAccessToken(1L, RoleType.USER)).willReturn(
+                accessTokenResponse);
             given(jwtContext.generateRefreshToken(1L)).willReturn("refresh-token-1");
 
             CallbackRequestDto request = CallbackRequestDto.builder()
@@ -150,7 +151,8 @@ class AuthServiceTest {
                 .expiresIn(3600L)
                 .build();
 
-            given(jwtContext.generateAccessToken(2L, "USER")).willReturn(accessTokenResponse);
+            given(jwtContext.generateAccessToken(2L, RoleType.USER)).willReturn(
+                accessTokenResponse);
             given(jwtContext.generateRefreshToken(2L)).willReturn("refresh-token-2");
 
             CallbackRequestDto request = CallbackRequestDto.builder()
@@ -192,7 +194,7 @@ class AuthServiceTest {
             UserAccountEntity user = UserAccountEntity.builder()
                 .userId(3L)
                 .nickname("리프레시유저")
-                .role("USER")
+                .role(RoleType.USER)
                 .build();
             given(userAccountRepository.findById(3L)).willReturn(Optional.of(user));
             doNothing().when(refreshTokenBlacklistService).addToBlacklist("valid-refresh-token");
@@ -202,7 +204,8 @@ class AuthServiceTest {
                 .expiresIn(3600L)
                 .build();
 
-            given(jwtContext.generateAccessToken(3L, "USER")).willReturn(accessTokenResponse);
+            given(jwtContext.generateAccessToken(3L, RoleType.USER)).willReturn(
+                accessTokenResponse);
             given(jwtContext.generateRefreshToken(3L)).willReturn("new-refresh-token");
 
             // when
@@ -240,7 +243,7 @@ class AuthServiceTest {
                 .isInstanceOf(InvalidTokenException.class);
 
             then(userAccountRepository).should(never()).findById(anyLong());
-            then(jwtContext).should(never()).generateAccessToken(anyLong(), anyString());
+            then(jwtContext).should(never()).generateAccessToken(anyLong(), any());
             then(refreshTokenBlacklistService).should(never()).addToBlacklist(anyString());
         }
 
@@ -264,7 +267,7 @@ class AuthServiceTest {
             assertThatThrownBy(() -> authService.refreshAccessToken("valid-refresh-token"))
                 .isInstanceOf(InvalidTokenException.class);
 
-            then(jwtContext).should(never()).generateAccessToken(anyLong(), anyString());
+            then(jwtContext).should(never()).generateAccessToken(anyLong(), any());
             then(refreshTokenBlacklistService).should(never()).addToBlacklist(anyString());
         }
     }
