@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum OAuth2ProviderType {
     KAKAO,
-    GOOGLE;
-    // APPLE;
+    GOOGLE,
+    APPLE;
 
     public static OAuth2ProviderType fromString(String provider) {
         try {

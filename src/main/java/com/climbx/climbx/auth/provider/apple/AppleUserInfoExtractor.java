@@ -12,20 +12,23 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class NaverUserInfoExtractor implements UserInfoExtractor {
+public class AppleUserInfoExtractor implements UserInfoExtractor {
 
-    @Value("${spring.security.oauth2.naver.jwks-uri}")
+    @Value("${spring.security.oauth2.apple.jwks-uri}")
     private String jwksUri;
 
-    @Value("${spring.security.oauth2.naver.issuer}")
+    @Value("${spring.security.oauth2.apple.issuer}")
     private String issuer;
 
-    @Value("${spring.security.oauth2.naver.audience}")
-    private String audience;
+    @Value("${spring.security.oauth2.apple.android-audience}")
+    private String androidAudience;
+
+    @Value("${spring.security.oauth2.apple.ios-audience}")
+    private String iosAudience;
 
     @Override
     public OAuth2ProviderType getProviderType() {
-        return OAuth2ProviderType.GOOGLE;
+        return OAuth2ProviderType.APPLE;
     }
 
     @Override
@@ -43,28 +46,29 @@ public class NaverUserInfoExtractor implements UserInfoExtractor {
     @Override
     public List<String> getAudience() {
         return List.of(
-            audience
+            androidAudience,
+            iosAudience
         );
     }
 
     @Override
     public ValidatedTokenInfoDto extractUserInfo(Jwt jwt) {
-        log.debug("Naver ID Token에서 사용자 정보 추출 시작");
+        log.debug("Google ID Token에서 사용자 정보 추출 시작");
 
         String providerId = jwt.getSubject();
         String email = jwt.getClaimAsString("email");
-        String nickname = jwt.getClaimAsString("name");
-        String profileImageUrl = jwt.getClaimAsString("picture");
+        String nickname = null;
+        String profileImageUrl = null;
 
         boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
         if (!emailVerified) {
-            log.warn("Naver ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
+            log.warn("Google ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
                 email);
             throw new EmailNotVerifiedException(OAuth2ProviderType.GOOGLE);
         }
 
         log.debug(
-            "Naver 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",
+            "Google 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",
             providerId,
             email,
             nickname
