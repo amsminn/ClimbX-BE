@@ -7,5 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VideoRepository extends JpaRepository<VideoEntity, UUID> {
 
-    List<VideoEntity> findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long userId);
+    List<VideoEntity> findByUserIdAndStatusAndDeletedAtIsNullOrderByCreatedAtDesc(
+        Long userId,
+        String status
+    );
 } 
