@@ -53,7 +53,7 @@ public class AppleUserInfoExtractor implements UserInfoExtractor {
 
     @Override
     public ValidatedTokenInfoDto extractUserInfo(Jwt jwt) {
-        log.debug("Google ID Token에서 사용자 정보 추출 시작");
+        log.debug("Apple ID Token에서 사용자 정보 추출 시작");
 
         String providerId = jwt.getSubject();
         String email = jwt.getClaimAsString("email");
@@ -62,13 +62,13 @@ public class AppleUserInfoExtractor implements UserInfoExtractor {
 
         boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
         if (!emailVerified) {
-            log.warn("Google ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
+            log.warn("Apple ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
                 email);
             throw new EmailNotVerifiedException(OAuth2ProviderType.GOOGLE);
         }
 
         log.debug(
-            "Google 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",
+            "Apple 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",
             providerId,
             email,
             nickname
@@ -79,7 +79,7 @@ public class AppleUserInfoExtractor implements UserInfoExtractor {
             .nickname(nickname)
             .email(email)
             .profileImageUrl(profileImageUrl)
-            .providerType(OAuth2ProviderType.GOOGLE.name())
+            .providerType(OAuth2ProviderType.APPLE.name())
             .build();
     }
 }
