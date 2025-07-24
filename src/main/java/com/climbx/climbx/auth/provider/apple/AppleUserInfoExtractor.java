@@ -1,4 +1,4 @@
-package com.climbx.climbx.auth.provider.google;
+package com.climbx.climbx.auth.provider.apple;
 
 import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
