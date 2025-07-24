@@ -49,7 +49,7 @@ public class NaverUserInfoExtractor implements UserInfoExtractor {
 
     @Override
     public ValidatedTokenInfoDto extractUserInfo(Jwt jwt) {
-        log.debug("Kakao ID Token에서 사용자 정보 추출 시작");
+        log.debug("Naver ID Token에서 사용자 정보 추출 시작");
 
         String providerId = jwt.getSubject();
         String email = jwt.getClaimAsString("email");
@@ -58,13 +58,13 @@ public class NaverUserInfoExtractor implements UserInfoExtractor {
 
         boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
         if (!emailVerified) {
-            log.warn("Google ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
+            log.warn("Naver ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
                 email);
             throw new EmailNotVerifiedException(OAuth2ProviderType.GOOGLE);
         }
 
         log.debug(
-            "Google 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",
+            "Naver 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",
             providerId,
             email,
             nickname

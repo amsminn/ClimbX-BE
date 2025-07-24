@@ -57,7 +57,7 @@ public class GoogleUserInfoExtractor implements UserInfoExtractor {
 
     @Override
     public ValidatedTokenInfoDto extractUserInfo(Jwt jwt) {
-        log.debug("Kakao ID Token에서 사용자 정보 추출 시작");
+        log.debug("Google ID Token에서 사용자 정보 추출 시작");
 
         String providerId = jwt.getSubject();
         String email = jwt.getClaimAsString("email");

@@ -61,7 +61,7 @@ public class KakaoUserInfoExtractor implements UserInfoExtractor {
 
         boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
         if (!emailVerified) {
-            log.warn("Google ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
+            log.warn("Kakao ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
                 email);
             throw new EmailNotVerifiedException(OAuth2ProviderType.KAKAO);
         }
