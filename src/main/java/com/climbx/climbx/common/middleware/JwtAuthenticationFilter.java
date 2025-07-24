@@ -1,7 +1,8 @@
 package com.climbx.climbx.common.middleware;
 
-import com.climbx.climbx.comcode.service.ComcodeService;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
+import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.util.JwtContext;
 import jakarta.servlet.FilterChain;
@@ -27,7 +28,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtContext jwtContext;
-    private final ComcodeService comcodeService;
 
     @Override
     protected void doFilterInternal(
@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             JwtTokenInfoDto tokenInfo = jwtContext.parseToken(token);
 
             // ACCESS 토큰인지 확인
-            String accessTokenType = comcodeService.getCodeValue("ACCESS");
+            String accessTokenType = TokenType.ACCESS.name();
             if (!accessTokenType.equals(tokenInfo.tokenType())) {
                 log.debug("Invalid token type: expected={}, actual={}", accessTokenType,
                     tokenInfo.tokenType());
@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             // Spring Security 인증 정보 설정
-            setAuthentication(tokenInfo.userId(), comcodeService.getCodeValue(tokenInfo.role()));
+            setAuthentication(tokenInfo.userId(), RoleType.from(tokenInfo.role()));
 
             log.debug("JWT authentication successful for user: {}", tokenInfo.userId());
 

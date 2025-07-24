@@ -1,6 +1,7 @@
 package com.climbx.climbx.ranking.service;
 
-import com.climbx.climbx.comcode.service.ComcodeService;
+import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.SortOrderType;
 import com.climbx.climbx.common.util.OptionalUtil;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.dto.UserRankingResponseDto;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RankingService {
 
     private final RankingRepository rankingRepository;
-    private final ComcodeService comcodeService;
 
     public RankingResponseDto getRankingPage(
         String criteria,
@@ -33,7 +33,7 @@ public class RankingService {
     ) {
         String validatedCriteria = RankingCriteria.fromCode(criteria);
         Direction direction = OptionalUtil.tryOf(
-            () -> Direction.valueOf(comcodeService.getCodeValue(order))
+            () -> Direction.valueOf(SortOrderType.from(order))
         ).orElse(Direction.DESC);
 
         Sort sort = Sort.by(direction, validatedCriteria);
@@ -41,7 +41,7 @@ public class RankingService {
 
         // 어드민 계정 제외하고 일반 사용자만 조회
         Page<UserStatEntity> rankingPage = rankingRepository.findAllByUserRole(pageable,
-            comcodeService.getCodeValue("USER"));
+            RoleType.USER.name());
 
         Long totalCount = rankingPage.getTotalElements();
         Integer totalPage = rankingPage.getTotalPages();

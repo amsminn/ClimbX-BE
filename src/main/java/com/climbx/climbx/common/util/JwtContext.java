@@ -1,8 +1,9 @@
 package com.climbx.climbx.common.util;
 
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
-import com.climbx.climbx.comcode.service.ComcodeService;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
+import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.exception.TokenExpiredException;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
@@ -34,7 +35,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtContext {
 
-    private final ComcodeService comcodeService;
     private final BearerTokenResolver bearerTokenResolver;
     private final NimbusJwtDecoder jwtDecoder;
     private final JwtEncoder jwtEncoder;
@@ -46,7 +46,6 @@ public class JwtContext {
     private final Function<JwtClaimsSet, String> tokenEncoder;
 
     public JwtContext(
-        ComcodeService comcodeService,
         @Value("${auth.jwt.secret}") String jwtSecret,
         @Value("${auth.jwt.access-token-expiration}") long accessTokenExpiration,
         @Value("${auth.jwt.refresh-token-expiration}") long refreshTokenExpiration,
@@ -54,8 +53,6 @@ public class JwtContext {
         @Value("${auth.jwt.audience}") String audience,
         @Value("${auth.jwt.jws-algorithm}") String jwsAlgorithm
     ) {
-        this.comcodeService = comcodeService;
-
         // DefaultBearerTokenResolver 설정
         DefaultBearerTokenResolver resolver = new DefaultBearerTokenResolver();
         resolver.setAllowFormEncodedBodyParameter(false); // Form parameter 비활성화
@@ -123,8 +120,8 @@ public class JwtContext {
             .subject(String.valueOf(userId))
             .issuedAt(now)
             .expiresAt(expiresAt)
-            .claim("role", comcodeService.getCodeValue(role))
-            .claim("type", comcodeService.getCodeValue("ACCESS"))
+            .claim("role", RoleType.from(role))
+            .claim("type", TokenType.ACCESS.name())
             .build();
 
         return AccessTokenResponseDto.builder()
@@ -146,7 +143,7 @@ public class JwtContext {
             .subject(String.valueOf(userId))
             .issuedAt(now)
             .expiresAt(expiresAt)
-            .claim("type", comcodeService.getCodeValue("REFRESH"))
+            .claim("type", TokenType.REFRESH.name())
             .build();
 
         return tokenEncoder.apply(claims);
@@ -171,9 +168,5 @@ public class JwtContext {
 
     public Long getAccessTokenExpiration() {
         return accessTokenExpiration;
-    }
-
-    public long getRefreshTokenExpiration() {
-        return refreshTokenExpiration;
     }
 }

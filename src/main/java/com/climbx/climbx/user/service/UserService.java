@@ -1,6 +1,7 @@
 package com.climbx.climbx.user.service;
 
-import com.climbx.climbx.comcode.service.ComcodeService;
+import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
@@ -9,6 +10,7 @@ import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.enums.CriteriaType;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
 import com.climbx.climbx.user.exception.NicknameMismatchException;
 import com.climbx.climbx.user.exception.UserNotFoundException;
@@ -36,17 +38,16 @@ public class UserService {
     private final UserStatRepository userStatRepository;
     private final SubmissionRepository submissionRepository;
     private final UserRankingHistoryRepository userRankingHistoryRepository;
-    private final ComcodeService comcodeService;
 
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
 
-        String userRoleCode = comcodeService.getCodeValue("USER");
+        RoleType userRole = RoleType.USER;
 
         if (search == null || search.trim().isEmpty()) {
-            userAccounts = userAccountRepository.findByRole(userRoleCode);
+            userAccounts = userAccountRepository.findByRole(userRole.name());
         } else {
-            userAccounts = userAccountRepository.findByRoleAndNicknameContaining(userRoleCode,
+            userAccounts = userAccountRepository.findByRoleAndNicknameContaining(userRole.name(),
                 search.trim());
         }
 
@@ -98,7 +99,7 @@ public class UserService {
 
         List<ProblemEntity> problemEntities = submissionRepository.getUserSubmissionProblems(
             userAccount.userId(),
-            comcodeService.getCodeValue("ACCEPTED"),
+            StatusType.ACCEPTED.name(),
             pageable
         );
 
@@ -116,7 +117,7 @@ public class UserService {
 
         return submissionRepository.getUserDateSolvedCount(
             userAccount.userId(),
-            comcodeService.getCodeValue("ACCEPTED"),
+            StatusType.ACCEPTED.name(),
             from,
             to
         );
@@ -129,11 +130,10 @@ public class UserService {
         LocalDate to
     ) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
-        criteria = comcodeService.getCodeValue(criteria);
 
         return userRankingHistoryRepository.getUserDailyHistory(
             userAccount.userId(),
-            criteria,
+            CriteriaType.from(criteria),
             from,
             to
         );

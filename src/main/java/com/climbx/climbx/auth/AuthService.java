@@ -11,10 +11,10 @@ import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.provider.exception.ProviderNotSupportedException;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
-import com.climbx.climbx.auth.service.NonceService;
 import com.climbx.climbx.auth.service.RefreshTokenBlacklistService;
-import com.climbx.climbx.comcode.service.ComcodeService;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
+import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.util.JwtContext;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -35,13 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final ComcodeService comcodeService;
     private final JwtContext jwtContext;
     private final UserAccountRepository userAccountRepository;
     private final UserAuthRepository userAuthsRepository;
     private final UserStatRepository userStatRepository;
     private final ProviderIdTokenService oauth2IdTokenService;
-    private final NonceService nonceService;
     private final RefreshTokenBlacklistService refreshTokenBlacklistService;
 
     /**
@@ -100,7 +98,7 @@ public class AuthService {
             JwtTokenInfoDto tokenInfo = jwtContext.parseToken(refreshToken);
 
             // 3. REFRESH 토큰인지 확인
-            String refreshTokenType = comcodeService.getCodeValue("REFRESH");
+            String refreshTokenType = TokenType.REFRESH.name();
             if (!refreshTokenType.equals(tokenInfo.tokenType().toUpperCase())) {
                 log.debug("Invalid token type: expected={}, actual={}", refreshTokenType,
                     tokenInfo.tokenType());
@@ -195,7 +193,7 @@ public class AuthService {
         // 사용자 계정 생성
         UserAccountEntity userAccount = UserAccountEntity.builder()
             .nickname(nickname)
-            .role(comcodeService.getCodeValue("USER"))
+            .role(RoleType.USER.name())
             .profileImageUrl(tokenInfo.profileImageUrl())
             .build();
 

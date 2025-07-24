@@ -52,7 +52,7 @@ public enum ErrorCode {
     EXTERNAL_SERVICE_ERROR(HttpStatus.BAD_GATEWAY, "외부 서비스 호출에 실패했습니다."),
     TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "요청 시간이 초과되었습니다."),
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "서비스를 사용할 수 없습니다."),
-    COMCODE_NOT_FOUND(HttpStatus.NOT_FOUND, "공통 코드 정보를 찾을 수 없습니다.");
+    INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 Enum 값입니다.");
 
     private final HttpStatus status;
     private final String message;
