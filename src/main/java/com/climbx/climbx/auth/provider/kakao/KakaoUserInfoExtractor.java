@@ -53,7 +53,7 @@ public class KakaoUserInfoExtractor implements UserInfoExtractor {
         String providerId = jwt.getSubject(); // sub 클레임
         String email = jwt.getClaimAsString("email");
         String nickname = jwt.getClaimAsString("nickname");
-        String profileImageUrl = jwt.getClaimAsString("profile_image");
+        String profileImageUrl = jwt.getClaimAsString("picture");
 
         boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
         if (!emailVerified) {
