@@ -8,7 +8,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
-import com.climbx.climbx.comcode.service.ComcodeService;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.exception.TokenExpiredException;
@@ -33,9 +32,6 @@ class JwtContextTest {
     private static final String JWS_ALGORITHM = "HS256";
 
     @Mock
-    private ComcodeService comcodeService;
-
-    @Mock
     private HttpServletRequest request;
 
     private JwtContext jwtContext;
@@ -44,7 +40,6 @@ class JwtContextTest {
     @BeforeEach
     void setUp() {
         jwtContext = new JwtContext(
-            comcodeService,
             JWT_SECRET,
             ACCESS_TOKEN_EXPIRATION,
             REFRESH_TOKEN_EXPIRATION,

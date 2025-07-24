@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
-import com.climbx.climbx.comcode.service.ComcodeService;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
@@ -55,36 +54,8 @@ public class UserServiceTest {
     @Mock
     private UserRankingHistoryRepository userRankingHistoryRepository;
 
-    @Mock
-    private ComcodeService comcodeService;
-
     @InjectMocks
     private UserService userService;
-
-    private void setupUserRoleComcode() {
-        given(comcodeService.getCodeValue("USER"))
-            .willReturn("USER");
-    }
-
-    private void setupRatingComcode() {
-        given(comcodeService.getCodeValue("RATING"))
-            .willReturn("RATING");
-    }
-
-    private void setupRankingComcode() {
-        given(comcodeService.getCodeValue("RANKING"))
-            .willReturn("RANKING");
-    }
-
-    private void setupSolvedCountComcode() {
-        given(comcodeService.getCodeValue("SOLVED_COUNT"))
-            .willReturn("SOLVED_COUNT");
-    }
-
-    private void setupAcceptedComcode() {
-        given(comcodeService.getCodeValue("ACCEPTED"))
-            .willReturn("ACCEPTED");
-    }
 
     @Nested
     @DisplayName("사용자 목록 조회 및 검색")
@@ -94,7 +65,6 @@ public class UserServiceTest {
         @DisplayName("전체 사용자 목록을 정상 조회")
         void getUsers_Success_AllUsers() {
             // given
-            setupUserRoleComcode();
             String search = null;
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "alice");
@@ -139,7 +109,6 @@ public class UserServiceTest {
         @DisplayName("빈 문자열로 검색 시 전체 사용자 목록 조회")
         void getUsers_Success_EmptySearch() {
             // given
-            setupUserRoleComcode();
             String search = "";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "test1");
@@ -172,7 +141,6 @@ public class UserServiceTest {
         @DisplayName("공백만 있는 검색어로 검색 시 전체 사용자 목록 조회")
         void getUsers_Success_WhitespaceOnlySearch() {
             // given
-            setupUserRoleComcode();
             String search = "   ";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
@@ -201,7 +169,6 @@ public class UserServiceTest {
         @DisplayName("닉네임 검색으로 특정 사용자들 조회")
         void getUsers_Success_WithSearch() {
             // given
-            setupUserRoleComcode();
             String search = "test";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "testuser1");
@@ -239,7 +206,6 @@ public class UserServiceTest {
         @DisplayName("검색 결과가 없는 경우")
         void getUsers_Success_NoResults() {
             // given
-            setupUserRoleComcode();
             String search = "nonexistent";
             List<UserAccountEntity> emptyUserAccounts = List.of();
 
@@ -262,7 +228,6 @@ public class UserServiceTest {
         @DisplayName("검색어 앞뒤 공백 제거 후 검색")
         void getUsers_Success_TrimmedSearch() {
             // given
-            setupUserRoleComcode();
             String search = "  alice  ";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "alice123");
@@ -292,7 +257,6 @@ public class UserServiceTest {
         @DisplayName("사용자는 있지만 통계 정보가 없는 경우")
         void getUsers_UserStatNotFound() {
             // given
-            setupUserRoleComcode();
             String search = null;
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
@@ -312,7 +276,6 @@ public class UserServiceTest {
         @DisplayName("다양한 레이팅을 가진 사용자들 조회")
         void getUsers_Success_DifferentRatings() {
             // given
-            setupUserRoleComcode();
             String search = "pro";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "pro_player1");
@@ -369,7 +332,6 @@ public class UserServiceTest {
         @DisplayName("ADMIN 역할 사용자는 조회되지 않음")
         void getUsers_AdminNotIncluded() {
             // given
-            setupUserRoleComcode();
             String search = null;
 
             UserAccountEntity normalUser = UserFixture.createUserAccountEntity(2L, "user");
@@ -399,7 +361,6 @@ public class UserServiceTest {
         @DisplayName("ADMIN 역할 사용자는 검색에서도 제외됨")
         void getUsers_AdminNotIncludedInSearch() {
             // given
-            setupUserRoleComcode();
             String search = "admin";
 
             UserAccountEntity normalUser = UserFixture.createUserAccountEntity(1L, "admin_user");
@@ -758,7 +719,6 @@ public class UserServiceTest {
             @DisplayName("사용자의 상위 문제를 정상 조회")
             void getUserTopProblems_Success() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 Integer limit = 5;
@@ -823,7 +783,6 @@ public class UserServiceTest {
             @DisplayName("사용자에게 문제 제출 기록이 없는 경우")
             void getUserTopProblems_NoSubmissions() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 Integer limit = 5;
@@ -872,7 +831,6 @@ public class UserServiceTest {
             @DisplayName("요청한 limit보다 적은 문제가 있는 경우")
             void getUserTopProblems_LessProblemsThanlimit() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 Integer limit = 10;
@@ -918,7 +876,6 @@ public class UserServiceTest {
             @DisplayName("사용자의 일별 해결 문제 수를 정상 조회")
             void getUserStreak_Success() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 1);
@@ -977,7 +934,6 @@ public class UserServiceTest {
             @DisplayName("해당 기간에 해결한 문제가 없는 경우")
             void getUserStreak_NoSolvedProblems() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 1);
@@ -1006,7 +962,6 @@ public class UserServiceTest {
             @DisplayName("하루만 조회하는 경우")
             void getUserStreak_SingleDay() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate singleDate = LocalDate.of(2024, 1, 15);
@@ -1043,7 +998,6 @@ public class UserServiceTest {
             @DisplayName("날짜 순서가 잘못된 경우 (from > to)")
             void getUserStreak_InvalidDateRange() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 31);
@@ -1072,7 +1026,6 @@ public class UserServiceTest {
             @DisplayName("연속되지 않은 날짜의 데이터 조회")
             void getUserStreak_NonConsecutiveDates() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 1);
@@ -1113,7 +1066,6 @@ public class UserServiceTest {
             @DisplayName("null 파라미터로 조회하는 경우")
             void getUserStreak_WithNullParameters() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = null;
@@ -1151,7 +1103,6 @@ public class UserServiceTest {
             @DisplayName("from만 null인 경우")
             void getUserStreak_WithFromNull() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = null;
@@ -1189,7 +1140,6 @@ public class UserServiceTest {
             @DisplayName("to만 null인 경우")
             void getUserStreak_WithToNull() {
                 // given
-                setupAcceptedComcode();
                 String nickname = "testUser";
                 Long userId = 1L;
                 LocalDate from = LocalDate.of(2024, 1, 1);
@@ -1223,337 +1173,329 @@ public class UserServiceTest {
                     .getUserDateSolvedCount(userId, "ACCEPTED", from, null);
             }
         }
+    }
 
-        @Nested
-        @DisplayName("사용자 일별 히스토리 조회")
-        class GetUserDailyHistory {
+    @Nested
+    @DisplayName("사용자 일별 히스토리 조회")
+    class GetUserDailyHistory {
 
-            @Test
-            @DisplayName("사용자의 레이팅 히스토리를 정상 조회")
-            void getUserDailyHistory_Success() {
-                // given
-                setupRatingComcode();
-                String nickname = "testUser";
-                Long userId = 1L;
-                String criteria = "RATING";
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 3);
+        @Test
+        @DisplayName("사용자의 레이팅 히스토리를 정상 조회")
+        void getUserDailyHistory_Success() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            String criteria = "RATING";
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 3);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1200),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1250),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 1300)
-                );
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1200),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1250),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 1300)
+            );
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                    .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
+                .willReturn(queryResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                    criteria, from, to);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
+                criteria, from, to);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1200),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1250),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 1300)
-                );
-                assertThat(result).isEqualTo(expected);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1200),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1250),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 1300)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                then(userRankingHistoryRepository).should()
-                    .getUserDailyHistory(userId, criteria, from, to);
-            }
+            then(userRankingHistoryRepository).should()
+                .getUserDailyHistory(userId, criteria, from, to);
+        }
 
-            @Test
-            @DisplayName("존재하지 않는 닉네임으로 히스토리 조회")
-            void getUserDailyHistory_UserNotFound() {
-                // given
-                String nickname = "nonexistentUser";
-                String criteria = "RANKING";
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 31);
+        @Test
+        @DisplayName("존재하지 않는 닉네임으로 히스토리 조회")
+        void getUserDailyHistory_UserNotFound() {
+            // given
+            String nickname = "nonexistentUser";
+            String criteria = "RANKING";
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 31);
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.empty());
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.empty());
 
-                // when & then
-                assertThatThrownBy(
-                    () -> userService.getUserDailyHistory(nickname, criteria, from, to))
-                    .isInstanceOf(UserNotFoundException.class);
+            // when & then
+            assertThatThrownBy(
+                () -> userService.getUserDailyHistory(nickname, criteria, from, to))
+                .isInstanceOf(UserNotFoundException.class);
 
-                then(userRankingHistoryRepository).should(never())
-                    .getUserDailyHistory(any(), any(), any(), any());
-            }
+            then(userRankingHistoryRepository).should(never())
+                .getUserDailyHistory(any(), any(), any(), any());
+        }
 
-            @Test
-            @DisplayName("해당 기간에 히스토리가 없는 경우")
-            void getUserDailyHistory_NoHistory() {
-                // given
-                setupSolvedCountComcode();
-                String nickname = "testUser";
-                Long userId = 1L;
-                String criteria = "SOLVED_COUNT";
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 31);
+        @Test
+        @DisplayName("해당 기간에 히스토리가 없는 경우")
+        void getUserDailyHistory_NoHistory() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            String criteria = "SOLVED_COUNT";
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 31);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
-                List<DailyHistoryResponseDto> emptyResults = List.of();
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
+            List<DailyHistoryResponseDto> emptyResults = List.of();
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                    .willReturn(emptyResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
+                .willReturn(emptyResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                    criteria, from, to);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
+                criteria, from, to);
 
-                // then
-                assertThat(result).isEmpty();
-                then(userRankingHistoryRepository).should()
-                    .getUserDailyHistory(userId, criteria, from, to);
-            }
+            // then
+            assertThat(result).isEmpty();
+            then(userRankingHistoryRepository).should()
+                .getUserDailyHistory(userId, criteria, from, to);
+        }
 
-            @Test
-            @DisplayName("다양한 criteria 타입으로 조회")
-            void getUserDailyHistory_DifferentCriteria() {
-                // given
-                setupRankingComcode();
-                String nickname = "testUser";
-                Long userId = 1L;
-                String criteria = "RANKING";
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 2);
+        @Test
+        @DisplayName("다양한 criteria 타입으로 조회")
+        void getUserDailyHistory_DifferentCriteria() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            String criteria = "RATING";
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 2);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 100),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 95)
-                );
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 100),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 95)
+            );
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                    .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
+                .willReturn(queryResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                    criteria, from, to);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
+                criteria, from, to);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 100),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 95)
-                );
-                assertThat(result).isEqualTo(expected);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 100),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 95)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                then(userRankingHistoryRepository).should()
-                    .getUserDailyHistory(userId, criteria, from, to);
-            }
+            then(userRankingHistoryRepository).should()
+                .getUserDailyHistory(userId, criteria, from, to);
+        }
 
-            @Test
-            @DisplayName("null 파라미터로 조회하는 경우")
-            void getUserDailyHistory_WithNullParameters() {
-                // given
-                setupRatingComcode();
-                String nickname = "testUser";
-                Long userId = 1L;
-                String criteria = "RATING";
-                LocalDate from = null;
-                LocalDate to = null;
+        @Test
+        @DisplayName("null 파라미터로 조회하는 경우")
+        void getUserDailyHistory_WithNullParameters() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            String criteria = "RATING";
+            LocalDate from = null;
+            LocalDate to = null;
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1050)
-                );
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1050)
+            );
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                    .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
+                .willReturn(queryResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                    criteria, from, to);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
+                criteria, from, to);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1050)
-                );
-                assertThat(result).isEqualTo(expected);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1050)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                then(userRankingHistoryRepository).should()
-                    .getUserDailyHistory(userId, criteria, null, null);
-            }
+            then(userRankingHistoryRepository).should()
+                .getUserDailyHistory(userId, criteria, null, null);
+        }
 
-            @Test
-            @DisplayName("하루만 조회하는 경우")
-            void getUserDailyHistory_SingleDay() {
-                // given
-                setupRatingComcode();
-                String nickname = "testUser";
-                Long userId = 1L;
-                String criteria = "RATING";
-                LocalDate singleDate = LocalDate.of(2024, 1, 15);
+        @Test
+        @DisplayName("하루만 조회하는 경우")
+        void getUserDailyHistory_SingleDay() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            String criteria = "RATING";
+            LocalDate singleDate = LocalDate.of(2024, 1, 15);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 1400)
-                );
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 1400)
+            );
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, singleDate,
-                    singleDate))
-                    .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, singleDate,
+                singleDate))
+                .willReturn(queryResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                    criteria, singleDate, singleDate);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
+                criteria, singleDate, singleDate);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 1400)
-                );
-                assertThat(result).isEqualTo(expected);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 1400)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                then(userRankingHistoryRepository).should()
-                    .getUserDailyHistory(userId, criteria, singleDate, singleDate);
-            }
+            then(userRankingHistoryRepository).should()
+                .getUserDailyHistory(userId, criteria, singleDate, singleDate);
+        }
 
-            @Test
-            @DisplayName("연속되지 않은 날짜의 히스토리 데이터 조회")
-            void getUserDailyHistory_NonConsecutiveDates() {
-                // given
-                setupSolvedCountComcode();
-                String nickname = "testUser";
-                Long userId = 1L;
-                String criteria = "SOLVED_COUNT";
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = LocalDate.of(2024, 1, 10);
+        @Test
+        @DisplayName("연속되지 않은 날짜의 히스토리 데이터 조회")
+        void getUserDailyHistory_NonConsecutiveDates() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            String criteria = "SOLVED_COUNT";
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = LocalDate.of(2024, 1, 10);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                // 1일, 5일, 9일에만 히스토리가 있음
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 10),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 15),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 20)
-                );
+            // 1일, 5일, 9일에만 히스토리가 있음
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 10),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 15),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 20)
+            );
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                    .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
+                .willReturn(queryResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                    criteria, from, to);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
+                criteria, from, to);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 10),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 15),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 20)
-                );
-                assertThat(result).isEqualTo(expected);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 10),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 15),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 20)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                then(userRankingHistoryRepository).should()
-                    .getUserDailyHistory(userId, criteria, from, to);
-            }
+            then(userRankingHistoryRepository).should()
+                .getUserDailyHistory(userId, criteria, from, to);
+        }
 
-            @Test
-            @DisplayName("from만 null인 경우")
-            void getUserDailyHistory_WithFromNull() {
-                // given
-                setupRankingComcode();
-                String nickname = "testUser";
-                Long userId = 1L;
-                String criteria = "RANKING";
-                LocalDate from = null;
-                LocalDate to = LocalDate.of(2024, 1, 31);
+        @Test
+        @DisplayName("from만 null인 경우")
+        void getUserDailyHistory_WithFromNull() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            String criteria = "RATING";
+            LocalDate from = null;
+            LocalDate to = LocalDate.of(2024, 1, 31);
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 50),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 45)
-                );
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 50),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 45)
+            );
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                    .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
+                .willReturn(queryResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                    criteria, from, to);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
+                criteria, from, to);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 50),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 45)
-                );
-                assertThat(result).isEqualTo(expected);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 50),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 45)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                then(userRankingHistoryRepository).should()
-                    .getUserDailyHistory(userId, criteria, null, to);
-            }
+            then(userRankingHistoryRepository).should()
+                .getUserDailyHistory(userId, criteria, null, to);
+        }
 
-            @Test
-            @DisplayName("to만 null인 경우")
-            void getUserDailyHistory_WithToNull() {
-                // given
-                setupRatingComcode();
-                String nickname = "testUser";
-                Long userId = 1L;
-                String criteria = "RATING";
-                LocalDate from = LocalDate.of(2024, 1, 1);
-                LocalDate to = null;
+        @Test
+        @DisplayName("to만 null인 경우")
+        void getUserDailyHistory_WithToNull() {
+            // given
+            String nickname = "testUser";
+            Long userId = 1L;
+            String criteria = "RATING";
+            LocalDate from = LocalDate.of(2024, 1, 1);
+            LocalDate to = null;
 
-                UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                    nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
+                nickname);
 
-                List<DailyHistoryResponseDto> queryResults = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 1100)
-                );
+            List<DailyHistoryResponseDto> queryResults = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 1100)
+            );
 
-                given(userAccountRepository.findByNickname(nickname))
-                    .willReturn(Optional.of(userAccount));
-                given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                    .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
+                .willReturn(queryResults);
 
-                // when
-                List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                    criteria, from, to);
+            // when
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
+                criteria, from, to);
 
-                // then
-                List<DailyHistoryResponseDto> expected = List.of(
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
-                    UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 1100)
-                );
-                assertThat(result).isEqualTo(expected);
+            // then
+            List<DailyHistoryResponseDto> expected = List.of(
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
+                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 1100)
+            );
+            assertThat(result).isEqualTo(expected);
 
-                then(userRankingHistoryRepository).should()
-                    .getUserDailyHistory(userId, criteria, from, null);
-            }
+            then(userRankingHistoryRepository).should()
+                .getUserDailyHistory(userId, criteria, from, null);
         }
     }
 }

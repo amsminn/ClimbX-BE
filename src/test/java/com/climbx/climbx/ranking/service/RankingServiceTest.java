@@ -7,8 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-import com.climbx.climbx.comcode.service.ComcodeService;
-import com.climbx.climbx.comcode.exception.ComcodeNotFound;
 import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.exception.InvalidCriteriaException;
@@ -34,9 +32,6 @@ class RankingServiceTest {
 
     @Mock
     private RankingRepository rankingRepository;
-
-    @Mock
-    private ComcodeService comcodeService;
 
     @InjectMocks
     private RankingService rankingService;
@@ -81,8 +76,6 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 2);
 
-            given(comcodeService.getCodeValue("desc")).willReturn("DESC");
-            given(comcodeService.getCodeValue("USER")).willReturn("USER");
             given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
                 .willReturn(mockPage);
 
@@ -102,8 +95,6 @@ class RankingServiceTest {
             assertThat(result.rankingList().get(1).nickname()).isEqualTo("bob");
             assertThat(result.rankingList().get(1).rating()).isEqualTo(1200);
 
-            then(comcodeService).should().getCodeValue("desc");
-            then(comcodeService).should().getCodeValue("USER");
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
         }
 
@@ -131,8 +122,6 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 1);
 
-            given(comcodeService.getCodeValue("asc")).willReturn("ASC");
-            given(comcodeService.getCodeValue("USER")).willReturn("USER");
             given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
                 .willReturn(mockPage);
 
@@ -145,8 +134,6 @@ class RankingServiceTest {
             assertThat(result.rankingList()).hasSize(1);
             assertThat(result.rankingList().get(0).currentStreak()).isEqualTo(10);
 
-            then(comcodeService).should().getCodeValue("asc");
-            then(comcodeService).should().getCodeValue("USER");
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
         }
 
@@ -174,8 +161,6 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 1);
 
-            given(comcodeService.getCodeValue("desc")).willReturn("DESC");
-            given(comcodeService.getCodeValue("USER")).willReturn("USER");
             given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
                 .willReturn(mockPage);
 
@@ -188,8 +173,6 @@ class RankingServiceTest {
             assertThat(result.rankingList()).hasSize(1);
             assertThat(result.rankingList().get(0).solvedCount()).isEqualTo(50);
 
-            then(comcodeService).should().getCodeValue("desc");
-            then(comcodeService).should().getCodeValue("USER");
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
         }
 
@@ -217,8 +200,6 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 1);
 
-            given(comcodeService.getCodeValue("desc")).willReturn("DESC");
-            given(comcodeService.getCodeValue("USER")).willReturn("USER");
             given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
                 .willReturn(mockPage);
 
@@ -231,8 +212,6 @@ class RankingServiceTest {
             assertThat(result.rankingList()).hasSize(1);
             assertThat(result.rankingList().get(0).longestStreak()).isEqualTo(20);
 
-            then(comcodeService).should().getCodeValue("desc");
-            then(comcodeService).should().getCodeValue("USER");
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
         }
 
@@ -260,8 +239,6 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 10);
 
-            given(comcodeService.getCodeValue("desc")).willReturn("DESC");
-            given(comcodeService.getCodeValue("USER")).willReturn("USER");
             given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
                 .willReturn(mockPage);
 
@@ -275,8 +252,6 @@ class RankingServiceTest {
             assertThat(result.perPage()).isEqualTo(5);
             assertThat(result.totalPage()).isEqualTo(2);
 
-            then(comcodeService).should().getCodeValue("desc");
-            then(comcodeService).should().getCodeValue("USER");
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
         }
 
@@ -304,9 +279,6 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 1);
 
-            given(comcodeService.getCodeValue("invalid_order")).willThrow(
-                new ComcodeNotFound("invalid_order"));
-            given(comcodeService.getCodeValue("USER")).willReturn("USER");
             given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
                 .willReturn(mockPage);
 
@@ -319,8 +291,6 @@ class RankingServiceTest {
             assertThat(result.totalCount()).isEqualTo(1);
             assertThat(result.rankingList()).hasSize(1);
 
-            then(comcodeService).should().getCodeValue("invalid_order");
-            then(comcodeService).should().getCodeValue("USER");
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
         }
 
@@ -351,8 +321,6 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 0);
 
-            given(comcodeService.getCodeValue("desc")).willReturn("DESC");
-            given(comcodeService.getCodeValue("USER")).willReturn("USER");
             given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
                 .willReturn(mockPage);
 
@@ -367,8 +335,6 @@ class RankingServiceTest {
             assertThat(result.totalPage()).isEqualTo(0);
             assertThat(result.rankingList()).isEmpty();
 
-            then(comcodeService).should().getCodeValue("desc");
-            then(comcodeService).should().getCodeValue("USER");
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
         }
     }

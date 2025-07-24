@@ -1,4 +1,4 @@
-package com.climbx.climbx.auth;
+package com.climbx.climbx.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,6 +10,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 
+import com.climbx.climbx.auth.AuthService;
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
 import com.climbx.climbx.auth.dto.TokenGenerationResponseDto;
@@ -18,9 +19,6 @@ import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
-import com.climbx.climbx.auth.service.NonceService;
-import com.climbx.climbx.auth.service.RefreshTokenBlacklistService;
-import com.climbx.climbx.comcode.service.ComcodeService;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.util.JwtContext;
@@ -40,8 +38,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayName("AuthService 테스트")
 class AuthServiceTest {
 
-    @Mock
-    private ComcodeService comcodeService;
 
     @Mock
     private JwtContext jwtContext;
@@ -129,7 +125,6 @@ class AuthServiceTest {
         @DisplayName("존재하지 않는 사용자인 경우 새 사용자를 생성한다")
         void shouldCreateNewUserWhenUserNotFound() {
             // given
-            given(comcodeService.getCodeValue("USER")).willReturn("USER");
             given(userAuthRepository.findByProviderAndProviderId(
                 OAuth2ProviderType.KAKAO, "67890")
             ).willReturn(Optional.empty());
@@ -187,7 +182,6 @@ class AuthServiceTest {
             // given
             doNothing().when(refreshTokenBlacklistService)
                 .validateTokenNotBlacklisted("valid-refresh-token");
-            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
             JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(3L)
                 .role("USER")
@@ -232,7 +226,6 @@ class AuthServiceTest {
             // given
             doNothing().when(refreshTokenBlacklistService)
                 .validateTokenNotBlacklisted("access-token");
-            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
 
             JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(1L)
@@ -257,7 +250,6 @@ class AuthServiceTest {
             // given
             doNothing().when(refreshTokenBlacklistService)
                 .validateTokenNotBlacklisted("valid-refresh-token");
-            given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
 
             JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(999L)
