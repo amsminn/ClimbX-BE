@@ -186,11 +186,15 @@ public class AuthService {
     ) {
 
         // 임시 닉네임 생성 (중복 방지)
-        String temporaryNickname = generateTemporaryNickname(tokenInfo.nickname());
+        String providerNickname = tokenInfo.nickname();
+        String nickname = userAccountRepository
+            .findByNickname(providerNickname)
+            .map(user -> generateTemporaryNickname(providerNickname))
+            .orElse(providerNickname);
 
         // 사용자 계정 생성
         UserAccountEntity userAccount = UserAccountEntity.builder()
-            .nickname(temporaryNickname)
+            .nickname(nickname)
             .role(comcodeService.getCodeValue("USER"))
             .profileImageUrl(tokenInfo.profileImageUrl())
             .build();
@@ -216,7 +220,7 @@ public class AuthService {
         userStatRepository.save(userStat);
 
         log.info("새로운 사용자 생성 완료: userId={}, nickname={}, providerId={}",
-            savedUser.userId(), temporaryNickname, tokenInfo.providerId());
+            savedUser.userId(), nickname, tokenInfo.providerId());
 
         return savedUser;
     }
@@ -225,6 +229,6 @@ public class AuthService {
      * 임시 닉네임을 생성합니다.
      */
     private String generateTemporaryNickname(String providerNickname) {
-        return "USER_" + UUID.randomUUID().toString().substring(0, 8);
+        return providerNickname + "_" + UUID.randomUUID().toString().substring(0, 8);
     }
 }
