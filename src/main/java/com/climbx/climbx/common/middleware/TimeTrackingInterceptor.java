@@ -14,8 +14,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class TimeTrackingInterceptor implements HandlerInterceptor {
 
-    private final TimeContext timeContext;
-
     @Override
     public boolean preHandle(
         @NonNull
@@ -30,8 +28,8 @@ public class TimeTrackingInterceptor implements HandlerInterceptor {
         long startTime = System.currentTimeMillis();
         String path = request.getRequestURI();
 
-        timeContext.setStartTime(startTime);
-        timeContext.setPath(path);
+        TimeContext.setStartTime(startTime);
+        TimeContext.setPath(path);
 
         log.debug("Request started: {} {}", request.getMethod(), path);
         return true;
@@ -49,13 +47,13 @@ public class TimeTrackingInterceptor implements HandlerInterceptor {
 
         Exception ex
     ) {
-        Long responseTime = timeContext.getResponseTime();
-        String path = timeContext.getPath();
+        Long responseTime = TimeContext.getResponseTime();
+        String path = TimeContext.getPath();
 
         if (responseTime != null) {
             log.debug("Request completed: {} {} - {}ms", request.getMethod(), path, responseTime);
         }
 
-        timeContext.clear();
+        TimeContext.clear();
     }
 } 
