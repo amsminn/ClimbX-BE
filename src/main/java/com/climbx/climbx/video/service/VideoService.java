@@ -1,6 +1,6 @@
 package com.climbx.climbx.video.service;
 
-import com.climbx.climbx.common.comcode.ComcodeService;
+import com.climbx.climbx.comcode.service.ComcodeService;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;

@@ -5,6 +5,7 @@ import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
+import com.climbx.climbx.user.service.UserService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

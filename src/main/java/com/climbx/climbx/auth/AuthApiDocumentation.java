@@ -3,6 +3,7 @@ package com.climbx.climbx.auth;
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
 import com.climbx.climbx.auth.dto.UserAuthResponseDto;
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,7 +29,7 @@ public interface AuthApiDocumentation {
             responseCode = "201",
             description = "인증 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "인증 성공",
                     value = """
@@ -51,7 +52,7 @@ public interface AuthApiDocumentation {
             responseCode = "400",
             description = "잘못된 ID Token",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 ID Token",
                     value = """
@@ -71,7 +72,7 @@ public interface AuthApiDocumentation {
             responseCode = "401",
             description = "인증 실패",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "인증 실패",
                     value = """
@@ -124,7 +125,7 @@ public interface AuthApiDocumentation {
             responseCode = "201",
             description = "토큰 갱신 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "토큰 갱신 성공",
                     value = """
@@ -147,7 +148,7 @@ public interface AuthApiDocumentation {
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -167,7 +168,7 @@ public interface AuthApiDocumentation {
             responseCode = "401",
             description = "유효하지 않은 리프레시 토큰",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "유효하지 않은 토큰",
                     value = """
@@ -205,7 +206,7 @@ public interface AuthApiDocumentation {
             responseCode = "200",
             description = "사용자 정보 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 정보",
                     value = """
@@ -232,7 +233,7 @@ public interface AuthApiDocumentation {
             responseCode = "401",
             description = "인증되지 않은 사용자",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "인증되지 않은 사용자",
                     value = """
@@ -252,7 +253,7 @@ public interface AuthApiDocumentation {
             responseCode = "403",
             description = "권한이 없는 사용자",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "권한 없음",
                     value = """
@@ -272,7 +273,7 @@ public interface AuthApiDocumentation {
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 없음",
                     value = """
@@ -304,7 +305,7 @@ public interface AuthApiDocumentation {
             responseCode = "204",
             description = "로그아웃 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "로그아웃 성공",
                     value = """
@@ -324,7 +325,7 @@ public interface AuthApiDocumentation {
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """

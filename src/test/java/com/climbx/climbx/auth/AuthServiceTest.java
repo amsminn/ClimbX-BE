@@ -20,10 +20,10 @@ import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.auth.service.NonceService;
 import com.climbx.climbx.auth.service.RefreshTokenBlacklistService;
-import com.climbx.climbx.common.comcode.ComcodeService;
-import com.climbx.climbx.common.security.JwtContext;
-import com.climbx.climbx.common.security.dto.JwtTokenInfo;
-import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.comcode.service.ComcodeService;
+import com.climbx.climbx.common.dto.JwtTokenInfoDto;
+import com.climbx.climbx.common.exception.InvalidTokenException;
+import com.climbx.climbx.common.util.JwtContext;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
@@ -188,7 +188,7 @@ class AuthServiceTest {
             doNothing().when(refreshTokenBlacklistService)
                 .validateTokenNotBlacklisted("valid-refresh-token");
             given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
-            JwtTokenInfo tokenInfo = JwtTokenInfo.builder()
+            JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(3L)
                 .role("USER")
                 .tokenType("REFRESH")
@@ -234,7 +234,7 @@ class AuthServiceTest {
                 .validateTokenNotBlacklisted("access-token");
             given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
 
-            JwtTokenInfo tokenInfo = JwtTokenInfo.builder()
+            JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(1L)
                 .role("USER")
                 .tokenType("ACCESS") // REFRESH가 아닌 ACCESS 타입
@@ -259,7 +259,7 @@ class AuthServiceTest {
                 .validateTokenNotBlacklisted("valid-refresh-token");
             given(comcodeService.getCodeValue("REFRESH")).willReturn("REFRESH");
 
-            JwtTokenInfo tokenInfo = JwtTokenInfo.builder()
+            JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(999L)
                 .role(null)
                 .tokenType("REFRESH")

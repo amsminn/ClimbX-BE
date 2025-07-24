@@ -8,7 +8,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
-import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import org.junit.jupiter.api.DisplayName;

@@ -2,6 +2,7 @@ package com.climbx.climbx.gym;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.gym.dto.GymInfoResponseDto;
+import com.climbx.climbx.gym.service.GymService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

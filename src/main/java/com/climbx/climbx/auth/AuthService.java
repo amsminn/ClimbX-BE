@@ -13,10 +13,10 @@ import com.climbx.climbx.auth.provider.exception.ProviderNotSupportedException;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.auth.service.NonceService;
 import com.climbx.climbx.auth.service.RefreshTokenBlacklistService;
-import com.climbx.climbx.common.comcode.ComcodeService;
-import com.climbx.climbx.common.security.JwtContext;
-import com.climbx.climbx.common.security.dto.JwtTokenInfo;
-import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.comcode.service.ComcodeService;
+import com.climbx.climbx.common.dto.JwtTokenInfoDto;
+import com.climbx.climbx.common.exception.InvalidTokenException;
+import com.climbx.climbx.common.util.JwtContext;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
@@ -97,7 +97,7 @@ public class AuthService {
             refreshTokenBlacklistService.validateTokenNotBlacklisted(refreshToken);
 
             // 2. 토큰에서 모든 정보를 한 번에 파싱 및 검증
-            JwtTokenInfo tokenInfo = jwtContext.parseToken(refreshToken);
+            JwtTokenInfoDto tokenInfo = jwtContext.parseToken(refreshToken);
 
             // 3. REFRESH 토큰인지 확인
             String refreshTokenType = comcodeService.getCodeValue("REFRESH");
