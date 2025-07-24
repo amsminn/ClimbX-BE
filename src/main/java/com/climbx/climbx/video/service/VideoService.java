@@ -60,7 +60,9 @@ public class VideoService {
             .orElseThrow(() -> new UserNotFoundException(nickname));
 
         return videoRepository.findByUserIdAndStatusAndDeletedAtIsNullOrderByCreatedAtDesc(
-                user.userId(), "COMPLETED")
+                user.userId(),
+                comcodeService.getCodeValue("COMPLETED")
+            )
             .stream()
             .map(VideoListResponseDto::from)
             .toList();
