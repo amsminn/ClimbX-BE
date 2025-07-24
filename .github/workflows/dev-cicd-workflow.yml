@@ -113,7 +113,10 @@ jobs:
               -e DB_USER='${{ secrets.DEV_DB_USER }}' \
               -e DB_PASSWORD='${{ secrets.DEV_DB_PASSWORD }}' \
               -e KAKAO_NATIVE_APP_KEY='${{ secrets.KAKAO_NATIVE_APP_KEY }}' \
-              -e KAKAO_CLIENT_SECRET='${{ secrets.KAKAO_CLIENT_SECRET }}' \
+              -e GOOGLE_ANDROID_APP_KEY='${{ secrets.GOOGLE_ANDROID_APP_KEY }}' \
+              -e GOOGLE_IOS_APP_KEY='${{ secrets.GOOGLE_IOS_APP_KEY }}' \
+              -e APPLE_ANDROID_APP_KEY='${{ secrets.APPLE_ANDROID_APP_KEY }}' \
+              -e APPLE_IOS_APP_KEY='${{ secrets.APPLE_IOS_APP_KEY }}' \
               -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
               -e AWS_S3_BUCKET_NAME='${{ secrets.AWS_S3_BUCKET_NAME }}' \
               -e AWS_S3_PRESIGNED_URL_EXPIRATION='${{ secrets.AWS_S3_PRESIGNED_URL_EXPIRATION }}' \
@@ -123,7 +126,7 @@ jobs:
               ${{ secrets.DEV_BE_CORE_ECR_REPOSITORY_URI }}:latest
             
             echo "New container started successfully."
-
+            
             # 5. 사용되지 않는 오래된 Docker 이미지 정리 (디스크 공간 확보)
             docker image prune -af
             

@@ -20,8 +20,8 @@ spring:
       apple:
         jwks-uri: https://appleid.apple.com/auth/keys
         issuer: https://appleid.apple.com
-        android-audience: ${APPLE_ANDROID_CLIENT_ID:temporary-apple-android-client-id} # default 값은 작동하지 않음
-        ios-audience: ${APPLE_IOS_CLIENT_ID:temporary-apple-ios-client-id} # default 값은 작동하지 않음
+        android-audience: ${APPLE_ANDROID_APP_KEY:temporary-apple-android-client-id} # default 값은 작동하지 않음
+        ios-audience: ${APPLE_IOS_APP_KEY:temporary-apple-ios-client-id} # default 값은 작동하지 않음
 
 # JWT 설정
 auth:
