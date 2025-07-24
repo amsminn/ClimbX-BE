@@ -13,14 +13,14 @@ spring:
         jwks-uri: https://www.googleapis.com/oauth2/v3/certs
         default-issuer: accounts.google.com
         http-issuer: https://accounts.google.com
-        android-audience: ${GOOGLE_ANDROID_APP_KEY}
-        ios-audience: ${GOOGLE_IOS_APP_KEY}
+        android-audience: ${GOOGLE_ANDROID_APP_KEY:temporary-google-android-app-key} # default 값은 작동하지 않음
+        ios-audience: ${GOOGLE_IOS_APP_KEY:temporary-google-ios-app-key} # default 값은 작동하지 않음
 
       # Naver OAuth2 설정
       naver:
         jwks-uri: https://nid.naver.com/oauth2/jwks
         issuer: https://nid.naver.com
-        audience: ${NAVER_CLIENT_ID}
+        audience: ${NAVER_CLIENT_ID:temporary-naver-client-id} // default 값은 작동하지 않음
 
 # JWT 설정
 auth:
