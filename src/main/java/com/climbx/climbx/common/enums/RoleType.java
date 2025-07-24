@@ -9,9 +9,6 @@ public enum RoleType {
     ADMIN;
 
     public static String from(String value) {
-        if (value == null || value.isEmpty()) {
-            return null;
-        }
         return OptionalUtil.tryOf(
             () -> RoleType.valueOf(value.toUpperCase()).name()
         ).orElseThrow(
