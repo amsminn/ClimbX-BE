@@ -1,4 +1,4 @@
-package com.climbx.climbx.auth;
+package com.climbx.climbx.auth.service;
 
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
@@ -11,7 +11,6 @@ import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.provider.exception.ProviderNotSupportedException;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
-import com.climbx.climbx.auth.service.RefreshTokenBlacklistService;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.TokenType;
@@ -193,7 +192,7 @@ public class AuthService {
         // 사용자 계정 생성
         UserAccountEntity userAccount = UserAccountEntity.builder()
             .nickname(nickname)
-            .role(RoleType.USER.name())
+            .role(RoleType.USER)
             .profileImageUrl(tokenInfo.profileImageUrl())
             .build();
 

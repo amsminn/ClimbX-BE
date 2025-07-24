@@ -10,9 +10,9 @@ public enum StatusType {
     REJECTED,
     COMPLETED;
 
-    public static String from(String value) {
+    public static StatusType from(String value) {
         return OptionalUtil.tryOf(
-            () -> StatusType.valueOf(value.toUpperCase()).name()
+            () -> StatusType.valueOf(value.toUpperCase())
         ).orElseThrow(
             () -> new InvalidEnumValueException("StatusType", value)
         );

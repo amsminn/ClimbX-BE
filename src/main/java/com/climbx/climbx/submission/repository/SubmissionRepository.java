@@ -1,5 +1,6 @@
 package com.climbx.climbx.submission.repository;
 
+import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -26,7 +27,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
         """)
     List<ProblemEntity> getUserSubmissionProblems(
         @Param("userId") Long userId,
-        @Param("status") String status,
+        @Param("status") StatusType status,
         Pageable pageable
     );
 
@@ -49,7 +50,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
         """)
     List<DailyHistoryResponseDto> getUserDateSolvedCount(
         @Param("userId") Long userId,
-        @Param("status") String status,
+        @Param("status") StatusType status,
         @Param("from") LocalDate from,
         @Param("to") LocalDate to
     );

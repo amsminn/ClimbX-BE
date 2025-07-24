@@ -65,9 +65,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Spring Security 인증 정보를 설정합니다.
      */
-    private void setAuthentication(Long userId, String role) {
+    private void setAuthentication(Long userId, RoleType role) {
         List<GrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority(role)
+            new SimpleGrantedAuthority(role.name())
         );
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

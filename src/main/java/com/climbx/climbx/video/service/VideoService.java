@@ -42,7 +42,7 @@ public class VideoService {
             .userId(userId)
             .userAccountEntity(user)
             .fileSize(videoUploadRequestDto.fileSize())
-            .status(StatusType.PENDING.name())
+            .status(StatusType.PENDING)
             .build();
 
         videoRepository.save(videoEntity);

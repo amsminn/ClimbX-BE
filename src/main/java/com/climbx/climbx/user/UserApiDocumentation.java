@@ -5,6 +5,7 @@ import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
+import com.climbx.climbx.user.enums.CriteriaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -651,7 +652,7 @@ public interface UserApiDocumentation {
             schema = @Schema(implementation = String.class)
         )
         @NotNull
-        String criteria,
+        CriteriaType criteria,
         @Parameter(
             name = "from",
             description = "조회 시작 날짜 (YYYY-MM-DD)",

@@ -18,7 +18,7 @@ public record VideoListResponseDto(
         return VideoListResponseDto.builder()
             .thumbnailCdnUrl(videoEntity.thumbnailCdnUrl())
             .hlsCdnUrl(videoEntity.hlsCdnUrl())
-            .status(videoEntity.status())
+            .status(videoEntity.status().name())
             .durationSeconds(videoEntity.durationSeconds())
             .createdAt(videoEntity.getCreatedAt())
             .build();

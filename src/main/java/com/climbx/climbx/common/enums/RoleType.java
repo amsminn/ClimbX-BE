@@ -8,9 +8,9 @@ public enum RoleType {
     USER,
     ADMIN;
 
-    public static String from(String value) {
+    public static RoleType from(String value) {
         return OptionalUtil.tryOf(
-            () -> RoleType.valueOf(value.toUpperCase()).name()
+            () -> RoleType.valueOf(value.toUpperCase())
         ).orElseThrow(
             () -> new InvalidEnumValueException("RoleType", value)
         );

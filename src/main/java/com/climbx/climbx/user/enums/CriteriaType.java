@@ -10,9 +10,9 @@ public enum CriteriaType {
     LONGGEST_STREAK,
     SOLVED_COUNT;
 
-    public static String from(String value) {
+    public static CriteriaType from(String value) {
         return OptionalUtil.tryOf(
-            () -> CriteriaType.valueOf(value.toUpperCase()).name()
+            () -> CriteriaType.valueOf(value.toUpperCase())
         ).orElseThrow(
             () -> new InvalidEnumValueException("CriteriaType", value)
         );

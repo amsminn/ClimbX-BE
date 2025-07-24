@@ -8,9 +8,9 @@ public enum SortOrderType {
     ASC,
     DESC;
 
-    public static String from(String value) {
+    public static SortOrderType from(String value) {
         return OptionalUtil.tryOf(
-            () -> SortOrderType.valueOf(value.toUpperCase()).name()
+            () -> SortOrderType.valueOf(value.toUpperCase())
         ).orElseThrow(
             () -> new InvalidEnumValueException("SortOrderType", value)
         );

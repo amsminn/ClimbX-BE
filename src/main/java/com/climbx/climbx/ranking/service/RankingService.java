@@ -33,7 +33,7 @@ public class RankingService {
     ) {
         String validatedCriteria = RankingCriteria.fromCode(criteria);
         Direction direction = OptionalUtil.tryOf(
-            () -> Direction.valueOf(SortOrderType.from(order))
+            () -> Direction.valueOf(SortOrderType.from(order).name())
         ).orElse(Direction.DESC);
 
         Sort sort = Sort.by(direction, validatedCriteria);

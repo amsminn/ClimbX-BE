@@ -110,7 +110,7 @@ public class JwtContext {
     /**
      * Access Token 생성
      */
-    public AccessTokenResponseDto generateAccessToken(Long userId, String role) {
+    public AccessTokenResponseDto generateAccessToken(Long userId, RoleType role) {
         Instant now = Instant.now();
         Instant expiresAt = now.plusSeconds(accessTokenExpiration);
 
@@ -120,7 +120,7 @@ public class JwtContext {
             .subject(String.valueOf(userId))
             .issuedAt(now)
             .expiresAt(expiresAt)
-            .claim("role", RoleType.from(role))
+            .claim("role", role.name())
             .claim("type", TokenType.ACCESS.name())
             .build();
 

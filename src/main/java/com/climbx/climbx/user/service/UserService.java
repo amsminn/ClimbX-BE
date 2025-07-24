@@ -42,13 +42,13 @@ public class UserService {
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
 
-        RoleType userRole = RoleType.USER;
-
         if (search == null || search.trim().isEmpty()) {
-            userAccounts = userAccountRepository.findByRole(userRole.name());
+            userAccounts = userAccountRepository.findByRole(RoleType.USER);
         } else {
-            userAccounts = userAccountRepository.findByRoleAndNicknameContaining(userRole.name(),
-                search.trim());
+            userAccounts = userAccountRepository.findByRoleAndNicknameContaining(
+                RoleType.USER,
+                search.trim()
+            );
         }
 
         return userAccounts.stream()
@@ -99,7 +99,7 @@ public class UserService {
 
         List<ProblemEntity> problemEntities = submissionRepository.getUserSubmissionProblems(
             userAccount.userId(),
-            StatusType.ACCEPTED.name(),
+            StatusType.ACCEPTED,
             pageable
         );
 
@@ -117,7 +117,7 @@ public class UserService {
 
         return submissionRepository.getUserDateSolvedCount(
             userAccount.userId(),
-            StatusType.ACCEPTED.name(),
+            StatusType.ACCEPTED,
             from,
             to
         );
@@ -125,7 +125,7 @@ public class UserService {
 
     public List<DailyHistoryResponseDto> getUserDailyHistory(
         String nickname,
-        String criteria,
+        CriteriaType criteria,
         LocalDate from,
         LocalDate to
     ) {
@@ -133,7 +133,7 @@ public class UserService {
 
         return userRankingHistoryRepository.getUserDailyHistory(
             userAccount.userId(),
-            CriteriaType.from(criteria),
+            criteria,
             from,
             to
         );

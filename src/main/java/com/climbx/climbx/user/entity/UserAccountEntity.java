@@ -2,6 +2,7 @@ package com.climbx.climbx.user.entity;
 
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.video.entity.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,8 +40,7 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @Column(name = "role", length = 32, nullable = false)
     @NotNull
-    @Size(max = 32)
-    private String role; // USER, ADMIN 등 권한
+    private RoleType role; // USER, ADMIN 등 권한
 
     @Column(name = "nickname", length = 64, unique = true, nullable = false)
     @NotBlank
