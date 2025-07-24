@@ -135,27 +135,7 @@ public interface VideoApiDocumentation {
                         """
                 )
             )
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "인증되지 않은 사용자",
-            content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
-                examples = @ExampleObject(
-                    name = "인증 실패",
-                    value = """
-                        {
-                          "httpStatus": 401,
-                          "statusMessage": "인증이 필요합니다.",
-                          "timeStamp": "2024-01-01T10:00:00Z",
-                          "responseTimeMs": 45,
-                          "path": "/api/videos",
-                          "data": null
-                        }
-                        """
-                )
-            )
         )
     })
-    List<VideoListResponseDto> getVideoList(Long userId);
+    List<VideoListResponseDto> getVideoList(String nickname);
 } 

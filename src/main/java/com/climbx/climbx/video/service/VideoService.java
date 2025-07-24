@@ -55,9 +55,13 @@ public class VideoService {
     }
 
     @Transactional(readOnly = true)
-    public List<VideoListResponseDto> getVideoList(Long userId) {
-        return videoRepository.findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(userId)
-            .stream().map(VideoListResponseDto::from)
+    public List<VideoListResponseDto> getVideoList(String nickname) {
+        UserAccountEntity user = userAccountRepository.findByNickname(nickname)
+            .orElseThrow(() -> new UserNotFoundException(nickname));
+
+        return videoRepository.findByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(user.userId())
+            .stream()
+            .map(VideoListResponseDto::from)
             .toList();
     }
 }
