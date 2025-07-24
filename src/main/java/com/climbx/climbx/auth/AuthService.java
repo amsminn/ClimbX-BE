@@ -189,8 +189,8 @@ public class AuthService {
         String providerNickname = tokenInfo.nickname();
         String nickname = userAccountRepository
             .findByNickname(providerNickname)
-            .map(UserAccountEntity::nickname)
-            .orElse(generateTemporaryNickname(providerNickname));
+            .map(user -> generateTemporaryNickname(providerNickname))
+            .orElse(providerNickname);
 
         // 사용자 계정 생성
         UserAccountEntity userAccount = UserAccountEntity.builder()
