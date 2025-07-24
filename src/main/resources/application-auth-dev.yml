@@ -8,17 +8,19 @@ spring:
         issuer: https://kauth.kakao.com
         audience: ${KAKAO_NATIVE_APP_KEY}
 
-        #       Google OAuth2 설정
+      # Google OAuth2 설정
       google:
         jwks-uri: https://www.googleapis.com/oauth2/v3/certs
-        issuer: https://accounts.google.com
-        audience: ${GOOGLE_CLIENT_ID}
+        default-issuer: accounts.google.com
+        http-issuer: https://accounts.google.com
+        android-audience: ${GOOGLE_ANDROID_APP_KEY}
+        ios-audience: ${GOOGLE_IOS_APP_KEY}
 
-        # Naver OAuth2 설정
-        naver:
-          jwks-uri: https://nid.naver.com/.well-known/jwks.json
-          issuer: https://nid.naver.com
-          audience: ${NAVER_CLIENT_ID}
+      # Naver OAuth2 설정
+      naver:
+        jwks-uri: https://nid.naver.com/oauth2/jwks
+        issuer: https://nid.naver.com
+        audience: ${NAVER_CLIENT_ID}
 
 # JWT 설정
 auth:

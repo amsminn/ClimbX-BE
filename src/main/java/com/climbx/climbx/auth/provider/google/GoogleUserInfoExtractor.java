@@ -17,11 +17,17 @@ public class GoogleUserInfoExtractor implements UserInfoExtractor {
     @Value("${spring.security.oauth2.google.jwks-uri}")
     private String jwksUri;
 
-    @Value("${spring.security.oauth2.google.issuer}")
-    private String issuer;
+    @Value("${spring.security.oauth2.google.default-issuer}")
+    private String defaultIssuer;
 
-    @Value("${spring.security.oauth2.google.audience}")
-    private String audience;
+    @Value("${spring.security.oauth2.google.http-issuer}")
+    private String httpIssuer;
+
+    @Value("${spring.security.oauth2.google.android-audience}")
+    private String androidAudience;
+
+    @Value("${spring.security.oauth2.google.ios-audience}")
+    private String iosAudience;
 
     @Override
     public OAuth2ProviderType getProviderType() {
@@ -35,12 +41,18 @@ public class GoogleUserInfoExtractor implements UserInfoExtractor {
 
     @Override
     public List<String> getIssuer() {
-        return List.of(issuer);
+        return List.of(
+            defaultIssuer,
+            httpIssuer
+        );
     }
 
     @Override
     public List<String> getAudience() {
-        return List.of(audience);
+        return List.of(
+            androidAudience,
+            iosAudience
+        );
     }
 
     @Override
