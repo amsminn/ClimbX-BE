@@ -1,5 +1,6 @@
 package com.climbx.climbx.gym;
 
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.gym.dto.GymInfoResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +31,7 @@ public interface GymApiDocumentation {
             description = "클라이밍장 정보 조회 성공",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "성공 응답",
                     value = """
@@ -59,7 +60,7 @@ public interface GymApiDocumentation {
             description = "잘못된 클라이밍장 ID",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -80,7 +81,7 @@ public interface GymApiDocumentation {
             description = "클라이밍장을 찾을 수 없음",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "클라이밍장 없음",
                     value = """
@@ -128,7 +129,7 @@ public interface GymApiDocumentation {
             description = "클라이밍장 목록 조회 성공",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "키워드 기반 클라이밍장 목록",
                     value = """
@@ -168,7 +169,7 @@ public interface GymApiDocumentation {
             description = "잘못된 요청",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -214,7 +215,7 @@ public interface GymApiDocumentation {
             description = "거리 기반 클라이밍장 목록 조회 성공",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "거리순 클라이밍장 목록",
                     value = """
@@ -254,7 +255,7 @@ public interface GymApiDocumentation {
             description = "잘못된 위도 또는 경도",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 위치 정보",
                     value = """

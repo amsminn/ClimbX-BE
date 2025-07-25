@@ -4,6 +4,7 @@ import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
 import com.climbx.climbx.auth.dto.TokenGenerationResponseDto;
 import com.climbx.climbx.auth.dto.UserAuthResponseDto;
+import com.climbx.climbx.auth.service.AuthService;
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

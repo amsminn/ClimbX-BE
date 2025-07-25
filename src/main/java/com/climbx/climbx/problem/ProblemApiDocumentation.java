@@ -1,5 +1,6 @@
 package com.climbx.climbx.problem;
 
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.problem.dto.SpotResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,7 +32,7 @@ public interface ProblemApiDocumentation {
             responseCode = "200",
             description = "문제 목록 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "문제 목록",
                     value = """
@@ -102,7 +103,7 @@ public interface ProblemApiDocumentation {
             responseCode = "400",
             description = "잘못된 요청 또는 필수 파라미터 누락",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -122,7 +123,7 @@ public interface ProblemApiDocumentation {
             responseCode = "500",
             description = "서버 내부 오류",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "서버 오류",
                     value = """

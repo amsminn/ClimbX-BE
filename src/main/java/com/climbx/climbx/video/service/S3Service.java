@@ -1,6 +1,6 @@
 package com.climbx.climbx.video.service;
 
-import com.climbx.climbx.common.error.ErrorCode;
+import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.video.exception.AwsBucketNotFoundException;
 import com.climbx.climbx.video.exception.FileExtensionNotExistsException;
 import com.github.benmanes.caffeine.cache.Cache;

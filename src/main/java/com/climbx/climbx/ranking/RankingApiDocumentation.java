@@ -1,5 +1,6 @@
 package com.climbx.climbx.ranking;
 
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,7 +46,7 @@ public interface RankingApiDocumentation {
             description = "랭킹 조회 성공",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "레이팅 기준 랭킹 조회 성공",
                     value = """
@@ -91,7 +92,7 @@ public interface RankingApiDocumentation {
             description = "잘못된 요청 파라미터",
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 랭킹 기준",
                     value = """

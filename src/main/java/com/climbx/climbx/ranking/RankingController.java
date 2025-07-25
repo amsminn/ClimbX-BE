@@ -2,6 +2,7 @@ package com.climbx.climbx.ranking;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
+import com.climbx.climbx.ranking.service.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

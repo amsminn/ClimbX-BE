@@ -4,9 +4,9 @@ import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.provider.exception.InvalidNonceException;
 import com.climbx.climbx.auth.service.NonceService;
-import com.climbx.climbx.common.security.exception.InvalidTokenException;
-import com.climbx.climbx.common.security.exception.TokenExpiredException;
-import com.climbx.climbx.common.util.OptionalUtils;
+import com.climbx.climbx.common.exception.InvalidTokenException;
+import com.climbx.climbx.common.exception.TokenExpiredException;
+import com.climbx.climbx.common.util.OptionalUtil;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -119,7 +119,7 @@ public class ProviderIdTokenService {
      * nonce 클레임을 검증합니다.
      */
     private void validateNonce(Jwt jwt, String expectedNonce, OAuth2ProviderType providerType) {
-        OptionalUtils.tryOf(() -> jwt.getClaimAsString("nonce"))
+        OptionalUtil.tryOf(() -> jwt.getClaimAsString("nonce"))
             .filter(nonce -> !nonce.isBlank() && nonce.equals(expectedNonce))
             .ifPresentOrElse(
                 nonceService::validateAndUseNonce,

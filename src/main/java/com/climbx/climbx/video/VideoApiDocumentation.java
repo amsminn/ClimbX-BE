@@ -1,5 +1,6 @@
 package com.climbx.climbx.video;
 
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.video.dto.VideoListResponseDto;
 import com.climbx.climbx.video.dto.VideoUploadRequestDto;
 import com.climbx.climbx.video.dto.VideoUploadResponseDto;
@@ -31,7 +32,7 @@ public interface VideoApiDocumentation {
             responseCode = "201",
             description = "영상 업로드 URL 생성 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "영상 업로드 URL",
                     value = """
@@ -54,7 +55,7 @@ public interface VideoApiDocumentation {
             responseCode = "401",
             description = "인증되지 않은 사용자",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "인증 실패",
                     value = """
@@ -74,7 +75,7 @@ public interface VideoApiDocumentation {
             responseCode = "500",
             description = "서버 내부 오류",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "서버 오류",
                     value = """
@@ -105,7 +106,7 @@ public interface VideoApiDocumentation {
             responseCode = "200",
             description = "영상 리스트 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "영상 리스트",
                     value = """

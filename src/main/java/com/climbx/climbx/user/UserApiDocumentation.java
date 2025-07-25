@@ -1,9 +1,11 @@
 package com.climbx.climbx.user;
 
+import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
+import com.climbx.climbx.user.enums.CriteriaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,7 +35,7 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "사용자 목록 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 목록",
                     value = """
@@ -70,7 +72,7 @@ public interface UserApiDocumentation {
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -106,7 +108,7 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "사용자 프로필 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 프로필",
                     value = """
@@ -139,7 +141,7 @@ public interface UserApiDocumentation {
             responseCode = "400",
             description = "잘못된 닉네임",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 닉네임",
                     value = """
@@ -159,7 +161,7 @@ public interface UserApiDocumentation {
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 없음",
                     value = """
@@ -197,7 +199,7 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "프로필 수정 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "프로필 수정 성공",
                     value = """
@@ -225,7 +227,7 @@ public interface UserApiDocumentation {
             responseCode = "400",
             description = "잘못된 요청 또는 유효하지 않은 데이터",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -245,7 +247,7 @@ public interface UserApiDocumentation {
             responseCode = "401",
             description = "인증되지 않은 사용자",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "인증되지 않은 사용자",
                     value = """
@@ -265,7 +267,7 @@ public interface UserApiDocumentation {
             responseCode = "403",
             description = "권한 없음 (다른 사용자의 프로필)",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "권한 없음",
                     value = """
@@ -285,7 +287,7 @@ public interface UserApiDocumentation {
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 없음",
                     value = """
@@ -305,7 +307,7 @@ public interface UserApiDocumentation {
             responseCode = "409",
             description = "중복된 닉네임",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "중복된 닉네임",
                     value = """
@@ -349,7 +351,7 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "최고 난이도 문제 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "최고 난이도 문제 목록",
                     value = """
@@ -388,7 +390,7 @@ public interface UserApiDocumentation {
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -408,7 +410,7 @@ public interface UserApiDocumentation {
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 없음",
                     value = """
@@ -454,7 +456,7 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "연속 등반 기록 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "연속 등반 기록",
                     value = """
@@ -489,7 +491,7 @@ public interface UserApiDocumentation {
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -509,7 +511,7 @@ public interface UserApiDocumentation {
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 없음",
                     value = """
@@ -560,7 +562,7 @@ public interface UserApiDocumentation {
             responseCode = "200",
             description = "일별 기록 조회 성공",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "일별 기록",
                     value = """
@@ -597,7 +599,7 @@ public interface UserApiDocumentation {
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "잘못된 요청",
                     value = """
@@ -617,7 +619,7 @@ public interface UserApiDocumentation {
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
             content = @Content(
-                schema = @Schema(implementation = com.climbx.climbx.common.response.ApiResponse.class),
+                schema = @Schema(implementation = ApiResponseDto.class),
                 examples = @ExampleObject(
                     name = "사용자 없음",
                     value = """
@@ -650,7 +652,7 @@ public interface UserApiDocumentation {
             schema = @Schema(implementation = String.class)
         )
         @NotNull
-        String criteria,
+        CriteriaType criteria,
         @Parameter(
             name = "from",
             description = "조회 시작 날짜 (YYYY-MM-DD)",

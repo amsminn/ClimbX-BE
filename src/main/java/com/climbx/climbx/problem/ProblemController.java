@@ -2,6 +2,7 @@ package com.climbx.climbx.problem;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.problem.dto.SpotResponseDto;
+import com.climbx.climbx.problem.service.ProblemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

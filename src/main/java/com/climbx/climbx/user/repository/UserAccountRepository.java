@@ -1,5 +1,6 @@
 package com.climbx.climbx.user.repository;
 
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +21,8 @@ public interface UserAccountRepository extends JpaRepository<UserAccountEntity, 
     Optional<UserAccountEntity> findByUserId(Long userId);
 
     // 특정 역할의 사용자들 조회
-    List<UserAccountEntity> findByRole(String role);
+    List<UserAccountEntity> findByRole(RoleType role);
 
     // 특정 역할이면서 닉네임에 특정 문자열을 포함하는 사용자들 조회
-    List<UserAccountEntity> findByRoleAndNicknameContaining(String role, String nickname);
+    List<UserAccountEntity> findByRoleAndNicknameContaining(RoleType role, String nickname);
 }

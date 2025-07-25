@@ -1,6 +1,7 @@
 package com.climbx.climbx.video.entity;
 
 import com.climbx.climbx.common.entity.BaseTimeEntity;
+import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import jakarta.persistence.Column;
@@ -81,8 +82,7 @@ public class VideoEntity extends BaseTimeEntity {
 
     @Column(name = "status", nullable = false, length = 16)
     @NotNull
-    @Size(min = 1, max = 16)
-    private String status; // 비디오 변환 상태, 예: PENDING, COMPLETED, FAILED 등
+    private StatusType status; // 비디오 변환 상태, 예: PENDING, COMPLETED, FAILED 등
 
     @Column(name = "processed_at")
     private LocalDateTime processedAt; // 비디오 변환 완료 시간

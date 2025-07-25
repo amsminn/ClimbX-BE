@@ -1,6 +1,7 @@
 package com.climbx.climbx.user.entity;
 
 import com.climbx.climbx.common.entity.BaseTimeEntity;
+import com.climbx.climbx.user.enums.CriteriaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,8 +36,7 @@ public class UserRankingHistoryEntity extends BaseTimeEntity {
 
     @Column(name = "criteria", length = 32, nullable = false)
     @NotNull
-    @Size(min = 1, max = 32)
-    private String criteria; // 히스토리 종류
+    private CriteriaType criteria; // 히스토리 종류
 
     @Column(name = "user_id", insertable = false, updatable = false, nullable = false)
     @NotNull

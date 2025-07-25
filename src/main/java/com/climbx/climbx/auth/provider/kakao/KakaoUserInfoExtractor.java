@@ -3,7 +3,6 @@ package com.climbx.climbx.auth.provider.kakao;
 import com.climbx.climbx.auth.dto.ValidatedTokenInfoDto;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.provider.UserInfoExtractor;
-import com.climbx.climbx.auth.provider.exception.EmailNotVerifiedException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,13 +57,6 @@ public class KakaoUserInfoExtractor implements UserInfoExtractor {
         String email = jwt.getClaimAsString("email");
         String nickname = jwt.getClaimAsString("nickname");
         String profileImageUrl = jwt.getClaimAsString("picture");
-
-        boolean emailVerified = jwt.getClaimAsBoolean("email_verified");
-        if (!emailVerified) {
-            log.warn("Kakao ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
-                email);
-            throw new EmailNotVerifiedException(OAuth2ProviderType.KAKAO);
-        }
 
         log.debug(
             "Kakao 사용자 정보 추출 완료: providerId={}, email={}, nickname={}",

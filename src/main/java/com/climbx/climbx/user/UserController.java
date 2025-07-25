@@ -5,6 +5,8 @@ import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
+import com.climbx.climbx.user.enums.CriteriaType;
+import com.climbx.climbx.user.service.UserService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -102,7 +104,7 @@ class UserController implements UserApiDocumentation {
         String nickname,
 
         @RequestParam(name = "criteria", required = true)
-        String criteria,
+        CriteriaType criteria,
 
         @RequestParam(name = "from", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

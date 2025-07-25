@@ -1,10 +1,12 @@
 package com.climbx.climbx.fixture;
 
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserRankingHistoryEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.enums.CriteriaType;
 import java.time.LocalDate;
 import java.util.Collections;
 
@@ -31,7 +33,7 @@ public class UserFixture {
             .nickname(nickname)
             .statusMessage(DEFAULT_STATUS_MESSAGE)
             .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
-            .role("USER")
+            .role(RoleType.USER)
             .build();
     }
 
@@ -76,7 +78,7 @@ public class UserFixture {
             .nickname(nickname)
             .statusMessage(statusMessage)
             .profileImageUrl(profileImageUrl)
-            .role(role)
+            .role(RoleType.valueOf(role))
             .build();
     }
 
@@ -209,7 +211,7 @@ public class UserFixture {
         return UserRankingHistoryEntity.builder()
             .historyId(historyId)
             .userId(userId)
-            .criteria(criteria)
+            .criteria(CriteriaType.from(criteria))
             .value(value)
             .build();
     }

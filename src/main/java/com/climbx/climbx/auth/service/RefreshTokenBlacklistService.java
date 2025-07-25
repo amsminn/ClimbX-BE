@@ -1,6 +1,6 @@
 package com.climbx.climbx.auth.service;
 
-import com.climbx.climbx.common.security.exception.InvalidTokenException;
+import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

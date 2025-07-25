@@ -1,6 +1,6 @@
 package com.climbx.climbx.video.service;
 
-import com.climbx.climbx.common.comcode.ComcodeService;
+import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class VideoService {
 
     private final S3Service s3Service;
-    private final ComcodeService comcodeService;
     private final VideoRepository videoRepository;
     private final UserAccountRepository userAccountRepository;
 
@@ -43,7 +42,7 @@ public class VideoService {
             .userId(userId)
             .userAccountEntity(user)
             .fileSize(videoUploadRequestDto.fileSize())
-            .status(comcodeService.getCodeValue("PENDING"))
+            .status(StatusType.PENDING)
             .build();
 
         videoRepository.save(videoEntity);
@@ -61,7 +60,7 @@ public class VideoService {
 
         return videoRepository.findByUserIdAndStatusAndDeletedAtIsNullOrderByCreatedAtDesc(
                 user.userId(),
-                comcodeService.getCodeValue("COMPLETED")
+                StatusType.COMPLETED.name()
             )
             .stream()
             .map(VideoListResponseDto::from)
