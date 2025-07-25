@@ -5,6 +5,9 @@ import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface UserAuthRepository extends JpaRepository<UserAuthEntity, Long> {
 
@@ -38,4 +41,11 @@ public interface UserAuthRepository extends JpaRepository<UserAuthEntity, Long> 
      * 특정 사용자의 모든 인증 정보를 조회합니다.
      */
     List<UserAuthEntity> findByUserId(Long userId);
+
+    /**
+     * 특정 사용자의 모든 UserAuth를 soft delete 처리합니다.
+     */
+    @Modifying
+    @Query("UPDATE UserAuthEntity u SET u.deletedAt = CURRENT_TIMESTAMP WHERE u.userId = :userId AND u.deletedAt IS NULL")
+    int softDeleteAllByUserId(@Param("userId") Long userId);
 } 
