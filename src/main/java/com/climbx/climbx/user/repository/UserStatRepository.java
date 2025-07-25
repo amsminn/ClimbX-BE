@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> {
 
     /*
-     * 사용자 통계 단일 조회 / 존재 검사
+     * 사용자 통계 단일 조회 (@SQLRestriction 자동 적용)
      */
     Optional<UserStatEntity> findByUserId(Long userId);
 
     /**
-     * 특정 레이팅을 가진 사용자의 순위(1-based) 조회
+     * 특정 레이팅을 가진 사용자의 순위(1-based) 조회 (@SQLRestriction 자동 적용)
      */
     Integer countByRatingGreaterThan(Integer rating);
 
@@ -24,7 +24,7 @@ public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> 
 
     /**
      * 최장 스트릭, 해결한 문제 수 기준 사용자의 순위(1-based) 조회
-     * ranking api 구현 시 포함
+     * TODO: 유저 프로필 랭킹 조회 구현 필요
      */
 //    long countByLongestStreakGreaterThan(Long longestStreak);
 //    default Long findLongestStreakRank(Long longestStreak) {

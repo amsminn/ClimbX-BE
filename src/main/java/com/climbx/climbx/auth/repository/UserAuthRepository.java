@@ -24,7 +24,7 @@ public interface UserAuthRepository extends JpaRepository<UserAuthEntity, Long> 
     /**
      * 특정 사용자가 특정 제공자로 인증한 정보가 있는지 확인합니다.
      */
-    boolean existsByUserAccountEntity_UserIdAndProvider(
+    boolean existsByUserIdAndProvider(
         Long userId,
         OAuth2ProviderType oauthProvider
     );
@@ -33,4 +33,9 @@ public interface UserAuthRepository extends JpaRepository<UserAuthEntity, Long> 
      * 특정 이메일로 등록된 인증 정보를 조회합니다.
      */
     List<UserAuthEntity> findByProviderEmail(String email);
+
+    /**
+     * 특정 사용자의 모든 인증 정보를 조회합니다.
+     */
+    List<UserAuthEntity> findByUserId(Long userId);
 } 

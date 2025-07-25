@@ -34,4 +34,9 @@ public interface UserRankingHistoryRepository extends
         @Param("from") LocalDate from,
         @Param("to") LocalDate to
     );
+
+    /**
+     * 특정 사용자의 모든 랭킹 히스토리를 조회합니다.
+     */
+    List<UserRankingHistoryEntity> findByUserId(Long userId);
 }
