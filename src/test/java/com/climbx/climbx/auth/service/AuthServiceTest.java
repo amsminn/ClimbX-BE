@@ -290,22 +290,22 @@ class AuthServiceTest {
     @DisplayName("회원 탈퇴 테스트")
     class UnregisterUserTest {
 
-                @Test
+        @Test
         @DisplayName("유효한 사용자 ID로 회원 탈퇴를 성공적으로 처리한다")
         void shouldUnregisterUserSuccessfully() {
             // given
             Long userId = 1L;
             String refreshToken = "valid-refresh-token";
-            
+
             UserAccountEntity userAccount = UserFixture.createUser(userId);
-            
+
             given(userAccountRepository.findByUserId(userId)).willReturn(Optional.of(userAccount));
             given(userStatRepository.softDeleteByUserId(userId)).willReturn(1);
             given(userAuthRepository.softDeleteAllByUserId(userId)).willReturn(2);
             given(videoRepository.softDeleteAllByUserId(userId)).willReturn(5);
             given(submissionRepository.softDeleteAllByUserId(userId)).willReturn(3);
             given(userRankingHistoryRepository.softDeleteAllByUserId(userId)).willReturn(10);
-            
+
             doNothing().when(refreshTokenBlacklistService).addToBlacklist(refreshToken);
 
             // when
@@ -314,10 +314,10 @@ class AuthServiceTest {
             // then
             // 1. 로그아웃 처리 검증
             then(refreshTokenBlacklistService).should().addToBlacklist(refreshToken);
-            
+
             // 2. 사용자 조회 검증
             then(userAccountRepository).should().findByUserId(userId);
-            
+
             // 3. 모든 관련 리소스 bulk delete 검증
             then(userStatRepository).should().softDeleteByUserId(userId);
             then(userAuthRepository).should().softDeleteAllByUserId(userId);
@@ -332,8 +332,9 @@ class AuthServiceTest {
             // given
             Long nonExistentUserId = 999L;
             String refreshToken = "valid-refresh-token";
-            
-            given(userAccountRepository.findByUserId(nonExistentUserId)).willReturn(Optional.empty());
+
+            given(userAccountRepository.findByUserId(nonExistentUserId)).willReturn(
+                Optional.empty());
             doNothing().when(refreshTokenBlacklistService).addToBlacklist(refreshToken);
 
             // when & then
@@ -343,7 +344,7 @@ class AuthServiceTest {
             // 로그아웃은 처리되었는지 확인
             then(refreshTokenBlacklistService).should().addToBlacklist(refreshToken);
             then(userAccountRepository).should().findByUserId(nonExistentUserId);
-            
+
             // 사용자가 존재하지 않으므로 bulk delete 메소드들은 호출되지 않음
             then(userStatRepository).should(never()).softDeleteByUserId(anyLong());
             then(userAuthRepository).should(never()).softDeleteAllByUserId(anyLong());
@@ -358,16 +359,16 @@ class AuthServiceTest {
             // given
             Long userId = 2L;
             String refreshToken = "valid-refresh-token";
-            
+
             UserAccountEntity userAccount = UserFixture.createUser(userId);
-            
+
             given(userAccountRepository.findByUserId(userId)).willReturn(Optional.of(userAccount));
             given(userStatRepository.softDeleteByUserId(userId)).willReturn(0);
             given(userAuthRepository.softDeleteAllByUserId(userId)).willReturn(0);
             given(videoRepository.softDeleteAllByUserId(userId)).willReturn(0);
             given(submissionRepository.softDeleteAllByUserId(userId)).willReturn(0);
             given(userRankingHistoryRepository.softDeleteAllByUserId(userId)).willReturn(0);
-            
+
             doNothing().when(refreshTokenBlacklistService).addToBlacklist(refreshToken);
 
             // when
@@ -376,10 +377,10 @@ class AuthServiceTest {
             // then
             // 1. 로그아웃 처리 검증
             then(refreshTokenBlacklistService).should().addToBlacklist(refreshToken);
-            
+
             // 2. 사용자 조회 검증
             then(userAccountRepository).should().findByUserId(userId);
-            
+
             // 3. 모든 관련 리소스 bulk delete 검증 (데이터가 없어도 bulk delete는 수행됨)
             then(userStatRepository).should().softDeleteByUserId(userId);
             then(userAuthRepository).should().softDeleteAllByUserId(userId);

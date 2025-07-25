@@ -12,7 +12,6 @@ import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.provider.exception.ProviderNotSupportedException;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
-import com.climbx.climbx.common.entity.SoftDeleteTimeEntity;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
@@ -183,8 +182,10 @@ public class AuthService {
         // 4. 마지막에 사용자 계정 soft delete
         userAccount.softDelete();
 
-        log.info("회원 탈퇴 처리 완료: userId={}, deletedStats={}, deletedAuths={}, deletedVideos={}, deletedSubmissions={}, deletedHistories={}", 
-            userId, deletedUserStats, deletedUserAuths, deletedVideos, deletedSubmissions, deletedHistories);
+        log.info(
+            "회원 탈퇴 처리 완료: userId={}, deletedStats={}, deletedAuths={}, deletedVideos={}, deletedSubmissions={}, deletedHistories={}",
+            userId, deletedUserStats, deletedUserAuths, deletedVideos, deletedSubmissions,
+            deletedHistories);
     }
 
     /**
