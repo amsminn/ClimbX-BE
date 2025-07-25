@@ -335,14 +335,13 @@ class AuthServiceTest {
 
             given(userAccountRepository.findByUserId(nonExistentUserId)).willReturn(
                 Optional.empty());
-            doNothing().when(refreshTokenBlacklistService).addToBlacklist(refreshToken);
 
             // when & then
             assertThatThrownBy(() -> authService.unregisterUser(nonExistentUserId, refreshToken))
                 .isInstanceOf(UserNotFoundException.class);
 
             // 로그아웃은 처리되었는지 확인
-            then(refreshTokenBlacklistService).should().addToBlacklist(refreshToken);
+            then(refreshTokenBlacklistService).should(never()).addToBlacklist(anyString());
             then(userAccountRepository).should().findByUserId(nonExistentUserId);
 
             // 사용자가 존재하지 않으므로 bulk delete 메소드들은 호출되지 않음

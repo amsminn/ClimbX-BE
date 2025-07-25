@@ -163,12 +163,12 @@ public class AuthService {
      */
     @Transactional
     public void unregisterUser(Long userId, String refreshToken) {
-        // 1. 먼저 로그아웃 처리
-        signOut(refreshToken);
-
         // 2. 사용자 조회
         UserAccountEntity userAccount = userAccountRepository.findByUserId(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
+
+        // 1. 먼저 로그아웃 처리
+        signOut(refreshToken);
 
         log.info("회원 탈퇴 처리 시작: userId={}, nickname={}", userId, userAccount.nickname());
 
