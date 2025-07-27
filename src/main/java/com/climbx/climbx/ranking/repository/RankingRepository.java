@@ -1,5 +1,6 @@
 package com.climbx.climbx.ranking.repository;
 
+import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,5 +15,5 @@ public interface RankingRepository extends JpaRepository<UserStatEntity, Long> {
                 JOIN FETCH u.userAccountEntity ua
                 WHERE ua.role = :role
         """)
-    Page<UserStatEntity> findAllByUserRole(Pageable pageable, @Param("role") String role);
+    Page<UserStatEntity> findAllByUserRole(Pageable pageable, @Param("role") RoleType role);
 }

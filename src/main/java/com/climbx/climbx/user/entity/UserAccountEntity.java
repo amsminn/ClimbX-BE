@@ -6,6 +6,8 @@ import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.video.entity.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,9 +25,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "user_accounts")
+@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
@@ -40,6 +44,7 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @Column(name = "role", length = 32, nullable = false)
     @NotNull
+    @Enumerated(EnumType.STRING)
     private RoleType role; // USER, ADMIN 등 권한
 
     @Column(name = "nickname", length = 64, unique = true, nullable = false)

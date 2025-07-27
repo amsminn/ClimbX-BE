@@ -24,6 +24,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(
@@ -39,6 +40,7 @@ import lombok.experimental.Accessors;
         )
     }
 )
+@SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
@@ -59,9 +61,9 @@ public class UserAuthEntity extends BaseTimeEntity {
     @NotNull
     private UserAccountEntity userAccountEntity;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "provider", length = 32, nullable = false)
     @NotNull
+    @Enumerated(EnumType.STRING)
     private OAuth2ProviderType provider; // OAuth2 provider (e.g. KAKAO)
 
     @Column(name = "provider_id", length = 128, nullable = false)

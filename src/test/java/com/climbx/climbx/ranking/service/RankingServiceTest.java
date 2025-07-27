@@ -3,7 +3,6 @@ package com.climbx.climbx.ranking.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -76,7 +75,7 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 2);
 
-            given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
+            given(rankingRepository.findAllByUserRole(any(Pageable.class), any()))
                 .willReturn(mockPage);
 
             // when
@@ -95,7 +94,7 @@ class RankingServiceTest {
             assertThat(result.rankingList().get(1).nickname()).isEqualTo("bob");
             assertThat(result.rankingList().get(1).rating()).isEqualTo(1200);
 
-            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
+            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
 
         @Test
@@ -122,7 +121,7 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 1);
 
-            given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
+            given(rankingRepository.findAllByUserRole(any(Pageable.class), any()))
                 .willReturn(mockPage);
 
             // when
@@ -134,7 +133,7 @@ class RankingServiceTest {
             assertThat(result.rankingList()).hasSize(1);
             assertThat(result.rankingList().get(0).currentStreak()).isEqualTo(10);
 
-            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
+            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
 
         @Test
@@ -161,7 +160,7 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 1);
 
-            given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
+            given(rankingRepository.findAllByUserRole(any(Pageable.class), any()))
                 .willReturn(mockPage);
 
             // when
@@ -173,7 +172,7 @@ class RankingServiceTest {
             assertThat(result.rankingList()).hasSize(1);
             assertThat(result.rankingList().get(0).solvedCount()).isEqualTo(50);
 
-            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
+            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
 
         @Test
@@ -200,7 +199,7 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 1);
 
-            given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
+            given(rankingRepository.findAllByUserRole(any(Pageable.class), any()))
                 .willReturn(mockPage);
 
             // when
@@ -212,7 +211,7 @@ class RankingServiceTest {
             assertThat(result.rankingList()).hasSize(1);
             assertThat(result.rankingList().get(0).longestStreak()).isEqualTo(20);
 
-            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
+            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
 
         @Test
@@ -239,7 +238,7 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 10);
 
-            given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
+            given(rankingRepository.findAllByUserRole(any(Pageable.class), any()))
                 .willReturn(mockPage);
 
             // when
@@ -252,7 +251,7 @@ class RankingServiceTest {
             assertThat(result.perPage()).isEqualTo(5);
             assertThat(result.totalPage()).isEqualTo(2);
 
-            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
+            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
 
         @Test
@@ -279,7 +278,7 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 1);
 
-            given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
+            given(rankingRepository.findAllByUserRole(any(Pageable.class), any()))
                 .willReturn(mockPage);
 
             // when
@@ -291,7 +290,7 @@ class RankingServiceTest {
             assertThat(result.totalCount()).isEqualTo(1);
             assertThat(result.rankingList()).hasSize(1);
 
-            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
+            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
 
         @Test
@@ -321,7 +320,7 @@ class RankingServiceTest {
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
                 0);
 
-            given(rankingRepository.findAllByUserRole(any(Pageable.class), anyString()))
+            given(rankingRepository.findAllByUserRole(any(Pageable.class), any()))
                 .willReturn(mockPage);
 
             // when
@@ -335,7 +334,7 @@ class RankingServiceTest {
             assertThat(result.totalPage()).isEqualTo(0);
             assertThat(result.rankingList()).isEmpty();
 
-            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), anyString());
+            then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
     }
 } 
