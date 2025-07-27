@@ -1,5 +1,6 @@
 package com.climbx.climbx.video.repository;
 
+import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.video.entity.VideoEntity;
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +16,7 @@ public interface VideoRepository extends JpaRepository<VideoEntity, UUID> {
      */
     List<VideoEntity> findByUserIdAndStatusOrderByCreatedAtDesc(
         Long userId,
-        String status
+        StatusType status
     );
 
     /**

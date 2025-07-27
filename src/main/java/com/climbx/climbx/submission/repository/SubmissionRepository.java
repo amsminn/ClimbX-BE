@@ -60,7 +60,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
      * 특정 사용자의 모든 제출을 조회합니다 (soft delete 포함).
      */
     @Query("""
-        SELECT s FROM SubmissionEntity s 
+        SELECT s FROM SubmissionEntity s
         JOIN s.videoEntity v 
         WHERE v.userId = :userId
         """)
@@ -71,8 +71,8 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
      */
     @Modifying
     @Query("""
-        UPDATE SubmissionEntity s 
-        SET s.deletedAt = CURRENT_TIMESTAMP 
+        UPDATE SubmissionEntity s
+        SET s.deletedAt = CURRENT_TIMESTAMP
         WHERE s.videoEntity.userId = :userId 
         AND s.deletedAt IS NULL
         """)

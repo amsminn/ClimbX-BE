@@ -6,6 +6,8 @@ import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.video.entity.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -48,6 +50,7 @@ public class SubmissionEntity extends BaseTimeEntity {
     private ProblemEntity problemEntity; // 문제 엔티티
 
     @Column(name = "status", length = 32, nullable = false)
+    @Enumerated(EnumType.STRING)
     private StatusType status; // 제출 상태, 예: PENDING, ACCEPTED, REJECTED 등
 
     @Column(name = "reject_reason", length = 256, nullable = true)

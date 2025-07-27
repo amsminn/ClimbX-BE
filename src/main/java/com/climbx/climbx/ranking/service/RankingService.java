@@ -41,7 +41,7 @@ public class RankingService {
 
         // 어드민 계정 제외하고 일반 사용자만 조회
         Page<UserStatEntity> rankingPage = rankingRepository.findAllByUserRole(pageable,
-            RoleType.USER.name());
+            RoleType.USER);
 
         Long totalCount = rankingPage.getTotalElements();
         Integer totalPage = rankingPage.getTotalPages();

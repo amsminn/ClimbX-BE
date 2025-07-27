@@ -60,7 +60,7 @@ public class VideoService {
 
         return videoRepository.findByUserIdAndStatusOrderByCreatedAtDesc(
                 user.userId(),
-                StatusType.COMPLETED.name()
+                StatusType.COMPLETED
             )
             .stream()
             .map(VideoListResponseDto::from)

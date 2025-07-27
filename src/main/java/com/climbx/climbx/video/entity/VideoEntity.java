@@ -6,6 +6,8 @@ import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -84,6 +86,7 @@ public class VideoEntity extends BaseTimeEntity {
 
     @Column(name = "status", nullable = false, length = 16)
     @NotNull
+    @Enumerated(EnumType.STRING)
     private StatusType status; // 비디오 변환 상태, 예: PENDING, COMPLETED, FAILED 등
 
     @Column(name = "processed_at")
