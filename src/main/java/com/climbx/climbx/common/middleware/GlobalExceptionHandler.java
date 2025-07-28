@@ -5,7 +5,6 @@ import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.exception.BusinessException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -22,9 +21,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleBusinessException(BusinessException e) {
         log.error(
-            "BusinessException occurred: {}, detail: {}",
+            "BusinessException occurred: code={}, message={}, context={}",
+            e.errorCode().getStatusCode(),
             e.getMessage(),
-            e.context().toString(),
+            e.context(),
             e
         );
         ApiResponseDto<Void> response = ApiResponseDto.error(
@@ -37,60 +37,31 @@ public class GlobalExceptionHandler {
     }
 
     /*
-     * ConstraintViolationException 예외 처리
+     * Validation 관련 예외 처리
      */
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponseDto<Void>> handleConstraintViolationException(
-        ConstraintViolationException e
-    ) {
-        log.error("ConstraintViolationException occurred: {}", e.getMessage(), e);
-        String errorMessage = e.getConstraintViolations().stream()
-            .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
-            .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-            .orElse("Validation failed");
+    @ExceptionHandler({
+        ConstraintViolationException.class,
+        MethodArgumentNotValidException.class,
+        MissingServletRequestParameterException.class
+    })
+    public ResponseEntity<ApiResponseDto<Void>> handleValidationException(Exception e) {
+        String errorMessage = extractValidationMessage(e);
+        ErrorCode errorCode = chooseErrorCode(e);
+
+        log.warn(
+            "ValidationException occurred: code={}, message={}",
+            errorCode.getStatusCode(),
+            errorMessage,
+            e
+        );
+
         ApiResponseDto<Void> response = ApiResponseDto.error(
-            ErrorCode.VALIDATION_FAILED.status(),
+            errorCode.status(),
             errorMessage
         );
-        return ResponseEntity
-            .status(ErrorCode.VALIDATION_FAILED.status())
-            .body(response);
-    }
-
-    /*
-     * @Valid, @Validated 를 통한 검증 실패
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponseDto<Void>> handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException e
-    ) {
-        log.error("Validation error occurred: {}", e.getMessage(), e);
-        String errorMessage = e.getBindingResult().getFieldErrors().stream()
-            .map(error -> error.getField() + ": " + error.getDefaultMessage())
-            .reduce((msg1, msg2) -> msg1 + ", " + msg2)
-            .orElse("Validation failed");
-        ApiResponseDto<Void> response = ApiResponseDto.error(
-            ErrorCode.VALIDATION_FAILED.status(),
-            errorMessage
-        );
-        return ResponseEntity
-            .status(ErrorCode.VALIDATION_FAILED.status())
-            .body(response);
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponseDto<Void>> handleMissingServletRequestParameterException(
-        MissingServletRequestParameterException e
-    ) {
-        log.error("MissingServletRequestParameterException occurred: {}", e.getMessage(), e);
-
-        ApiResponseDto<Void> response = ApiResponseDto.error(
-            ErrorCode.MISSING_REQUEST_PARAMETER.status(),
-            e.getMessage()
-        );
 
         return ResponseEntity
-            .status(ErrorCode.MISSING_REQUEST_PARAMETER.status())
+            .status(errorCode.status())
             .body(response);
     }
 
@@ -99,13 +70,50 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponseDto<Void>> handleGeneralException(Exception e) {
-        log.error("An unexpected error occurred: {}", e.getMessage(), e);
+
+        ErrorCode errorCode = chooseErrorCode(e);
+        log.error(
+            "UnexpectedException occurred: code={}, message={}",
+            errorCode.getStatusCode(),
+            e.getMessage(),
+            e
+        );
+
         ApiResponseDto<Void> response = ApiResponseDto.error(
-            HttpStatus.INTERNAL_SERVER_ERROR,
+            errorCode.status(),
             "An unexpected error occurred"
         );
+
         return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+            .status(errorCode.status())
             .body(response);
+    }
+
+    private String extractValidationMessage(Exception e) {
+        if (e instanceof ConstraintViolationException cve) {
+            return cve.getConstraintViolations().stream()
+                .map(violation -> violation.getPropertyPath() + "(" + violation.getMessage() + ")")
+                .reduce((msg1, msg2) -> msg1 + ", " + msg2)
+                .orElse("Validation failed");
+        } else if (e instanceof MethodArgumentNotValidException manve) {
+            return manve.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + "(" + error.getDefaultMessage() + ")")
+                .reduce((msg1, msg2) -> msg1 + ", " + msg2)
+                .orElse("Validation failed");
+        } else if (e instanceof MissingServletRequestParameterException msrpe) {
+            return "Missing required parameter(" + msrpe.getParameterName() + ")";
+        }
+        return "Validation failed";
+    }
+
+    private ErrorCode chooseErrorCode(Exception e) {
+        if (e instanceof ConstraintViolationException) {
+            return ErrorCode.VALIDATION_FAILED;
+        } else if (e instanceof MethodArgumentNotValidException) {
+            return ErrorCode.VALIDATION_FAILED;
+        } else if (e instanceof MissingServletRequestParameterException) {
+            return ErrorCode.MISSING_REQUEST_PARAMETER;
+        }
+        return ErrorCode.INTERNAL_ERROR;
     }
 }
