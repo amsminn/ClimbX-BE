@@ -58,9 +58,9 @@ public class VideoService {
         UserAccountEntity user = userAccountRepository.findByNickname(nickname)
             .orElseThrow(() -> new UserNotFoundException(nickname));
 
-        return videoRepository.findByUserIdAndStatusOrderByCreatedAtDesc(
+        return videoRepository.findByUserIdAndStatusInOrderByCreatedAtDesc(
                 user.userId(),
-                StatusType.COMPLETED
+                List.of(StatusType.PENDING, StatusType.COMPLETED)
             )
             .stream()
             .map(VideoListResponseDto::from)
