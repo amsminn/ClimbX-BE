@@ -6,13 +6,15 @@ import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Long> {
+public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UUID> {
 
 
     /**
@@ -61,7 +63,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
      */
     @Query("""
         SELECT s FROM SubmissionEntity s
-        JOIN s.videoEntity v 
+        JOIN s.videoEntity v
         WHERE v.userId = :userId
         """)
     List<SubmissionEntity> findByUserId(@Param("userId") Long userId);
@@ -73,8 +75,32 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, Lo
     @Query("""
         UPDATE SubmissionEntity s
         SET s.deletedAt = CURRENT_TIMESTAMP
-        WHERE s.videoEntity.userId = :userId 
+        WHERE s.videoEntity.userId = :userId
         AND s.deletedAt IS NULL
         """)
     int softDeleteAllByUserId(@Param("userId") Long userId);
+
+    /**
+     * 다양한 필터 조건으로 제출 목록을 조회합니다.
+     */
+    @Query("""
+        SELECT s FROM SubmissionEntity s
+        JOIN FETCH s.videoEntity v
+        JOIN FETCH v.userAccountEntity u
+        JOIN FETCH s.problemEntity p
+        JOIN FETCH p.gym g
+        WHERE (:userId IS NULL OR v.userId = :userId)
+          AND (:problemId IS NULL OR p.problemId = :problemId)
+          AND (:holdColor IS NULL OR p.holdColor = :holdColor)
+          AND (:ratingFrom IS NULL OR p.problemRating >= :ratingFrom)  
+          AND (:ratingTo IS NULL OR p.problemRating <= :ratingTo)
+        """)
+    Page<SubmissionEntity> findSubmissionsWithFilters(
+        @Param("userId") Long userId,
+        @Param("problemId") Long problemId,
+        @Param("holdColor") String holdColor,
+        @Param("ratingFrom") Integer ratingFrom,
+        @Param("ratingTo") Integer ratingTo,
+        Pageable pageable
+    );
 }
