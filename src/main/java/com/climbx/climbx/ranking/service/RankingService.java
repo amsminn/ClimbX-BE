@@ -31,7 +31,7 @@ public class RankingService {
         Integer page,
         Integer perPage
     ) {
-        String validatedCriteria = RankingCriteria.fromCode(criteria);
+        String validatedCriteria = RankingCriteria.from(criteria).name();
         Direction direction = OptionalUtil.tryOf(
             () -> Direction.valueOf(SortOrderType.from(order).name())
         ).orElse(Direction.DESC);
@@ -43,18 +43,20 @@ public class RankingService {
         Page<UserStatEntity> rankingPage = rankingRepository.findAllByUserRole(pageable,
             RoleType.USER);
 
-        Long totalCount = rankingPage.getTotalElements();
-        Integer totalPage = rankingPage.getTotalPages();
         List<UserRankingResponseDto> rankingList = rankingPage.getContent().stream()
             .map(UserRankingResponseDto::from)
             .toList();
 
+        // 페이징 정보 계산
+        Long totalCount = rankingPage.getTotalElements();
+        Boolean hasNext = rankingPage.hasNext();
+        String nextCursor = hasNext ? String.valueOf(page + 1) : null;
+
         return RankingResponseDto.builder()
+            .rankings(rankingList)
             .totalCount(totalCount)
-            .page(page)
-            .perPage(perPage)
-            .totalPage(totalPage)
-            .rankingList(rankingList)
+            .hasNext(hasNext)
+            .nextCursor(nextCursor)
             .build();
     }
 }
