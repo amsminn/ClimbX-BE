@@ -21,7 +21,7 @@ public record VideoListResponseDto(
             .hlsCdnUrl(videoEntity.hlsCdnUrl())
             .status(videoEntity.status())
             .durationSeconds(videoEntity.durationSeconds())
-            .createdAt(videoEntity.getCreatedAt())
+            .createdAt(videoEntity.createdAt())
             .build();
     }
 }
