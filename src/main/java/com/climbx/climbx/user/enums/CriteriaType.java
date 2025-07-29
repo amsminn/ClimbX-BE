@@ -11,10 +11,7 @@ public enum CriteriaType {
     SOLVED_COUNT;
 
     public static CriteriaType from(String value) {
-        return OptionalUtil.tryOf(
-            () -> CriteriaType.valueOf(value.toUpperCase())
-        ).orElseThrow(
-            () -> new InvalidEnumValueException("CriteriaType", value)
-        );
+        return OptionalUtil.tryOf(() -> valueOf(value))
+            .orElseThrow(() -> new InvalidEnumValueException("CriteriaType", value));
     }
 }

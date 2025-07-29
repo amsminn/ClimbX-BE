@@ -11,10 +11,7 @@ public enum StatusType {
     COMPLETED;
 
     public static StatusType from(String value) {
-        return OptionalUtil.tryOf(
-            () -> StatusType.valueOf(value.toUpperCase())
-        ).orElseThrow(
-            () -> new InvalidEnumValueException("StatusType", value)
-        );
+        return OptionalUtil.tryOf(() -> valueOf(value))
+            .orElseThrow(() -> new InvalidEnumValueException("StatusType", value));
     }
 }

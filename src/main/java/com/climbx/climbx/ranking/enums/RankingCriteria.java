@@ -1,5 +1,6 @@
 package com.climbx.climbx.ranking.enums;
 
+import com.climbx.climbx.common.util.OptionalUtil;
 import com.climbx.climbx.ranking.exception.InvalidCriteriaException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,8 @@ public enum RankingCriteria {
 
     private final String columnName;
 
-    public static String fromCode(String code) {
-        try {
-            return RankingCriteria.valueOf(code.toUpperCase()).columnName();
-        } catch (IllegalArgumentException e) {
-            throw new InvalidCriteriaException(code);
-        }
+    public static RankingCriteria from(String code) {
+        return OptionalUtil.tryOf(() -> valueOf(code))
+            .orElseThrow(() -> new InvalidCriteriaException(code));
     }
 }

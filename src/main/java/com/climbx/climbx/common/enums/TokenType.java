@@ -9,10 +9,7 @@ public enum TokenType {
     REFRESH;
 
     public static TokenType from(String value) {
-        return OptionalUtil.tryOf(
-            () -> TokenType.valueOf(value.toUpperCase())
-        ).orElseThrow(
-            () -> new InvalidEnumValueException("TokenType", value)
-        );
+        return OptionalUtil.tryOf(() -> valueOf(value))
+            .orElseThrow(() -> new InvalidEnumValueException("TokenType", value));
     }
 }
