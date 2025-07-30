@@ -9,7 +9,6 @@ import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
-import com.climbx.climbx.auth.provider.exception.ProviderNotSupportedException;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
 import com.climbx.climbx.common.enums.RoleType;
@@ -51,15 +50,8 @@ public class AuthService {
      * OAuth2 콜백
      */
     @Transactional
-    public TokenGenerationResponseDto handleCallback(String provider, CallbackRequestDto request) {
-        // Provider 타입 검증
-        OAuth2ProviderType providerType;
-        try {
-            providerType = OAuth2ProviderType.valueOf(provider.toUpperCase());
-        } catch (Exception e) {
-            throw new ProviderNotSupportedException(provider);
-        }
-
+    public TokenGenerationResponseDto handleCallback(OAuth2ProviderType provider,
+        CallbackRequestDto request) {
         // ID Token 검증 및 사용자 정보 추출
         ValidatedTokenInfoDto tokenInfo = oauth2IdTokenService.verifyIdToken(
             provider,
@@ -71,7 +63,7 @@ public class AuthService {
             provider, tokenInfo.providerId(), tokenInfo.email());
 
         // 사용자 정보로 계정 생성 또는 업데이트
-        UserAccountEntity user = createOrUpdateUser(tokenInfo, providerType);
+        UserAccountEntity user = createOrUpdateUser(tokenInfo, provider);
 
         // JWT 토큰 생성
         AccessTokenResponseDto accessToken = jwtContext.generateAccessToken(
@@ -82,7 +74,7 @@ public class AuthService {
         String refreshToken = jwtContext.generateRefreshToken(user.userId());
 
         log.info("사용자 로그인 완료: userId={}, nickname={}, provider={}",
-            user.userId(), user.nickname(), providerType.name());
+            user.userId(), user.nickname(), provider.name());
 
         return TokenGenerationResponseDto.builder()
             .accessToken(accessToken)
@@ -104,7 +96,7 @@ public class AuthService {
 
             // 3. REFRESH 토큰인지 확인
             String refreshTokenType = TokenType.REFRESH.name();
-            if (!refreshTokenType.equals(tokenInfo.tokenType().toUpperCase())) {
+            if (!refreshTokenType.equals(tokenInfo.tokenType().name())) {
                 log.debug("Invalid token type: expected={}, actual={}", refreshTokenType,
                     tokenInfo.tokenType());
                 throw new InvalidTokenException();

@@ -3,6 +3,7 @@ package com.climbx.climbx.auth;
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
 import com.climbx.climbx.auth.dto.UserAuthResponseDto;
+import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.common.dto.ApiResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,8 +15,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.validation.annotation.Validated;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @Validated
@@ -98,7 +100,7 @@ public interface AuthApiDocumentation {
             required = true,
             example = "kakao"
         )
-        @NotBlank String provider,
+        @NotNull OAuth2ProviderType provider,
         @Parameter(
             name = "request",
             description = "ID Token과 Nonce를 포함한 콜백 요청",

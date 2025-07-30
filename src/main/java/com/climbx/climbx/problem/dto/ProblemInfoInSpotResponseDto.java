@@ -5,6 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record ProblemInfoInSpotResponseDto(
+    
     Long problemId,
     String localLevel,
     String holdColor,

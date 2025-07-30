@@ -58,11 +58,12 @@ public class ProviderIdTokenService {
      * @param nonce    OIDC nonce 값 (CSRF 공격 방지)
      * @return 검증된 사용자 정보
      */
-    public ValidatedTokenInfoDto verifyIdToken(String provider, String idToken, String nonce) {
-        OAuth2ProviderType providerType = OAuth2ProviderType.valueOf(provider.toUpperCase());
+    public ValidatedTokenInfoDto verifyIdToken(OAuth2ProviderType provider, String idToken,
+        String nonce) {
+        OAuth2ProviderType providerType = OAuth2ProviderType.valueOf(provider.name());
 
         try {
-            log.debug("{} ID Token 검증 시작", provider.toUpperCase());
+            log.debug("{} ID Token 검증 시작", provider.name());
 
             // Provider별 JwtDecoder 선택
             JwtDecoder decoder = getJwtDecoder(provider);
@@ -77,19 +78,19 @@ public class ProviderIdTokenService {
             ValidatedTokenInfoDto userInfo = extractor.extractUserInfo(jwt);
 
             log.info("{} ID Token 검증 성공: providerId={}, email={}",
-                provider.toUpperCase(), userInfo.providerId(), userInfo.email());
+                provider.name(), userInfo.providerId(), userInfo.email());
 
             return userInfo;
 
         } catch (BadJwtException e) {
             if (e.getMessage().contains("expired")) {
-                log.warn("{} ID Token 만료: {}", provider.toUpperCase(), e.getMessage());
+                log.warn("{} ID Token 만료: {}", provider.name(), e.getMessage());
                 throw new TokenExpiredException();
             }
-            log.error("{} ID Token Invalid", provider.toUpperCase(), e);
+            log.error("{} ID Token Invalid", provider.name(), e);
             throw new InvalidTokenException();
         } catch (Exception e) {
-            log.error("{} ID Token Invalid", provider.toUpperCase(), e);
+            log.error("{} ID Token Invalid", provider.name(), e);
             throw new InvalidTokenException();
         }
     }
@@ -97,8 +98,8 @@ public class ProviderIdTokenService {
     /**
      * Provider에 해당하는 JwtDecoder를 가져옵니다.
      */
-    private JwtDecoder getJwtDecoder(String provider) {
-        return Optional.ofNullable(idTokenDecoders.get(provider.toLowerCase()))
+    private JwtDecoder getJwtDecoder(OAuth2ProviderType provider) {
+        return Optional.ofNullable(idTokenDecoders.get(provider.name()))
             .orElseThrow(() -> new InvalidTokenException("provider claim not found"));
     }
 
