@@ -1,17 +1,16 @@
 package com.climbx.climbx.ranking.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
-import com.climbx.climbx.ranking.exception.InvalidCriteriaException;
 import com.climbx.climbx.ranking.repository.RankingRepository;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.enums.CriteriaType;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,10 +42,10 @@ class RankingServiceTest {
         @DisplayName("레이팅 기준 내림차순 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageByRatingDesc() {
             // given
-            String criteria = "rating";
-            String order = "desc";
+            CriteriaType criteria = CriteriaType.RATING;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount1 = UserFixture.createUserAccountEntity(1L, "alice");
             UserAccountEntity userAccount2 = UserFixture.createUserAccountEntity(2L, "bob");
@@ -79,20 +78,17 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(2);
-            assertThat(result.page()).isEqualTo(0);
-            assertThat(result.perPage()).isEqualTo(10);
-            assertThat(result.totalPage()).isEqualTo(1);
-            assertThat(result.rankingList()).hasSize(2);
+            assertThat(result.hasNext()).isFalse();
+            assertThat(result.rankings()).hasSize(2);
 
-            assertThat(result.rankingList().get(0).nickname()).isEqualTo("alice");
-            assertThat(result.rankingList().get(0).rating()).isEqualTo(1500);
-            assertThat(result.rankingList().get(1).nickname()).isEqualTo("bob");
-            assertThat(result.rankingList().get(1).rating()).isEqualTo(1200);
+            assertThat(result.rankings().get(0).nickname()).isEqualTo("alice");
+            assertThat(result.rankings().get(0).rating()).isEqualTo(1500);
+            assertThat(result.rankings().get(1).nickname()).isEqualTo("bob");
+            assertThat(result.rankings().get(1).rating()).isEqualTo(1200);
 
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
@@ -101,10 +97,10 @@ class RankingServiceTest {
         @DisplayName("연속 출석일 기준 오름차순 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageByStreakAsc() {
             // given
-            String criteria = "streak";
-            String order = "asc";
+            CriteriaType criteria = CriteriaType.STREAK;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -125,13 +121,12 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(1);
-            assertThat(result.rankingList()).hasSize(1);
-            assertThat(result.rankingList().get(0).currentStreak()).isEqualTo(10);
+            assertThat(result.rankings()).hasSize(1);
+            assertThat(result.rankings().get(0).currentStreak()).isEqualTo(10);
 
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
@@ -140,10 +135,10 @@ class RankingServiceTest {
         @DisplayName("해결 문제 수 기준 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageBySolvedCount() {
             // given
-            String criteria = "solvedProblemsCount";
-            String order = "desc";
+            CriteriaType criteria = CriteriaType.SOLVED_COUNT;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -164,13 +159,12 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(1);
-            assertThat(result.rankingList()).hasSize(1);
-            assertThat(result.rankingList().get(0).solvedCount()).isEqualTo(50);
+            assertThat(result.rankings()).hasSize(1);
+            assertThat(result.rankings().get(0).solvedCount()).isEqualTo(50);
 
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
@@ -179,10 +173,10 @@ class RankingServiceTest {
         @DisplayName("최장 연속 출석일 기준 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageByLongestStreak() {
             // given
-            String criteria = "longestStreak";
-            String order = "desc";
+            CriteriaType criteria = CriteriaType.STREAK;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -203,13 +197,12 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(1);
-            assertThat(result.rankingList()).hasSize(1);
-            assertThat(result.rankingList().get(0).longestStreak()).isEqualTo(20);
+            assertThat(result.rankings()).hasSize(1);
+            assertThat(result.rankings().get(0).longestStreak()).isEqualTo(20);
 
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
@@ -218,10 +211,10 @@ class RankingServiceTest {
         @DisplayName("페이징 처리가 정상적으로 동작한다")
         void shouldHandlePagination() {
             // given
-            String criteria = "rating";
-            String order = "desc";
+            CriteriaType criteria = CriteriaType.RATING;
             Integer page = 1;
             Integer perPage = 5;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -236,20 +229,18 @@ class RankingServiceTest {
 
             List<UserStatEntity> userStats = List.of(userStat);
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
-                10);
+                15);
 
             given(rankingRepository.findAllByUserRole(any(Pageable.class), any()))
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
-            assertThat(result.totalCount()).isEqualTo(10);
-            assertThat(result.page()).isEqualTo(1);
-            assertThat(result.perPage()).isEqualTo(5);
-            assertThat(result.totalPage()).isEqualTo(2);
+            assertThat(result.totalCount()).isEqualTo(15);
+            assertThat(result.hasNext()).isTrue();
+            assertThat(result.nextCursor()).isEqualTo("2");
 
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }
@@ -258,10 +249,10 @@ class RankingServiceTest {
         @DisplayName("잘못된 order 파라미터일 때 기본값 DESC를 사용한다")
         void shouldUseDefaultOrderWhenInvalidOrder() {
             // given
-            String criteria = "rating";
-            String order = "invalid_order";
+            CriteriaType criteria = CriteriaType.RATING;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -282,39 +273,24 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result).isNotNull();
             assertThat(result.totalCount()).isEqualTo(1);
-            assertThat(result.rankingList()).hasSize(1);
+            assertThat(result.rankings()).hasSize(1);
 
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
-        }
-
-        @Test
-        @DisplayName("잘못된 criteria 파라미터일 때 InvalidCriteriaException을 던진다")
-        void shouldThrowExceptionWhenInvalidCriteria() {
-            // given
-            String criteria = "invalid_criteria";
-            String order = "desc";
-            Integer page = 0;
-            Integer perPage = 10;
-
-            // when & then
-            assertThatThrownBy(() -> rankingService.getRankingPage(criteria, order, page, perPage))
-                .isInstanceOf(InvalidCriteriaException.class);
         }
 
         @Test
         @DisplayName("빈 결과를 정상적으로 처리한다")
         void shouldHandleEmptyResult() {
             // given
-            String criteria = "rating";
-            String order = "desc";
+            CriteriaType criteria = CriteriaType.RATING;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             List<UserStatEntity> userStats = List.of();
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
@@ -324,15 +300,13 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(0);
-            assertThat(result.page()).isEqualTo(0);
-            assertThat(result.perPage()).isEqualTo(10);
-            assertThat(result.totalPage()).isEqualTo(0);
-            assertThat(result.rankingList()).isEmpty();
+            assertThat(result.hasNext()).isFalse();
+            assertThat(result.nextCursor()).isNull();
+            assertThat(result.rankings()).isEmpty();
 
             then(rankingRepository).should().findAllByUserRole(any(Pageable.class), any());
         }

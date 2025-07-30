@@ -1,6 +1,7 @@
 package com.climbx.climbx.common.config;
 
 import com.climbx.climbx.common.middleware.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
@@ -28,9 +30,18 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth ->
                 auth
                     .requestMatchers("/api/auth/me").authenticated()
+                    .requestMatchers("/api/auth/signout").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/api/users/*").authenticated()
                     .requestMatchers(HttpMethod.POST, "/api/videos/upload").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/submissions/*").authenticated()
+                    .requestMatchers(HttpMethod.PATCH, "/api/submissions/*").authenticated()
                     .anyRequest().permitAll()
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(
+                    (req, res, ex2) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+                )
+                .accessDeniedHandler(new AccessDeniedHandlerImpl())
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();

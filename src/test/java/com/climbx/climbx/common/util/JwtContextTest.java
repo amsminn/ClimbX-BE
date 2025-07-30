@@ -10,6 +10,7 @@ import static org.mockito.Mockito.spy;
 import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
 import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.exception.TokenExpiredException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -147,7 +148,7 @@ class JwtContextTest {
                 .issuer("issuer")
                 .audience("audience")
                 .role("USER")
-                .tokenType("ACCESS")
+                .tokenType(TokenType.ACCESS)
                 .build();
             doReturn(mockTokenInfo).when(jwtContextStub).parseToken("mocked-access-token");
 
@@ -157,7 +158,7 @@ class JwtContextTest {
             // then
             assertThat(tokenInfo.userId()).isEqualTo(123L);
             assertThat(tokenInfo.role()).isEqualTo("USER");
-            assertThat(tokenInfo.tokenType()).isEqualTo("ACCESS");
+            assertThat(tokenInfo.tokenType()).isEqualTo(TokenType.ACCESS);
         }
 
         @Test
@@ -170,7 +171,7 @@ class JwtContextTest {
                 .issuer("issuer")
                 .audience("audience")
                 .role(null)
-                .tokenType("REFRESH")
+                .tokenType(TokenType.REFRESH)
                 .build();
             doReturn(mockTokenInfo).when(jwtContextStub).parseToken("mocked-refresh-token");
 
@@ -179,7 +180,7 @@ class JwtContextTest {
 
             // then
             assertThat(tokenInfo.userId()).isEqualTo(456L);
-            assertThat(tokenInfo.tokenType()).isEqualTo("REFRESH");
+            assertThat(tokenInfo.tokenType()).isEqualTo(TokenType.REFRESH);
             assertThat(tokenInfo.role()).isNull();
         }
 

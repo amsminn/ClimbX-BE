@@ -70,7 +70,7 @@ public class KakaoUserInfoExtractor implements UserInfoExtractor {
             .nickname(nickname)
             .email(email)
             .profileImageUrl(profileImageUrl)
-            .providerType(OAuth2ProviderType.KAKAO.name())
+            .providerType(OAuth2ProviderType.KAKAO)
             .build();
     }
 } 

@@ -20,6 +20,7 @@ import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
 import com.climbx.climbx.common.enums.RoleType;
+import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
 import com.climbx.climbx.common.util.JwtContext;
 import com.climbx.climbx.fixture.UserFixture;
@@ -106,7 +107,7 @@ class AuthServiceTest {
             given(userAuthRepository.findByProviderAndProviderId(
                 OAuth2ProviderType.KAKAO, "12345")
             ).willReturn(Optional.of(userAuth));
-            given(providerIdTokenService.verifyIdToken("kakao", "valid-id-token",
+            given(providerIdTokenService.verifyIdToken(OAuth2ProviderType.KAKAO, "valid-id-token",
                 "test-nonce")).willReturn(
                 ValidatedTokenInfoDto.builder()
                     .providerId("12345")
@@ -124,7 +125,8 @@ class AuthServiceTest {
                 .build();
 
             // when
-            TokenGenerationResponseDto result = authService.handleCallback("kakao", request);
+            TokenGenerationResponseDto result = authService.handleCallback(OAuth2ProviderType.KAKAO,
+                request);
 
             // then
             assertThat(result).isNotNull();
@@ -133,7 +135,7 @@ class AuthServiceTest {
             assertThat(result.refreshToken()).isEqualTo("refresh-token-1");
 
             then(providerIdTokenService).should()
-                .verifyIdToken("kakao", "valid-id-token", "test-nonce");
+                .verifyIdToken(OAuth2ProviderType.KAKAO, "valid-id-token", "test-nonce");
         }
 
         @Test
@@ -151,7 +153,7 @@ class AuthServiceTest {
                     .role(entity.role())
                     .build();
             });
-            given(providerIdTokenService.verifyIdToken("kakao", "valid-id-token",
+            given(providerIdTokenService.verifyIdToken(OAuth2ProviderType.KAKAO, "valid-id-token",
                 "test-nonce")).willReturn(
                 ValidatedTokenInfoDto.builder()
                     .providerId("67890")
@@ -175,7 +177,8 @@ class AuthServiceTest {
                 .build();
 
             // when
-            TokenGenerationResponseDto result = authService.handleCallback("kakao", request);
+            TokenGenerationResponseDto result = authService.handleCallback(OAuth2ProviderType.KAKAO,
+                request);
 
             // then
             assertThat(result).isNotNull();
@@ -184,7 +187,7 @@ class AuthServiceTest {
             assertThat(result.refreshToken()).isEqualTo("refresh-token-2");
 
             then(providerIdTokenService).should()
-                .verifyIdToken("kakao", "valid-id-token", "test-nonce");
+                .verifyIdToken(OAuth2ProviderType.KAKAO, "valid-id-token", "test-nonce");
         }
     }
 
@@ -201,7 +204,7 @@ class AuthServiceTest {
             JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(3L)
                 .role("USER")
-                .tokenType("REFRESH")
+                .tokenType(TokenType.REFRESH)
                 .build();
             given(jwtContext.parseToken("valid-refresh-token")).willReturn(tokenInfo);
 
@@ -247,7 +250,7 @@ class AuthServiceTest {
             JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(1L)
                 .role("USER")
-                .tokenType("ACCESS") // REFRESH가 아닌 ACCESS 타입
+                .tokenType(TokenType.ACCESS)
                 .build();
 
             given(jwtContext.parseToken("access-token")).willReturn(tokenInfo);
@@ -271,7 +274,7 @@ class AuthServiceTest {
             JwtTokenInfoDto tokenInfo = JwtTokenInfoDto.builder()
                 .userId(999L)
                 .role(null)
-                .tokenType("REFRESH")
+                .tokenType(TokenType.REFRESH)
                 .build();
 
             given(jwtContext.parseToken("valid-refresh-token")).willReturn(tokenInfo);

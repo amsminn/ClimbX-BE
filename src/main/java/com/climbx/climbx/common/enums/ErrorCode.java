@@ -23,6 +23,11 @@ public enum ErrorCode {
     MISSING_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "필수 파라미터가 누락되었습니다."),
     GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "클라이밍장을 찾을 수 없습니다."),
     NICKNAME_MISMATCH(HttpStatus.BAD_REQUEST, "닉네임이 일치하지 않습니다."),
+    VIDEO_NOT_FOUND(HttpStatus.NOT_FOUND, "비디오를 찾을 수 없습니다."),
+    PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "문제를 찾을 수 없습니다."),
+    FORBIDDEN_SUBMISSION(HttpStatus.FORBIDDEN, "제출물에 대한 권한이 없습니다."),
+    DUPLICATE_APPEAL(HttpStatus.CONFLICT, "이미 이의신청이 접수된 제출물입니다."),
+    DUPLICATE_SUBMISSION(HttpStatus.CONFLICT, "이미 제출된 영상입니다."),
 
     // Ranking Errors
     INVALID_RANKING_CRITERIA(HttpStatus.BAD_REQUEST, "유효하지 않은 랭킹 기준입니다."),

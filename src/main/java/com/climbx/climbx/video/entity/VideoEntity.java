@@ -52,6 +52,7 @@ public class VideoEntity extends BaseTimeEntity {
     private SubmissionEntity submissionEntity; // 비디오 제출 엔티티
 
     @Column(name = "file_size", nullable = false)
+    @NotNull
     @Min(value = 0)
     @Max(value = 1024 * 1024 * 1024) // 최대 1GB
     private Long fileSize; // 비디오 파일 크기 (바이트 단위)
@@ -91,5 +92,4 @@ public class VideoEntity extends BaseTimeEntity {
 
     @Column(name = "processed_at")
     private LocalDateTime processedAt; // 비디오 변환 완료 시간
-
 }

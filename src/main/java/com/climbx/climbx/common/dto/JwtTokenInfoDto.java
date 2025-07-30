@@ -1,5 +1,6 @@
 package com.climbx.climbx.common.dto;
 
+import com.climbx.climbx.common.enums.TokenType;
 import lombok.Builder;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -13,7 +14,7 @@ public record JwtTokenInfoDto(
     String issuer,
     String audience,
     String role,
-    String tokenType
+    TokenType tokenType
 ) {
 
     public static JwtTokenInfoDto from(Jwt jwt) {
@@ -22,7 +23,7 @@ public record JwtTokenInfoDto(
             .issuer(jwt.getIssuer().toString())
             .audience(jwt.getAudience().stream().findFirst().orElse(null))
             .role(jwt.getClaimAsString("role"))
-            .tokenType(jwt.getClaimAsString("type"))
+            .tokenType(TokenType.from(jwt.getClaimAsString("type")))
             .build();
     }
 } 

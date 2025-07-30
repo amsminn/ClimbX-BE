@@ -4,6 +4,7 @@ import com.climbx.climbx.auth.dto.AccessTokenResponseDto;
 import com.climbx.climbx.auth.dto.CallbackRequestDto;
 import com.climbx.climbx.auth.dto.TokenGenerationResponseDto;
 import com.climbx.climbx.auth.dto.UserAuthResponseDto;
+import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.service.AuthService;
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,20 +37,20 @@ public class AuthController implements AuthApiDocumentation {
     @PostMapping("/oauth2/{provider}/callback")
     @SuccessStatus(value = HttpStatus.CREATED)
     public AccessTokenResponseDto handleCallback(
-        @PathVariable String provider,
+        @PathVariable OAuth2ProviderType provider,
         @RequestBody CallbackRequestDto request,
         HttpServletResponse response
     ) {
         log.info(
             "{} OAuth2 콜백 처리 시작",
-            provider.toUpperCase()
+            provider.name()
         );
 
         TokenGenerationResponseDto tokenResponse = authService.handleCallback(provider, request);
 
         response.setHeader(REFRESH_TOKEN_HEADER, tokenResponse.refreshToken());
 
-        log.info("{} OAuth2 콜백 처리 완료", provider.toUpperCase());
+        log.info("{} OAuth2 콜백 처리 완료", provider.name());
 
         return tokenResponse.accessToken();
     }

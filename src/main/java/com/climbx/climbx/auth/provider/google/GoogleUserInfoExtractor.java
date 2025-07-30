@@ -83,7 +83,7 @@ public class GoogleUserInfoExtractor implements UserInfoExtractor {
             .nickname(nickname)
             .email(email)
             .profileImageUrl(profileImageUrl)
-            .providerType(OAuth2ProviderType.GOOGLE.name())
+            .providerType(OAuth2ProviderType.GOOGLE)
             .build();
     }
 }

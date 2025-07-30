@@ -79,7 +79,7 @@ public class AppleUserInfoExtractor implements UserInfoExtractor {
             .nickname(nickname)
             .email(email)
             .profileImageUrl(profileImageUrl)
-            .providerType(OAuth2ProviderType.APPLE.name())
+            .providerType(OAuth2ProviderType.APPLE)
             .build();
     }
 }
