@@ -7,7 +7,7 @@ import java.util.UUID;
 public class ForbiddenSubmissionException extends BusinessException {
 
     public ForbiddenSubmissionException(Long userId, UUID videoId) {
-        super(ErrorCode.FORBIDDEN);
+        super(ErrorCode.FORBIDDEN_SUBMISSION);
         addContext("userId", userId.toString());
         addContext("videoId", videoId.toString());
     }
