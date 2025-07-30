@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ApiResponseDto<Void>> handleBusinessException(BusinessException e) {
-        log.error(
+        log.warn(
             "BusinessException occurred: code={}, message={}, context={}",
             e.errorCode().getStatusCode(),
             e.getMessage(),

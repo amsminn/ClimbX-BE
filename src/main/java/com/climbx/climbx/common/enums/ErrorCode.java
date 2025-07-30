@@ -75,7 +75,9 @@ public enum ErrorCode {
      * AWS errors
      */
     S3_BUCKET_NOT_FOUND(HttpStatus.NOT_FOUND, "S3 버킷을 찾을 수 없습니다."),
-    FILE_EXTENSION_NOT_EXISTS(HttpStatus.BAD_REQUEST, "파일 확장자가 존재하지 않습니다.");
+    FILE_EXTENSION_NOT_EXISTS(HttpStatus.BAD_REQUEST, "파일 확장자가 존재하지 않습니다."),
+    S3_BUCKET_NAME_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 버킷 이름이 설정되지 않았습니다."),
+    ;
 
     private final HttpStatus status;
     private final String message;
