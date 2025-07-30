@@ -26,6 +26,7 @@ import com.climbx.climbx.submission.exception.DuplicateSubmissionException;
 import com.climbx.climbx.submission.exception.ForbiddenSubmissionException;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.entity.UserAccountEntity;
+import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.video.entity.VideoEntity;
 import com.climbx.climbx.video.exception.VideoNotFoundException;
 import com.climbx.climbx.video.repository.VideoRepository;
@@ -57,6 +58,9 @@ class SubmissionServiceTest {
     @Mock
     private ProblemRepository problemRepository;
 
+    @Mock
+    private UserAccountRepository userAccountRepository;
+
     @InjectMocks
     private SubmissionService submissionService;
 
@@ -85,6 +89,10 @@ class SubmissionServiceTest {
             .build();
     }
 
+    private UserAccountEntity createUser(Long userId, String nickname) {
+        return UserFixture.createUserAccountEntity(userId, nickname);
+    }
+
     private ProblemEntity createProblem(Long problemId) {
         return ProblemFixture.createProblemEntity(problemId,
             GymFixture.createGymEntity(1L, "테스트 클라이밍 센터", 37.5665, 126.9780));
@@ -98,18 +106,22 @@ class SubmissionServiceTest {
         @DisplayName("제출 목록을 성공적으로 조회한다")
         void shouldGetSubmissionsSuccessfully() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
+            UserAccountEntity user = createUser(userId, nickname);
             SubmissionEntity submission = createSubmission();
             Page<SubmissionEntity> submissionPage = new PageImpl<>(List.of(submission));
             Pageable pageable = PageRequest.of(0, 10);
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(submissionRepository.findSubmissionsWithFilters(
                 eq(userId), eq(null), eq(null), eq(null), eq(null), any(Pageable.class)
             )).willReturn(submissionPage);
 
             // when
             SubmissionListResponseDto result = submissionService.getSubmissions(
-                userId, null, null, null, null, pageable
+                nickname, null, null, null, null, pageable
             );
 
             // then
@@ -117,6 +129,7 @@ class SubmissionServiceTest {
             assertThat(result.totalCount()).isEqualTo(1L);
             assertThat(result.hasNext()).isFalse();
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(submissionRepository).should().findSubmissionsWithFilters(
                 eq(userId), eq(null), eq(null), eq(null), eq(null), any(Pageable.class)
             );
@@ -131,14 +144,18 @@ class SubmissionServiceTest {
         @DisplayName("유효한 요청으로 제출을 성공적으로 생성한다")
         void shouldCreateSubmissionSuccessfully() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             Long problemId = 1L;
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             ProblemEntity problem = createProblem(problemId);
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(videoRepository.findByVideoIdAndStatus(videoId, StatusType.COMPLETED))
                 .willReturn(Optional.of(video));
             given(submissionRepository.findById(videoId))
@@ -149,11 +166,12 @@ class SubmissionServiceTest {
                 .willAnswer(invocation -> invocation.getArgument(0));
 
             // when
-            SubmissionResponseDto result = submissionService.createSubmission(userId, request);
+            SubmissionResponseDto result = submissionService.createSubmission(nickname, request);
 
             // then
             assertThat(result.status()).isEqualTo(StatusType.PENDING);
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(videoRepository).should().findByVideoIdAndStatus(videoId, StatusType.COMPLETED);
             then(problemRepository).should().findById(problemId);
             then(submissionRepository).should().save(any(SubmissionEntity.class));
@@ -163,17 +181,23 @@ class SubmissionServiceTest {
         @DisplayName("존재하지 않는 비디오로 제출 생성 시 예외를 던진다")
         void shouldThrowExceptionWhenVideoNotFound() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, 1L);
 
+            UserAccountEntity user = createUser(userId, nickname);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(videoRepository.findByVideoIdAndStatus(videoId, StatusType.COMPLETED))
                 .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> submissionService.createSubmission(userId, request))
+            assertThatThrownBy(() -> submissionService.createSubmission(nickname, request))
                 .isInstanceOf(VideoNotFoundException.class);
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(videoRepository).should().findByVideoIdAndStatus(videoId, StatusType.COMPLETED);
         }
 
@@ -181,20 +205,25 @@ class SubmissionServiceTest {
         @DisplayName("다른 사용자의 비디오로 제출 생성 시 예외를 던진다")
         void shouldThrowExceptionWhenVideoOwnerMismatch() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, 1L);
 
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(otherUserId, videoId);
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(videoRepository.findByVideoIdAndStatus(videoId, StatusType.COMPLETED))
                 .willReturn(Optional.of(video));
 
             // when & then
-            assertThatThrownBy(() -> submissionService.createSubmission(userId, request))
+            assertThatThrownBy(() -> submissionService.createSubmission(nickname, request))
                 .isInstanceOf(ForbiddenSubmissionException.class);
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(videoRepository).should().findByVideoIdAndStatus(videoId, StatusType.COMPLETED);
         }
 
@@ -202,13 +231,17 @@ class SubmissionServiceTest {
         @DisplayName("존재하지 않는 문제로 제출 생성 시 예외를 던진다")
         void shouldThrowExceptionWhenProblemNotFound() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             Long problemId = 999L;
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(videoRepository.findByVideoIdAndStatus(videoId, StatusType.COMPLETED))
                 .willReturn(Optional.of(video));
             given(submissionRepository.findById(videoId))
@@ -217,9 +250,10 @@ class SubmissionServiceTest {
                 .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> submissionService.createSubmission(userId, request))
+            assertThatThrownBy(() -> submissionService.createSubmission(nickname, request))
                 .isInstanceOf(ProblemNotFoundException.class);
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(problemRepository).should().findById(problemId);
         }
 
@@ -227,23 +261,28 @@ class SubmissionServiceTest {
         @DisplayName("이미 제출된 영상으로 제출 생성 시 예외를 던진다")
         void shouldThrowExceptionWhenVideoAlreadySubmitted() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             Long problemId = 1L;
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity existingSubmission = createSubmission(video, createProblem(problemId));
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(videoRepository.findByVideoIdAndStatus(videoId, StatusType.COMPLETED))
                 .willReturn(Optional.of(video));
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(existingSubmission));
 
             // when & then
-            assertThatThrownBy(() -> submissionService.createSubmission(userId, request))
+            assertThatThrownBy(() -> submissionService.createSubmission(nickname, request))
                 .isInstanceOf(DuplicateSubmissionException.class);
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(submissionRepository).should().findById(videoId);
         }
     }
@@ -297,21 +336,26 @@ class SubmissionServiceTest {
         @DisplayName("제출을 성공적으로 취소한다")
         void shouldCancelSubmissionSuccessfully() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(1L));
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(submission));
 
             // when
-            SubmissionCancelResponseDto result = submissionService.cancelSubmission(userId,
+            SubmissionCancelResponseDto result = submissionService.cancelSubmission(nickname,
                 videoId);
 
             // then
             assertThat(result).isNotNull();
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(submissionRepository).should().findById(videoId);
         }
 
@@ -319,19 +363,24 @@ class SubmissionServiceTest {
         @DisplayName("다른 사용자의 제출 취소 시 예외를 던진다")
         void shouldThrowExceptionWhenCancelOthersSubmission() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(otherUserId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(1L));
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(submission));
 
             // when & then
-            assertThatThrownBy(() -> submissionService.cancelSubmission(userId, videoId))
+            assertThatThrownBy(() -> submissionService.cancelSubmission(nickname, videoId))
                 .isInstanceOf(ForbiddenSubmissionException.class);
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(submissionRepository).should().findById(videoId);
         }
     }
@@ -344,24 +393,30 @@ class SubmissionServiceTest {
         @DisplayName("제출 이의제기를 성공적으로 처리한다")
         void shouldAppealSubmissionSuccessfully() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("정당한 이의제기 사유")
                 .build();
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(1L));
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(submission));
 
             // when
-            SubmissionAppealResponseDto result = submissionService.appealSubmission(userId, videoId,
+            SubmissionAppealResponseDto result = submissionService.appealSubmission(nickname,
+                videoId,
                 request);
 
             // then
             assertThat(result).isNotNull();
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(submissionRepository).should().findById(videoId);
         }
 
@@ -369,22 +424,27 @@ class SubmissionServiceTest {
         @DisplayName("다른 사용자의 제출에 이의제기 시 예외를 던진다")
         void shouldThrowExceptionWhenAppealOthersSubmission() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("이의제기 사유")
                 .build();
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(otherUserId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(1L));
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(submission));
 
             // when & then
-            assertThatThrownBy(() -> submissionService.appealSubmission(userId, videoId, request))
+            assertThatThrownBy(() -> submissionService.appealSubmission(nickname, videoId, request))
                 .isInstanceOf(ForbiddenSubmissionException.class);
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(submissionRepository).should().findById(videoId);
         }
 
@@ -392,11 +452,13 @@ class SubmissionServiceTest {
         @DisplayName("동일한 내용으로 중복 이의제기 시 예외를 던진다")
         void shouldThrowExceptionWhenDuplicateAppeal() {
             // given
+            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("동일한 이의제기 사유")
                 .build();
+            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity submission = SubmissionEntity.builder()
                 .videoId(videoId)
@@ -406,13 +468,16 @@ class SubmissionServiceTest {
                 .appealContent(request.reason()) // 이미 동일한 내용으로 이의제기 되어 있음
                 .build();
 
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(user));
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(submission));
 
             // when & then
-            assertThatThrownBy(() -> submissionService.appealSubmission(userId, videoId, request))
+            assertThatThrownBy(() -> submissionService.appealSubmission(nickname, videoId, request))
                 .isInstanceOf(DuplicateAppealException.class);
 
+            then(userAccountRepository).should().findByNickname(nickname);
             then(submissionRepository).should().findById(videoId);
         }
     }

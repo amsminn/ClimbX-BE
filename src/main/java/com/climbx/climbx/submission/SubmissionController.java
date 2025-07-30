@@ -16,7 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +37,8 @@ public class SubmissionController implements SubmissionApiDocumentation {
     @GetMapping
     @SuccessStatus(value = HttpStatus.OK)
     public SubmissionListResponseDto getSubmissions(
-        @RequestParam(name = "userId", required = false)
-        Long userId,
+        @RequestParam(name = "nickname", required = false)
+        String nickname,
 
         @RequestParam(name = "problemId", required = false)
         Long problemId,
@@ -59,7 +59,7 @@ public class SubmissionController implements SubmissionApiDocumentation {
         Pageable pageable
     ) {
         return submissionService.getSubmissions(
-            userId,
+            nickname,
             problemId,
             holdColor,
             ratingFrom,
@@ -72,13 +72,13 @@ public class SubmissionController implements SubmissionApiDocumentation {
     @PostMapping
     @SuccessStatus(value = HttpStatus.CREATED)
     public SubmissionResponseDto createSubmission(
-        @AuthenticationPrincipal
-        Long userId,
+        @RequestParam(name = "nickname")
+        String nickname,
 
         @RequestBody
         SubmissionCreateRequestDto request
     ) {
-        return submissionService.createSubmission(userId, request);
+        return submissionService.createSubmission(nickname, request);
     }
 
     @Override
@@ -95,13 +95,13 @@ public class SubmissionController implements SubmissionApiDocumentation {
     @PatchMapping("/{videoId}")
     @SuccessStatus(value = HttpStatus.OK)
     public SubmissionCancelResponseDto cancelSubmission(
-        @AuthenticationPrincipal
-        Long userId,
+        @RequestParam(name = "nickname")
+        String nickname,
 
         @PathVariable(name = "videoId")
         UUID videoId
     ) {
-        return submissionService.cancelSubmission(userId, videoId);
+        return submissionService.cancelSubmission(nickname, videoId);
     }
 
     @Override
@@ -118,8 +118,8 @@ public class SubmissionController implements SubmissionApiDocumentation {
     @PostMapping("/{videoId}/appeal")
     @SuccessStatus(value = HttpStatus.CREATED)
     public SubmissionAppealResponseDto appealSubmission(
-        @AuthenticationPrincipal
-        Long userId,
+        @RequestParam(name = "nickname")
+        String nickname,
 
         @PathVariable(name = "videoId")
         UUID videoId,
@@ -127,6 +127,6 @@ public class SubmissionController implements SubmissionApiDocumentation {
         @RequestBody
         SubmissionAppealRequestDto request // Optional reason for appeal
     ) {
-        return submissionService.appealSubmission(userId, videoId, request);
+        return submissionService.appealSubmission(nickname, videoId, request);
     }
 }

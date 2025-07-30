@@ -6,10 +6,7 @@ import com.climbx.climbx.ranking.service.RankingService;
 import com.climbx.climbx.user.enums.CriteriaType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.data.web.SortDefault;
-import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,9 +28,6 @@ public class RankingController implements RankingApiDocumentation {
         CriteriaType criteria,
 
         @PageableDefault(page = 0, size = 20)
-        @SortDefaults(
-            @SortDefault(direction = Direction.DESC)
-        )
         Pageable pageable
     ) {
         return rankingService.getRankingPage(criteria, pageable);

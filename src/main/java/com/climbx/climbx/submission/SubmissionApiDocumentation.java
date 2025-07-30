@@ -88,11 +88,11 @@ public interface SubmissionApiDocumentation {
     })
     SubmissionListResponseDto getSubmissions(
         @Parameter(
-            name = "userId",
-            description = "사용자 ID로 필터링",
-            example = "123"
+            name = "nickname",
+            description = "사용자 닉네임으로 필터링",
+            example = "climbUser123"
         )
-        Long userId,
+        String nickname,
 
         @Parameter(
             name = "problemId",
@@ -227,8 +227,13 @@ public interface SubmissionApiDocumentation {
         )
     })
     SubmissionResponseDto createSubmission(
-        @Parameter(hidden = true)
-        Long userId,
+        @Parameter(
+            name = "nickname",
+            description = "사용자 닉네임",
+            required = true,
+            example = "climbUser123"
+        )
+        String nickname,
 
         @Parameter(
             name = "request",
@@ -405,8 +410,13 @@ public interface SubmissionApiDocumentation {
         )
     })
     SubmissionCancelResponseDto cancelSubmission(
-        @Parameter(hidden = true)
-        Long userId,
+        @Parameter(
+            name = "nickname",
+            description = "사용자 닉네임",
+            required = true,
+            example = "climbUser123"
+        )
+        String nickname,
 
         @Parameter(
             name = "videoId",
@@ -613,8 +623,13 @@ public interface SubmissionApiDocumentation {
         )
     })
     SubmissionAppealResponseDto appealSubmission(
-        @Parameter(hidden = true)
-        Long userId,
+        @Parameter(
+            name = "nickname",
+            description = "사용자 닉네임",
+            required = true,
+            example = "climbUser123"
+        )
+        String nickname,
 
         @Parameter(
             name = "videoId",
