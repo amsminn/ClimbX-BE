@@ -5,9 +5,9 @@ import com.climbx.climbx.common.enums.SortOrderType;
 import com.climbx.climbx.common.util.OptionalUtil;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.dto.UserRankingResponseDto;
-import com.climbx.climbx.ranking.enums.RankingCriteria;
 import com.climbx.climbx.ranking.repository.RankingRepository;
 import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.enums.CriteriaType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,17 +26,16 @@ public class RankingService {
     private final RankingRepository rankingRepository;
 
     public RankingResponseDto getRankingPage(
-        String criteria,
-        String order,
+        CriteriaType criteria,
+        SortOrderType order,
         Integer page,
         Integer perPage
     ) {
-        String validatedCriteria = RankingCriteria.from(criteria).name();
         Direction direction = OptionalUtil.tryOf(
-            () -> Direction.valueOf(SortOrderType.from(order).name())
+            () -> Direction.valueOf(order.name())
         ).orElse(Direction.DESC);
 
-        Sort sort = Sort.by(direction, validatedCriteria);
+        Sort sort = Sort.by(direction, criteria.name());
         Pageable pageable = PageRequest.of(page, perPage, sort);
 
         // 어드민 계정 제외하고 일반 사용자만 조회

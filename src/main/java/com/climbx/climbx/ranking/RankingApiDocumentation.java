@@ -1,7 +1,9 @@
 package com.climbx.climbx.ranking;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
+import com.climbx.climbx.common.enums.SortOrderType;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
+import com.climbx.climbx.user.enums.CriteriaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,8 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -119,8 +120,8 @@ public interface RankingApiDocumentation {
             required = true,
             example = "rating"
         )
-        @NotBlank(message = "랭킹 기준은 필수입니다")
-        String criteria,
+        @NotNull(message = "랭킹 기준은 필수입니다")
+        CriteriaType criteria,
 
         @Parameter(
             name = "order",
@@ -128,8 +129,7 @@ public interface RankingApiDocumentation {
             required = false,
             example = "desc"
         )
-        @Pattern(regexp = "^(asc|desc)$", message = "정렬 순서는 asc 또는 desc만 가능합니다")
-        String order,
+        SortOrderType order,
 
         @Parameter(
             name = "page",

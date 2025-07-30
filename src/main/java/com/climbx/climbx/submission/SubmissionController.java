@@ -127,6 +127,6 @@ public class SubmissionController implements SubmissionApiDocumentation {
         @RequestBody
         SubmissionAppealRequestDto request // Optional reason for appeal
     ) {
-        return submissionService.appealSubmission(userId, videoId, request.reason());
+        return submissionService.appealSubmission(userId, videoId, request);
     }
 }

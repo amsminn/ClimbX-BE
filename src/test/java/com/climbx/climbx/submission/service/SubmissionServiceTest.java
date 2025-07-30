@@ -14,6 +14,7 @@ import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.exception.ProblemNotFoundException;
 import com.climbx.climbx.problem.repository.ProblemRepository;
+import com.climbx.climbx.submission.dto.SubmissionAppealRequestDto;
 import com.climbx.climbx.submission.dto.SubmissionAppealResponseDto;
 import com.climbx.climbx.submission.dto.SubmissionCancelResponseDto;
 import com.climbx.climbx.submission.dto.SubmissionCreateRequestDto;
@@ -343,7 +344,9 @@ class SubmissionServiceTest {
             // given
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
-            String reason = "정당한 이의제기 사유";
+            SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
+                .reason("정당한 이의제기 사유")
+                .build();
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(1L));
 
@@ -352,7 +355,7 @@ class SubmissionServiceTest {
 
             // when
             SubmissionAppealResponseDto result = submissionService.appealSubmission(userId, videoId,
-                reason);
+                request);
 
             // then
             assertThat(result).isNotNull();
@@ -367,7 +370,9 @@ class SubmissionServiceTest {
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
-            String reason = "이의제기 사유";
+            SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
+                .reason("이의제기 사유")
+                .build();
             VideoEntity video = createVideo(otherUserId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(1L));
 
@@ -375,7 +380,7 @@ class SubmissionServiceTest {
                 .willReturn(Optional.of(submission));
 
             // when & then
-            assertThatThrownBy(() -> submissionService.appealSubmission(userId, videoId, reason))
+            assertThatThrownBy(() -> submissionService.appealSubmission(userId, videoId, request))
                 .isInstanceOf(ForbiddenSubmissionException.class);
 
             then(submissionRepository).should().findById(videoId);
@@ -387,21 +392,23 @@ class SubmissionServiceTest {
             // given
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
-            String reason = "동일한 이의제기 사유";
+            SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
+                .reason("동일한 이의제기 사유")
+                .build();
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity submission = SubmissionEntity.builder()
                 .videoId(videoId)
                 .videoEntity(video)
                 .problemEntity(createProblem(1L))
                 .status(StatusType.PENDING)
-                .appealContent(reason) // 이미 동일한 내용으로 이의제기 되어 있음
+                .appealContent(request.reason()) // 이미 동일한 내용으로 이의제기 되어 있음
                 .build();
 
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(submission));
 
             // when & then
-            assertThatThrownBy(() -> submissionService.appealSubmission(userId, videoId, reason))
+            assertThatThrownBy(() -> submissionService.appealSubmission(userId, videoId, request))
                 .isInstanceOf(DuplicateAppealException.class);
 
             then(submissionRepository).should().findById(videoId);

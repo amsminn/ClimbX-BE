@@ -6,6 +6,7 @@ import com.climbx.climbx.common.util.OptionalUtil;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.exception.ProblemNotFoundException;
 import com.climbx.climbx.problem.repository.ProblemRepository;
+import com.climbx.climbx.submission.dto.SubmissionAppealRequestDto;
 import com.climbx.climbx.submission.dto.SubmissionAppealResponseDto;
 import com.climbx.climbx.submission.dto.SubmissionCancelResponseDto;
 import com.climbx.climbx.submission.dto.SubmissionCreateRequestDto;
@@ -148,7 +149,8 @@ public class SubmissionService {
     }
 
     @Transactional
-    public SubmissionAppealResponseDto appealSubmission(Long userId, UUID videoId, String reason) {
+    public SubmissionAppealResponseDto appealSubmission(Long userId, UUID videoId,
+        SubmissionAppealRequestDto request) {
         SubmissionEntity submissionEntity = submissionRepository.findById(videoId)
             .orElseGet(() -> {
                 log.warn("User {} attempted to appeal submission for non-existent video {}", userId,
@@ -164,7 +166,7 @@ public class SubmissionService {
             });
 
         Optional.ofNullable(submissionEntity.appealContent())
-            .filter(content -> content.equals(reason))
+            .filter(content -> content.equals(request.reason()))
             .ifPresent(content -> {
                 log.warn(
                     "User {} attempted to appeal submission for video {} with duplicate reason",
@@ -172,7 +174,7 @@ public class SubmissionService {
                 throw new DuplicateAppealException(videoId);
             });
 
-        submissionEntity.setAppealContent(reason);
+        submissionEntity.setAppealContent(request.reason());
 
         return SubmissionAppealResponseDto.from(submissionEntity);
     }
