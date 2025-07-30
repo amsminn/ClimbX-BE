@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -122,25 +123,11 @@ public interface SubmissionApiDocumentation {
         Integer ratingTo,
 
         @Parameter(
-            name = "order",
-            description = "정렬 순서 (asc/desc)",
-            example = "desc"
+            name = "pageable",
+            description = "페이징 정보 (페이지 번호, 페이지 크기 등)",
+            required = false
         )
-        String order,
-
-        @Parameter(
-            name = "page",
-            description = "페이지 번호 (0부터 시작)",
-            example = "0"
-        )
-        Integer page,
-
-        @Parameter(
-            name = "perPage",
-            description = "페이지당 항목 수",
-            example = "20"
-        )
-        Integer perPage
+        Pageable pageable
     );
 
     @Operation(

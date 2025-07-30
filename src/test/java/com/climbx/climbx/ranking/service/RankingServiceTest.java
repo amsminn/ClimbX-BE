@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-import com.climbx.climbx.common.enums.SortOrderType;
 import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.repository.RankingRepository;
@@ -44,9 +43,9 @@ class RankingServiceTest {
         void shouldGetRankingPageByRatingDesc() {
             // given
             CriteriaType criteria = CriteriaType.RATING;
-            SortOrderType order = SortOrderType.DESC;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount1 = UserFixture.createUserAccountEntity(1L, "alice");
             UserAccountEntity userAccount2 = UserFixture.createUserAccountEntity(2L, "bob");
@@ -79,8 +78,7 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(2);
@@ -100,9 +98,9 @@ class RankingServiceTest {
         void shouldGetRankingPageByStreakAsc() {
             // given
             CriteriaType criteria = CriteriaType.STREAK;
-            SortOrderType order = SortOrderType.ASC;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -123,8 +121,7 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(1);
@@ -139,9 +136,9 @@ class RankingServiceTest {
         void shouldGetRankingPageBySolvedCount() {
             // given
             CriteriaType criteria = CriteriaType.SOLVED_COUNT;
-            SortOrderType order = SortOrderType.DESC;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -162,8 +159,7 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(1);
@@ -178,9 +174,9 @@ class RankingServiceTest {
         void shouldGetRankingPageByLongestStreak() {
             // given
             CriteriaType criteria = CriteriaType.STREAK;
-            SortOrderType order = SortOrderType.DESC;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -201,8 +197,7 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(1);
@@ -217,9 +212,9 @@ class RankingServiceTest {
         void shouldHandlePagination() {
             // given
             CriteriaType criteria = CriteriaType.RATING;
-            SortOrderType order = SortOrderType.DESC;
             Integer page = 1;
             Integer perPage = 5;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -240,8 +235,7 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(15);
@@ -256,9 +250,9 @@ class RankingServiceTest {
         void shouldUseDefaultOrderWhenInvalidOrder() {
             // given
             CriteriaType criteria = CriteriaType.RATING;
-            SortOrderType order = SortOrderType.DESC;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(1L, "alice");
             UserStatEntity userStat = UserStatEntity.builder()
@@ -279,8 +273,7 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result).isNotNull();
@@ -295,9 +288,9 @@ class RankingServiceTest {
         void shouldHandleEmptyResult() {
             // given
             CriteriaType criteria = CriteriaType.RATING;
-            SortOrderType order = SortOrderType.DESC;
             Integer page = 0;
             Integer perPage = 10;
+            Pageable pageable = PageRequest.of(page, perPage);
 
             List<UserStatEntity> userStats = List.of();
             Page<UserStatEntity> mockPage = new PageImpl<>(userStats, PageRequest.of(page, perPage),
@@ -307,8 +300,7 @@ class RankingServiceTest {
                 .willReturn(mockPage);
 
             // when
-            RankingResponseDto result = rankingService.getRankingPage(criteria, order, page,
-                perPage);
+            RankingResponseDto result = rankingService.getRankingPage(criteria, pageable);
 
             // then
             assertThat(result.totalCount()).isEqualTo(0);

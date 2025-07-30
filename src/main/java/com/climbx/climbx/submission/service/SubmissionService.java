@@ -1,6 +1,5 @@
 package com.climbx.climbx.submission.service;
 
-import com.climbx.climbx.common.enums.SortOrderType;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.util.OptionalUtil;
 import com.climbx.climbx.problem.entity.ProblemEntity;
@@ -26,10 +25,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,18 +45,8 @@ public class SubmissionService {
         String holdColor,
         Integer ratingFrom,
         Integer ratingTo,
-        String order,
-        Integer page,
-        Integer perPage
+        Pageable pageable
     ) {
-        // 페이징 및 정렬 설정
-        Direction direction = OptionalUtil.tryOf(
-            () -> Direction.valueOf(SortOrderType.from(order).name())
-        ).orElse(Direction.DESC);
-
-        Sort sort = Sort.by(direction, "createdAt");
-        Pageable pageable = PageRequest.of(page, perPage, sort);
-
         // 제출 목록 조회 (Page 객체로 반환)
         Page<SubmissionEntity> submissionPage = submissionRepository.findSubmissionsWithFilters(
             userId, problemId, holdColor, ratingFrom, ratingTo, pageable
@@ -74,7 +60,9 @@ public class SubmissionService {
         // 페이징 정보 계산
         Long totalCount = submissionPage.getTotalElements();
         Boolean hasNext = submissionPage.hasNext();
-        String nextCursor = hasNext ? String.valueOf(page + 1) : null;
+        String nextCursor = hasNext
+            ? submissionPage.nextPageable().getPageNumber() + ""
+            : null;
 
         return SubmissionListResponseDto.builder()
             .submissions(submissions)

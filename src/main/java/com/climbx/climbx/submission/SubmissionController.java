@@ -10,6 +10,11 @@ import com.climbx.climbx.submission.dto.SubmissionResponseDto;
 import com.climbx.climbx.submission.service.SubmissionService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
+import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,14 +52,11 @@ public class SubmissionController implements SubmissionApiDocumentation {
         @RequestParam(name = "ratingTo", required = false)
         Integer ratingTo,
 
-        @RequestParam(name = "order", required = false, defaultValue = "desc")
-        String order,
-
-        @RequestParam(name = "page", required = false, defaultValue = "0")
-        Integer page,
-
-        @RequestParam(name = "perPage", required = false, defaultValue = "20")
-        Integer perPage
+        @PageableDefault(page = 0, size = 20)
+        @SortDefaults(
+            @SortDefault(sort = "createdAt", direction = Direction.DESC)
+        )
+        Pageable pageable
     ) {
         return submissionService.getSubmissions(
             userId,
@@ -62,9 +64,7 @@ public class SubmissionController implements SubmissionApiDocumentation {
             holdColor,
             ratingFrom,
             ratingTo,
-            order,
-            page,
-            perPage
+            pageable
         );
     }
 

@@ -1,7 +1,6 @@
 package com.climbx.climbx.ranking;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
-import com.climbx.climbx.common.enums.SortOrderType;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.user.enums.CriteriaType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,9 +10,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
@@ -124,30 +122,11 @@ public interface RankingApiDocumentation {
         CriteriaType criteria,
 
         @Parameter(
-            name = "order",
-            description = "정렬 순서 (asc: 오름차순, desc: 내림차순)",
-            required = false,
-            example = "desc"
+            name = "pageable",
+            description = "페이지 정보",
+            required = true,
+            example = "page=0&size=20"
         )
-        SortOrderType order,
-
-        @Parameter(
-            name = "page",
-            description = "페이지 번호 (0부터 시작)",
-            required = false,
-            example = "0"
-        )
-        @Min(value = 0, message = "페이지 번호는 0 이상이어야 합니다")
-        @Max(value = 100, message = "페이지 번호는 100 이하이어야 합니다")
-        Integer page,
-
-        @Parameter(
-            name = "perPage",
-            description = "페이지당 항목 수 (최대 100)",
-            required = false,
-            example = "20"
-        )
-        @Min(value = 1, message = "페이지당 항목 수는 1 이상이어야 합니다")
-        Integer perPage
+        Pageable pageable
     );
 } 

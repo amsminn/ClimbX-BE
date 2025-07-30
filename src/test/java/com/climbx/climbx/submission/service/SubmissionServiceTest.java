@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,6 +101,7 @@ class SubmissionServiceTest {
             Long userId = 1L;
             SubmissionEntity submission = createSubmission();
             Page<SubmissionEntity> submissionPage = new PageImpl<>(List.of(submission));
+            Pageable pageable = PageRequest.of(0, 10);
 
             given(submissionRepository.findSubmissionsWithFilters(
                 eq(userId), eq(null), eq(null), eq(null), eq(null), any(Pageable.class)
@@ -107,7 +109,7 @@ class SubmissionServiceTest {
 
             // when
             SubmissionListResponseDto result = submissionService.getSubmissions(
-                userId, null, null, null, null, "desc", 0, 10
+                userId, null, null, null, null, pageable
             );
 
             // then
