@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -66,6 +67,31 @@ public class GlobalExceptionHandler {
     }
 
     /*
+     * MethodArgumentTypeMismatchException 예외 처리
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponseDto<Void>> handleMethodArgumentTypeMismatchException(
+        MethodArgumentTypeMismatchException e
+    ) {
+        ErrorCode errorCode = chooseErrorCode(e);
+        log.warn(
+            "MethodArgumentTypeMismatchException occurred: code={}, message={}",
+            errorCode.getStatusCode(),
+            e.getMessage(),
+            e
+        );
+
+        ApiResponseDto<Void> response = ApiResponseDto.error(
+            errorCode.status(),
+            errorCode.getMessage()
+        );
+
+        return ResponseEntity
+            .status(errorCode.status())
+            .body(response);
+    }
+
+    /*
      * 정의되지 않은 예외
      */
     @ExceptionHandler(Exception.class)
@@ -81,7 +107,7 @@ public class GlobalExceptionHandler {
 
         ApiResponseDto<Void> response = ApiResponseDto.error(
             errorCode.status(),
-            "An unexpected error occurred"
+            errorCode.getMessage()
         );
 
         return ResponseEntity
@@ -113,6 +139,8 @@ public class GlobalExceptionHandler {
             return ErrorCode.VALIDATION_FAILED;
         } else if (e instanceof MissingServletRequestParameterException) {
             return ErrorCode.MISSING_REQUEST_PARAMETER;
+        } else if (e instanceof MethodArgumentTypeMismatchException) {
+            return ErrorCode.METHOD_ARGUMENT_TYPE_MISMATCH;
         }
         return ErrorCode.INTERNAL_ERROR;
     }

@@ -1,6 +1,7 @@
 package com.climbx.climbx.problem.service;
 
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.exception.GymNotFoundException;
 import com.climbx.climbx.gym.repository.GymRepository;
 import com.climbx.climbx.problem.dto.ProblemInfoInSpotResponseDto;
 import com.climbx.climbx.problem.dto.SpotDetailsResponseDto;
@@ -8,12 +9,13 @@ import com.climbx.climbx.problem.dto.SpotResponseDto;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -28,7 +30,8 @@ public class ProblemService {
         String holdColor
     ) {
         // Gym 정보 조회
-        Optional<GymEntity> gym = gymRepository.findById(gymId);
+        GymEntity gym = gymRepository.findById(gymId)
+            .orElseThrow(() -> new GymNotFoundException(gymId));
 
         // 필터링된 문제들 조회
         List<ProblemInfoInSpotResponseDto> problems = problemRepository
@@ -58,7 +61,7 @@ public class ProblemService {
         // 결과 DTO 반환
         return SpotResponseDto.builder()
             .gymId(gymId)
-            .map2dUrl(gym.map(GymEntity::map2dUrl).orElse(null))
+            .map2dUrl(gym.map2dUrl())
             .spotDetailsResponseDtoList(spotDetailsResponseDtoList)
             .build();
     }
