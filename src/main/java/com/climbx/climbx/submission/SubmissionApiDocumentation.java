@@ -1,6 +1,7 @@
 package com.climbx.climbx.submission;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
+import com.climbx.climbx.submission.dto.SubmissionAppealRequestDto;
 import com.climbx.climbx.submission.dto.SubmissionAppealResponseDto;
 import com.climbx.climbx.submission.dto.SubmissionCancelResponseDto;
 import com.climbx.climbx.submission.dto.SubmissionCreateRequestDto;
@@ -15,8 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.util.UUID;
 import org.springframework.validation.annotation.Validated;
 
@@ -643,8 +642,7 @@ public interface SubmissionApiDocumentation {
             description = "이의신청 사유 (최대 256자, 선택사항)",
             example = "정당한 완등이었습니다."
         )
-        @NotBlank
-        @Size(max = 256)
-        String reason
+        @Valid
+        SubmissionAppealRequestDto reason
     );
 } 

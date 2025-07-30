@@ -1,6 +1,7 @@
 package com.climbx.climbx.submission;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
+import com.climbx.climbx.submission.dto.SubmissionAppealRequestDto;
 import com.climbx.climbx.submission.dto.SubmissionAppealResponseDto;
 import com.climbx.climbx.submission.dto.SubmissionCancelResponseDto;
 import com.climbx.climbx.submission.dto.SubmissionCreateRequestDto;
@@ -123,9 +124,9 @@ public class SubmissionController implements SubmissionApiDocumentation {
         @PathVariable(name = "videoId")
         UUID videoId,
 
-        @RequestBody(required = false)
-        String reason // Optional reason for appeal
+        @RequestBody
+        SubmissionAppealRequestDto request // Optional reason for appeal
     ) {
-        return submissionService.appealSubmission(userId, videoId, reason);
+        return submissionService.appealSubmission(userId, videoId, request.reason());
     }
 }
