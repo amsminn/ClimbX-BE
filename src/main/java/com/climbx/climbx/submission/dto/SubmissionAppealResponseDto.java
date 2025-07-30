@@ -21,7 +21,7 @@ public record SubmissionAppealResponseDto(
             .appealReason(submissionEntity.appealContent())
             .appealStatus(submissionEntity.appealStatus())
             .appealedAt(
-                submissionEntity.appealStatus() == StatusType.REJECTED
+                submissionEntity.appealContent() != null
                     ? submissionEntity.updatedAt()
                     : null)
             .build();
