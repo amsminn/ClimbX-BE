@@ -10,6 +10,7 @@ import com.climbx.climbx.user.service.UserService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ class UserController implements UserApiDocumentation {
         @RequestParam(name = "search", required = false)
         String search
     ) {
+        log.info("사용자 목록 조회: search={}", search);
         return userService.getUsers(search);
     }
 
@@ -42,6 +45,7 @@ class UserController implements UserApiDocumentation {
     @GetMapping("/{nickname}")
     @SuccessStatus(value = HttpStatus.OK)
     public UserProfileResponseDto getUserByNickname(@PathVariable String nickname) {
+        log.info("사용자 프로필 조회: nickname={}", nickname);
         return userService.getUserByNickname(nickname);
     }
 
@@ -58,6 +62,7 @@ class UserController implements UserApiDocumentation {
         @RequestBody
         UserProfileModifyRequestDto request
     ) {
+        log.info("사용자 프로필 수정: userId={}, nickname={}", userId, nickname);
         return userService.modifyUserProfile(
             userId,
             nickname,
@@ -75,6 +80,7 @@ class UserController implements UserApiDocumentation {
         @RequestParam(name = "limit", required = false, defaultValue = "20")
         Integer limit
     ) {
+        log.info("사용자 상위 문제 조회: nickname={}, limit={}", nickname, limit);
         return userService.getUserTopProblems(nickname, limit);
     }
 
@@ -93,6 +99,7 @@ class UserController implements UserApiDocumentation {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
     ) {
+        log.info("사용자 스트릭 조회: nickname={}, from={}, to={}", nickname, from, to);
         return userService.getUserStreak(nickname, from, to);
     }
 
@@ -114,6 +121,8 @@ class UserController implements UserApiDocumentation {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         LocalDate to
     ) {
+        log.info("사용자 히스토리 그래프 데이터 조회: nickname={}, criteria={}, from={}, to={}",
+            nickname, criteria, from, to);
         return userService.getUserDailyHistory(nickname, criteria, from, to);
     }
 }

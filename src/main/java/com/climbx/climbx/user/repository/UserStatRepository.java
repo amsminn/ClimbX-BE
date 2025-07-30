@@ -12,16 +12,13 @@ public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> 
     /*
      * 사용자 통계 단일 조회 (@SQLRestriction 자동 적용)
      */
-    Optional<UserStatEntity> findByUserId(Long userId);
 
     /**
      * 특정 레이팅을 가진 사용자의 순위(1-based) 조회 (@SQLRestriction 자동 적용)
      */
-    Integer countByRatingGreaterThan(Integer rating);
+    Integer countByRatingGreaterThanEqual(Integer rating);
 
-    default Integer findRatingRank(Integer rating) {
-        return countByRatingGreaterThan(rating) + 1;
-    }
+    Optional<UserStatEntity> findByUserId(Long userId);
 
     /**
      * 특정 사용자의 UserStat을 soft delete 처리합니다.

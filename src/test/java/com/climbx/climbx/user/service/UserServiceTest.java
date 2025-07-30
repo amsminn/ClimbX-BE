@@ -87,11 +87,11 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userStat2));
             given(userStatRepository.findByUserId(3L))
                 .willReturn(Optional.of(userStat3));
-            given(userStatRepository.findRatingRank(1200))
+            given(userStatRepository.countByRatingGreaterThanEqual(1200))
                 .willReturn(30);
-            given(userStatRepository.findRatingRank(1300))
+            given(userStatRepository.countByRatingGreaterThanEqual(1300))
                 .willReturn(20);
-            given(userStatRepository.findRatingRank(1400))
+            given(userStatRepository.countByRatingGreaterThanEqual(1400))
                 .willReturn(10);
 
             // when
@@ -127,7 +127,7 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userStat1));
             given(userStatRepository.findByUserId(2L))
                 .willReturn(Optional.of(userStat2));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
                 .willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
@@ -155,7 +155,7 @@ public class UserServiceTest {
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
                 .willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
@@ -187,9 +187,9 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userStat1));
             given(userStatRepository.findByUserId(2L))
                 .willReturn(Optional.of(userStat2));
-            given(userStatRepository.findRatingRank(1100))
+            given(userStatRepository.countByRatingGreaterThanEqual(1100))
                 .willReturn(40);
-            given(userStatRepository.findRatingRank(1600))
+            given(userStatRepository.countByRatingGreaterThanEqual(1600))
                 .willReturn(5);
 
             // when
@@ -242,7 +242,7 @@ public class UserServiceTest {
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
                 .willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
@@ -301,11 +301,11 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userStat2));
             given(userStatRepository.findByUserId(3L))
                 .willReturn(Optional.of(userStat3));
-            given(userStatRepository.findRatingRank(2000))
+            given(userStatRepository.countByRatingGreaterThanEqual(2000))
                 .willReturn(3);
-            given(userStatRepository.findRatingRank(1800))
+            given(userStatRepository.countByRatingGreaterThanEqual(1800))
                 .willReturn(8);
-            given(userStatRepository.findRatingRank(2200))
+            given(userStatRepository.countByRatingGreaterThanEqual(2200))
                 .willReturn(1);
 
             // when
@@ -346,7 +346,7 @@ public class UserServiceTest {
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(2L))
                 .willReturn(Optional.of(userStat));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
                 .willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
@@ -375,7 +375,7 @@ public class UserServiceTest {
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
                 .willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
@@ -409,7 +409,7 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
                 .willReturn(ratingRank);
 
             // when
@@ -462,6 +462,9 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
+            Integer ratingRank = 10;            // given
+            String nickname = "testUser";
+            Long userId = 1L;
             Integer ratingRank = 10;
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
@@ -472,7 +475,26 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
+            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
+                .willReturn(ratingRank);
+
+            // when
+            UserProfileResponseDto result = userService.getUserByNickname(nickname);
+
+            // then
+            UserProfileResponseDto expected = UserFixture.createUserProfileResponseDto(nickname,
+                ratingRank);
+            assertThat(result).isEqualTo(expected);
+
+            UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
+                nickname);
+            UserStatEntity userStatEntity = UserFixture.createUserStatEntity(userId);
+
+            given(userAccountRepository.findByNickname(nickname))
+                .willReturn(Optional.of(userAccountEntity));
+            given(userStatRepository.findByUserId(userId))
+                .willReturn(Optional.of(userStatEntity));
+            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
                 .willReturn(ratingRank);
 
             // when
@@ -573,7 +595,7 @@ public class UserServiceTest {
                 .willReturn(false);
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(rating))
+            given(userStatRepository.countByRatingGreaterThanEqual(rating))
                 .willReturn(ratingRank);
 
             // when
@@ -675,7 +697,7 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(1000))
+            given(userStatRepository.countByRatingGreaterThanEqual(1000))
                 .willReturn(50);
 
             // when
