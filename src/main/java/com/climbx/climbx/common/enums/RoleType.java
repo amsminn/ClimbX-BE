@@ -9,7 +9,7 @@ public enum RoleType {
     ADMIN;
 
     public static RoleType from(String value) {
-        return OptionalUtil.tryOf(() -> valueOf(value)).
-            orElseThrow(() -> new InvalidEnumValueException("RoleType", value));
+        return OptionalUtil.tryOf(() -> valueOf(value))
+            .orElseThrow(() -> new InvalidEnumValueException("RoleType", value));
     }
 }
