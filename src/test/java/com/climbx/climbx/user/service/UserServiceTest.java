@@ -463,28 +463,6 @@ public class UserServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
             Integer ratingRank = 10;            // given
-            String nickname = "testUser";
-            Long userId = 1L;
-            Integer ratingRank = 10;
-
-            UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
-                nickname);
-            UserStatEntity userStatEntity = UserFixture.createUserStatEntity(userId);
-
-            given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccountEntity));
-            given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.countByRatingGreaterThanEqual(UserFixture.DEFAULT_RATING))
-                .willReturn(ratingRank);
-
-            // when
-            UserProfileResponseDto result = userService.getUserByNickname(nickname);
-
-            // then
-            UserProfileResponseDto expected = UserFixture.createUserProfileResponseDto(nickname,
-                ratingRank);
-            assertThat(result).isEqualTo(expected);
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
                 nickname);
