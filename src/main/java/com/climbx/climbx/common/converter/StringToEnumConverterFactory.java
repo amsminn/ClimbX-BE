@@ -1,5 +1,7 @@
 package com.climbx.climbx.common.converter;
 
+import com.climbx.climbx.common.exception.InvalidEnumValueException;
+import com.climbx.climbx.common.util.OptionalUtil;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.lang.NonNull;
@@ -32,10 +34,8 @@ public class StringToEnumConverterFactory implements ConverterFactory<String, En
             @NonNull
             String source
         ) {
-            if (source.isEmpty()) {
-                return null;
-            }
-            return Enum.valueOf(this.enumType, source.toUpperCase());
+            return OptionalUtil.tryOf(() -> Enum.valueOf(this.enumType, source.toUpperCase()))
+                .orElseThrow(() -> new InvalidEnumValueException(enumType.getName(), source));
         }
     }
 }
