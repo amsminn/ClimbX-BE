@@ -26,7 +26,12 @@ public class RankingService {
         CriteriaType criteria,
         Pageable pageable
     ) {
-        Sort sort = Sort.by(criteria.getDirection(), criteria.getSortKey());
+        Sort sort = Sort.by(
+            Sort.Order.desc(criteria.getLowerCaseName()),
+            Sort.Order.asc("updatedAt"),
+            Sort.Order.asc("userId")
+        );
+
         Pageable sortedPageable = PageRequest.of(
             pageable.getPageNumber(),
             pageable.getPageSize(),

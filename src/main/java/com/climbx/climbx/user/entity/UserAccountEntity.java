@@ -49,7 +49,7 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @Column(name = "nickname", length = 64, unique = true, nullable = false)
     @NotBlank
-    @Size(min = 3, max = 64)
+    @Size(min = 1, max = 64)
     private String nickname; // 사용자 닉네임
 
     @Column(name = "status_message", length = 128, nullable = true)

@@ -87,12 +87,15 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userStat2));
             given(userStatRepository.findByUserId(3L))
                 .willReturn(Optional.of(userStat3));
-            given(userStatRepository.findRatingRank(1200))
-                .willReturn(30);
-            given(userStatRepository.findRatingRank(1300))
-                .willReturn(20);
-            given(userStatRepository.findRatingRank(1400))
-                .willReturn(10);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                1200, userStat1.updatedAt(), 1L)
+            ).willReturn(30);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                1300, userStat2.updatedAt(), 2L)
+            ).willReturn(20);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                1400, userStat3.updatedAt(), 3L)
+            ).willReturn(10);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -127,8 +130,12 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userStat1));
             given(userStatRepository.findByUserId(2L))
                 .willReturn(Optional.of(userStat2));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
-                .willReturn(UserFixture.DEFAULT_RANKING);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                UserFixture.DEFAULT_RATING, userStat1.updatedAt(), 1L)
+            ).willReturn(UserFixture.DEFAULT_RANKING);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                UserFixture.DEFAULT_RATING, userStat2.updatedAt(), 2L)
+            ).willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -155,8 +162,9 @@ public class UserServiceTest {
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
-                .willReturn(UserFixture.DEFAULT_RANKING);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                UserFixture.DEFAULT_RATING, userStat1.updatedAt(), 1L)
+            ).willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -187,10 +195,12 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userStat1));
             given(userStatRepository.findByUserId(2L))
                 .willReturn(Optional.of(userStat2));
-            given(userStatRepository.findRatingRank(1100))
-                .willReturn(40);
-            given(userStatRepository.findRatingRank(1600))
-                .willReturn(5);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                1100, userStat1.updatedAt(), 1L)
+            ).willReturn(40);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                1600, userStat2.updatedAt(), 2L)
+            ).willReturn(5);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -242,8 +252,9 @@ public class UserServiceTest {
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
-                .willReturn(UserFixture.DEFAULT_RANKING);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                UserFixture.DEFAULT_RATING, userStat1.updatedAt(), 1L)
+            ).willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -301,12 +312,15 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userStat2));
             given(userStatRepository.findByUserId(3L))
                 .willReturn(Optional.of(userStat3));
-            given(userStatRepository.findRatingRank(2000))
-                .willReturn(3);
-            given(userStatRepository.findRatingRank(1800))
-                .willReturn(8);
-            given(userStatRepository.findRatingRank(2200))
-                .willReturn(1);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                2000, userStat1.updatedAt(), 1L)
+            ).willReturn(3);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                1800, userStat2.updatedAt(), 2L)
+            ).willReturn(8);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                2200, userStat3.updatedAt(), 3L)
+            ).willReturn(1);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -346,8 +360,9 @@ public class UserServiceTest {
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(2L))
                 .willReturn(Optional.of(userStat));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
-                .willReturn(UserFixture.DEFAULT_RANKING);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                UserFixture.DEFAULT_RATING, userStat.updatedAt(), 2L)
+            ).willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -375,8 +390,9 @@ public class UserServiceTest {
                 .willReturn(userAccounts);
             given(userStatRepository.findByUserId(1L))
                 .willReturn(Optional.of(userStat));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
-                .willReturn(UserFixture.DEFAULT_RANKING);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                UserFixture.DEFAULT_RATING, userStat.updatedAt(), 1L)
+            ).willReturn(UserFixture.DEFAULT_RANKING);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -409,8 +425,9 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
-                .willReturn(ratingRank);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                UserFixture.DEFAULT_RATING, userStatEntity.updatedAt(), userId)
+            ).willReturn(ratingRank);
 
             // when
             UserProfileResponseDto result = userService.getUserById(userId);
@@ -462,7 +479,7 @@ public class UserServiceTest {
             // given
             String nickname = "testUser";
             Long userId = 1L;
-            Integer ratingRank = 10;
+            Integer ratingRank = 10;            // given
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
                 nickname);
@@ -472,8 +489,9 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(UserFixture.DEFAULT_RATING))
-                .willReturn(ratingRank);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                UserFixture.DEFAULT_RATING, userStatEntity.updatedAt(), userId)
+            ).willReturn(ratingRank);
 
             // when
             UserProfileResponseDto result = userService.getUserByNickname(nickname);
@@ -573,8 +591,9 @@ public class UserServiceTest {
                 .willReturn(false);
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(rating))
-                .willReturn(ratingRank);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                rating, userStatEntity.updatedAt(), userId)
+            ).willReturn(ratingRank);
 
             // when
             UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname,
@@ -675,8 +694,9 @@ public class UserServiceTest {
                 .willReturn(Optional.of(userAccountEntity));
             given(userStatRepository.findByUserId(userId))
                 .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRatingRank(1000))
-                .willReturn(50);
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
+                1000, userStatEntity.updatedAt(), userId)
+            ).willReturn(50);
 
             // when
             UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname,

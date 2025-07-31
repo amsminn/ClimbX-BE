@@ -9,6 +9,7 @@ import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
+import com.climbx.climbx.auth.provider.exception.ProviderNotSupportedException;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
 import com.climbx.climbx.common.enums.RoleType;
@@ -50,20 +51,21 @@ public class AuthService {
      * OAuth2 콜백
      */
     @Transactional
-    public TokenGenerationResponseDto handleCallback(OAuth2ProviderType provider,
+    public TokenGenerationResponseDto handleCallback(OAuth2ProviderType providerType,
         CallbackRequestDto request) {
+
         // ID Token 검증 및 사용자 정보 추출
         ValidatedTokenInfoDto tokenInfo = oauth2IdTokenService.verifyIdToken(
-            provider,
+            providerType,
             request.idToken(),
             request.nonce()
         );
 
-        log.info("OAuth2 idToken 검증 성공: provider={}, providerId={}, email={}",
-            provider, tokenInfo.providerId(), tokenInfo.email());
+        log.info("OAuth2 idToken 검증 성공: provider={}, providerId={}, nickname={}",
+            providerType, tokenInfo.providerId(), tokenInfo.nickname());
 
         // 사용자 정보로 계정 생성 또는 업데이트
-        UserAccountEntity user = createOrUpdateUser(tokenInfo, provider);
+        UserAccountEntity user = createOrUpdateUser(tokenInfo, providerType);
 
         // JWT 토큰 생성
         AccessTokenResponseDto accessToken = jwtContext.generateAccessToken(
@@ -74,7 +76,7 @@ public class AuthService {
         String refreshToken = jwtContext.generateRefreshToken(user.userId());
 
         log.info("사용자 로그인 완료: userId={}, nickname={}, provider={}",
-            user.userId(), user.nickname(), provider.name());
+            user.userId(), user.nickname(), providerType.name());
 
         return TokenGenerationResponseDto.builder()
             .accessToken(accessToken)
@@ -99,7 +101,7 @@ public class AuthService {
             if (!refreshTokenType.equals(tokenInfo.tokenType().name())) {
                 log.debug("Invalid token type: expected={}, actual={}", refreshTokenType,
                     tokenInfo.tokenType());
-                throw new InvalidTokenException();
+                throw new InvalidTokenException("not a refresh token");
             }
 
             // 4. 사용자 존재 확인
@@ -120,12 +122,9 @@ public class AuthService {
 
             log.info("토큰 갱신 완료: userId={}", tokenInfo.userId());
 
-            return TokenGenerationResponseDto.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .build();
+            return TokenGenerationResponseDto.from(newAccessToken, newRefreshToken);
         } catch (Exception e) {
-            log.error("리프레시 토큰 갱신 실패", e);
+            log.warn("리프레시 토큰 갱신 실패", e);
             throw new InvalidTokenException("리프레시 토큰 갱신에 실패했습니다.");
         }
     }
@@ -137,6 +136,11 @@ public class AuthService {
         // 사용자 주 인증 수단 조회
         UserAuthEntity userAuth = userAuthsRepository.findByUserIdAndIsPrimaryTrue(userId)
             .orElseThrow(() -> new UserAuthNotFoundException(userId));
+
+        log.info("현재 사용자 정보 조회: userId={}, nickname={}, provider={}",
+            userAuth.userAccountEntity().userId(),
+            userAuth.userAccountEntity().nickname(),
+            userAuth.provider().name());
 
         return UserAuthResponseDto.from(userAuth);
     }
@@ -155,14 +159,15 @@ public class AuthService {
      */
     @Transactional
     public void unregisterUser(Long userId, String refreshToken) {
-        // 2. 사용자 조회
+
+        // 1. 사용자 조회
         UserAccountEntity userAccount = userAccountRepository.findByUserId(userId)
             .orElseThrow(() -> new UserNotFoundException(userId));
 
-        // 1. 먼저 로그아웃 처리
-        signOut(refreshToken);
-
         log.info("회원 탈퇴 처리 시작: userId={}, nickname={}", userId, userAccount.nickname());
+
+        // 2. 로그아웃 처리
+        signOut(refreshToken);
 
         // 3. 사용자 소유 리소스들 bulk soft delete 처리 (성능 최적화)
         int deletedUserStats = userStatRepository.softDeleteByUserId(userId);
@@ -174,10 +179,7 @@ public class AuthService {
         // 4. 마지막에 사용자 계정 soft delete
         userAccount.softDelete();
 
-        log.info(
-            "회원 탈퇴 처리 완료: userId={}, deletedStats={}, deletedAuths={}, deletedVideos={}, deletedSubmissions={}, deletedHistories={}",
-            userId, deletedUserStats, deletedUserAuths, deletedVideos, deletedSubmissions,
-            deletedHistories);
+        log.info("회원 탈퇴 처리 완료: userId={}, nickname={}", userId, userAccount.nickname());
     }
 
     /**
@@ -194,7 +196,8 @@ public class AuthService {
         if (existingUserAuth.isPresent()) {
             // 기존 사용자 정보 업데이트
             UserAccountEntity user = existingUserAuth.get().userAccountEntity();
-            log.info("기존 사용자 로그인: userId={}, providerId={}", user.userId(), tokenInfo.providerId());
+            log.info("기존 사용자 로그인: userId={}, nickname={}, providerId={}",
+                user.userId(), user.nickname(), tokenInfo.providerId());
             return user;
         } else {
             // 새로운 사용자 생성
@@ -226,6 +229,8 @@ public class AuthService {
 
         UserAccountEntity savedUser = userAccountRepository.save(userAccount);
 
+        log.info("새로운 사용자 계정 저장: userId={}, nickname={}", savedUser.userId(), nickname);
+
         // 사용자 인증 정보 생성
         UserAuthEntity userAuth = UserAuthEntity.builder()
             .userAccountEntity(savedUser)
@@ -237,12 +242,18 @@ public class AuthService {
 
         userAuthsRepository.save(userAuth);
 
+        log.info("새로운 사용자 인증 정보 저장: userId={}, nickname={}, provider={}, providerId={}",
+            savedUser.userId(), savedUser.nickname(), providerType.name(), tokenInfo.providerId());
+
         // 사용자 통계 정보 초기화
         UserStatEntity userStat = UserStatEntity.builder()
             .userAccountEntity(savedUser)
             .build();
 
         userStatRepository.save(userStat);
+
+        log.info("새로운 사용자 스탯 정보 저장: userId={}, nickname={}",
+            savedUser.userId(), savedUser.nickname());
 
         log.info("새로운 사용자 생성 완료: userId={}, nickname={}, providerId={}",
             savedUser.userId(), nickname, tokenInfo.providerId());

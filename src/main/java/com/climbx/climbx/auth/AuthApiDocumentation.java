@@ -95,12 +95,12 @@ public interface AuthApiDocumentation {
     })
     AccessTokenResponseDto handleCallback(
         @Parameter(
-            name = "provider",
+            name = "providerType",
             description = "OAuth2 제공자",
             required = true,
             example = "kakao"
         )
-        @NotNull OAuth2ProviderType provider,
+        @NotNull OAuth2ProviderType providerType,
         @Parameter(
             name = "request",
             description = "ID Token과 Nonce를 포함한 콜백 요청",

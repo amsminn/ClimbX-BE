@@ -1,6 +1,7 @@
 package com.climbx.climbx.user.repository;
 
 import com.climbx.climbx.user.entity.UserStatEntity;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,16 +13,24 @@ public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> 
     /*
      * 사용자 통계 단일 조회 (@SQLRestriction 자동 적용)
      */
-    Optional<UserStatEntity> findByUserId(Long userId);
 
     /**
      * 특정 레이팅을 가진 사용자의 순위(1-based) 조회 (@SQLRestriction 자동 적용)
      */
-    Integer countByRatingGreaterThan(Integer rating);
+    @Query("""
+        SELECT COUNT(us) + 1
+        FROM UserStatEntity us
+        WHERE us.rating > :rating
+        OR (us.rating = :rating AND us.updatedAt < :updatedAt)
+        OR (us.rating = :rating AND us.updatedAt = :updatedAt AND us.userId < :userId)
+        """)
+    Integer findRankByRatingAndUpdatedAtAndUserId(
+        @Param("rating") Integer rating,
+        @Param("updatedAt") LocalDateTime updatedAt,
+        @Param("userId") Long userId
+    );
 
-    default Integer findRatingRank(Integer rating) {
-        return countByRatingGreaterThan(rating) + 1;
-    }
+    Optional<UserStatEntity> findByUserId(Long userId);
 
     /**
      * 특정 사용자의 UserStat을 soft delete 처리합니다.

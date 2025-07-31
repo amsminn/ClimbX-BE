@@ -1,5 +1,6 @@
 package com.climbx.climbx.common.config;
 
+import com.climbx.climbx.auth.enums.OAuth2ProviderType;
 import com.climbx.climbx.auth.provider.UserInfoExtractor;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +33,12 @@ public class ProviderIdTokenConfig {
      * Provider별 JwtDecoder 맵을 생성합니다. 각 Provider의 구현체에서 제공하는 설정을 사용하여 JwtDecoder를 동적으로 생성합니다.
      */
     @Bean
-    public Map<String, JwtDecoder> oauth2IdTokenDecoders() {
+    public Map<OAuth2ProviderType, JwtDecoder> oauth2IdTokenDecoders() {
         log.info("OAuth2 ID Token Decoders 초기화 시작");
 
-        Map<String, JwtDecoder> decoders = userInfoExtractors.stream()
+        Map<OAuth2ProviderType, JwtDecoder> decoders = userInfoExtractors.stream()
             .collect(Collectors.toMap(
-                extractor -> extractor.getProviderType().name().toLowerCase(),
+                UserInfoExtractor::getProviderType,
                 this::createJwtDecoder
             ));
 
