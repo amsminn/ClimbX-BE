@@ -27,7 +27,7 @@ public class RankingService {
         Pageable pageable
     ) {
         Sort sort = Sort.by(
-            Sort.Order.desc(criteria.name().toLowerCase()),
+            Sort.Order.desc(criteria.getLowerCaseName()),
             Sort.Order.asc("updatedAt"),
             Sort.Order.asc("userId")
         );

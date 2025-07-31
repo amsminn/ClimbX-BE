@@ -24,7 +24,7 @@ public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> 
         OR (us.rating = :rating AND us.updatedAt < :updatedAt)
         OR (us.rating = :rating AND us.updatedAt = :updatedAt AND us.userId < :userId)
         """)
-    Integer findRankByRatingWithSorting(
+    Integer findRankByRatingAndUpdatedAtAndUserId(
         @Param("rating") Integer rating,
         @Param("updatedAt") LocalDateTime updatedAt,
         @Param("userId") Long userId
