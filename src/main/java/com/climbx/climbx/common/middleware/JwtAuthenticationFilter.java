@@ -42,10 +42,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             JwtTokenInfoDto tokenInfo = jwtContext.parseToken(token);
 
             // ACCESS 토큰인지 확인
-            String accessTokenType = TokenType.ACCESS.name();
-            if (!accessTokenType.equals(tokenInfo.tokenType())) {
-                log.debug("Invalid token type: expected={}, actual={}", accessTokenType,
-                    tokenInfo.tokenType());
+            TokenType accessTokenType = TokenType.ACCESS;
+            if (accessTokenType != tokenInfo.tokenType()) {
+                log.debug("Invalid token type: expected={}, actual={}",
+                    accessTokenType, tokenInfo.tokenType());
                 throw new InvalidTokenException();
             }
 
