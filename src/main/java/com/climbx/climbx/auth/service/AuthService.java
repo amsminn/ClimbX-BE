@@ -212,9 +212,11 @@ public class AuthService {
         OAuth2ProviderType providerType
     ) {
         // 임시 닉네임 생성 (중복 방지)
-        String providerNickname = tokenInfo.nickname();
+        String providerNickname = Optional.ofNullable(tokenInfo.nickname())
+            .orElse(generateTemporaryNickname(providerType.name()));
+
         String nickname = userAccountRepository
-            .findByNickname(providerNickname == null ? providerType.name() : providerNickname)
+            .findByNickname(providerNickname)
             .map(user -> generateTemporaryNickname(providerNickname))
             .orElse(providerNickname);
 
