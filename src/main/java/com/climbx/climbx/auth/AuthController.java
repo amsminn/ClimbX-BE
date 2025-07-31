@@ -34,23 +34,21 @@ public class AuthController implements AuthApiDocumentation {
      * provider의 인가 code를 받아 인증하고 토큰 발급
      */
     @Override
-    @PostMapping("/oauth2/{provider}/callback")
+    @PostMapping("/oauth2/{providerType}/callback")
     @SuccessStatus(value = HttpStatus.CREATED)
     public AccessTokenResponseDto handleCallback(
-        @PathVariable OAuth2ProviderType provider,
+        @PathVariable OAuth2ProviderType providerType,
         @RequestBody CallbackRequestDto request,
         HttpServletResponse response
     ) {
-        log.info(
-            "{} OAuth2 콜백 처리 시작",
-            provider.name()
-        );
+        log.info("{} OAuth2 콜백 처리 시작", providerType);
 
-        TokenGenerationResponseDto tokenResponse = authService.handleCallback(provider, request);
+        TokenGenerationResponseDto tokenResponse = authService
+            .handleCallback(providerType, request);
 
         response.setHeader(REFRESH_TOKEN_HEADER, tokenResponse.refreshToken());
 
-        log.info("{} OAuth2 콜백 처리 완료", provider.name());
+        log.info("{} OAuth2 콜백 처리 완료", providerType);
 
         return tokenResponse.accessToken();
     }

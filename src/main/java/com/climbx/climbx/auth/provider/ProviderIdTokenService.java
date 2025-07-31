@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProviderIdTokenService {
 
-    private final Map<String, JwtDecoder> idTokenDecoders;
+    private final Map<OAuth2ProviderType, JwtDecoder> idTokenDecoders;
     private final Map<OAuth2ProviderType, UserInfoExtractor> extractorMap;
     private final NonceService nonceService;
 
@@ -34,7 +34,7 @@ public class ProviderIdTokenService {
      * UserInfoExtractor 목록을 Map으로 변환하여 빠른 조회 지원
      */
     public ProviderIdTokenService(
-        @Qualifier("oauth2IdTokenDecoders") Map<String, JwtDecoder> idTokenDecoders,
+        @Qualifier("oauth2IdTokenDecoders") Map<OAuth2ProviderType, JwtDecoder> idTokenDecoders,
         List<UserInfoExtractor> userInfoExtractors,
         NonceService nonceService
     ) {
@@ -53,20 +53,22 @@ public class ProviderIdTokenService {
     /**
      * 지정된 Provider의 ID Token을 검증하고 사용자 정보를 추출합니다.
      *
-     * @param provider Provider 타입 (kakao, google, naver 등)
-     * @param idToken  검증할 ID Token
-     * @param nonce    OIDC nonce 값 (CSRF 공격 방지)
+     * @param providerType Provider 타입 (kakao, google, apple)
+     * @param idToken      검증할 ID Token
+     * @param nonce        OIDC nonce 값 (CSRF 공격 방지)
      * @return 검증된 사용자 정보
      */
-    public ValidatedTokenInfoDto verifyIdToken(OAuth2ProviderType provider, String idToken,
-        String nonce) {
-        OAuth2ProviderType providerType = OAuth2ProviderType.valueOf(provider.name());
+    public ValidatedTokenInfoDto verifyIdToken(
+        OAuth2ProviderType providerType,
+        String idToken,
+        String nonce
+    ) {
 
         try {
-            log.debug("{} ID Token 검증 시작", provider.name());
+            log.debug("{} ID Token 검증 시작", providerType);
 
             // Provider별 JwtDecoder 선택
-            JwtDecoder decoder = getJwtDecoder(provider);
+            JwtDecoder decoder = getJwtDecoder(providerType);
 
             Jwt jwt = decoder.decode(idToken);
 
@@ -78,19 +80,19 @@ public class ProviderIdTokenService {
             ValidatedTokenInfoDto userInfo = extractor.extractUserInfo(jwt);
 
             log.info("{} ID Token 검증 성공: providerId={}, email={}",
-                provider.name(), userInfo.providerId(), userInfo.email());
+                providerType.name(), userInfo.providerId(), userInfo.email());
 
             return userInfo;
 
         } catch (BadJwtException e) {
             if (e.getMessage().contains("expired")) {
-                log.warn("{} ID Token 만료: {}", provider.name(), e.getMessage());
+                log.warn("{} ID Token 만료: {}", providerType.name(), e.getMessage());
                 throw new TokenExpiredException();
             }
-            log.error("{} ID Token Invalid", provider.name(), e);
+            log.error("{} ID Token Invalid", providerType.name(), e);
             throw new InvalidTokenException();
         } catch (Exception e) {
-            log.error("{} ID Token Invalid", provider.name(), e);
+            log.error("{} ID Token Invalid", providerType.name(), e);
             throw new InvalidTokenException();
         }
     }
@@ -98,8 +100,8 @@ public class ProviderIdTokenService {
     /**
      * Provider에 해당하는 JwtDecoder를 가져옵니다.
      */
-    private JwtDecoder getJwtDecoder(OAuth2ProviderType provider) {
-        return Optional.ofNullable(idTokenDecoders.get(provider.name()))
+    private JwtDecoder getJwtDecoder(OAuth2ProviderType providerType) {
+        return Optional.ofNullable(idTokenDecoders.get(providerType))
             .orElseThrow(() -> new InvalidTokenException("provider claim not found"));
     }
 

@@ -64,7 +64,7 @@ public class AppleUserInfoExtractor implements UserInfoExtractor {
         if (!emailVerified) {
             log.warn("Apple ID Token에서 이메일이 인증되지 않았습니다: providerId={}, email={}", providerId,
                 email);
-            throw new EmailNotVerifiedException(OAuth2ProviderType.GOOGLE);
+            throw new EmailNotVerifiedException(OAuth2ProviderType.APPLE);
         }
 
         log.debug(
