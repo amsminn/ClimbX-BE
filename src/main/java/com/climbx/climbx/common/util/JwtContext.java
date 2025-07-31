@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.crypto.spec.SecretKeySpec;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -32,6 +33,7 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenResolv
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class JwtContext {
 
@@ -124,6 +126,8 @@ public class JwtContext {
             .claim("type", TokenType.ACCESS.name())
             .build();
 
+        log.info("generating access token for userId: {}, role: {}", userId, role);
+
         return AccessTokenResponseDto.builder()
             .accessToken(tokenEncoder.apply(claims))
             .expiresIn(accessTokenExpiration)
@@ -145,6 +149,8 @@ public class JwtContext {
             .expiresAt(expiresAt)
             .claim("type", TokenType.REFRESH.name())
             .build();
+
+        log.info("generating refresh token for userId: {}", userId);
 
         return tokenEncoder.apply(claims);
     }

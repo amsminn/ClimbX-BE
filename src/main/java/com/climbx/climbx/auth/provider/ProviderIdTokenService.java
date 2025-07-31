@@ -40,14 +40,10 @@ public class ProviderIdTokenService {
     ) {
         this.idTokenDecoders = idTokenDecoders;
         this.extractorMap = userInfoExtractors.stream()
-            .collect(Collectors.toMap(
-                UserInfoExtractor::getProviderType,
-                Function.identity()
-            ));
+            .collect(Collectors.toMap(UserInfoExtractor::getProviderType, Function.identity()));
         this.nonceService = nonceService;
 
-        log.info("OAuth2IdTokenService 초기화 완료. 지원 Provider: {}",
-            extractorMap.keySet());
+        log.info("OAuth2IdTokenService 초기화 완료. 지원 Provider: {}", extractorMap.keySet());
     }
 
     /**
@@ -89,11 +85,11 @@ public class ProviderIdTokenService {
                 log.warn("{} ID Token 만료: {}", providerType.name(), e.getMessage());
                 throw new TokenExpiredException();
             }
-            log.error("{} ID Token Invalid", providerType.name(), e);
-            throw new InvalidTokenException();
+            log.warn("{} ID Token Invalid", providerType.name(), e);
+            throw new InvalidTokenException(e.getMessage());
         } catch (Exception e) {
-            log.error("{} ID Token Invalid", providerType.name(), e);
-            throw new InvalidTokenException();
+            log.warn("{} ID Token Invalid", providerType.name(), e);
+            throw new InvalidTokenException(e.getMessage());
         }
     }
 
@@ -102,7 +98,9 @@ public class ProviderIdTokenService {
      */
     private JwtDecoder getJwtDecoder(OAuth2ProviderType providerType) {
         return Optional.ofNullable(idTokenDecoders.get(providerType))
-            .orElseThrow(() -> new InvalidTokenException("provider claim not found"));
+            .orElseThrow(() -> new InvalidTokenException(
+                "provider decoder not found for " + providerType.name()
+            ));
     }
 
     /**
@@ -110,12 +108,9 @@ public class ProviderIdTokenService {
      */
     private UserInfoExtractor getExtractor(OAuth2ProviderType providerType) {
         return Optional.ofNullable(extractorMap.get(providerType))
-            .orElseThrow(
-                () -> new InvalidTokenException(
-                    "provider extractor not found for "
-                        + providerType.name()
-                )
-            );
+            .orElseThrow(() -> new InvalidTokenException(
+                "provider extractor not found for " + providerType.name()
+            ));
     }
 
     /**
@@ -124,13 +119,11 @@ public class ProviderIdTokenService {
     private void validateNonce(Jwt jwt, String expectedNonce, OAuth2ProviderType providerType) {
         OptionalUtil.tryOf(() -> jwt.getClaimAsString("nonce"))
             .filter(nonce -> !nonce.isBlank() && nonce.equals(expectedNonce))
-            .ifPresentOrElse(
-                nonceService::validateAndUseNonce,
-                () -> {
-                    log.warn("{} ID Token nonce 검증 실패: nonce={}", providerType.name(),
-                        expectedNonce);
-                    throw new InvalidNonceException(providerType);
-                }
-            );
+            .ifPresentOrElse(nonce -> nonceService.validateAndUseNonce(nonce, providerType), () -> {
+                log.warn(
+                    "{} ID Token validation failed: nonce={}", providerType.name(), expectedNonce
+                );
+                throw new InvalidNonceException(providerType);
+            });
     }
 } 
