@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // ACCESS 토큰인지 확인
             TokenType accessTokenType = TokenType.ACCESS;
             if (accessTokenType != tokenInfo.tokenType()) {
-                log.debug("Invalid token type: expected={}, actual={}",
+                log.info("Invalid token type: expected={}, actual={}",
                     accessTokenType, tokenInfo.tokenType());
                 throw new InvalidTokenException();
             }
@@ -52,10 +52,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Spring Security 인증 정보 설정
             setAuthentication(tokenInfo.userId(), RoleType.from(tokenInfo.role()));
 
-            log.debug("JWT authentication successful for user: {}", tokenInfo.userId());
+            log.info("JWT authentication successful for user: {}", tokenInfo.userId());
 
         } catch (Exception e) {
-            log.debug("JWT authentication failed: {}", e.getMessage());
+            log.warn("JWT authentication failed: {}", e.getMessage());
             // 예상치 못한 오류 발생 시에도 인증 없이 계속 진행
         } finally {
             filterChain.doFilter(request, response);
