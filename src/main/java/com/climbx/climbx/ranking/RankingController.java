@@ -5,6 +5,7 @@ import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.service.RankingService;
 import com.climbx.climbx.user.enums.CriteriaType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/ranking")
 @RequiredArgsConstructor
@@ -30,6 +32,9 @@ public class RankingController implements RankingApiDocumentation {
         @PageableDefault(page = 0, size = 20)
         Pageable pageable
     ) {
+        log.info("랭킹 조회: criteria={}, page={}, size={}",
+            criteria, pageable.getPageNumber(), pageable.getPageSize());
+
         return rankingService.getRankingPage(criteria, pageable);
     }
 }
