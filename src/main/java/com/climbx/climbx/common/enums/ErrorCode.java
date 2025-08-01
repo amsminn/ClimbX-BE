@@ -43,6 +43,8 @@ public enum ErrorCode {
     FORBIDDEN_SUBMISSION(HttpStatus.FORBIDDEN, "제출물에 대한 권한이 없습니다."),
     DUPLICATE_APPEAL(HttpStatus.CONFLICT, "이미 이의신청이 접수된 제출물입니다."),
     DUPLICATE_SUBMISSION(HttpStatus.CONFLICT, "이미 제출된 영상입니다."),
+    DEFAULT_NICKNAME_RETRY_LIMIT_EXCEEDED(HttpStatus.INTERNAL_SERVER_ERROR,
+        "기본 닉네임 생성 재시도 횟수를 초과했습니다."),
 
     /**
      * Gym errors
