@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -149,10 +150,15 @@ public class S3Service {
 
         // Content Type 검증
         String contentType = profileImage.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
+        final Set<String> allowedContentTypes = Set.of(
+            "image/jpeg", "image/png", "image/jpg", "image/gif", "image/webp", "image/bmp");
+
+        if (contentType == null || !allowedContentTypes.contains(contentType)) {
             log.error("Invalid content type for profile image: {}", contentType);
             throw new BusinessException(
-                ErrorCode.INVALID_REQUEST, "Profile image must be an image file");
+                ErrorCode.INVALID_REQUEST,
+                "Profile image must be an image file (JPEG, PNG, GIF, WEBP, BMP)"
+            );
         }
 
         log.debug("Profile image parameters validated successfully");
