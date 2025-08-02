@@ -52,6 +52,11 @@ public class AppleUserInfoExtractor implements UserInfoExtractor {
     }
 
     @Override
+    public boolean nonceCheckEnabled() {
+        return true;
+    }
+
+    @Override
     public ValidatedTokenInfoDto extractUserInfo(Jwt jwt) {
         log.debug("Apple ID Token에서 사용자 정보 추출 시작");
 

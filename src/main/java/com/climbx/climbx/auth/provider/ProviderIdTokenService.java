@@ -117,6 +117,10 @@ public class ProviderIdTokenService {
      * nonce 클레임을 검증합니다.
      */
     private void validateNonce(Jwt jwt, String expectedNonce, OAuth2ProviderType providerType) {
+        if (!getExtractor(providerType).nonceCheckEnabled()) {
+            return;
+        }
+
         OptionalUtil.tryOf(() -> jwt.getClaimAsString("nonce"))
             .filter(nonce -> !nonce.isBlank() && nonce.equals(expectedNonce))
             .ifPresentOrElse(nonce -> nonceService.validateAndUseNonce(nonce, providerType), () -> {

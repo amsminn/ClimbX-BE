@@ -56,6 +56,11 @@ public class GoogleUserInfoExtractor implements UserInfoExtractor {
     }
 
     @Override
+    public boolean nonceCheckEnabled() {
+        return false;
+    }
+
+    @Override
     public ValidatedTokenInfoDto extractUserInfo(Jwt jwt) {
         log.debug("Google ID Token에서 사용자 정보 추출 시작");
 

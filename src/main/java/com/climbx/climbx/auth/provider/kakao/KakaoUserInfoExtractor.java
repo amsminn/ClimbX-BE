@@ -50,6 +50,11 @@ public class KakaoUserInfoExtractor implements UserInfoExtractor {
     }
 
     @Override
+    public boolean nonceCheckEnabled() {
+        return true;
+    }
+
+    @Override
     public ValidatedTokenInfoDto extractUserInfo(Jwt jwt) {
         log.debug("Kakao ID Token에서 사용자 정보 추출 시작");
 
