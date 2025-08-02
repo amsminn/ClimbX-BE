@@ -56,8 +56,8 @@ public class UserAccountEntity extends BaseTimeEntity {
     @Size(max = 128) // nullable
     private String statusMessage; // 상태 메시지
 
-    @Column(name = "profile_image_url", length = 255, nullable = true)
-    private String profileImageUrl; // 프로필 이미지 URL
+    @Column(name = "profile_image_cdn_url", length = 256, nullable = true)
+    private String profileImageCdnUrl; // 프로필 이미지 URL
 
     @Builder.Default
     @Column(name = "last_login_date", nullable = false)
@@ -85,6 +85,6 @@ public class UserAccountEntity extends BaseTimeEntity {
     }
 
     public void updateProfileImageUrl(String profileImageUrl) {
-        this.profileImageUrl = profileImageUrl;
+        this.profileImageCdnUrl = profileImageUrl;
     }
 }

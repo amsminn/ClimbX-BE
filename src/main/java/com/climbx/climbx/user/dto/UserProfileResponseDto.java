@@ -12,7 +12,7 @@ public record UserProfileResponseDto(
 
     String statusMessage,
 
-    String profileImageUrl, // null 허용
+    String profileImageCdnUrl, // null 허용
 
     Integer ranking,
 
@@ -45,8 +45,8 @@ public record UserProfileResponseDto(
         return UserProfileResponseDto.builder()
             .nickname(account.nickname())
             .statusMessage(account.statusMessage())
-            .profileImageUrl(account.profileImageUrl())
             .tier(tier)
+            .profileImageCdnUrl(account.profileImageCdnUrl())
             .ranking(ranking)
             .rating(stat.rating())
             .categoryRatings(categoryRatings)

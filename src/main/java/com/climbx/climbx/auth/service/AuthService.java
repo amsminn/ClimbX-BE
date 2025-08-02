@@ -227,7 +227,7 @@ public class AuthService {
         UserAccountEntity userAccount = UserAccountEntity.builder()
             .nickname(nickname)
             .role(RoleType.USER)
-            .profileImageUrl(tokenInfo.profileImageUrl())
+            .profileImageCdnUrl(tokenInfo.profileImageUrl())
             .build();
 
         UserAccountEntity savedUser = userAccountRepository.save(userAccount);

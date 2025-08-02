@@ -32,7 +32,7 @@ public class UserFixture {
             .userId(1L)
             .nickname(nickname)
             .statusMessage(DEFAULT_STATUS_MESSAGE)
-            .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
+            .profileImageCdnUrl(DEFAULT_PROFILE_IMAGE_URL)
             .role(RoleType.USER)
             .build();
     }
@@ -78,7 +78,7 @@ public class UserFixture {
             .userId(userId)
             .nickname(nickname)
             .statusMessage(statusMessage)
-            .profileImageUrl(profileImageUrl)
+            .profileImageCdnUrl(profileImageUrl)
             .role(RoleType.valueOf(role))
             .userStatEntity(userStat)
             .build();
@@ -160,7 +160,7 @@ public class UserFixture {
         return UserProfileResponseDto.builder()
             .nickname(nickname)
             .statusMessage(DEFAULT_STATUS_MESSAGE)
-            .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
+            .profileImageCdnUrl(DEFAULT_PROFILE_IMAGE_URL)
             .ranking(ranking)
             .rating(rating)
             .tier("BRONZE1")
@@ -188,7 +188,7 @@ public class UserFixture {
         return UserProfileResponseDto.builder()
             .nickname(nickname)
             .statusMessage(statusMessage)
-            .profileImageUrl(profileImageUrl)
+            .profileImageCdnUrl(profileImageUrl)
             .ranking(ranking)
             .rating(rating)
             .tier("SILVER1")

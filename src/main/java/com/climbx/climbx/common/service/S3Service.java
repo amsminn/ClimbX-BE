@@ -151,13 +151,14 @@ public class S3Service {
         // Content Type 검증
         String contentType = profileImage.getContentType();
         final Set<String> allowedContentTypes = Set.of(
-            "image/jpeg", "image/png", "image/jpg", "image/gif", "image/webp", "image/bmp");
+            "image/jpeg", "image/png", "image/jpg", "image/gif", "image/webp", "image/bmp",
+            "image/heic");
 
         if (contentType == null || !allowedContentTypes.contains(contentType)) {
             log.error("Invalid content type for profile image: {}", contentType);
             throw new BusinessException(
                 ErrorCode.INVALID_REQUEST,
-                "Profile image must be an image file (JPEG, PNG, GIF, WEBP, BMP)"
+                "Profile image must be an image file (JPEG, PNG, JPG, GIF, WEBP, BMP, HEIC)"
             );
         }
 

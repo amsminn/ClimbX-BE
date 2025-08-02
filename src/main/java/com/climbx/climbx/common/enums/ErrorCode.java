@@ -37,7 +37,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     USER_STAT_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 통계 정보를 찾을 수 없습니다."),
     DUPLICATED_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
-    NICKNAME_MISMATCH(HttpStatus.BAD_REQUEST, "닉네임이 일치하지 않습니다."),
+    NICKNAME_MISMATCH(HttpStatus.FORBIDDEN, "닉네임이 일치하지 않습니다."),
     VIDEO_NOT_FOUND(HttpStatus.NOT_FOUND, "비디오를 찾을 수 없습니다."),
     PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "문제를 찾을 수 없습니다."),
     FORBIDDEN_SUBMISSION(HttpStatus.FORBIDDEN, "제출물에 대한 권한이 없습니다."),

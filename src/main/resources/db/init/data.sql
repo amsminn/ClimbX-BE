@@ -5,7 +5,7 @@
 INSERT INTO user_accounts (role,
                            nickname,
                            status_message,
-                           profile_image_url,
+                           profile_image_cdn_url,
                            last_login_date,
                            created_at,
                            updated_at,
@@ -33,7 +33,7 @@ VALUES (1, 2500, 10, 15, 200, 5, 2, 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NUL
 
 
 -- RATING 테스트용 더미 데이터
-INSERT INTO user_accounts (role, nickname, status_message, profile_image_url, last_login_date,
+INSERT INTO user_accounts (role, nickname, status_message, profile_image_cdn_url, last_login_date,
                            created_at, updated_at)
 VALUES ('USER', 'charlie', 'Climbing high!', '/images/charlie.png', CURRENT_DATE, CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP),
