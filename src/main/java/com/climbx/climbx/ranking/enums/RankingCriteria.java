@@ -13,8 +13,8 @@ public enum RankingCriteria {
 
     RATING("rating"),
     STREAK("currentStreak"),
-    LONGESTSTREAK("longestStreak"),
-    SOLVEDPROBLEMSCOUNT("solvedCount");
+    LONGEST_STREAK("longestStreak"),
+    SOLVED_COUNT("solvedCount");
 
     private final String columnName;
 
