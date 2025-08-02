@@ -22,7 +22,7 @@ public class TierConfig {
             for (int level = 3; level >= 1; level--) {
                 int minRating = i * 450 + (3 - level) * 150;
                 int maxRating = minRating + 150 - 1;
-                int score = i * 6 + (3 - level) + 1; // 1, 3, 5, 7, 9
+                int score = i * 6 + 2 * (3 - level) + 1; // 1, 3, 5, 7, 9
                 tierList.add(new TierDefinitionDto(name, level, minRating, maxRating, score));
             }
         }
