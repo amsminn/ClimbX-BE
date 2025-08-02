@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +30,7 @@ public interface SubmissionApiDocumentation {
         description = "다양한 필터 조건으로 제출물 목록을 조회합니다."
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "제출물 목록 조회 성공",
             content = @Content(
@@ -65,7 +66,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 요청 파라미터",
             content = @Content(
@@ -136,7 +137,7 @@ public interface SubmissionApiDocumentation {
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "201",
             description = "제출물 생성 성공",
             content = @Content(
@@ -165,7 +166,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 요청 데이터",
             content = @Content(
@@ -185,7 +186,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "401",
             description = "인증되지 않은 사용자",
             content = @Content(
@@ -205,7 +206,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "404",
             description = "문제를 찾을 수 없음",
             content = @Content(
@@ -259,7 +260,7 @@ public interface SubmissionApiDocumentation {
         description = "특정 비디오 ID에 해당하는 제출물을 조회합니다."
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "제출물 조회 성공",
             content = @Content(
@@ -288,7 +289,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "404",
             description = "비디오를 찾을 수 없음",
             content = @Content(
@@ -325,7 +326,7 @@ public interface SubmissionApiDocumentation {
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "제출물 취소 성공",
             content = @Content(
@@ -348,7 +349,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "401",
             description = "인증되지 않은 사용자",
             content = @Content(
@@ -368,7 +369,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "403",
             description = "제출물에 대한 권한 없음",
             content = @Content(
@@ -388,7 +389,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "404",
             description = "비디오를 찾을 수 없음",
             content = @Content(
@@ -432,7 +433,7 @@ public interface SubmissionApiDocumentation {
         description = "특정 비디오 ID에 해당하는 제출물의 이의신청을 조회합니다."
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "이의신청 조회 성공",
             content = @Content(
@@ -458,7 +459,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "404",
             description = "비디오를 찾을 수 없음",
             content = @Content(
@@ -495,7 +496,7 @@ public interface SubmissionApiDocumentation {
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "201",
             description = "이의신청 성공",
             content = @Content(
@@ -521,7 +522,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
@@ -541,7 +542,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "401",
             description = "인증되지 않은 사용자",
             content = @Content(
@@ -561,7 +562,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "403",
             description = "제출물에 대한 권한 없음",
             content = @Content(
@@ -581,7 +582,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "404",
             description = "비디오를 찾을 수 없음",
             content = @Content(
@@ -601,7 +602,7 @@ public interface SubmissionApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "409",
             description = "동일한 사유로 이미 이의신청이 존재함",
             content = @Content(

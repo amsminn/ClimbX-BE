@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.DecimalMax;
@@ -26,7 +27,7 @@ public interface GymApiDocumentation {
         description = "클라이밍장 ID를 사용하여 특정 클라이밍장의 상세 정보를 조회합니다."
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "클라이밍장 정보 조회 성공",
             content = @Content(
@@ -55,7 +56,7 @@ public interface GymApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 클라이밍장 ID",
             content = @Content(
@@ -76,7 +77,7 @@ public interface GymApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "404",
             description = "클라이밍장을 찾을 수 없음",
             content = @Content(
@@ -124,7 +125,7 @@ public interface GymApiDocumentation {
             """
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "클라이밍장 목록 조회 성공",
             content = @Content(
@@ -164,7 +165,7 @@ public interface GymApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
@@ -210,7 +211,7 @@ public interface GymApiDocumentation {
             """
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "거리 기반 클라이밍장 목록 조회 성공",
             content = @Content(
@@ -250,7 +251,7 @@ public interface GymApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 위도 또는 경도",
             content = @Content(

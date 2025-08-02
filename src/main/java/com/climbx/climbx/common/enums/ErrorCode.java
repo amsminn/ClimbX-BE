@@ -57,6 +57,12 @@ public enum ErrorCode {
     INVALID_RANKING_CRITERIA(HttpStatus.BAD_REQUEST, "유효하지 않은 랭킹 기준입니다."),
 
     /**
+     * Submission errors
+     */
+    PENDING_SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "PENDING 상태인 제출물을 찾을 수 없습니다."),
+    STATUS_MODIFY_TO_PENDING(HttpStatus.BAD_REQUEST, "제출물 상태를 PENDING으로 변경할 수 없습니다."),
+
+    /**
      * Auth errors
      */
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
