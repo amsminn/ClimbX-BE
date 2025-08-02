@@ -40,7 +40,7 @@ public class RatingUtil {
 
         int solvedCountScore = (int) Math.round(1000 * (1 - Math.pow(0.98, solvedCount)));
 
-        int contributionScore = (int) Math.round(50 * (1 - Math.pow(0.9, contributionCount)));
+        int contributionScore = (int) Math.round(100 * (1 - Math.pow(0.9, contributionCount)));
 
         return topProblemScore + submissionCountScore + solvedCountScore + contributionScore;
     }
