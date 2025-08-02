@@ -3,7 +3,7 @@ package com.climbx.climbx.user;
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
-import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
+import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.enums.CriteriaType;
 import com.climbx.climbx.user.service.UserService;
@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -50,9 +52,9 @@ class UserController implements UserApiDocumentation {
     }
 
     @Override
-    @PutMapping("/{nickname}")
+    @PutMapping(value = "/{nickname}")
     @SuccessStatus(value = HttpStatus.OK)
-    public UserProfileResponseDto modifyUserProfile(
+    public UserProfileResponseDto modifyUserProfileInfo(
         @AuthenticationPrincipal
         Long userId,
 
@@ -60,14 +62,31 @@ class UserController implements UserApiDocumentation {
         String nickname,
 
         @RequestBody
-        UserProfileModifyRequestDto request
+        UserProfileInfoModifyRequestDto modifyRequest
     ) {
         log.info("사용자 프로필 수정: userId={}, nickname={}", userId, nickname);
-        return userService.modifyUserProfile(
-            userId,
-            nickname,
-            request
-        );
+
+        return userService.modifyUserProfileInfo(userId, nickname, modifyRequest);
+    }
+
+    @Override
+    @PutMapping(value = "/{nickname}/profile-image", consumes = {"multipart/form-data"})
+    @SuccessStatus(value = HttpStatus.OK)
+    public UserProfileResponseDto updateUserProfileImage(
+        @AuthenticationPrincipal
+        Long userId,
+
+        @PathVariable
+        String nickname,
+
+        @RequestPart(name = "profileImage", required = false)
+        MultipartFile profileImage
+    ) {
+        log.info("사용자 프로필 이미지 수정: userId={}, nickname={}, image={}",
+            userId, nickname,
+            profileImage == null ? "기본 프로필 이미지(null)" : profileImage.getOriginalFilename());
+
+        return userService.updateUserProfileImage(userId, nickname, profileImage);
     }
 
     @Override

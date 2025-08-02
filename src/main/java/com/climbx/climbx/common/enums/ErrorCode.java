@@ -43,6 +43,8 @@ public enum ErrorCode {
     FORBIDDEN_SUBMISSION(HttpStatus.FORBIDDEN, "제출물에 대한 권한이 없습니다."),
     DUPLICATE_APPEAL(HttpStatus.CONFLICT, "이미 이의신청이 접수된 제출물입니다."),
     DUPLICATE_SUBMISSION(HttpStatus.CONFLICT, "이미 제출된 영상입니다."),
+    DEFAULT_NICKNAME_RETRY_LIMIT_EXCEEDED(HttpStatus.INTERNAL_SERVER_ERROR,
+        "기본 닉네임 생성 재시도 횟수를 초과했습니다."),
 
     /**
      * Gym errors
@@ -77,6 +79,8 @@ public enum ErrorCode {
     S3_BUCKET_NOT_FOUND(HttpStatus.NOT_FOUND, "S3 버킷을 찾을 수 없습니다."),
     FILE_EXTENSION_NOT_EXISTS(HttpStatus.BAD_REQUEST, "파일 확장자가 존재하지 않습니다."),
     S3_BUCKET_NAME_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 버킷 이름이 설정되지 않았습니다."),
+    CLOUDFRONT_DOMAIN_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR,
+        "CloudFront 도메인이 설정되지 않았습니다."),
     ;
 
     private final HttpStatus status;

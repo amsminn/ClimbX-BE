@@ -1,6 +1,7 @@
 package com.climbx.climbx.video.service;
 
 import com.climbx.climbx.common.enums.StatusType;
+import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
@@ -32,7 +33,7 @@ public class VideoService {
             .orElseThrow(() -> new UserNotFoundException(userId));
 
         UUID videoId = UUID.randomUUID();
-        String presignedUrl = s3Service.generatePresignedUrl(
+        String presignedUrl = s3Service.generateVideoUploadPresignedUrl(
             videoId,
             videoUploadRequestDto.fileExtension()
         );

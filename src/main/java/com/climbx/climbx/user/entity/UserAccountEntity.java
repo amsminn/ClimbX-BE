@@ -79,9 +79,12 @@ public class UserAccountEntity extends BaseTimeEntity {
         this.lastLoginDate = LocalDate.now(); // 현재 날짜로 마지막 접속 날짜 갱신
     }
 
-    public void modifyProfile(String nickname, String statusMessage, String profileImageUrl) {
+    public void modifyProfileInfo(String nickname, String statusMessage) {
         this.nickname = nickname;
         this.statusMessage = statusMessage;
+    }
+
+    public void updateProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
     }
 }

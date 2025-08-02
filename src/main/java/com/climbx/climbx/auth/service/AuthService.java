@@ -11,6 +11,7 @@ import com.climbx.climbx.auth.exception.UserAuthNotFoundException;
 import com.climbx.climbx.auth.provider.ProviderIdTokenService;
 import com.climbx.climbx.auth.repository.UserAuthRepository;
 import com.climbx.climbx.common.dto.JwtTokenInfoDto;
+import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.TokenType;
 import com.climbx.climbx.common.exception.InvalidTokenException;
@@ -18,13 +19,14 @@ import com.climbx.climbx.common.util.JwtContext;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.exception.CannotCreateUserNickname;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserRankingHistoryRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import com.climbx.climbx.video.repository.VideoRepository;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -211,14 +213,8 @@ public class AuthService {
         ValidatedTokenInfoDto tokenInfo,
         OAuth2ProviderType providerType
     ) {
-        // 임시 닉네임 생성 (중복 방지)
-        String providerNickname = Optional.ofNullable(tokenInfo.nickname())
-            .orElse(generateTemporaryNickname(providerType.name()));
-
-        String nickname = userAccountRepository
-            .findByNickname(providerNickname)
-            .map(user -> generateTemporaryNickname(providerNickname))
-            .orElse(providerNickname);
+        // 클라이머_12341234 형식의 닉네임 생성 (중복 방지)
+        String nickname = generateUniqueClimberNickname();
 
         // 사용자 계정 생성
         UserAccountEntity userAccount = UserAccountEntity.builder()
@@ -262,9 +258,33 @@ public class AuthService {
     }
 
     /**
-     * 임시 닉네임을 생성합니다.
+     * 중복되지 않는 클라이머_ 형식의 닉네임을 생성합니다.
      */
-    private String generateTemporaryNickname(String providerNickname) {
-        return providerNickname + "_" + UUID.randomUUID().toString().substring(0, 8);
+    private String generateUniqueClimberNickname() {
+        String nickname;
+        int attempts = 0;
+        int maxAttempts = 100; // 무한 루프 방지
+
+        do {
+            nickname = generateClimberNickname();
+            attempts++;
+
+            log.debug("생성된 닉네임: {}, 시도 횟수: {}", nickname, attempts);
+            if (attempts >= maxAttempts) {
+                log.warn("닉네임 생성 최대 시도 횟수 초과: {}", maxAttempts);
+                throw new CannotCreateUserNickname(ErrorCode.DEFAULT_NICKNAME_RETRY_LIMIT_EXCEEDED);
+            }
+        } while (userAccountRepository.findByNickname(nickname).isPresent());
+
+        return nickname;
+    }
+
+    /**
+     * 클라이머_12341234 형식의 닉네임을 생성합니다.
+     */
+    private String generateClimberNickname() {
+        int randomNumber = 10_000_000 + ThreadLocalRandom.current()
+            .nextInt(0, 90_000_000); // 8자리 숫자 생성 (10_000_000 ~ 99_999_999)
+        return "클라이머_" + randomNumber;
     }
 }

@@ -2,11 +2,12 @@ package com.climbx.climbx.user.service;
 
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
+import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
-import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
+import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
@@ -23,12 +24,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -38,6 +42,7 @@ public class UserService {
     private final UserStatRepository userStatRepository;
     private final SubmissionRepository submissionRepository;
     private final UserRankingHistoryRepository userRankingHistoryRepository;
+    private final S3Service s3Service;
 
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
@@ -67,10 +72,10 @@ public class UserService {
     }
 
     @Transactional
-    public UserProfileResponseDto modifyUserProfile(
+    public UserProfileResponseDto modifyUserProfileInfo(
         Long userId,
         String currentNickname,
-        UserProfileModifyRequestDto userProfileDto
+        UserProfileInfoModifyRequestDto requestDto
     ) {
         UserAccountEntity userAccountEntity = findUserById(userId);
 
@@ -78,16 +83,40 @@ public class UserService {
             throw new NicknameMismatchException(currentNickname, userAccountEntity.nickname());
         }
 
-        if (!currentNickname.equals(userProfileDto.newNickname())
-            && userAccountRepository.existsByNickname(userProfileDto.newNickname())) {
-            throw new DuplicateNicknameException(userProfileDto.newNickname());
+        if (!currentNickname.equals(requestDto.newNickname())
+            && userAccountRepository.existsByNickname(requestDto.newNickname())) {
+            throw new DuplicateNicknameException(requestDto.newNickname());
         }
 
-        userAccountEntity.modifyProfile(
-            userProfileDto.newNickname(),
-            userProfileDto.newStatusMessage(),
-            userProfileDto.newProfileImageUrl()
+        userAccountEntity.modifyProfileInfo(
+            requestDto.newNickname(),
+            requestDto.newStatusMessage()
         );
+
+        return buildProfile(userAccountEntity);
+    }
+
+    @Transactional
+    public UserProfileResponseDto updateUserProfileImage(
+        Long userId,
+        String nickname,
+        MultipartFile profileImage
+    ) {
+        UserAccountEntity userAccountEntity = findUserById(userId);
+
+        if (!nickname.equals(userAccountEntity.nickname())) {
+            throw new NicknameMismatchException(nickname, userAccountEntity.nickname());
+        }
+
+        // 프로필 이미지 업로드 처리
+        // 입력 이미지가 없다면 null을 저장하여 기본 프로필 이미지로 설정
+        String profileImageUrl = null;
+        if (profileImage != null && !profileImage.isEmpty()) {
+            profileImageUrl = s3Service.uploadProfileImage(userId, profileImage);
+        }
+
+        log.info("프로필 이미지 URL: {}", profileImageUrl == null ? "기본 프로필 이미지(null)" : profileImageUrl);
+        userAccountEntity.updateProfileImageUrl(profileImageUrl);
 
         return buildProfile(userAccountEntity);
     }

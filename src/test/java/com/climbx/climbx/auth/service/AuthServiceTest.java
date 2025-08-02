@@ -145,6 +145,7 @@ class AuthServiceTest {
             given(userAuthRepository.findByProviderAndProviderId(
                 OAuth2ProviderType.KAKAO, "67890")
             ).willReturn(Optional.empty());
+            given(userAccountRepository.findByNickname(anyString())).willReturn(Optional.empty());
             given(userAccountRepository.save(any())).willAnswer(invocation -> {
                 UserAccountEntity entity = invocation.getArgument(0);
                 return UserAccountEntity.builder()

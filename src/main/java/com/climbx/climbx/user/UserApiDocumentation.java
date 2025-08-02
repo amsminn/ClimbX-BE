@@ -3,7 +3,7 @@ package com.climbx.climbx.user;
 import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
-import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
+import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.enums.CriteriaType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -21,6 +22,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 @Validated
 @Tag(name = "User", description = "사용자 관련 API")
@@ -324,7 +326,7 @@ public interface UserApiDocumentation {
             )
         )
     })
-    UserProfileResponseDto modifyUserProfile(
+    UserProfileResponseDto modifyUserProfileInfo(
         @Parameter(hidden = true)
         Long userId,
         @Parameter(
@@ -336,10 +338,168 @@ public interface UserApiDocumentation {
         @NotBlank
         String nickname,
         @Parameter(
-            description = "프로필 수정 요청 데이터",
-            required = true
+            description = "사용자 프로필 수정 요청 데이터"
         )
-        @jakarta.validation.Valid UserProfileModifyRequestDto request
+        @Valid
+        UserProfileInfoModifyRequestDto modifyRequest
+    );
+
+    @Operation(
+        summary = "사용자 프로필 이미지 수정",
+        description = "현재 로그인한 사용자의 프로필 이미지를 수정합니다. 이미지 파일을 업로드하여 S3에 저장하고 CDN URL을 반환합니다."
+    )
+    @SecurityRequirement(name = "Bearer Authentication")
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200",
+            description = "프로필 이미지 수정 성공",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "프로필 이미지 수정 성공",
+                    value = """
+                        {
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-15T10:00:00Z",
+                          "responseTimeMs": 234,
+                          "path": "/api/users/클라이머123/profile-image",
+                          "data": {
+                            "nickname": "클라이머123",
+                            "statusMessage": "열심히 등반 중!",
+                            "profileImageUrl": "https://cdn.climbx.com/profile-images/123_1642248000000.jpg",
+                            "ranking": 15,
+                            "rating": 1500,
+                            "categoryRatings": {},
+                            "currentStreak": 7,
+                            "longestStreak": 21,
+                            "solvedProblemsCount": 156,
+                            "rivalCount": 8
+                          }
+                        }
+                        """
+                )
+            )
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400",
+            description = "잘못된 요청 또는 유효하지 않은 이미지 파일",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "잘못된 이미지 파일",
+                    value = """
+                        {
+                          "httpStatus": 400,
+                          "statusMessage": "이미지 파일만 업로드 가능합니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 89,
+                          "path": "/api/users/클라이머123/profile-image",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401",
+            description = "인증되지 않은 사용자",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "인증되지 않은 사용자",
+                    value = """
+                        {
+                          "httpStatus": 401,
+                          "statusMessage": "인증이 필요합니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 23,
+                          "path": "/api/users/클라이머123/profile-image",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "403",
+            description = "권한 없음 (다른 사용자의 프로필)",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "권한 없음",
+                    value = """
+                        {
+                          "httpStatus": 403,
+                          "statusMessage": "다른 사용자의 프로필을 수정할 수 없습니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 45,
+                          "path": "/api/users/다른사용자/profile-image",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "413",
+            description = "파일 크기 초과",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "파일 크기 초과",
+                    value = """
+                        {
+                          "httpStatus": 413,
+                          "statusMessage": "이미지 파일 크기는 5MB 이하여야 합니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 134,
+                          "path": "/api/users/클라이머123/profile-image",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "500",
+            description = "서버 오류 (S3 업로드 실패 등)",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "서버 오류",
+                    value = """
+                        {
+                          "httpStatus": 500,
+                          "statusMessage": "이미지 업로드에 실패했습니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 567,
+                          "path": "/api/users/클라이머123/profile-image",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        )
+    })
+    UserProfileResponseDto updateUserProfileImage(
+        @Parameter(hidden = true)
+        Long userId,
+        @Parameter(
+            name = "nickname",
+            description = "현재 사용자 닉네임",
+            required = true,
+            example = "클라이머123"
+        )
+        @NotBlank
+        String nickname,
+        @Parameter(
+            name = "profileImage",
+            description = "업로드할 프로필 이미지 파일 (JPG, PNG, GIF 지원, 최대 5MB)",
+            required = false,
+            content = @Content(mediaType = "multipart/form-data")
+        )
+        MultipartFile profileImage
     );
 
     @Operation(
@@ -668,4 +828,5 @@ public interface UserApiDocumentation {
         )
         LocalDate to
     );
-} 
+}
+
