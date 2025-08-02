@@ -182,7 +182,10 @@ public class AuthService {
         // 4. 마지막에 사용자 계정 soft delete
         userAccount.softDelete();
 
-        log.info("회원 탈퇴 처리 완료: userId={}, nickname={}", userId, userAccount.nickname());
+        log.info("회원 탈퇴 처리 완료: userId={}, nickname={}, total deleted resources={}", userId,
+            userAccount.nickname(),
+            deletedUserStats + deletedUserAuths + deletedVideos + deletedSubmissions
+                + deletedHistories);
     }
 
     /**
