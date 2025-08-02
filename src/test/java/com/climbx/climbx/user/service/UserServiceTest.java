@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.service.S3Service;
+import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
@@ -61,6 +62,9 @@ public class UserServiceTest {
     @Mock
     private S3Service s3Service;
 
+    @Mock
+    private RatingUtil ratingUtil;
+
     @InjectMocks
     private UserService userService;
 
@@ -100,6 +104,9 @@ public class UserServiceTest {
             given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
                 1400, userStat3.updatedAt(), 3L)
             ).willReturn(10);
+            given(ratingUtil.getTier(1200)).willReturn("BRONZE1");
+            given(ratingUtil.getTier(1300)).willReturn("SILVER1");
+            given(ratingUtil.getTier(1400)).willReturn("GOLD1");
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -336,7 +343,7 @@ public class UserServiceTest {
             assertThat(firstUser.nickname()).isEqualTo("pro_player1");
             assertThat(firstUser.rating()).isEqualTo(2000L);
             assertThat(firstUser.ranking()).isEqualTo(3L);
-            assertThat(firstUser.solvedProblemsCount()).isEqualTo(100L);
+            assertThat(firstUser.solvedCount()).isEqualTo(100L);
 
             UserProfileResponseDto secondUser = result.get(1);
             assertThat(secondUser.nickname()).isEqualTo("pro_player2");
@@ -432,6 +439,7 @@ public class UserServiceTest {
             given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
                 UserFixture.DEFAULT_RATING, userStatEntity.updatedAt(), userId)
             ).willReturn(ratingRank);
+            given(ratingUtil.getTier(UserFixture.DEFAULT_RATING)).willReturn("BRONZE1");
 
             // when
             UserProfileResponseDto result = userService.getUserById(userId);
@@ -496,6 +504,7 @@ public class UserServiceTest {
             given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
                 UserFixture.DEFAULT_RATING, userStatEntity.updatedAt(), userId)
             ).willReturn(ratingRank);
+            given(ratingUtil.getTier(UserFixture.DEFAULT_RATING)).willReturn("BRONZE1");
 
             // when
             UserProfileResponseDto result = userService.getUserByNickname(nickname);
@@ -600,6 +609,7 @@ public class UserServiceTest {
             given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
                 rating, userStatEntity.updatedAt(), userId)
             ).willReturn(ratingRank);
+            given(ratingUtil.getTier(rating)).willReturn("SILVER1");
 
             // when
             UserProfileResponseDto result = userService.modifyUserProfileInfo(userId,

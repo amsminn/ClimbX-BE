@@ -23,7 +23,7 @@ public record UserRankingResponseDto(
             .rating(user.rating())
             .currentStreak(user.currentStreak())
             .longestStreak(user.longestStreak())
-            .solvedCount(user.solvedProblemsCount())
+            .solvedCount(user.solvedCount())
             .build();
     }
 }

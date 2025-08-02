@@ -10,9 +10,17 @@ import com.climbx.climbx.admin.submissions.dto.SubmissionReviewRequestDto;
 import com.climbx.climbx.admin.submissions.dto.SubmissionReviewResponseDto;
 import com.climbx.climbx.admin.submissions.exception.StatusModifyToPendingException;
 import com.climbx.climbx.common.enums.StatusType;
+import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.entity.UserAccountEntity;
+import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.exception.UserNotFoundException;
+import com.climbx.climbx.user.repository.UserStatRepository;
+import com.climbx.climbx.video.entity.VideoEntity;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AdminSubmissionService 테스트")
@@ -33,6 +42,12 @@ class AdminSubmissionServiceTest {
     @Mock
     private SubmissionRepository submissionRepository;
 
+    @Mock
+    private UserStatRepository userStatRepository;
+
+    @Mock
+    private RatingUtil ratingUtil;
+
     @Nested
     @DisplayName("reviewSubmission 메서드 테스트")
     class ReviewSubmissionTest {
@@ -42,19 +57,60 @@ class AdminSubmissionServiceTest {
         void givenValidPendingSubmission_whenReviewWithAccepted_thenSuccess() {
             // Given
             UUID videoId = UUID.randomUUID();
+            Long userId = 1L;
             String reason = "승인 완료";
+            int oldRating = 1200;
+            int newRating = 1250;
+
             SubmissionReviewRequestDto request = SubmissionReviewRequestDto.builder()
                 .status(StatusType.ACCEPTED)
                 .reason(reason)
                 .build();
 
+            VideoEntity videoEntity = VideoEntity.builder()
+                .videoId(videoId)
+                .userId(userId)
+                .build();
+
             SubmissionEntity submission = SubmissionEntity.builder()
                 .videoId(videoId)
                 .status(StatusType.PENDING)
+                .videoEntity(videoEntity)
                 .build();
+
+            UserAccountEntity userAccount = UserAccountEntity.builder()
+                .userId(userId)
+                .nickname("testUser")
+                .build();
+
+            UserStatEntity userStat = UserStatEntity.builder()
+                .userId(userId)
+                .rating(oldRating)
+                .submissionCount(10)
+                .solvedCount(5)
+                .contributionCount(3)
+                .userAccountEntity(userAccount)
+                .build();
+
+            List<ProblemEntity> topProblems = List.of(
+                ProblemEntity.builder().problemRating(1300).build(),
+                ProblemEntity.builder().problemRating(1250).build(),
+                ProblemEntity.builder().problemRating(1200).build()
+            );
 
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(submission));
+            given(userStatRepository.findById(userId))
+                .willReturn(Optional.of(userStat));
+            given(submissionRepository.getUserTopProblems(userId, StatusType.ACCEPTED,
+                Pageable.ofSize(50)))
+                .willReturn(topProblems);
+            given(ratingUtil.calculateUserRating(
+                List.of(1300, 1250, 1200),
+                userStat.submissionCount(),
+                userStat.solvedCount() + 1, // incrementSolvedProblemsCount 호출 후
+                userStat.contributionCount()
+            )).willReturn(newRating);
 
             // When
             SubmissionReviewResponseDto result = adminSubmissionService.reviewSubmission(videoId,
@@ -64,8 +120,52 @@ class AdminSubmissionServiceTest {
             assertThat(result.videoId()).isEqualTo(videoId);
             assertThat(result.status()).isEqualTo(StatusType.ACCEPTED);
             assertThat(result.reason()).isEqualTo(reason);
+            assertThat(userStat.rating()).isEqualTo(newRating);
+            assertThat(userStat.solvedCount()).isEqualTo(6); // 5 + 1
 
             then(submissionRepository).should(times(1)).findById(videoId);
+            then(userStatRepository).should(times(1)).findById(userId);
+            then(submissionRepository).should(times(1))
+                .getUserTopProblems(userId, StatusType.ACCEPTED, Pageable.ofSize(50));
+            then(ratingUtil).should(times(1))
+                .calculateUserRating(List.of(1300, 1250, 1200), 10, 6, 3);
+        }
+
+        @Test
+        @DisplayName("ACCEPTED 승인 시 사용자 통계를 찾을 수 없으면 UserNotFoundException이 발생한다")
+        void givenAcceptedStatusButUserNotFound_whenReview_thenThrowUserNotFoundException() {
+            // Given
+            UUID videoId = UUID.randomUUID();
+            Long userId = 1L;
+            String reason = "승인 완료";
+
+            SubmissionReviewRequestDto request = SubmissionReviewRequestDto.builder()
+                .status(StatusType.ACCEPTED)
+                .reason(reason)
+                .build();
+
+            VideoEntity videoEntity = VideoEntity.builder()
+                .videoId(videoId)
+                .userId(userId)
+                .build();
+
+            SubmissionEntity submission = SubmissionEntity.builder()
+                .videoId(videoId)
+                .status(StatusType.PENDING)
+                .videoEntity(videoEntity)
+                .build();
+
+            given(submissionRepository.findById(videoId))
+                .willReturn(Optional.of(submission));
+            given(userStatRepository.findById(userId))
+                .willReturn(Optional.empty());
+
+            // When & Then
+            assertThatThrownBy(() -> adminSubmissionService.reviewSubmission(videoId, request))
+                .isInstanceOf(UserNotFoundException.class);
+
+            then(submissionRepository).should(times(1)).findById(videoId);
+            then(userStatRepository).should(times(1)).findById(userId);
         }
 
         @Test
@@ -73,19 +173,43 @@ class AdminSubmissionServiceTest {
         void givenValidPendingSubmission_whenReviewWithRejected_thenSuccess() {
             // Given
             UUID videoId = UUID.randomUUID();
+            Long userId = 1L;
             String reason = "부적절한 내용";
+
             SubmissionReviewRequestDto request = SubmissionReviewRequestDto.builder()
                 .status(StatusType.REJECTED)
                 .reason(reason)
                 .build();
 
+            VideoEntity videoEntity = VideoEntity.builder()
+                .videoId(videoId)
+                .userId(userId)
+                .build();
+
             SubmissionEntity submission = SubmissionEntity.builder()
                 .videoId(videoId)
                 .status(StatusType.PENDING)
+                .videoEntity(videoEntity)
+                .build();
+
+            UserAccountEntity userAccount = UserAccountEntity.builder()
+                .userId(userId)
+                .nickname("testUser")
+                .build();
+
+            UserStatEntity userStat = UserStatEntity.builder()
+                .userId(userId)
+                .rating(1200)
+                .submissionCount(10)
+                .solvedCount(5)
+                .contributionCount(3)
+                .userAccountEntity(userAccount)
                 .build();
 
             given(submissionRepository.findById(videoId))
                 .willReturn(Optional.of(submission));
+            given(userStatRepository.findById(userId))
+                .willReturn(Optional.of(userStat));
 
             // When
             SubmissionReviewResponseDto result = adminSubmissionService.reviewSubmission(videoId,
@@ -95,8 +219,20 @@ class AdminSubmissionServiceTest {
             assertThat(result.videoId()).isEqualTo(videoId);
             assertThat(result.status()).isEqualTo(StatusType.REJECTED);
             assertThat(result.reason()).isEqualTo(reason);
+            // REJECTED의 경우 레이팅이 변경되지 않아야 함
+            assertThat(userStat.rating()).isEqualTo(1200);
+            assertThat(userStat.solvedCount()).isEqualTo(5); // 변경되지 않음
 
             then(submissionRepository).should(times(1)).findById(videoId);
+            then(userStatRepository).should(times(1)).findById(userId);
+            // REJECTED의 경우 레이팅 계산 관련 메서드는 호출되지 않아야 함
+            then(submissionRepository).should(times(0))
+                .getUserTopProblems(userId, StatusType.ACCEPTED, Pageable.ofSize(50));
+            then(ratingUtil).should(times(0))
+                .calculateUserRating(org.mockito.ArgumentMatchers.any(),
+                    org.mockito.ArgumentMatchers.anyInt(),
+                    org.mockito.ArgumentMatchers.anyInt(),
+                    org.mockito.ArgumentMatchers.anyInt());
         }
 
         @Test

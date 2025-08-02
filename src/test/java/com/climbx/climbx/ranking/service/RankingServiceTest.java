@@ -56,7 +56,7 @@ class RankingServiceTest {
                 .rating(1500)
                 .currentStreak(10)
                 .longestStreak(20)
-                .solvedProblemsCount(50)
+                .solvedCount(50)
                 .rivalCount(5)
                 .build();
 
@@ -66,7 +66,7 @@ class RankingServiceTest {
                 .rating(1200)
                 .currentStreak(5)
                 .longestStreak(15)
-                .solvedProblemsCount(30)
+                .solvedCount(30)
                 .rivalCount(3)
                 .build();
 
@@ -109,7 +109,7 @@ class RankingServiceTest {
                 .rating(1500)
                 .currentStreak(10)
                 .longestStreak(20)
-                .solvedProblemsCount(50)
+                .solvedCount(50)
                 .rivalCount(5)
                 .build();
 
@@ -147,7 +147,7 @@ class RankingServiceTest {
                 .rating(1500)
                 .currentStreak(10)
                 .longestStreak(20)
-                .solvedProblemsCount(50)
+                .solvedCount(50)
                 .rivalCount(5)
                 .build();
 
@@ -185,7 +185,7 @@ class RankingServiceTest {
                 .rating(1500)
                 .currentStreak(10)
                 .longestStreak(20)
-                .solvedProblemsCount(50)
+                .solvedCount(50)
                 .rivalCount(5)
                 .build();
 
@@ -223,7 +223,7 @@ class RankingServiceTest {
                 .rating(1500)
                 .currentStreak(10)
                 .longestStreak(20)
-                .solvedProblemsCount(50)
+                .solvedCount(50)
                 .rivalCount(5)
                 .build();
 
@@ -261,7 +261,7 @@ class RankingServiceTest {
                 .rating(1500)
                 .currentStreak(10)
                 .longestStreak(20)
-                .solvedProblemsCount(50)
+                .solvedCount(50)
                 .rivalCount(5)
                 .build();
 

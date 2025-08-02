@@ -4,12 +4,19 @@ import com.climbx.climbx.admin.submissions.dto.SubmissionReviewRequestDto;
 import com.climbx.climbx.admin.submissions.dto.SubmissionReviewResponseDto;
 import com.climbx.climbx.admin.submissions.exception.StatusModifyToPendingException;
 import com.climbx.climbx.common.enums.StatusType;
+import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.exception.UserNotFoundException;
+import com.climbx.climbx.user.repository.UserStatRepository;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminSubmissionService {
 
     private final SubmissionRepository submissionRepository;
+    private final UserStatRepository userStatRepository;
+    private final RatingUtil ratingUtil;
 
     @Transactional
     public SubmissionReviewResponseDto reviewSubmission(
@@ -43,10 +52,45 @@ public class AdminSubmissionService {
         log.info("Reviewing succeed: videoId: {}, status: {}, reason: {}",
             submission.videoId(), submission.status(), submission.statusReason());
 
+        Long userId = submission.videoEntity().userId();
+
+        UserStatEntity userStat = userStatRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
+
+        int prevRating = userStat.rating();
+        log.info("User {} (ID: {}) previous rating: {}", userStat.userAccountEntity().nickname(),
+            userId, prevRating);
+
+        if (submission.status() == StatusType.ACCEPTED) {
+            userStat.incrementSolvedProblemsCount();
+            int newRating = ratingUtil.calculateUserRating(
+                getUserTopProblemRatings(userId),
+                userStat.submissionCount(),
+                userStat.solvedCount(),
+                userStat.contributionCount()
+            );
+
+            userStat.setRating(newRating);
+            // Category Rating은 batch에서 처리
+
+            log.info("User {} (ID: {}) new rating: {}", userStat.userAccountEntity().nickname(),
+                userId, newRating);
+        }
+
         return SubmissionReviewResponseDto.builder()
             .videoId(submission.videoId())
             .status(submission.status())
             .reason(submission.statusReason())
             .build();
+    }
+
+    private List<Integer> getUserTopProblemRatings(Long userId) {
+        return submissionRepository.getUserTopProblems(
+                userId,
+                StatusType.ACCEPTED,
+                Pageable.ofSize(50)
+            ).stream()
+            .map(ProblemEntity::problemRating)
+            .toList();
     }
 }

@@ -14,7 +14,7 @@ public enum RankingCriteria {
     RATING("rating"),
     STREAK("currentStreak"),
     LONGESTSTREAK("longestStreak"),
-    SOLVEDPROBLEMSCOUNT("solvedProblemsCount");
+    SOLVEDPROBLEMSCOUNT("solvedCount");
 
     private final String columnName;
 

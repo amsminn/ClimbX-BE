@@ -17,6 +17,7 @@ import com.climbx.climbx.submission.exception.DuplicateSubmissionException;
 import com.climbx.climbx.submission.exception.ForbiddenSubmissionException;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.entity.UserAccountEntity;
+import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.video.entity.VideoEntity;
@@ -118,6 +119,9 @@ public class SubmissionService {
             .build();
 
         submissionRepository.save(submissionEntity);
+
+        UserStatEntity userStat = user.userStatEntity();
+        userStat.incrementSubmissionCount();
 
         return SubmissionResponseDto.from(submissionEntity);
     }

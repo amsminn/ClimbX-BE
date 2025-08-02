@@ -3,6 +3,7 @@ package com.climbx.climbx.user.service;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.service.S3Service;
+import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
@@ -42,6 +43,7 @@ public class UserService {
     private final SubmissionRepository submissionRepository;
     private final UserRankingHistoryRepository userRankingHistoryRepository;
     private final S3Service s3Service;
+    private final RatingUtil ratingUtil;
 
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
@@ -168,6 +170,7 @@ public class UserService {
 
     private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
         UserStatEntity userStat = findUserStatByUserId(userAccount.userId());
+        String tier = ratingUtil.getTier(userStat.rating());
         Integer ratingRank = userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
             userStat.rating(), userStat.updatedAt(), userStat.userId());
         Map<String, Integer> categoryRatings = Collections.emptyMap();
@@ -175,6 +178,7 @@ public class UserService {
         return UserProfileResponseDto.from(
             userAccount,
             userStat,
+            tier,
             ratingRank,
             categoryRatings
         );

@@ -57,14 +57,38 @@ public class UserStatEntity extends BaseTimeEntity {
     private Integer longestStreak = 0; // 가장 긴 연속 출석일, 기본값은 0
 
     @Builder.Default
-    @Column(name = "solved_problems_count", nullable = false)
+    @Column(name = "solved_count", nullable = false)
     @NotNull
     @Min(0)
-    private Integer solvedProblemsCount = 0; // 해결한 문제 수, 기본값은 0
+    private Integer solvedCount = 0; // 해결한 문제 수, 기본값은 0
+
+    @Builder.Default
+    @Column(name = "submission_count", nullable = false)
+    @NotNull
+    @Min(0)
+    private Integer submissionCount = 0; // 제출한 문제 수, 기본값은 0
+
+    @Builder.Default
+    @Column(name = "contribution_count", nullable = false)
+    @NotNull
+    @Min(0)
+    private Integer contributionCount = 0; // 기여한 문제 수, 기본값은 0
 
     @Builder.Default
     @Column(name = "rival_count", nullable = false)
     @NotNull
     @Min(0)
     private Integer rivalCount = 0; // 라이벌 수, 기본값은 0
+
+    public void incrementSubmissionCount() {
+        this.submissionCount++;
+    }
+
+    public void incrementSolvedProblemsCount() {
+        this.solvedCount++;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
 }
