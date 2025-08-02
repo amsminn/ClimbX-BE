@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
@@ -40,7 +41,7 @@ public interface RankingApiDocumentation {
             """
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "랭킹 조회 성공",
             content = @Content(
@@ -86,7 +87,7 @@ public interface RankingApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 요청 파라미터",
             content = @Content(

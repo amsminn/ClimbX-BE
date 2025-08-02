@@ -10,10 +10,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,7 +31,7 @@ public interface AuthApiDocumentation {
         description = "OAuth2 ID Token을 검증하고 JWT 토큰을 반환합니다."
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "201",
             description = "인증 성공",
             content = @Content(
@@ -52,7 +54,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 ID Token",
             content = @Content(
@@ -72,7 +74,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "401",
             description = "인증 실패",
             content = @Content(
@@ -115,7 +117,7 @@ public interface AuthApiDocumentation {
                     """
             )
         )
-        @jakarta.validation.Valid CallbackRequestDto request,
+        @Valid CallbackRequestDto request,
         @Parameter(hidden = true)
         HttpServletResponse response
     );
@@ -125,7 +127,7 @@ public interface AuthApiDocumentation {
         description = "HTTP Only 쿠키에 저장된 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다."
     )
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "201",
             description = "토큰 갱신 성공",
             content = @Content(
@@ -148,7 +150,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
@@ -168,7 +170,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "401",
             description = "유효하지 않은 리프레시 토큰",
             content = @Content(
@@ -206,7 +208,7 @@ public interface AuthApiDocumentation {
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "200",
             description = "사용자 정보 조회 성공",
             content = @Content(
@@ -233,7 +235,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "401",
             description = "인증되지 않은 사용자",
             content = @Content(
@@ -253,7 +255,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "403",
             description = "권한이 없는 사용자",
             content = @Content(
@@ -273,7 +275,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
             content = @Content(
@@ -305,7 +307,7 @@ public interface AuthApiDocumentation {
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "204",
             description = "로그아웃 성공",
             content = @Content(
@@ -325,7 +327,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
@@ -357,7 +359,7 @@ public interface AuthApiDocumentation {
     )
     @SecurityRequirement(name = "Bearer Authentication")
     @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "204",
             description = "회원 탈퇴 성공",
             content = @Content(
@@ -377,7 +379,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "400",
             description = "잘못된 요청",
             content = @Content(
@@ -397,7 +399,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "401",
             description = "인증 실패",
             content = @Content(
@@ -417,7 +419,7 @@ public interface AuthApiDocumentation {
                 )
             )
         ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+        @ApiResponse(
             responseCode = "404",
             description = "사용자를 찾을 수 없음",
             content = @Content(
