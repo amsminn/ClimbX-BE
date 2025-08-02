@@ -7,7 +7,6 @@ import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +27,11 @@ public class AdminSubmissionService {
         SubmissionReviewRequestDto request
     ) {
         // 검토 요청 상태가 PENDING인 경우 예외 처리
-        Optional.of(request.status())
-            .filter(s -> s.equals(StatusType.PENDING))
-            .ifPresent(s -> {
-                log.warn("Status를 PENDING으로 변경 시도 videoId: {}, status: {}, reason: {}",
-                    videoId, request.status(), request.reason());
-                throw new StatusModifyToPendingException(videoId);
-            });
+        if (request.status() == StatusType.PENDING) {
+            log.warn("Status를 PENDING으로 변경 시도 videoId: {}, status: {}, reason: {}",
+                videoId, request.status(), request.reason());
+            throw new StatusModifyToPendingException(videoId);
+        }
 
         // PENDING 상태의 제출 조회
         SubmissionEntity submission = submissionRepository.findById(videoId)
