@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
         );
         ApiResponseDto<Void> response = ApiResponseDto.error(
             e.errorCode().status(),
-            e.errorCode().message()
+            e.errorCode().message() + (e.context().isEmpty() ? "" : " - " + e.context())
         );
         return ResponseEntity
             .status(e.errorCode().status())
