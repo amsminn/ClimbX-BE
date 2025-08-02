@@ -73,12 +73,30 @@ public class UserFixture {
         String profileImageUrl,
         String role
     ) {
+        UserStatEntity userStat = createUserStatEntity(userId);
         return UserAccountEntity.builder()
             .userId(userId)
             .nickname(nickname)
             .statusMessage(statusMessage)
             .profileImageUrl(profileImageUrl)
             .role(RoleType.valueOf(role))
+            .userStatEntity(userStat)
+            .build();
+    }
+
+    // UserAccountEntity와 UserStatEntity를 함께 생성하는 메서드
+    public static UserAccountEntity createUserAccountEntityWithStats(Long userId, String nickname) {
+        UserStatEntity userStat = createUserStatEntity(userId);
+        UserAccountEntity user = createUserAccountEntity(userId, nickname);
+        
+        // Builder 패턴을 사용하여 userStatEntity 설정
+        return UserAccountEntity.builder()
+            .userId(user.userId())
+            .nickname(user.nickname())
+            .statusMessage(user.statusMessage())
+            .profileImageUrl(user.profileImageUrl())
+            .role(user.role())
+            .userStatEntity(userStat)
             .build();
     }
 
@@ -121,7 +139,7 @@ public class UserFixture {
             .rating(rating)
             .currentStreak(currentStreak)
             .longestStreak(longestStreak)
-            .solvedProblemsCount(solvedProblemsCount)
+            .solvedCount(solvedProblemsCount)
             .rivalCount(rivalCount)
             .build();
     }
@@ -145,10 +163,13 @@ public class UserFixture {
             .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
             .ranking(ranking)
             .rating(rating)
+            .tier("BRONZE1")
             .categoryRatings(Collections.emptyMap())
             .currentStreak(DEFAULT_CURRENT_STREAK)
             .longestStreak(DEFAULT_LONGEST_STREAK)
-            .solvedProblemsCount(DEFAULT_SOLVED_PROBLEMS_COUNT)
+            .solvedCount(DEFAULT_SOLVED_PROBLEMS_COUNT)
+            .submissionCount(0)
+            .contributionCount(0)
             .rivalCount(DEFAULT_RIVAL_COUNT)
             .build();
     }
@@ -170,10 +191,13 @@ public class UserFixture {
             .profileImageUrl(profileImageUrl)
             .ranking(ranking)
             .rating(rating)
+            .tier("SILVER1")
             .categoryRatings(Collections.emptyMap())
             .currentStreak(currentStreak)
             .longestStreak(longestStreak)
-            .solvedProblemsCount(solvedProblemsCount)
+            .solvedCount(solvedProblemsCount)
+            .submissionCount(0)
+            .contributionCount(0)
             .rivalCount(rivalCount)
             .build();
     }
