@@ -250,6 +250,7 @@ public class DomainEntity extends BaseTimeEntity {
 #### Request DTO (Record 패턴)
 ```java
 public record DomainCreateRequestDto(
+    
     @NotBlank(message = "필수 필드는 비어있을 수 없습니다.")
     @Size(max = 100, message = "최대 100자까지 입력 가능합니다.")
     String requiredField,
@@ -268,6 +269,7 @@ public record DomainCreateRequestDto(
 ```java
 @Builder
 public record DomainResponseDto(
+
     Long id,
     String requiredField,
     String optionalField,
@@ -282,8 +284,6 @@ public record DomainResponseDto(
                 .createdAt(entity.createdAt())
                 .updatedAt(entity.updatedAt())
                 .build();
-    }
-}
     }
 }
 ```

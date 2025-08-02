@@ -1,17 +1,6 @@
 ---
 description: "Testing guidelines and best practices for unit and integration tests, including BDD-style testing with Mockito. Enforces use of then() instead of verify() for BDD consistency."
-globs: ["**/*Test.java", "**/*Tests.java", "src/test/**/*.java        given(userService.getUserByNickname("testuser")).willReturn(response);
-        
-        // when & then
-        mockMvc.perform(get("/api/users/testuser")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.httpStatus").value(200))
-                .andExpect(jsonPath("$.statusMessage").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.nickname").value("testuser"))
-                .andExpect(jsonPath("$.data.rating").value(1500));
-        
-        then(userService).should().getUserByNickname("testuser");ply: true
+globs: ["**/*Test.java", "**/*Tests.java", "src/test/**/*.java"]
 ---
 
 # Testing Guidelines
