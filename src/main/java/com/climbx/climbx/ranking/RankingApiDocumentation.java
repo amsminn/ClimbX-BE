@@ -29,7 +29,7 @@ public interface RankingApiDocumentation {
             - `rating`: 레이팅 기준
             - `streak`: 연속 출석일 기준
             - `longestStreak`: 최장 연속 출석일 기준
-            - `solvedProblemsCount`: 해결한 문제 수 기준
+            - `solvedCount`: 해결한 문제 수 기준
             
             **정렬 순서**:
             - `desc`: 내림차순 (기본값)
@@ -115,7 +115,7 @@ public interface RankingApiDocumentation {
     RankingResponseDto getRanking(
         @Parameter(
             name = "criteria",
-            description = "랭킹 기준 (rating, streak, longestStreak, solvedProblemsCount)",
+            description = "랭킹 기준 (rating, streak, longestStreak, solvedCount)",
             required = true,
             example = "rating"
         )

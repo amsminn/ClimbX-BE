@@ -18,13 +18,19 @@ public record UserProfileResponseDto(
 
     Integer rating,
 
+    String tier,
+
     Map<String, Integer> categoryRatings,
 
     Integer currentStreak,
 
     Integer longestStreak,
 
-    Integer solvedProblemsCount,
+    Integer solvedCount,
+
+    Integer submissionCount,
+
+    Integer contributionCount,
 
     Integer rivalCount
 ) {
@@ -32,6 +38,7 @@ public record UserProfileResponseDto(
     public static UserProfileResponseDto from(
         UserAccountEntity account,
         UserStatEntity stat,
+        String tier,
         Integer ranking,
         Map<String, Integer> categoryRatings) {
 
@@ -39,12 +46,15 @@ public record UserProfileResponseDto(
             .nickname(account.nickname())
             .statusMessage(account.statusMessage())
             .profileImageUrl(account.profileImageUrl())
+            .tier(tier)
             .ranking(ranking)
             .rating(stat.rating())
             .categoryRatings(categoryRatings)
             .currentStreak(stat.currentStreak())
             .longestStreak(stat.longestStreak())
-            .solvedProblemsCount(stat.solvedProblemsCount())
+            .solvedCount(stat.solvedCount())
+            .submissionCount(stat.submissionCount())
+            .contributionCount(stat.contributionCount())
             .rivalCount(stat.rivalCount())
             .build();
     }

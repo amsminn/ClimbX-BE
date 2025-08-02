@@ -50,8 +50,8 @@ public interface UserStatRepository extends JpaRepository<UserStatEntity, Long> 
 //        return countByLongestStreakGreaterThan(longestStreak) + 1;
 //    }
 //
-//    long countBySolvedProblemsCountGreaterThan(Long solvedProblemsCount);
-//    default Long findSolvedProblemsCountRank(Long solvedProblemsCount) {
-//        return countBySolvedProblemsCountGreaterThan(solvedProblemsCount) + 1;
+//    long countBySolvedProblemsCountGreaterThan(Long solvedCount);
+//    default Long findSolvedProblemsCountRank(Long solvedCount) {
+//        return countBySolvedProblemsCountGreaterThan(solvedCount) + 1;
 //    }
 }
