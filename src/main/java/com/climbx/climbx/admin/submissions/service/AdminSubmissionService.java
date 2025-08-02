@@ -60,23 +60,18 @@ public class AdminSubmissionService {
         int prevRating = userStat.rating();
         log.info("User {} (ID: {}) previous rating: {}", userStat.userAccountEntity().nickname(),
             userId, prevRating);
+
         if (submission.status() == StatusType.ACCEPTED) {
             userStat.incrementSolvedProblemsCount();
-            List<Integer> problemRatings = submissionRepository.getUserTopProblems(
-                    userId,
-                    StatusType.ACCEPTED,
-                    Pageable.ofSize(50)
-                ).stream()
-                .map(ProblemEntity::problemRating).toList();
-
             int newRating = ratingUtil.calculateUserRating(
-                problemRatings,
+                getUserTopProblemRatings(userId),
                 userStat.submissionCount(),
                 userStat.solvedCount(),
                 userStat.contributionCount()
             );
 
             userStat.setRating(newRating);
+            // Category Rating은 batch에서 처리
 
             log.info("User {} (ID: {}) new rating: {}", userStat.userAccountEntity().nickname(),
                 userId, newRating);
@@ -87,5 +82,15 @@ public class AdminSubmissionService {
             .status(submission.status())
             .reason(submission.statusReason())
             .build();
+    }
+
+    private List<Integer> getUserTopProblemRatings(Long userId) {
+        return submissionRepository.getUserTopProblems(
+                userId,
+                StatusType.ACCEPTED,
+                Pageable.ofSize(50)
+            ).stream()
+            .map(ProblemEntity::problemRating)
+            .toList();
     }
 }
