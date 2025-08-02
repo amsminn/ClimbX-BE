@@ -21,7 +21,8 @@ public class RatingUtil {
 
     public String getTier(int rating) {
         TierDefinitionDto tierDefinition = getTierDefinition(rating);
-        return tierDefinition.name() + tierDefinition.level().toString();
+        return tierDefinition.name() + (tierDefinition.level() != null ? tierDefinition.level()
+            .toString() : "");
     }
 
     public int calculateUserRating(
