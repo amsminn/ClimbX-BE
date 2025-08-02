@@ -8,18 +8,19 @@
 
 ## 환경 변수 설정
 
-```bash
+```properties
 # JWT 설정
 JWT_SECRET=your-jwt-secret-key
-
 # 데이터베이스 설정
 DB_USER=your-db-username
 DB_PASSWORD=your-db-password
-
 # AWS S3 설정
 AWS_ACCESS_KEY_ID=your-aws-access-key
 AWS_SECRET_ACCESS_KEY=your-aws-secret-key
-
+AWS_S3_VIDEOS_MEDIA_BUCKET_NAME=your-s3-bucket-name
+AWS_S3_PROFILE_IMAGE_BUCKET_NAME=your-s3-profile-image-bucket-name
+AWS_CLOUDFRONT_DOMAIN=your-cloudfront-domain
+AWS_S3_PRESIGNED_URL_EXPIRATION=180
 # OAuth2 설정
 KAKAO_NATIVE_APP_KEY=your-kakao-app-key
 GOOGLE_ANDROID_APP_KEY=your-google-android-key
