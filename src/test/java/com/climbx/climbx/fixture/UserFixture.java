@@ -88,7 +88,7 @@ public class UserFixture {
     public static UserAccountEntity createUserAccountEntityWithStats(Long userId, String nickname) {
         UserStatEntity userStat = createUserStatEntity(userId);
         UserAccountEntity user = createUserAccountEntity(userId, nickname);
-        
+
         // Builder 패턴을 사용하여 userStatEntity 설정
         return UserAccountEntity.builder()
             .userId(user.userId())

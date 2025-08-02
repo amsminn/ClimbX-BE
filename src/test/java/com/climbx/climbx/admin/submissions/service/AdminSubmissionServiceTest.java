@@ -175,7 +175,7 @@ class AdminSubmissionServiceTest {
             UUID videoId = UUID.randomUUID();
             Long userId = 1L;
             String reason = "부적절한 내용";
-            
+
             SubmissionReviewRequestDto request = SubmissionReviewRequestDto.builder()
                 .status(StatusType.REJECTED)
                 .reason(reason)
@@ -229,9 +229,9 @@ class AdminSubmissionServiceTest {
             then(submissionRepository).should(times(0))
                 .getUserTopProblems(userId, StatusType.ACCEPTED, Pageable.ofSize(50));
             then(ratingUtil).should(times(0))
-                .calculateUserRating(org.mockito.ArgumentMatchers.any(), 
-                    org.mockito.ArgumentMatchers.anyInt(), 
-                    org.mockito.ArgumentMatchers.anyInt(), 
+                .calculateUserRating(org.mockito.ArgumentMatchers.any(),
+                    org.mockito.ArgumentMatchers.anyInt(),
+                    org.mockito.ArgumentMatchers.anyInt(),
                     org.mockito.ArgumentMatchers.anyInt());
         }
 
