@@ -27,8 +27,9 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
           JOIN s.videoEntity v
          WHERE v.userId = :userId
            AND s.status = :status
+         ORDER BY s.problemEntity.problemRating DESC
         """)
-    List<ProblemEntity> getUserSubmissionProblems(
+    List<ProblemEntity> getUserTopProblems(
         @Param("userId") Long userId,
         @Param("status") StatusType status,
         Pageable pageable

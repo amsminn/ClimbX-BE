@@ -767,7 +767,7 @@ public class UserServiceTest {
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
             given(
-                submissionRepository.getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                submissionRepository.getUserTopProblems(eq(userId), eq(StatusType.ACCEPTED),
                     any(Pageable.class)))
                 .willReturn(problemEntities);
 
@@ -784,7 +784,7 @@ public class UserServiceTest {
             assertThat(result).isEqualTo(expected);
 
             then(submissionRepository).should()
-                .getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                .getUserTopProblems(eq(userId), eq(StatusType.ACCEPTED),
                     any(Pageable.class));
         }
 
@@ -802,7 +802,7 @@ public class UserServiceTest {
             assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
                 .isInstanceOf(UserNotFoundException.class);
             then(submissionRepository).should(never())
-                .getUserSubmissionProblems(any(), any(), any());
+                .getUserTopProblems(any(), any(), any());
         }
 
         @Test
@@ -820,7 +820,7 @@ public class UserServiceTest {
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
             given(
-                submissionRepository.getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                submissionRepository.getUserTopProblems(eq(userId), eq(StatusType.ACCEPTED),
                     any(Pageable.class)))
                 .willReturn(emptyProblems);
 
@@ -831,7 +831,7 @@ public class UserServiceTest {
             // then
             assertThat(result).isEmpty();
             then(submissionRepository).should()
-                .getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                .getUserTopProblems(eq(userId), eq(StatusType.ACCEPTED),
                     any(Pageable.class));
         }
 
@@ -878,7 +878,7 @@ public class UserServiceTest {
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
             given(
-                submissionRepository.getUserSubmissionProblems(eq(userId), eq(StatusType.ACCEPTED),
+                submissionRepository.getUserTopProblems(eq(userId), eq(StatusType.ACCEPTED),
                     any(Pageable.class)))
                 .willReturn(problemEntities);
 
