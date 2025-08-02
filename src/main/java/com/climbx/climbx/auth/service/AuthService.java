@@ -220,7 +220,7 @@ public class AuthService {
         ValidatedTokenInfoDto tokenInfo,
         OAuth2ProviderType providerType
     ) {
-        // 클라이머_12341234 형식의 닉네임 생성 (중복 방지)
+        // 클라이머_123456 형식의 닉네임 생성 (중복 방지)
         String nickname = generateUniqueClimberNickname();
 
         // 사용자 계정 생성
@@ -287,11 +287,11 @@ public class AuthService {
     }
 
     /**
-     * 클라이머_12341234 형식의 닉네임을 생성합니다.
+     * 클라이머_123456 형식의 닉네임을 생성합니다.
      */
     private String generateClimberNickname() {
-        int randomNumber = 10_000_000 + ThreadLocalRandom.current()
-            .nextInt(0, 90_000_000); // 8자리 숫자 생성 (10_000_000 ~ 99_999_999)
+        int randomNumber = 100_000 + ThreadLocalRandom.current()
+            .nextInt(0, 900_000); // 8자리 숫자 생성 (100_000 ~ 999_999)
         return "클라이머_" + randomNumber;
     }
 }
