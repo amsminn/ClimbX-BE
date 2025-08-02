@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 
 import com.climbx.climbx.admin.submissions.dto.SubmissionReviewRequestDto;
 import com.climbx.climbx.admin.submissions.dto.SubmissionReviewResponseDto;
+import com.climbx.climbx.admin.submissions.exception.StatusModifyToPendingException;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
@@ -166,6 +167,24 @@ class AdminSubmissionServiceTest {
                 .isInstanceOf(PendingSubmissionNotFoundException.class);
 
             then(submissionRepository).should(times(1)).findById(videoId);
+        }
+
+        @Test
+        @DisplayName("검토 상태를 PENDING으로 변경하려고 하면 StatusModifyToPendingException이 발생한다")
+        void givenPendingStatus_whenReview_thenThrowStatusModifyToPendingException() {
+            // Given
+            UUID videoId = UUID.randomUUID();
+            SubmissionReviewRequestDto request = SubmissionReviewRequestDto.builder()
+                .status(StatusType.PENDING)
+                .reason("PENDING으로 변경 시도")
+                .build();
+
+            // When & Then
+            assertThatThrownBy(() -> adminSubmissionService.reviewSubmission(videoId, request))
+                .isInstanceOf(StatusModifyToPendingException.class);
+
+            // Repository 호출이 없어야 함 (예외가 먼저 발생하므로)
+            then(submissionRepository).should(times(0)).findById(videoId);
         }
     }
 }
