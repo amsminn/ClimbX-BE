@@ -1,6 +1,7 @@
 package com.climbx.climbx.user.dto;
 
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 
 @Builder
 public record UserProfileModifyRequestDto(
@@ -9,7 +10,7 @@ public record UserProfileModifyRequestDto(
 
     String newStatusMessage,
 
-    String newProfileImageUrl // null 허용
+    MultipartFile profileImage // null 허용
 ) {
 
 }

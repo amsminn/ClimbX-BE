@@ -2,6 +2,7 @@ package com.climbx.climbx.user.service;
 
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
+import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
@@ -37,6 +38,7 @@ public class UserService {
     private final UserStatRepository userStatRepository;
     private final SubmissionRepository submissionRepository;
     private final UserRankingHistoryRepository userRankingHistoryRepository;
+    private final S3Service s3Service;
 
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
@@ -82,10 +84,16 @@ public class UserService {
             throw new DuplicateNicknameException(userProfileDto.newNickname());
         }
 
+        // 프로필 이미지 업로드 처리
+        String profileImageUrl = null;
+        if (userProfileDto.profileImage() != null && !userProfileDto.profileImage().isEmpty()) {
+            profileImageUrl = s3Service.uploadProfileImage(userId, userProfileDto.profileImage());
+        }
+
         userAccountEntity.modifyProfile(
             userProfileDto.newNickname(),
             userProfileDto.newStatusMessage(),
-            userProfileDto.newProfileImageUrl()
+            profileImageUrl
         );
 
         return buildProfile(userAccountEntity);
