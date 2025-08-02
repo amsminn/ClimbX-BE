@@ -1,7 +1,5 @@
----
-alwaysApply: true
----
-# ClimbX Backend
+# ClimbX Backend - GitHub Copilot Instructions
+
 You are working on ClimbX, a Spring Boot-based backend API for climbing gym problem submission and ranking systems.
 
 ## Project Overview
