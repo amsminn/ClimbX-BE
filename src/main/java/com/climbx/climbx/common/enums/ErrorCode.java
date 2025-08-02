@@ -62,7 +62,7 @@ public enum ErrorCode {
     /**
      * Rating Util errors
      */
-    INVALID_RATING_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 레이팅 값입니다. 1에서 3100 사이의 값을 입력해주세요."),
+    INVALID_RATING_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 레이팅 값입니다. 0이상 3100 이하의 정수 값을 입력해주세요."),
 
     /**
      * Submission errors
