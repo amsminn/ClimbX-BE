@@ -21,6 +21,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 @Validated
 @Tag(name = "User", description = "사용자 관련 API")
@@ -336,10 +337,25 @@ public interface UserApiDocumentation {
         @NotBlank
         String nickname,
         @Parameter(
-            description = "프로필 수정 요청 데이터",
-            required = true
+            name = "newNickname",
+            description = "새로운 닉네임",
+            required = false,
+            example = "새로운닉네임"
         )
-        @jakarta.validation.Valid UserProfileModifyRequestDto request
+        String newNickname,
+        @Parameter(
+            name = "newStatusMessage",
+            description = "새로운 상태 메시지",
+            required = false,
+            example = "열심히 등반 중!"
+        )
+        String newStatusMessage,
+        @Parameter(
+            name = "profileImage",
+            description = "프로필 이미지 파일",
+            required = false
+        )
+        MultipartFile profileImage
     );
 
     @Operation(
