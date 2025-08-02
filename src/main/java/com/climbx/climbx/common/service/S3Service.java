@@ -105,7 +105,7 @@ public class S3Service {
         // 파일 확장자 추출
         String fileExtension = extractFileExtension(profileImage.getOriginalFilename());
 
-        // S3 키 생성 (profile-images/userId_timestamp.extension)
+        // S3 키 생성 (userId/userId-yyyy-MM-dd-HH-mm-ss-SSS.extension)
         String s3Key = generateProfileImageKey(userId, fileExtension);
 
         try {
