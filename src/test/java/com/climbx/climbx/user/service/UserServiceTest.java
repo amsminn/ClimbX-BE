@@ -19,7 +19,7 @@ import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
-import com.climbx.climbx.user.dto.UserProfileModifyRequestDto;
+import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
@@ -581,10 +581,9 @@ public class UserServiceTest {
             Integer rating = 1200;
             Integer ratingRank = 20;
 
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+            UserProfileInfoModifyRequestDto requestDto = UserProfileInfoModifyRequestDto.builder()
                 .newNickname(newNickname)
                 .newStatusMessage(newStatusMessage)
-                .profileImage(null)
                 .build();
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(
@@ -603,12 +602,13 @@ public class UserServiceTest {
             ).willReturn(ratingRank);
 
             // when
-            UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname,
+            UserProfileResponseDto result = userService.modifyUserProfileInfo(userId,
+                currentNickname,
                 requestDto);
 
             // then
             UserProfileResponseDto expected = UserFixture.createUserProfileResponseDto(
-                newNickname, newStatusMessage, null, ratingRank, rating, 3, 10, 15,
+                newNickname, newStatusMessage, "old.jpg", ratingRank, rating, 3, 10, 15,
                 2);
             assertThat(result).isEqualTo(expected);
         }
@@ -619,10 +619,9 @@ public class UserServiceTest {
             // given
             Long userId = 999L;
             String currentNickname = "oldNickname";
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+            UserProfileInfoModifyRequestDto requestDto = UserProfileInfoModifyRequestDto.builder()
                 .newNickname("newNickname")
                 .newStatusMessage("New status")
-                .profileImage(null)
                 .build();
 
             given(userAccountRepository.findByUserId(userId))
@@ -630,7 +629,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(
-                () -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                () -> userService.modifyUserProfileInfo(userId, currentNickname, requestDto))
                 .isInstanceOf(UserNotFoundException.class);
             then(userAccountRepository).should(never()).save(any());
         }
@@ -643,10 +642,9 @@ public class UserServiceTest {
             String currentNickname = "oldNickname";
             String actualNickname = "actualNickname";
 
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+            UserProfileInfoModifyRequestDto requestDto = UserProfileInfoModifyRequestDto.builder()
                 .newNickname("newNickname")
                 .newStatusMessage("New status")
-                .profileImage(null)
                 .build();
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
@@ -657,7 +655,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(
-                () -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                () -> userService.modifyUserProfileInfo(userId, currentNickname, requestDto))
                 .isInstanceOf(NicknameMismatchException.class);
 
             then(userAccountRepository).should(never()).save(any());
@@ -671,10 +669,9 @@ public class UserServiceTest {
             String currentNickname = "oldNickname";
             String duplicateNickname = "existingNickname";
 
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+            UserProfileInfoModifyRequestDto requestDto = UserProfileInfoModifyRequestDto.builder()
                 .newNickname(duplicateNickname)
                 .newStatusMessage("New status")
-                .profileImage(null)
                 .build();
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
@@ -687,7 +684,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(
-                () -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                () -> userService.modifyUserProfileInfo(userId, currentNickname, requestDto))
                 .isInstanceOf(DuplicateNicknameException.class);
             then(userAccountRepository).should(never()).save(any());
         }
@@ -699,10 +696,9 @@ public class UserServiceTest {
             Long userId = 1L;
             String currentNickname = "sameNickname";
 
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+            UserProfileInfoModifyRequestDto requestDto = UserProfileInfoModifyRequestDto.builder()
                 .newNickname(currentNickname)
                 .newStatusMessage("New status")
-                .profileImage(null)
                 .build();
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(
@@ -718,7 +714,8 @@ public class UserServiceTest {
             ).willReturn(50);
 
             // when
-            UserProfileResponseDto result = userService.modifyUserProfile(userId, currentNickname,
+            UserProfileResponseDto result = userService.modifyUserProfileInfo(userId,
+                currentNickname,
                 requestDto);
 
             // then
@@ -734,10 +731,9 @@ public class UserServiceTest {
             String currentNickname = "oldNickname";
             String newNickname = "newNickname";
 
-            UserProfileModifyRequestDto requestDto = UserProfileModifyRequestDto.builder()
+            UserProfileInfoModifyRequestDto requestDto = UserProfileInfoModifyRequestDto.builder()
                 .newNickname(newNickname)
                 .newStatusMessage("New status")
-                .profileImage(null)
                 .build();
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
@@ -752,7 +748,7 @@ public class UserServiceTest {
 
             // when & then
             assertThatThrownBy(
-                () -> userService.modifyUserProfile(userId, currentNickname, requestDto))
+                () -> userService.modifyUserProfileInfo(userId, currentNickname, requestDto))
                 .isInstanceOf(UserStatNotFoundException.class);
         }
 
