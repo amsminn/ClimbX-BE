@@ -56,7 +56,7 @@ public class SubmissionEntity extends BaseTimeEntity {
     @Column(name = "reject_reason", length = 256, nullable = true)
     @Size(max = 256)
     @Builder.Default
-    private String rejectReason = null; // 거절 사유, nullable
+    private String statusReason = null; // 거절 사유, nullable
 
     @Column(name = "appeal_content", length = 256, nullable = true)
     @Size(max = 256)
@@ -71,5 +71,10 @@ public class SubmissionEntity extends BaseTimeEntity {
     public void setAppealContent(String appealContent) {
         this.appealStatus = StatusType.PENDING;
         this.appealContent = appealContent;
+    }
+
+    public void setStatus(StatusType status, String statusReason) {
+        this.status = status;
+        this.statusReason = statusReason;
     }
 }

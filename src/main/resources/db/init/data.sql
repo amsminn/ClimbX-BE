@@ -548,6 +548,11 @@ VALUES ((UNHEX(REPLACE("3f06af63-a93c-11e4-9797-00505690773f", "-", ""))), 2, 12
         'https://example.com/video3.mp4', 'https://example.com/video3.m3u8',
         'https://example.com/video3_thumbnail.jpg', 'https://cdn.example.com/video3.m3u8',
         'https://cdn.example.com/video3_thumbnail.jpg', 900, 'job789', 'COMPLETED',
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       ((UNHEX(REPLACE("3f06af63-a93c-44e4-9737-00505690473f", "-", ""))), 2, 45678901,
+        'https://example.com/video4.mp4', 'https://example.com/video4.m3u8',
+        'https://example.com/video4_thumbnail.jpg', 'https://cdn.example.com/video4.m3u8',
+        'https://cdn.example.com/video4_thumbnail.jpg', 1200, 'job101', 'COMPLETED',
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
 INSERT INTO submissions (video_id,
@@ -564,6 +569,9 @@ VALUES ((UNHEX(REPLACE("3f06af63-a93c-11e4-9797-00505690773f", "-", ""))), 1, 'A
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
        ((UNHEX(REPLACE("3f06af63-a93c-22e4-9737-00505690473f", "-", ""))), 2, 'REJECTED',
         'Incorrect solution',
+        NULL, NULL,
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
+       ((UNHEX(REPLACE("3f06af63-a93c-33e4-9737-00505690473f", "-", ""))), 3, 'PENDING', NULL,
         NULL, NULL,
         CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);
 
