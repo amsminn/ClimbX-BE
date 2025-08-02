@@ -10,6 +10,10 @@ public enum ProblemType {
     SLOPER_HOLD("슬로퍼 홀드"),
     POCKET_HOLD("포켓 홀드"),
 
+    TOE_HOOK("토 훅"),
+    HEEL_HOOK("힐 훅"),
+    DROP_KNEE("드롭 니"),
+
     REACH("리치"),
     BALANCE("밸런스"),
     OVERHANG("오버행"),
@@ -17,7 +21,7 @@ public enum ProblemType {
 
     LUNGE("런지"),
     DYNO("다이노"),
-    CODINATE("코디네이트");
+    COORDINATE("코디네이션");
 
     private final String tag;
 
