@@ -79,6 +79,8 @@ public class AuthService {
         log.info("사용자 로그인 완료: userId={}, nickname={}, provider={}",
             user.userId(), user.nickname(), providerType.name());
 
+        user.markLogin();
+
         return TokenGenerationResponseDto.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken)
@@ -122,6 +124,8 @@ public class AuthService {
             String newRefreshToken = jwtContext.generateRefreshToken(tokenInfo.userId());
 
             log.info("토큰 갱신 완료: userId={}", tokenInfo.userId());
+
+            user.markLogin();
 
             return TokenGenerationResponseDto.from(newAccessToken, newRefreshToken);
         } catch (Exception e) {
@@ -180,7 +184,10 @@ public class AuthService {
         // 4. 마지막에 사용자 계정 soft delete
         userAccount.softDelete();
 
-        log.info("회원 탈퇴 처리 완료: userId={}, nickname={}", userId, userAccount.nickname());
+        log.info("회원 탈퇴 처리 완료: userId={}, nickname={}, total deleted resources={}", userId,
+            userAccount.nickname(),
+            deletedUserStats + deletedUserAuths + deletedVideos + deletedSubmissions
+                + deletedHistories);
     }
 
     /**

@@ -30,6 +30,8 @@ public interface UserInfoExtractor {
      */
     List<String> getAudience();
 
+    boolean nonceCheckEnabled();
+
     /**
      * JWT에서 사용자 정보를 추출합니다.
      *

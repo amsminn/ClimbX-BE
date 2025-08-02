@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -123,10 +122,9 @@ public class UserService {
 
     public List<ProblemDetailsResponseDto> getUserTopProblems(String nickname, Integer limit) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
-        Sort sort = Sort.by("problemEntity.problemRating").descending();
-        Pageable pageable = PageRequest.of(0, limit, sort);
+        Pageable pageable = PageRequest.of(0, limit);
 
-        List<ProblemEntity> problemEntities = submissionRepository.getUserSubmissionProblems(
+        List<ProblemEntity> problemEntities = submissionRepository.getUserTopProblems(
             userAccount.userId(),
             StatusType.ACCEPTED,
             pageable

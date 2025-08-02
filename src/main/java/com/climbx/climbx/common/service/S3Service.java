@@ -42,7 +42,7 @@ public class S3Service {
     @Value("${aws.s3.videos-media-bucket-name}")
     private String videosMediaBucketName;
 
-    @Value("${aws.s3.profile-image-bucket-name:}")
+    @Value("${aws.s3.profile-image-bucket-name}")
     private String profileImageBucketName;
 
     @Value("${aws.s3.presigned-url-expiration}")
