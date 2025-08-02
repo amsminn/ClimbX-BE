@@ -26,7 +26,7 @@ import com.climbx.climbx.user.repository.UserRankingHistoryRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import com.climbx.climbx.video.repository.VideoRepository;
 import java.util.Optional;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -276,6 +276,7 @@ public class AuthService {
             nickname = generateClimberNickname();
             attempts++;
 
+            log.debug("생성된 닉네임: {}, 시도 횟수: {}", nickname, attempts);
             if (attempts >= maxAttempts) {
                 log.warn("닉네임 생성 최대 시도 횟수 초과: {}", maxAttempts);
                 throw new CannotCreateUserNickname(ErrorCode.DEFAULT_NICKNAME_RETRY_LIMIT_EXCEEDED);
@@ -289,8 +290,8 @@ public class AuthService {
      * 클라이머_12341234 형식의 닉네임을 생성합니다.
      */
     private String generateClimberNickname() {
-        Random random = new Random();
-        int randomNumber = 10000000 + random.nextInt(90000000); // 8자리 숫자 생성 (10000000 ~ 99999999)
+        int randomNumber = 10_000_000 + ThreadLocalRandom.current()
+            .nextInt(0, 90_000_000); // 8자리 숫자 생성 (10_000_000 ~ 99_999_999)
         return "클라이머_" + randomNumber;
     }
 }
