@@ -77,6 +77,8 @@ public class AuthService {
         log.info("사용자 로그인 완료: userId={}, nickname={}, provider={}",
             user.userId(), user.nickname(), providerType.name());
 
+        user.markLogin();
+
         return TokenGenerationResponseDto.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken)
@@ -120,6 +122,8 @@ public class AuthService {
             String newRefreshToken = jwtContext.generateRefreshToken(tokenInfo.userId());
 
             log.info("토큰 갱신 완료: userId={}", tokenInfo.userId());
+
+            user.markLogin();
 
             return TokenGenerationResponseDto.from(newAccessToken, newRefreshToken);
         } catch (Exception e) {
