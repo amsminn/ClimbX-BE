@@ -10,7 +10,7 @@ import lombok.Builder;
 public record SubmissionResponseDto(
 
     UUID videoId,
-    Long problemId,
+    UUID problemId,
     String problemLocalLevel,
     String problemHoldColor,
     Integer problemRating,

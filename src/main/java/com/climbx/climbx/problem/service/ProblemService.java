@@ -1,19 +1,29 @@
 package com.climbx.climbx.problem.service;
 
+import com.climbx.climbx.common.enums.ActiveStatusType;
+import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.gym.exception.GymNotFoundException;
 import com.climbx.climbx.gym.repository.GymRepository;
+import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
+import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoInSpotResponseDto;
 import com.climbx.climbx.problem.dto.SpotDetailsResponseDto;
 import com.climbx.climbx.problem.dto.SpotResponseDto;
+import com.climbx.climbx.problem.entity.GymAreaEntity;
+import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
+import com.climbx.climbx.problem.repository.GymAreaRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -23,6 +33,8 @@ public class ProblemService {
 
     private final ProblemRepository problemRepository;
     private final GymRepository gymRepository;
+    private final GymAreaRepository gymAreaRepository;
+    private final S3Service s3Service;
 
     public SpotResponseDto getProblemSpotsWithFilters(
         Long gymId,
@@ -64,5 +76,51 @@ public class ProblemService {
             .map2dUrl(gym.map2dUrl())
             .spotDetailsResponseDtoList(spotDetailsResponseDtoList)
             .build();
+    }
+
+    @Transactional
+    public ProblemCreateResponseDto registerProblem(
+        ProblemCreateRequestDto request,
+        MultipartFile problemImage
+    ) {
+        log.info("Creating problem: gymAreaId={}, localLevel={}, holdColor={}",
+            request.gymAreaId(), request.localLevel(), request.holdColor());
+
+        // GymArea 조회
+        GymAreaEntity gymArea = gymAreaRepository.findById(request.gymAreaId())
+            .orElseThrow(() -> new GymAreaNotFoundException(request.gymAreaId()));
+
+        // Gym 정보는 GymArea를 통해 가져옴
+        GymEntity gym = gymArea.gym();
+
+        // 이미지 업로드 처리
+        UUID problemId = UUID.randomUUID();
+        String imageCdnUrl = null;
+        if (problemImage != null && !problemImage.isEmpty()) {
+            imageCdnUrl = s3Service.uploadProblemImage(problemId, gymArea.gymAreaId(),
+                problemImage);
+        }
+
+        // Problem 엔티티 생성
+        ProblemEntity problem = ProblemEntity.builder()
+            .problemId(problemId)
+            .gym(gym)
+            .gymArea(gymArea)
+            .localLevel(request.localLevel())
+            .holdColor(request.holdColor())
+            .problemRating(request.problemRating())
+            .spotId(request.spotId())
+            .spotXRatio(request.spotXRatio())
+            .spotYRatio(request.spotYRatio())
+            .problemImageCdnUrl(imageCdnUrl)
+            .status(ActiveStatusType.ACTIVE)
+            .build();
+
+        ProblemEntity savedProblem = problemRepository.save(problem);
+
+        log.info("Problem created successfully: problemId={}, imageCdnUrl={}",
+            savedProblem.problemId(), imageCdnUrl);
+
+        return ProblemCreateResponseDto.from(savedProblem);
     }
 }

@@ -1,6 +1,8 @@
 package com.climbx.climbx.problem;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
+import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
+import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.SpotResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,9 +12,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 문제 관련 API 문서화를 위한 인터페이스
@@ -167,5 +171,96 @@ public interface ProblemApiDocumentation {
         )
         @Size(min = 1, max = 20)
         String holdColor
+    );
+
+    @Operation(
+        summary = "문제 생성",
+        description = "새로운 클라이밍 문제를 생성합니다. 문제 정보와 선택적으로 이미지를 업로드할 수 있습니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "문제 생성 성공",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "문제 생성 성공",
+                    value = """
+                        {
+                          "httpStatus": 201,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 234,
+                          "path": "/api/problems",
+                          "data": {
+                            "problemId": 123,
+                            "gymAreaId": 1,
+                            "localLevel": "V3",
+                            "holdColor": "빨강",
+                            "problemRating": 1500,
+                            "spotId": 5,
+                            "spotXRatio": 25.5,
+                            "spotYRatio": 30.2,
+                            "imageCdnUrl": "https://cdn.example.com/problem-images/1_1640995200000.jpg",
+                            "status": "ACTIVE"
+                          }
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "잘못된 요청 또는 유효성 검사 실패",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "유효성 검사 실패",
+                    value = """
+                        {
+                          "httpStatus": 400,
+                          "statusMessage": "VALIDATION_FAILED",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 45,
+                          "path": "/api/problems",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "클라이밍장 영역을 찾을 수 없음",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "영역 없음",
+                    value = """
+                        {
+                          "httpStatus": 404,
+                          "statusMessage": "GYM_AREA_NOT_FOUND",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 123,
+                          "path": "/api/problems",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        )
+    })
+    ProblemCreateResponseDto registerProblem(
+        @Parameter(
+            description = "문제 생성 요청 데이터",
+            required = true
+        )
+        @Valid ProblemCreateRequestDto request,
+
+        @Parameter(
+            description = "문제 이미지 파일 (선택사항, 최대 10MB)",
+            required = false
+        )
+        MultipartFile problemImage
     );
 }

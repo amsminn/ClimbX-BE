@@ -1,19 +1,20 @@
 package com.climbx.climbx.problem.dto;
 
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import java.util.UUID;
 import lombok.Builder;
 
 @Builder
 public record ProblemInfoInSpotResponseDto(
 
-    Long problemId,
+    UUID problemId,
     String localLevel,
     String holdColor,
     Integer problemRating,
     Long spotId,
     Double spotXRatio,
     Double spotYRatio,
-    String imageUrl
+    String problemImageCdnUrl
 ) {
 
     public static ProblemInfoInSpotResponseDto from(ProblemEntity problem) {
@@ -25,7 +26,7 @@ public record ProblemInfoInSpotResponseDto(
             .spotId(problem.spotId())
             .spotXRatio(problem.spotXRatio())
             .spotYRatio(problem.spotYRatio())
-            .imageUrl(problem.imageUrl())
+            .problemImageCdnUrl(problem.problemImageCdnUrl())
             .build();
     }
 }

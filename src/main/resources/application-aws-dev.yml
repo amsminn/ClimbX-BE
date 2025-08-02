@@ -7,6 +7,7 @@ aws:
   s3:
     videos-media-bucket-name: ${AWS_S3_VIDEOS_MEDIA_BUCKET_NAME}
     profile-image-bucket-name: ${AWS_S3_PROFILE_IMAGE_BUCKET_NAME}
+    problem-image-bucket-name: ${AWS_S3_PROBLEM_IMAGE_BUCKET_NAME}
     presigned-url-expiration: ${AWS_S3_PRESIGNED_URL_EXPIRATION:180} # in seconds
     region: ${AWS_S3_REGION:ap-northeast-2}
     access-key: ${AWS_ACCESS_KEY_ID}

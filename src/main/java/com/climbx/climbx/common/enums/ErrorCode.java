@@ -22,6 +22,7 @@ public enum ErrorCode {
     MISSING_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "필수 파라미터가 누락되었습니다."),
     METHOD_ARGUMENT_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "메서드 파라미터 타입이 일치하지 않습니다."),
     RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "요청 허용 횟수를 초과했습니다."),
+    IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "이미지 파일 크기가 5MB 제한을 초과했습니다."),
 
     // 5xx: Server errors
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
@@ -50,6 +51,7 @@ public enum ErrorCode {
      * Gym errors
      */
     GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "클라이밍장을 찾을 수 없습니다."),
+    GYM_AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "클라이밍장 벽(구역)을 찾을 수 없습니다."),
 
     /**
      * Ranking errors

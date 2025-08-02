@@ -13,7 +13,7 @@ public record SubmissionCreateRequestDto(
 
     @NotNull
     @Min(1)
-    Long problemId
+    UUID problemId
 ) {
 
 }

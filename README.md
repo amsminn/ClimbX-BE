@@ -19,6 +19,7 @@ AWS_ACCESS_KEY_ID=your-aws-access-key
 AWS_SECRET_ACCESS_KEY=your-aws-secret-key
 AWS_S3_VIDEOS_MEDIA_BUCKET_NAME=your-s3-bucket-name
 AWS_S3_PROFILE_IMAGE_BUCKET_NAME=your-s3-profile-image-bucket-name
+AWS_S3_PROBLEM_IMAGE_BUCKET_NAME=your-s3-problem-image-bucket-name
 AWS_CLOUDFRONT_DOMAIN=your-cloudfront-domain
 AWS_S3_PRESIGNED_URL_EXPIRATION=180
 # OAuth2 설정

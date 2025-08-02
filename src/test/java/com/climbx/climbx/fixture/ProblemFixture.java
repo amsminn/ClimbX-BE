@@ -3,6 +3,7 @@ package com.climbx.climbx.fixture;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import java.util.UUID;
 
 public class ProblemFixture {
 
@@ -14,13 +15,13 @@ public class ProblemFixture {
     public static final Double DEFAULT_SPOT_X_RATIO = 50.0;
     public static final Double DEFAULT_SPOT_Y_RATIO = 30.0;
 
-    public static ProblemEntity createProblemEntity(Long problemId, GymEntity gym) {
+    public static ProblemEntity createProblemEntity(UUID problemId, GymEntity gym) {
         return createProblemEntity(problemId, gym, DEFAULT_LOCAL_LEVEL, DEFAULT_HOLD_COLOR,
             DEFAULT_PROBLEM_RATING, DEFAULT_SPOT_ID, DEFAULT_SPOT_X_RATIO, DEFAULT_SPOT_Y_RATIO);
     }
 
     public static ProblemEntity createProblemEntity(
-        Long problemId,
+        UUID problemId,
         GymEntity gym,
         String localLevel,
         String holdColor,
@@ -31,7 +32,7 @@ public class ProblemFixture {
     }
 
     public static ProblemEntity createProblemEntity(
-        Long problemId,
+        UUID problemId,
         GymEntity gym,
         String localLevel,
         String holdColor
@@ -41,7 +42,7 @@ public class ProblemFixture {
     }
 
     public static ProblemEntity createProblemEntity(
-        Long problemId,
+        UUID problemId,
         GymEntity gym,
         String localLevel,
         String holdColor,
@@ -59,12 +60,12 @@ public class ProblemFixture {
             .spotId(spotId)
             .spotXRatio(spotXRatio)
             .spotYRatio(spotYRatio)
-            .imageUrl(DEFAULT_IMAGE_URL)
+            .problemImageCdnUrl(DEFAULT_IMAGE_URL)
             .build();
     }
 
     public static ProblemDetailsResponseDto createProblemResponseDto(
-        Long problemId,
+        UUID problemId,
         Long gymId,
         String gymName
     ) {
@@ -74,7 +75,7 @@ public class ProblemFixture {
     }
 
     public static ProblemDetailsResponseDto createProblemResponseDto(
-        Long problemId,
+        UUID problemId,
         Long gymId,
         String gymName,
         String localLevel,
@@ -86,7 +87,7 @@ public class ProblemFixture {
     }
 
     public static ProblemDetailsResponseDto createProblemResponseDto(
-        Long problemId,
+        UUID problemId,
         Long gymId,
         String gymName,
         String localLevel,
@@ -106,7 +107,7 @@ public class ProblemFixture {
             .spotId(spotId)
             .spotXRatio(spotXRatio)
             .spotYRatio(spotYRatio)
-            .imageUrl(DEFAULT_IMAGE_URL)
+            .problemImageCdnUrl(DEFAULT_IMAGE_URL)
             .build();
     }
 } 

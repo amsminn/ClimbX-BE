@@ -1,7 +1,10 @@
 package com.climbx.climbx.common.service;
 
+import static com.climbx.climbx.common.util.FileUploadUtils.extractFileExtension;
+
 import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.exception.BusinessException;
+import com.climbx.climbx.common.util.FileUploadUtils;
 import com.climbx.climbx.video.exception.AwsBucketNameNotConfiguredException;
 import com.climbx.climbx.video.exception.AwsBucketNotFoundException;
 import com.climbx.climbx.video.exception.AwsCloudFrontDomainNotConfiguredException;
@@ -9,9 +12,6 @@ import com.climbx.climbx.video.exception.FileExtensionNotExistsException;
 import com.github.benmanes.caffeine.cache.Cache;
 import java.io.IOException;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +45,9 @@ public class S3Service {
     @Value("${aws.s3.profile-image-bucket-name}")
     private String profileImageBucketName;
 
+    @Value("${aws.s3.problem-image-bucket-name}")
+    private String problemImageBucketName;
+
     @Value("${aws.s3.presigned-url-expiration}")
     private long presignedUrlExpiration;
 
@@ -56,7 +59,7 @@ public class S3Service {
             videoId, fileExtension);
 
         // 입력값 검증
-        validateInputParameters(videoId, fileExtension);
+        FileUploadValidator.validateVideoParameters(videoId, fileExtension);
 
         // 버킷 이름이 설정되어 있지 않으면 예외 발생
         if (videosMediaBucketName == null || videosMediaBucketName.isEmpty()) {
@@ -89,7 +92,7 @@ public class S3Service {
             userId, profileImage.getOriginalFilename());
 
         // 입력값 검증
-        validateProfileImageParameters(userId, profileImage);
+        FileUploadValidator.validateProfileImageParameters(userId, profileImage);
 
         // 버킷 이름이 설정되어 있지 않으면 예외 발생
         if (profileImageBucketName == null || profileImageBucketName.isEmpty()) {
@@ -104,10 +107,11 @@ public class S3Service {
         ensureBucketExists(profileImageBucketName);
 
         // 파일 확장자 추출
-        String fileExtension = extractFileExtension(profileImage.getOriginalFilename());
+        String fileExtension = extractFileExtension(
+            profileImage.getOriginalFilename());
 
-        // S3 키 생성 (userId/userId-yyyy-MM-dd-HH-mm-ss-SSS.extension)
-        String s3Key = generateProfileImageKey(userId, fileExtension);
+        // S3 키 생성 (profile-images/userId/userId-yyyy-MM-dd-HH-mm-ss.extension)
+        String s3Key = FileUploadUtils.generateProfileImageKey(userId, fileExtension);
 
         try {
             // S3에 파일 업로드
@@ -116,53 +120,56 @@ public class S3Service {
             // CDN URL 생성
             String cdnUrl = generateCdnUrl(s3Key);
 
-            log.info("Successfully uploaded profile image for userId: {}, CDN URL: {}",
+            log.info("Successfully uploaded profile image: userId={}, CDN URL={}",
                 userId, cdnUrl);
 
             return cdnUrl;
 
         } catch (IOException e) {
-            log.error("Failed to read profile image file for userId: {}", userId, e);
+            log.error("Failed to read profile image file: userId={}, fileName={}",
+                userId, profileImage.getOriginalFilename(), e);
             throw new BusinessException(
                 ErrorCode.INTERNAL_ERROR, "Failed to read profile image file");
         }
     }
 
-    private void validateProfileImageParameters(Long userId, MultipartFile profileImage) {
-        if (userId == null) {
-            log.error("UserId cannot be null");
-            throw new BusinessException(ErrorCode.INVALID_REQUEST, "UserId cannot be null");
-        }
+    /**
+     * 문제 이미지를 S3에 업로드하고 CDN URL을 반환합니다.
+     */
+    public String uploadProblemImage(UUID problemId, Long gymAreaId, MultipartFile problemImage) {
+        log.info("Uploading problem image: problemId={}, gymAreaId={}, fileName={}",
+            problemId, gymAreaId, problemImage.getOriginalFilename());
 
-        if (profileImage == null || profileImage.isEmpty()) {
-            log.error("Profile image file cannot be null or empty");
-            throw new BusinessException(
-                ErrorCode.INVALID_REQUEST, "Profile image file cannot be null or empty");
-        }
+        // 입력값 검증
+        FileUploadValidator.validateProblemImageParameters(problemId, problemImage);
 
-        // 파일 크기 검증 (예: 5MB 제한)
-        long maxFileSize = 5 * 1024 * 1024; // 5MB
-        if (profileImage.getSize() > maxFileSize) {
-            log.error("Profile image file size exceeds limit: {} bytes", profileImage.getSize());
-            throw new BusinessException(
-                ErrorCode.INVALID_REQUEST, "Profile image file size must be less than 5MB");
-        }
+        // 파일 확장자 추출
+        String fileExtension = extractFileExtension(problemImage.getOriginalFilename());
 
-        // Content Type 검증
-        String contentType = profileImage.getContentType();
-        final Set<String> allowedContentTypes = Set.of(
-            "image/jpeg", "image/png", "image/jpg", "image/gif", "image/webp", "image/bmp",
-            "image/heic");
+        // S3 키 생성 (problem-images/{gymAreaId}/{yyyy-MM-dd-HH-mm-ss}-{problemId}.extension)
+        String s3Key = FileUploadUtils.generateProblemImageKey(problemId, gymAreaId, fileExtension);
 
-        if (contentType == null || !allowedContentTypes.contains(contentType)) {
-            log.error("Invalid content type for profile image: {}", contentType);
-            throw new BusinessException(
-                ErrorCode.INVALID_REQUEST,
-                "Profile image must be an image file (JPEG, PNG, JPG, GIF, WEBP, BMP, HEIC)"
+        try {
+            // S3에 파일 업로드
+            uploadFileToS3(problemImageBucketName, s3Key, problemImage);
+
+            // CDN URL 생성
+            String cdnUrl = generateCdnUrl(s3Key);
+
+            log.info(
+                "Successfully uploaded problem image: problemId={}, gymAreaId={}, CDN URL={}",
+                problemId, gymAreaId, cdnUrl
             );
-        }
+            return cdnUrl;
 
-        log.debug("Profile image parameters validated successfully");
+        } catch (IOException e) {
+            log.error(
+                "Failed to read problem image file: problemId={}, gymAreaId={}, fileName={}",
+                problemId, gymAreaId, problemImage.getOriginalFilename(), e
+            );
+            throw new BusinessException(ErrorCode.INTERNAL_ERROR,
+                "Failed to read problem image file");
+        }
     }
 
     private void ensureBucketExists(String bucketName) {
@@ -179,21 +186,6 @@ public class S3Service {
         } else {
             log.debug("Using cached bucket: {}", bucketName);
         }
-    }
-
-    private String extractFileExtension(String originalFileName) {
-        if (originalFileName == null || !originalFileName.contains(".")) {
-            throw new FileExtensionNotExistsException(
-                ErrorCode.FILE_EXTENSION_NOT_EXISTS, "File extension is required.");
-        }
-
-        return originalFileName.substring(originalFileName.lastIndexOf("."));
-    }
-
-    private String generateProfileImageKey(Long userId, String fileExtension) {
-        String now = LocalDateTime.now()
-            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss-SSS"));
-        return String.format("%d/%d-%s%s", userId, userId, now, fileExtension);
     }
 
     private void uploadFileToS3(String bucketName, String s3Key, MultipartFile file)
@@ -224,22 +216,6 @@ public class S3Service {
         String cdnUrl = String.format("https://%s/%s", cloudfrontDomain, s3Key);
         log.debug("Generated CDN URL: {}", cdnUrl);
         return cdnUrl;
-    }
-
-    private void validateInputParameters(UUID videoId, String fileExtension) {
-        if (videoId == null) {
-            log.error("VideoId cannot be null");
-            throw new IllegalArgumentException("VideoId cannot be null");
-        }
-
-        if (fileExtension == null || fileExtension.trim().isEmpty()) {
-            log.warn("File extension cannot be null or empty");
-            throw new FileExtensionNotExistsException(
-                ErrorCode.FILE_EXTENSION_NOT_EXISTS, "File extension is required."
-            );
-        }
-
-        log.debug("Input parameters validated successfully");
     }
 
     private String createPresignedUrl(String s3Key, String bucketName) {
@@ -336,4 +312,4 @@ public class S3Service {
                 "Failed to check bucket existence: " + e.getMessage());
         }
     }
-} 
+}
