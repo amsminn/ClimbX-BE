@@ -15,13 +15,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -60,27 +59,16 @@ class UserController implements UserApiDocumentation {
         @PathVariable
         String nickname,
 
-        @RequestParam(name = "newNickname", required = false)
-        String newNickname,
-
-        @RequestParam(name = "newStatusMessage", required = false)
-        String newStatusMessage,
-
-        @RequestPart(name = "profileImage", required = false)
-        MultipartFile profileImage
+        @ModelAttribute
+        UserProfileModifyRequestDto modifyRequest
     ) {
         log.info("사용자 프로필 수정: userId={}, nickname={}", userId, nickname);
         log.debug("새 닉네임: {}, 새 상태 메시지: {}, 프로필 이미지: {}",
-            newNickname,
-            newStatusMessage,
-            profileImage != null ? profileImage.getOriginalFilename() : "없음"
+            modifyRequest.newNickname(),
+            modifyRequest.newStatusMessage(),
+            modifyRequest.profileImage() != null ? modifyRequest.profileImage()
+                .getOriginalFilename() : "없음"
         );
-
-        UserProfileModifyRequestDto modifyRequest = UserProfileModifyRequestDto.builder()
-            .newNickname(newNickname)
-            .newStatusMessage(newStatusMessage)
-            .profileImage(profileImage)
-            .build();
 
         return userService.modifyUserProfile(userId, nickname, modifyRequest);
     }
