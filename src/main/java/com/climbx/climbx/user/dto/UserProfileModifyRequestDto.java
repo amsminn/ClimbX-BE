@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Builder
 public record UserProfileModifyRequestDto(
+
     @Size(min = 1, max = 64)
     String newNickname,
 
