@@ -110,7 +110,7 @@ public class UserServiceTest {
             given(ratingUtil.getTier(1200)).willReturn("BRONZE1");
             given(ratingUtil.getTier(1300)).willReturn("SILVER1");
             given(ratingUtil.getTier(1400)).willReturn("GOLD1");
-            
+
             // Mock category ratings calculation
             given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
                 .willReturn(List.of());
@@ -167,7 +167,7 @@ public class UserServiceTest {
                 UserFixture.DEFAULT_RATING, userStat2.updatedAt(), 2L)
             ).willReturn(UserFixture.DEFAULT_RANKING);
             given(ratingUtil.getTier(UserFixture.DEFAULT_RATING)).willReturn("BRONZE1");
-            
+
             // Mock category ratings calculation
             given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
                 .willReturn(List.of());
@@ -209,7 +209,7 @@ public class UserServiceTest {
                 UserFixture.DEFAULT_RATING, userStat1.updatedAt(), 1L)
             ).willReturn(UserFixture.DEFAULT_RANKING);
             given(ratingUtil.getTier(UserFixture.DEFAULT_RATING)).willReturn("BRONZE1");
-            
+
             // Mock category ratings calculation
             given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
                 .willReturn(List.of());
@@ -255,7 +255,7 @@ public class UserServiceTest {
             ).willReturn(5);
             given(ratingUtil.getTier(1100)).willReturn("BRONZE1");
             given(ratingUtil.getTier(1600)).willReturn("GOLD1");
-            
+
             // Mock category ratings calculation
             given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
                 .willReturn(List.of());
@@ -845,11 +845,14 @@ public class UserServiceTest {
             GymAreaEntity gymArea2 = GymAreaFixture.createGymAreaEntity(2L, gym2, "메인 구역");
             GymAreaEntity gymArea3 = GymAreaFixture.createGymAreaEntity(3L, gym3, "메인 구역");
 
-            ProblemEntity problem1 = ProblemFixture.createProblemEntity(problemId1, gym1, gymArea1, "고급",
+            ProblemEntity problem1 = ProblemFixture.createProblemEntity(problemId1, gym1, gymArea1,
+                "고급",
                 "빨강", 1800);
-            ProblemEntity problem2 = ProblemFixture.createProblemEntity(problemId2, gym2, gymArea2, "중급",
+            ProblemEntity problem2 = ProblemFixture.createProblemEntity(problemId2, gym2, gymArea2,
+                "중급",
                 "파랑", 1500);
-            ProblemEntity problem3 = ProblemFixture.createProblemEntity(problemId3, gym3, gymArea3, "초급",
+            ProblemEntity problem3 = ProblemFixture.createProblemEntity(problemId3, gym3, gymArea3,
+                "초급",
                 "노랑", 1200);
 
             List<ProblemEntity> problemEntities = List.of(problem1, problem2, problem3);
@@ -867,11 +870,14 @@ public class UserServiceTest {
 
             // then
             List<ProblemDetailsResponseDto> expected = List.of(
-                ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역", "고급", "빨강",
+                ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역",
+                    "고급", "빨강",
                     1800),
-                ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역", "중급", "파랑",
+                ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역",
+                    "중급", "파랑",
                     1500),
-                ProblemFixture.createProblemResponseDto(problemId3, 3L, "테스트 체육관3", 3L, "메인 구역", "초급", "노랑",
+                ProblemFixture.createProblemResponseDto(problemId3, 3L, "테스트 체육관3", 3L, "메인 구역",
+                    "초급", "노랑",
                     1200)
             );
             assertThat(result).isEqualTo(expected);
@@ -966,9 +972,11 @@ public class UserServiceTest {
             GymAreaEntity gymArea1 = GymAreaFixture.createGymAreaEntity(1L, gym1, "메인 구역");
             GymAreaEntity gymArea2 = GymAreaFixture.createGymAreaEntity(2L, gym2, "메인 구역");
 
-            ProblemEntity problem1 = ProblemFixture.createProblemEntity(problemId1, gym1, gymArea1, "고급",
+            ProblemEntity problem1 = ProblemFixture.createProblemEntity(problemId1, gym1, gymArea1,
+                "고급",
                 "빨강", 1600);
-            ProblemEntity problem2 = ProblemFixture.createProblemEntity(problemId2, gym2, gymArea2, "중급",
+            ProblemEntity problem2 = ProblemFixture.createProblemEntity(problemId2, gym2, gymArea2,
+                "중급",
                 "파랑", 1400);
 
             List<ProblemEntity> problemEntities = List.of(problem1, problem2);
@@ -986,9 +994,11 @@ public class UserServiceTest {
 
             // then
             List<ProblemDetailsResponseDto> expected = List.of(
-                ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역", "고급", "빨강",
+                ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역",
+                    "고급", "빨강",
                     1600),
-                ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역", "중급", "파랑",
+                ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역",
+                    "중급", "파랑",
                     1400)
             );
             assertThat(result).isEqualTo(expected);

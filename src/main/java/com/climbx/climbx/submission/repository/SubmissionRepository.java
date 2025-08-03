@@ -124,7 +124,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
 
     // 2) Secondary 만
     @Query("""
-          SELECT p.secondaryTag as tag, s, p.problemRating as rating
+          SELECT p.secondaryTag as tag, p.problemRating as rating
           FROM SubmissionEntity s
           JOIN s.videoEntity v
           JOIN s.problemEntity p
