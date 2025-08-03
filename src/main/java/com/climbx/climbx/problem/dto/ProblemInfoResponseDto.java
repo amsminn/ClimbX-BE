@@ -3,29 +3,33 @@ package com.climbx.climbx.problem.dto;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
 
 @Builder
-public record ProblemDetailsResponseDto(
+public record ProblemInfoResponseDto(
 
     UUID problemId,
     Long gymId,
-    String gymName,
     Long gymAreaId,
     String gymAreaName,
     String localLevel,
     String holdColor,
     Integer problemRating,
     String problemImageCdnUrl,
-    ActiveStatusType activeStatus
+    ActiveStatusType activeStatus,
+    LocalDateTime createdAt
 ) {
 
-    public static ProblemDetailsResponseDto from(ProblemEntity problem, GymAreaEntity gymArea) {
-        return ProblemDetailsResponseDto.builder()
+    public static ProblemInfoResponseDto from(
+        ProblemEntity problem,
+        Long gymId,
+        GymAreaEntity gymArea
+    ) {
+        return ProblemInfoResponseDto.builder()
             .problemId(problem.problemId())
-            .gymId(problem.gym().gymId())
-            .gymName(problem.gym().name())
+            .gymId(gymId)
             .gymAreaId(gymArea.gymAreaId())
             .gymAreaName(gymArea.areaName())
             .localLevel(problem.localLevel())
@@ -33,6 +37,7 @@ public record ProblemDetailsResponseDto(
             .problemRating(problem.problemRating())
             .problemImageCdnUrl(problem.problemImageCdnUrl())
             .activeStatus(problem.activeStatus())
+            .createdAt(problem.createdAt())
             .build();
     }
 }

@@ -13,7 +13,7 @@ import java.util.Collections;
 public class UserFixture {
 
     public static final String DEFAULT_NICKNAME = "testUser";
-    public static final String DEFAULT_STATUS_MESSAGE = "Test status message";
+    public static final String DEFAULT_STATUS_MESSAGE = "Test activeStatus message";
     public static final String DEFAULT_PROFILE_IMAGE_URL = "http://example.com/profile.jpg";
     public static final Integer DEFAULT_RATING = 1500;
     public static final Integer DEFAULT_CURRENT_STREAK = 5;

@@ -11,13 +11,14 @@ import static org.mockito.Mockito.times;
 
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.common.service.S3Service;
+import com.climbx.climbx.fixture.GymAreaFixture;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.gym.repository.GymRepository;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
-import com.climbx.climbx.problem.dto.SpotResponseDto;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
@@ -61,41 +62,45 @@ public class ProblemServiceTest {
             Long gymId = 1L;
             String localLevel = "빨강";
             String holdColor = "파랑";
+            Long gymAreaId = 1L;
             UUID problemId1 = UUID.randomUUID();
             UUID problemId2 = UUID.randomUUID();
             UUID problemId3 = UUID.randomUUID();
 
             GymEntity gymEntity = GymFixture.createGymEntity(gymId, "테스트 클라이밍장", 37.0, 126.0);
+
+            GymAreaEntity gymArea1 = GymAreaFixture.createGymAreaEntity(1L, gymEntity, "테스트 구역");
+            GymAreaEntity gymArea2 = GymAreaFixture.createGymAreaEntity(2L, gymEntity, "테스트 구역");
+            GymAreaEntity gymArea3 = GymAreaFixture.createGymAreaEntity(3L, gymEntity, "테스트 구역");
+
             ProblemEntity problemEntity1 = ProblemFixture.createProblemEntity(problemId1, gymEntity,
-                localLevel, holdColor, 1200, 1L, 50.0, 30.0);
+                gymArea1, localLevel, holdColor, 1200);
             ProblemEntity problemEntity2 = ProblemFixture.createProblemEntity(problemId2, gymEntity,
-                localLevel, holdColor, 1300, 1L, 55.0, 35.0);
+                gymArea2, localLevel, holdColor, 1300);
             ProblemEntity problemEntity3 = ProblemFixture.createProblemEntity(problemId3, gymEntity,
-                localLevel, holdColor, 1400, 2L, 60.0, 40.0);
+                gymArea3, localLevel, holdColor, 1400);
 
             List<ProblemEntity> mockProblems = List.of(problemEntity1, problemEntity2,
                 problemEntity3);
 
             given(gymRepository.findById(gymId))
                 .willReturn(Optional.of(gymEntity));
-            given(problemRepository.findByGym_GymIdAndLocalLevelAndHoldColor(
-                gymId, localLevel, holdColor
+            given(gymAreaRepository.findById(gymAreaId))
+                .willReturn(Optional.of(gymArea1));
+            given(problemRepository.findByGymAndAreaAndLevelAndColorAndActiveStatus(
+                gymId, gymAreaId, localLevel, holdColor, ActiveStatusType.ACTIVE
             )).willReturn(mockProblems);
 
             // when
-            SpotResponseDto result = problemService.getProblemSpotsWithFilters(
-                gymId, localLevel, holdColor);
+            List<ProblemInfoResponseDto> result = problemService.getProblemsWithFilters(
+                gymId, gymAreaId, localLevel, holdColor, ActiveStatusType.ACTIVE);
 
             // then
             then(problemRepository).should(times(1))
-                .findByGym_GymIdAndLocalLevelAndHoldColor(gymId, localLevel, holdColor);
+                .findByGymAndAreaAndLevelAndColorAndActiveStatus(gymId, gymAreaId, localLevel,
+                    holdColor, ActiveStatusType.ACTIVE);
 
-            assertThat(result.spotDetailsResponseDtoList()).hasSize(2); // spotId 1, 2로 그룹화됨
-            assertThat(
-                result.spotDetailsResponseDtoList().get(0).problemDetailsResponseDtoList())
-                .hasSize(2); // spotId 1에 2개 문제
-            assertThat(result.spotDetailsResponseDtoList().get(1).problemDetailsResponseDtoList())
-                .hasSize(1); // spotId 2에 1개 문제
+            assertThat(result).hasSize(3); // 모든 문제가 하나의 그룹으로
         }
     }
 
@@ -111,9 +116,6 @@ public class ProblemServiceTest {
             String localLevel = "V3";
             String holdColor = "빨강";
             Integer problemRating = 1500;
-            Long spotId = 5L;
-            Double spotXRatio = 25.5;
-            Double spotYRatio = 30.2;
             UUID problemId = UUID.randomUUID();
 
             ProblemCreateRequestDto request = ProblemCreateRequestDto.builder()
@@ -121,9 +123,6 @@ public class ProblemServiceTest {
                 .localLevel(localLevel)
                 .holdColor(holdColor)
                 .problemRating(problemRating)
-                .spotId(spotId)
-                .spotXRatio(spotXRatio)
-                .spotYRatio(spotYRatio)
                 .build();
 
             MockMultipartFile problemImage = new MockMultipartFile(
@@ -149,11 +148,8 @@ public class ProblemServiceTest {
                 .localLevel(localLevel)
                 .holdColor(holdColor)
                 .problemRating(problemRating)
-                .spotId(spotId)
-                .spotXRatio(spotXRatio)
-                .spotYRatio(spotYRatio)
                 .problemImageCdnUrl(expectedCdnUrl)
-                .status(ActiveStatusType.ACTIVE)
+                .activeStatus(ActiveStatusType.ACTIVE)
                 .build();
 
             given(gymAreaRepository.findById(gymAreaId))
@@ -177,11 +173,8 @@ public class ProblemServiceTest {
             assertThat(result.localLevel()).isEqualTo(localLevel);
             assertThat(result.holdColor()).isEqualTo(holdColor);
             assertThat(result.problemRating()).isEqualTo(problemRating);
-            assertThat(result.spotId()).isEqualTo(spotId);
-            assertThat(result.spotXRatio()).isEqualTo(spotXRatio);
-            assertThat(result.spotYRatio()).isEqualTo(spotYRatio);
             assertThat(result.problemImageCdnUrl()).isEqualTo(expectedCdnUrl);
-            assertThat(result.status()).isEqualTo(ActiveStatusType.ACTIVE);
+            assertThat(result.activeStatus()).isEqualTo(ActiveStatusType.ACTIVE);
         }
 
         @Test
@@ -192,9 +185,6 @@ public class ProblemServiceTest {
             String localLevel = "V4";
             String holdColor = "파랑";
             Integer problemRating = 1600;
-            Long spotId = 6L;
-            Double spotXRatio = 35.5;
-            Double spotYRatio = 40.2;
             UUID problemId = UUID.randomUUID();
 
             ProblemCreateRequestDto request = ProblemCreateRequestDto.builder()
@@ -202,9 +192,6 @@ public class ProblemServiceTest {
                 .localLevel(localLevel)
                 .holdColor(holdColor)
                 .problemRating(problemRating)
-                .spotId(spotId)
-                .spotXRatio(spotXRatio)
-                .spotYRatio(spotYRatio)
                 .build();
 
             GymEntity gymEntity = GymFixture.createGymEntity(1L, "테스트 클라이밍장", 37.0, 126.0);
@@ -221,11 +208,8 @@ public class ProblemServiceTest {
                 .localLevel(localLevel)
                 .holdColor(holdColor)
                 .problemRating(problemRating)
-                .spotId(spotId)
-                .spotXRatio(spotXRatio)
-                .spotYRatio(spotYRatio)
                 .problemImageCdnUrl(null)
-                .status(ActiveStatusType.ACTIVE)
+                .activeStatus(ActiveStatusType.ACTIVE)
                 .build();
 
             given(gymAreaRepository.findById(gymAreaId))
@@ -246,11 +230,8 @@ public class ProblemServiceTest {
             assertThat(result.localLevel()).isEqualTo(localLevel);
             assertThat(result.holdColor()).isEqualTo(holdColor);
             assertThat(result.problemRating()).isEqualTo(problemRating);
-            assertThat(result.spotId()).isEqualTo(spotId);
-            assertThat(result.spotXRatio()).isEqualTo(spotXRatio);
-            assertThat(result.spotYRatio()).isEqualTo(spotYRatio);
             assertThat(result.problemImageCdnUrl()).isNull();
-            assertThat(result.status()).isEqualTo(ActiveStatusType.ACTIVE);
+            assertThat(result.activeStatus()).isEqualTo(ActiveStatusType.ACTIVE);
         }
 
         @Test
@@ -263,9 +244,6 @@ public class ProblemServiceTest {
                 .localLevel("V5")
                 .holdColor("초록")
                 .problemRating(1700)
-                .spotId(7L)
-                .spotXRatio(45.5)
-                .spotYRatio(50.2)
                 .build();
 
             given(gymAreaRepository.findById(nonExistentGymAreaId))

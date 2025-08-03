@@ -133,7 +133,7 @@ public class UserService {
         );
 
         return problemEntities.stream()
-            .map(ProblemDetailsResponseDto::from)
+            .map(problem -> ProblemDetailsResponseDto.from(problem, problem.gymArea()))
             .toList();
     }
 

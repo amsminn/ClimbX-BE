@@ -12,8 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import java.util.UUID;
@@ -56,25 +54,11 @@ public class ProblemEntity extends BaseTimeEntity {
     @Min(value = 1L)
     private Integer problemRating; // 문제 난이도
 
-    @Column(name = "spot_id", nullable = false)
-    @Min(value = 1L)
-    private Long spotId; // 문제 위치 ID, 클라이밍장 내에서의 위치
-
-    @Column(name = "spot_x_ratio", nullable = false)
-    @DecimalMin("0.0")
-    @DecimalMax("100.0")
-    private Double spotXRatio; // 문제 위치 X 좌표 비율
-
-    @Column(name = "spot_y_ratio", nullable = false)
-    @DecimalMin("0.0")
-    @DecimalMax("100.0")
-    private Double spotYRatio; // 문제 위치 Y 좌표 비율
-
     @Column(name = "problem_image_cdn_url", length = 512)
     @Size(max = 512)
     private String problemImageCdnUrl; // 문제 이미지 CDN URL
 
-    @Column(name = "status", length = 16, nullable = false)
+    @Column(name = "active_status", length = 16, nullable = false)
     @Enumerated(EnumType.STRING)
-    private ActiveStatusType status; // 문제 상태 (예: 활성화, 비활성화 등)
+    private ActiveStatusType activeStatus; // 문제 상태 (예: 활성화, 비활성화 등)
 }

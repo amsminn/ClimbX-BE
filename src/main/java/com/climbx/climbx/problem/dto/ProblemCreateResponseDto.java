@@ -16,11 +16,8 @@ public record ProblemCreateResponseDto(
     String localLevel,
     String holdColor,
     Integer problemRating,
-    Long spotId,
-    Double spotXRatio,
-    Double spotYRatio,
     String problemImageCdnUrl,
-    ActiveStatusType status
+    ActiveStatusType activeStatus
 ) {
 
     public static ProblemCreateResponseDto from(ProblemEntity problem) {
@@ -33,11 +30,8 @@ public record ProblemCreateResponseDto(
             .localLevel(problem.localLevel())
             .holdColor(problem.holdColor())
             .problemRating(problem.problemRating())
-            .spotId(problem.spotId())
-            .spotXRatio(problem.spotXRatio())
-            .spotYRatio(problem.spotYRatio())
             .problemImageCdnUrl(problem.problemImageCdnUrl())
-            .status(problem.status())
+            .activeStatus(problem.activeStatus())
             .build();
     }
 }

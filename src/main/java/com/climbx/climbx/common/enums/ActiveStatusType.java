@@ -4,6 +4,7 @@ import com.climbx.climbx.common.exception.InvalidEnumValueException;
 import com.climbx.climbx.common.util.OptionalUtil;
 
 public enum ActiveStatusType {
+
     ACTIVE,
     INACTIVE;
 

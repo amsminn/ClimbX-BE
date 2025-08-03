@@ -7,18 +7,14 @@ import com.climbx.climbx.gym.exception.GymNotFoundException;
 import com.climbx.climbx.gym.repository.GymRepository;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
-import com.climbx.climbx.problem.dto.ProblemInfoInSpotResponseDto;
-import com.climbx.climbx.problem.dto.SpotDetailsResponseDto;
-import com.climbx.climbx.problem.dto.SpotResponseDto;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.GymAreaRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,46 +32,30 @@ public class ProblemService {
     private final GymAreaRepository gymAreaRepository;
     private final S3Service s3Service;
 
-    public SpotResponseDto getProblemSpotsWithFilters(
+    public List<ProblemInfoResponseDto> getProblemsWithFilters(
         Long gymId,
+        Long gymAreaId,
         String localLevel,
-        String holdColor
+        String holdColor,
+        ActiveStatusType activeStatus
     ) {
         // Gym 정보 조회
         GymEntity gym = gymRepository.findById(gymId)
             .orElseThrow(() -> new GymNotFoundException(gymId));
 
+        // GymArea 정보 조회
+        GymAreaEntity gymArea = gymAreaRepository.findById(gymAreaId)
+            .orElseThrow(() -> new GymAreaNotFoundException(gymAreaId));
+
         // 필터링된 문제들 조회
-        List<ProblemInfoInSpotResponseDto> problems = problemRepository
-            .findByGym_GymIdAndLocalLevelAndHoldColor(gymId, localLevel, holdColor)
+        List<ProblemInfoResponseDto> problems = problemRepository
+            .findByGymAndAreaAndLevelAndColorAndActiveStatus(gymId, gymAreaId, localLevel,
+                holdColor, activeStatus)
             .stream()
-            .map(ProblemInfoInSpotResponseDto::from)
+            .map(problem -> ProblemInfoResponseDto.from(problem, gymId, gymArea))
             .toList();
 
-        // 문제들을 spotId로 그룹화
-        // {spotId, [problem1, problem2, ...]}
-        Map<Long, List<ProblemInfoInSpotResponseDto>> groupedProblems = problems.stream()
-            .collect(Collectors.groupingBy(ProblemInfoInSpotResponseDto::spotId));
-
-        // 그룹화된 문제들을 SpotDetailsResponseDto로 변환
-        // [{spotId, [problem1, problem2, ...]}, {spotId, [problem3, problem4, ...]}]
-        List<SpotDetailsResponseDto> spotDetailsResponseDtoList = groupedProblems.entrySet()
-            .stream()
-            .map(entry -> {
-                Long spotId = entry.getKey();
-                List<ProblemInfoInSpotResponseDto> problemInfoInSpotResponseDtoList = entry.getValue();
-                return SpotDetailsResponseDto.builder()
-                    .spotId(spotId)
-                    .problemDetailsResponseDtoList(problemInfoInSpotResponseDtoList)
-                    .build();
-            }).toList();
-
-        // 결과 DTO 반환
-        return SpotResponseDto.builder()
-            .gymId(gymId)
-            .map2dUrl(gym.map2dUrl())
-            .spotDetailsResponseDtoList(spotDetailsResponseDtoList)
-            .build();
+        return problems;
     }
 
     @Transactional
@@ -109,11 +89,8 @@ public class ProblemService {
             .localLevel(request.localLevel())
             .holdColor(request.holdColor())
             .problemRating(request.problemRating())
-            .spotId(request.spotId())
-            .spotXRatio(request.spotXRatio())
-            .spotYRatio(request.spotYRatio())
             .problemImageCdnUrl(imageCdnUrl)
-            .status(ActiveStatusType.ACTIVE)
+            .activeStatus(ActiveStatusType.ACTIVE)
             .build();
 
         ProblemEntity savedProblem = problemRepository.save(problem);

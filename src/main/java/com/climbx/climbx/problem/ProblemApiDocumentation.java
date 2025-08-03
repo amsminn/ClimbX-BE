@@ -1,9 +1,10 @@
 package com.climbx.climbx.problem;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
+import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
-import com.climbx.climbx.problem.dto.SpotResponseDto;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,9 +62,6 @@ public interface ProblemApiDocumentation {
                                     "localLevel": "빨강",
                                     "holdColor": "파랑",
                                     "problemRating": 1200,
-                                    "spotId": 1,
-                                    "spotXRatio": 15.5,
-                                    "spotYRatio": 20.3,
                                     "imageUrl": "https://example.com/problem1.jpg"
                                   },
                                   {
@@ -72,9 +71,6 @@ public interface ProblemApiDocumentation {
                                     "localLevel": "빨강",
                                     "holdColor": "파랑",
                                     "problemRating": 1300,
-                                    "spotId": 1,
-                                    "spotXRatio": 16.2,
-                                    "spotYRatio": 21.1,
                                     "imageUrl": "https://example.com/problem2.jpg"
                                   }
                                 ]
@@ -89,9 +85,6 @@ public interface ProblemApiDocumentation {
                                     "localLevel": "빨강",
                                     "holdColor": "파랑",
                                     "problemRating": 1400,
-                                    "spotId": 2,
-                                    "spotXRatio": 45.8,
-                                    "spotYRatio": 60.5,
                                     "imageUrl": "https://example.com/problem3.jpg"
                                   }
                                 ]
@@ -144,7 +137,7 @@ public interface ProblemApiDocumentation {
             )
         )
     })
-    SpotResponseDto getProblemSpotsWithFilters(
+    List<ProblemInfoResponseDto> getProblemsWithFilters(
         @Parameter(
             name = "gymId",
             description = "클라이밍장 ID",
@@ -153,6 +146,15 @@ public interface ProblemApiDocumentation {
         )
         @Min(1L)
         Long gymId,
+
+        @Parameter(
+            name = "gymAreaId",
+            description = "클라이밍장 영역 ID",
+            required = true,
+            example = "1"
+        )
+        @Min(1L)
+        Long gymAreaId,
 
         @Parameter(
             name = "localLevel",
@@ -170,7 +172,15 @@ public interface ProblemApiDocumentation {
             example = "초록"
         )
         @Size(min = 1, max = 20)
-        String holdColor
+        String holdColor,
+
+        @Parameter(
+            name = "activeStatus",
+            description = "문제 상태 (예: ACTIVE, INACTIVE)",
+            required = true,
+            example = "ACTIVE"
+        )
+        ActiveStatusType activeStatus
     );
 
     @Operation(

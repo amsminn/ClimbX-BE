@@ -8,9 +8,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.climbx.climbx.common.enums.StatusType;
+import com.climbx.climbx.fixture.GymAreaFixture;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
+import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.exception.ProblemNotFoundException;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -96,8 +99,9 @@ class SubmissionServiceTest {
     }
 
     private ProblemEntity createProblem(UUID problemId) {
-        return ProblemFixture.createProblemEntity(problemId,
-            GymFixture.createGymEntity(1L, "테스트 클라이밍 센터", 37.5665, 126.9780));
+        GymEntity gym = GymFixture.createGymEntity(1L, "테스트 클라이밍 센터", 37.5665, 126.9780);
+        GymAreaEntity gymArea = GymAreaFixture.createGymAreaEntity(1L, gym, "테스트 구역");
+        return ProblemFixture.createProblemEntity(problemId, gym, gymArea);
     }
 
     @Nested
