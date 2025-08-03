@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -80,8 +79,7 @@ public class RatingUtil {
                 Collectors.mapping(TagProjectionDto::getRating, Collectors.toList())
             ));
 
-        return Stream.concat(solvedByTag.keySet().stream(), allByTag.keySet().stream())
-            .distinct()
+        return allByTag.keySet().stream()
             .map(tag -> {
                 List<Long> solvedRatings = solvedByTag.getOrDefault(tag, List.of());
                 List<Long> allRatings = allByTag.getOrDefault(tag, List.of());
@@ -91,12 +89,7 @@ public class RatingUtil {
                     .limit(50)
                     .mapToInt(Long::intValue)
                     .sum();
-                int allSubmissionScore = 10 * Math.min(
-                    allRatings.stream()
-                        .mapToInt(Long::intValue)
-                        .sum(),
-                    50
-                );
+                int allSubmissionScore = 10 * Math.min(allRatings.size(), 50);
                 int solvedCountScore = (int) Math.round(
                     1000 * (1 - Math.pow(0.98, solvedRatings.size()))
                 );

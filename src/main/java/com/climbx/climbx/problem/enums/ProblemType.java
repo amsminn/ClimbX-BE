@@ -3,10 +3,12 @@ package com.climbx.climbx.problem.enums;
 import com.climbx.climbx.common.exception.InvalidEnumValueException;
 import com.climbx.climbx.common.util.OptionalUtil;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Getter
 @Accessors(fluent = true)
+@RequiredArgsConstructor
 public enum ProblemType {
 
     PINCH_HOLD("핀치 홀드"),
@@ -28,10 +30,6 @@ public enum ProblemType {
     COORDINATE("코디네이션");
 
     private final String displayName;
-
-    ProblemType(String tag) {
-        this.displayName = tag;
-    }
 
     public static ProblemType from(String name) {
         return OptionalUtil.tryOf(() -> valueOf(name))
