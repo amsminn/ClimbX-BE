@@ -10,9 +10,9 @@ public class GymAreaFixture {
     public static GymAreaEntity createGymAreaEntity(Long gymAreaId, GymEntity gym,
         String areaName) {
         return GymAreaEntity.builder()
-            .gymAreaId(1L)
+            .gymAreaId(gymAreaId)
             .gym(gym)
-            .areaName("Main Area")
+            .areaName(areaName)
             .areaImageCdnUrl(DEFAULT_GYM_AREA_IMAGE_CDN_URL)
             .build();
     }

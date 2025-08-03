@@ -94,7 +94,7 @@ public class UserFixture {
             .userId(user.userId())
             .nickname(user.nickname())
             .statusMessage(user.statusMessage())
-            .profileImageUrl(user.profileImageUrl())
+            .profileImageCdnUrl(user.profileImageCdnUrl())
             .role(user.role())
             .userStatEntity(userStat)
             .build();
@@ -140,6 +140,8 @@ public class UserFixture {
             .currentStreak(currentStreak)
             .longestStreak(longestStreak)
             .solvedCount(solvedProblemsCount)
+            .submissionCount(0)
+            .contributionCount(0)
             .rivalCount(rivalCount)
             .build();
     }

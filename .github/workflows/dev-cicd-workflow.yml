@@ -118,7 +118,7 @@ jobs:
               -e APPLE_ANDROID_APP_KEY='${{ secrets.APPLE_ANDROID_APP_KEY }}' \
               -e APPLE_IOS_APP_KEY='${{ secrets.APPLE_IOS_APP_KEY }}' \
               -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
-              -e AWS_S3_VIDEOS_MEDIA_BUCKET_NAME='${{ secrets.AWS_S3_VIDEOS_MEDIA_BUCKET_NAME }}' \
+              -e AWS_S3_VIDEOS_SOURCE_BUCKET_NAME='${{ secrets.AWS_S3_VIDEOS_SOURCE_BUCKET_NAME }}' \
               -e AWS_S3_PROFILE_IMAGE_BUCKET_NAME='${{ secrets.AWS_S3_PROFILE_IMAGE_BUCKET_NAME }}' \
               -e AWS_S3_PRESIGNED_URL_EXPIRATION='${{ secrets.AWS_S3_PRESIGNED_URL_EXPIRATION }}' \
               -e AWS_CLOUDFRONT_DOMAIN='${{ secrets.AWS_CLOUDFRONT_DOMAIN }}' \

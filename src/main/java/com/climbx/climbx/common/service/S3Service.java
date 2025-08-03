@@ -39,8 +39,8 @@ public class S3Service {
 
     private final Cache<String, Boolean> existingBuckets;
 
-    @Value("${aws.s3.videos-media-bucket-name}")
-    private String videosMediaBucketName;
+    @Value("${aws.s3.videos-source-bucket-name}")
+    private String videosSourceBucketName;
 
     @Value("${aws.s3.profile-image-bucket-name}")
     private String profileImageBucketName;
@@ -62,23 +62,23 @@ public class S3Service {
         FileUploadValidator.validateVideoParameters(videoId, fileExtension);
 
         // 버킷 이름이 설정되어 있지 않으면 예외 발생
-        if (videosMediaBucketName == null || videosMediaBucketName.isEmpty()) {
-            log.error("S3 video media bucket name is not configured");
+        if (videosSourceBucketName == null || videosSourceBucketName.isEmpty()) {
+            log.error("S3 video source bucket name is not configured");
             throw new AwsBucketNameNotConfiguredException(
                 ErrorCode.S3_BUCKET_NAME_NOT_CONFIGURED,
-                "S3 video media bucket name is not configured."
+                "S3 video source bucket name is not configured."
             );
         }
 
         // 버킷 이름이 캐시에 없으면 S3에서 버킷 존재 여부 확인 후 캐싱
-        ensureBucketExists(videosMediaBucketName);
+        ensureBucketExists(videosSourceBucketName);
 
         // S3 키 생성 (videoId.mp4)
         fileExtension = ensureDotPrefix(fileExtension);
         String s3Key = videoId + fileExtension;
 
         // S3 presigned URL 생성
-        String presignedUrl = createPresignedUrl(s3Key, videosMediaBucketName);
+        String presignedUrl = createPresignedUrl(s3Key, videosSourceBucketName);
 
         log.info("Successfully generated presigned URL for videoId: {}", videoId);
         return presignedUrl;
