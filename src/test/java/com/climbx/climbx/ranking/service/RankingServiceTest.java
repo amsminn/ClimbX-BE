@@ -7,10 +7,10 @@ import static org.mockito.BDDMockito.then;
 
 import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
+import com.climbx.climbx.ranking.enums.RankingCriteria;
 import com.climbx.climbx.ranking.repository.RankingRepository;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
-import com.climbx.climbx.user.enums.CriteriaType;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -42,7 +42,7 @@ class RankingServiceTest {
         @DisplayName("레이팅 기준 내림차순 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageByRatingDesc() {
             // given
-            CriteriaType criteria = CriteriaType.RATING;
+            RankingCriteria criteria = RankingCriteria.RATING;
             Integer page = 0;
             Integer perPage = 10;
             Pageable pageable = PageRequest.of(page, perPage);
@@ -97,7 +97,7 @@ class RankingServiceTest {
         @DisplayName("연속 출석일 기준 오름차순 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageByStreakAsc() {
             // given
-            CriteriaType criteria = CriteriaType.STREAK;
+            RankingCriteria criteria = RankingCriteria.CURRENT_STREAK;
             Integer page = 0;
             Integer perPage = 10;
             Pageable pageable = PageRequest.of(page, perPage);
@@ -135,7 +135,7 @@ class RankingServiceTest {
         @DisplayName("해결 문제 수 기준 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageBySolvedCount() {
             // given
-            CriteriaType criteria = CriteriaType.SOLVED_COUNT;
+            RankingCriteria criteria = RankingCriteria.SOLVED_COUNT;
             Integer page = 0;
             Integer perPage = 10;
             Pageable pageable = PageRequest.of(page, perPage);
@@ -173,7 +173,7 @@ class RankingServiceTest {
         @DisplayName("최장 연속 출석일 기준 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageByLongestStreak() {
             // given
-            CriteriaType criteria = CriteriaType.STREAK;
+            RankingCriteria criteria = RankingCriteria.LONGEST_STREAK;
             Integer page = 0;
             Integer perPage = 10;
             Pageable pageable = PageRequest.of(page, perPage);
@@ -211,7 +211,7 @@ class RankingServiceTest {
         @DisplayName("페이징 처리가 정상적으로 동작한다")
         void shouldHandlePagination() {
             // given
-            CriteriaType criteria = CriteriaType.RATING;
+            RankingCriteria criteria = RankingCriteria.RATING;
             Integer page = 1;
             Integer perPage = 5;
             Pageable pageable = PageRequest.of(page, perPage);
@@ -249,7 +249,7 @@ class RankingServiceTest {
         @DisplayName("잘못된 order 파라미터일 때 기본값 DESC를 사용한다")
         void shouldUseDefaultOrderWhenInvalidOrder() {
             // given
-            CriteriaType criteria = CriteriaType.RATING;
+            RankingCriteria criteria = RankingCriteria.RATING;
             Integer page = 0;
             Integer perPage = 10;
             Pageable pageable = PageRequest.of(page, perPage);
@@ -287,7 +287,7 @@ class RankingServiceTest {
         @DisplayName("빈 결과를 정상적으로 처리한다")
         void shouldHandleEmptyResult() {
             // given
-            CriteriaType criteria = CriteriaType.RATING;
+            RankingCriteria criteria = RankingCriteria.RATING;
             Integer page = 0;
             Integer perPage = 10;
             Pageable pageable = PageRequest.of(page, perPage);

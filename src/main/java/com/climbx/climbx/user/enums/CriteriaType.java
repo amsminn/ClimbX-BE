@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 public enum CriteriaType {
 
     RATING,
-    STREAK,
+    TOTAL_STREAK,
     LONGEST_STREAK,
     SOLVED_COUNT;
 

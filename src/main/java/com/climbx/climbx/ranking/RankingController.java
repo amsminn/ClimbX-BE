@@ -2,8 +2,8 @@ package com.climbx.climbx.ranking;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
+import com.climbx.climbx.ranking.enums.RankingCriteria;
 import com.climbx.climbx.ranking.service.RankingService;
-import com.climbx.climbx.user.enums.CriteriaType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +27,7 @@ public class RankingController implements RankingApiDocumentation {
     @SuccessStatus(value = HttpStatus.OK)
     public RankingResponseDto getRanking(
         @RequestParam(name = "criteria", required = true)
-        CriteriaType criteria,
+        RankingCriteria criteria,
 
         @PageableDefault(page = 0, size = 20)
         Pageable pageable

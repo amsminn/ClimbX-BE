@@ -11,15 +11,17 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 public enum RankingCriteria {
 
-    RATING("rating"),
-    STREAK("currentStreak"),
-    LONGEST_STREAK("longestStreak"),
-    SOLVED_COUNT("solvedCount");
-
-    private final String columnName;
+    RATING,
+    CURRENT_STREAK,
+    LONGEST_STREAK,
+    SOLVED_COUNT;
 
     public static RankingCriteria from(String code) {
         return OptionalUtil.tryOf(() -> valueOf(code))
             .orElseThrow(() -> new InvalidCriteriaException(code));
+    }
+
+    public String getLowerCaseName() {
+        return this.name().toLowerCase();
     }
 }

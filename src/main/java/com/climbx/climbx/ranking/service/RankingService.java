@@ -3,9 +3,9 @@ package com.climbx.climbx.ranking.service;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.dto.UserRankingResponseDto;
+import com.climbx.climbx.ranking.enums.RankingCriteria;
 import com.climbx.climbx.ranking.repository.RankingRepository;
 import com.climbx.climbx.user.entity.UserStatEntity;
-import com.climbx.climbx.user.enums.CriteriaType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +23,7 @@ public class RankingService {
     private final RankingRepository rankingRepository;
 
     public RankingResponseDto getRankingPage(
-        CriteriaType criteria,
+        RankingCriteria criteria,
         Pageable pageable
     ) {
         Sort sort = Sort.by(
