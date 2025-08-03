@@ -51,7 +51,7 @@ public class S3Service {
     @Value("${aws.s3.presigned-url-expiration}")
     private long presignedUrlExpiration;
 
-    @Value("${aws.cloudfront.domain:}")
+    @Value("${aws.cloudfront.domain}")
     private String cloudfrontDomain;
 
     public String generateVideoUploadPresignedUrl(UUID videoId, String fileExtension) {
