@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
@@ -288,12 +289,14 @@ public interface ProblemApiDocumentation {
             description = "문제 생성 요청 데이터",
             required = true
         )
-        @Valid ProblemCreateRequestDto request,
+        @Valid
+        ProblemCreateRequestDto request,
 
         @Parameter(
             description = "문제 이미지 파일 (선택사항, 최대 10MB)",
-            required = false
+            required = true
         )
+        @NotNull
         MultipartFile problemImage
     );
 }

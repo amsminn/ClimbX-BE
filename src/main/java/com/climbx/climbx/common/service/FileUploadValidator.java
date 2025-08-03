@@ -2,7 +2,7 @@ package com.climbx.climbx.common.service;
 
 import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.exception.BusinessException;
-import com.climbx.climbx.common.exception.IMAGE_SIZE_EXCEEDED;
+import com.climbx.climbx.common.exception.ImageSizeExceededException;
 import com.climbx.climbx.video.exception.FileExtensionNotExistsException;
 import java.util.Set;
 import java.util.UUID;
@@ -48,7 +48,7 @@ public class FileUploadValidator {
         // 파일 크기 검증 (예: 5MB 제한)
         if (profileImage.getSize() > MAX_IMAGE_SIZE) {
             log.warn("Profile image file size exceeds limit: {} bytes", profileImage.getSize());
-            throw new IMAGE_SIZE_EXCEEDED(
+            throw new ImageSizeExceededException(
                 ErrorCode.IMAGE_SIZE_EXCEEDED, "Profile image file size must be less than 5MB");
         }
 
@@ -83,7 +83,7 @@ public class FileUploadValidator {
         if (problemImage.getSize() > MAX_IMAGE_SIZE) {
             log.warn("Problem image file size exceeds limit: fileSize={} bytes, limit={} btyes",
                 problemImage.getSize(), MAX_IMAGE_SIZE);
-            throw new IMAGE_SIZE_EXCEEDED(
+            throw new ImageSizeExceededException(
                 ErrorCode.IMAGE_SIZE_EXCEEDED, "Problem image file size must be less than 10MB");
         }
 

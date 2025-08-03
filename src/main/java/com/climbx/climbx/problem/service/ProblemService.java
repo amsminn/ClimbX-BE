@@ -1,6 +1,8 @@
 package com.climbx.climbx.problem.service;
 
 import com.climbx.climbx.common.enums.ActiveStatusType;
+import com.climbx.climbx.common.enums.ErrorCode;
+import com.climbx.climbx.common.exception.InvalidParameterException;
 import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.gym.exception.GymNotFoundException;
@@ -73,13 +75,15 @@ public class ProblemService {
         // Gym 정보는 GymArea를 통해 가져옴
         GymEntity gym = gymArea.gym();
 
+        if (problemImage == null || problemImage.isEmpty()) {
+            throw new InvalidParameterException(
+                ErrorCode.INVALID_PARAMETER, "Problem image must not be null or empty");
+        }
+
         // 이미지 업로드 처리
         UUID problemId = UUID.randomUUID();
-        String imageCdnUrl = null;
-        if (problemImage != null && !problemImage.isEmpty()) {
-            imageCdnUrl = s3Service.uploadProblemImage(problemId, gymArea.gymAreaId(),
-                problemImage);
-        }
+        String imageCdnUrl = s3Service.uploadProblemImage(problemId, gymArea.gymAreaId(),
+            problemImage);
 
         // Problem 엔티티 생성
         ProblemEntity problem = ProblemEntity.builder()
@@ -88,15 +92,17 @@ public class ProblemService {
             .gymArea(gymArea)
             .localLevel(request.localLevel())
             .holdColor(request.holdColor())
-            .problemRating(request.problemRating())
+            // Todo .problemRating()
             .problemImageCdnUrl(imageCdnUrl)
             .activeStatus(ActiveStatusType.ACTIVE)
             .build();
 
         ProblemEntity savedProblem = problemRepository.save(problem);
 
-        log.info("Problem created successfully: problemId={}, imageCdnUrl={}",
-            savedProblem.problemId(), imageCdnUrl);
+        log.info(
+            "Problem created successfully: problemId={}, localLevel={}, holdColor={}, imageCdnUrl={}",
+            savedProblem.problemId(), savedProblem.localLevel(), savedProblem.holdColor(),
+            imageCdnUrl);
 
         return ProblemCreateResponseDto.from(savedProblem);
     }

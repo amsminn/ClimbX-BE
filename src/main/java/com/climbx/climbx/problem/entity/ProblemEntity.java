@@ -50,7 +50,7 @@ public class ProblemEntity extends BaseTimeEntity {
     @Size(min = 1, max = 32)
     private String holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
 
-    @Column(name = "problem_rating", nullable = false)
+    @Column(name = "problem_rating") // Todo nullable = false
     @Min(value = 1L)
     private Integer problemRating; // 문제 난이도
 

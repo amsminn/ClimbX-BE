@@ -15,6 +15,7 @@ public enum ErrorCode {
      */
     // 4xx: Client errors
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "유효하지 않은 파라미터입니다."),
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "유효성 검사에 실패했습니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),

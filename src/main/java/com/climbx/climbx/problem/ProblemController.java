@@ -7,6 +7,7 @@ import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.service.ProblemService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,8 +57,13 @@ public class ProblemController implements ProblemApiDocumentation {
     @PostMapping
     @SuccessStatus(value = HttpStatus.CREATED)
     public ProblemCreateResponseDto registerProblem(
-        @RequestPart("request") @Valid ProblemCreateRequestDto request,
-        @RequestPart(value = "problemImage", required = false) MultipartFile problemImage
+        @RequestPart("request")
+        @Valid
+        ProblemCreateRequestDto request,
+
+        @RequestPart(value = "problemImage", required = true)
+        @NotNull
+        MultipartFile problemImage
     ) {
         log.info("문제 생성: gymAreaId={}, localLevel={}, holdColor={}",
             request.gymAreaId(), request.localLevel(), request.holdColor());

@@ -122,7 +122,6 @@ public class ProblemServiceTest {
                 .gymAreaId(gymAreaId)
                 .localLevel(localLevel)
                 .holdColor(holdColor)
-                .problemRating(problemRating)
                 .build();
 
             MockMultipartFile problemImage = new MockMultipartFile(
@@ -191,7 +190,6 @@ public class ProblemServiceTest {
                 .gymAreaId(gymAreaId)
                 .localLevel(localLevel)
                 .holdColor(holdColor)
-                .problemRating(problemRating)
                 .build();
 
             GymEntity gymEntity = GymFixture.createGymEntity(1L, "테스트 클라이밍장", 37.0, 126.0);
@@ -218,11 +216,14 @@ public class ProblemServiceTest {
                 .willReturn(savedProblem);
 
             // when
-            ProblemCreateResponseDto result = problemService.registerProblem(request, null);
+            MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt",
+                "text/plain", "test".getBytes());
+            ProblemCreateResponseDto result = problemService.registerProblem(request,
+                multipartFile);
 
             // then
             then(gymAreaRepository).should(times(1)).findById(gymAreaId);
-            then(s3Service).should(times(0)).uploadProblemImage(any(), anyLong(), any());
+            then(s3Service).should(times(0)).uploadProblemImage(eq(problemId), anyLong(), any());
             then(problemRepository).should(times(1)).save(any(ProblemEntity.class));
 
             assertThat(result.problemId()).isEqualTo(problemId);
@@ -243,7 +244,6 @@ public class ProblemServiceTest {
                 .gymAreaId(nonExistentGymAreaId)
                 .localLevel("V5")
                 .holdColor("초록")
-                .problemRating(1700)
                 .build();
 
             given(gymAreaRepository.findById(nonExistentGymAreaId))

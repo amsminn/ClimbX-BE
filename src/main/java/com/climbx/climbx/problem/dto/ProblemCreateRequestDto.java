@@ -1,6 +1,5 @@
 package com.climbx.climbx.problem.dto;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -17,11 +16,7 @@ public record ProblemCreateRequestDto(
 
     @NotNull
     @Size(min = 1, max = 32)
-    String holdColor,
-
-    @NotNull
-    @Min(value = 1L)
-    Integer problemRating
+    String holdColor
 ) {
 
 }
