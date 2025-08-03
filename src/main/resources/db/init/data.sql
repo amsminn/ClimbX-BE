@@ -439,7 +439,7 @@ VALUES
  'https://example.com/problem62.jpg', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
 ((UNHEX(REPLACE("550e8400-e29b-41d4-a716-446655440063", "-", ""))), 13, 63, '초록', '노랑', 2987,
  'https://example.com/problem63.jpg', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
-((UNHEX(REPLACE("550e8400-e29b-41d4-a716-446655440064", "-", ""))), 13, 64, '빨간색', '초록', 1,
+((UNHEX(REPLACE("550e8400-e29b-41d4-a716-446655440064", "-", ""))), 13, 64, '빨강', '초록', 1,
  'https://example.com/problem64.jpg', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL),
 ((UNHEX(REPLACE("550e8400-e29b-41d4-a716-446655440065", "-", ""))), 13, 65, '파랑', '보라', 1567,
  'https://example.com/problem65.jpg', 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL);

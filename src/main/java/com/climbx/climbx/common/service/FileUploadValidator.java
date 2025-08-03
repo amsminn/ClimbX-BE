@@ -19,7 +19,7 @@ public class FileUploadValidator {
 
     public static void validateVideoParameters(UUID videoId, String fileExtension) {
         if (videoId == null) {
-            log.error("VideoId cannot be null");
+            log.warn("VideoId cannot be null");
             throw new IllegalArgumentException("VideoId cannot be null");
         }
 
@@ -35,19 +35,19 @@ public class FileUploadValidator {
 
     public static void validateProfileImageParameters(Long userId, MultipartFile profileImage) {
         if (userId == null) {
-            log.error("UserId cannot be null");
+            log.warn("UserId cannot be null");
             throw new BusinessException(ErrorCode.INVALID_REQUEST, "UserId cannot be null");
         }
 
         if (profileImage == null || profileImage.isEmpty()) {
-            log.error("Profile image file cannot be null or empty");
+            log.warn("Profile image file cannot be null or empty");
             throw new BusinessException(
                 ErrorCode.INVALID_REQUEST, "Profile image file cannot be null or empty");
         }
 
         // 파일 크기 검증 (예: 5MB 제한)
         if (profileImage.getSize() > MAX_IMAGE_SIZE) {
-            log.error("Profile image file size exceeds limit: {} bytes", profileImage.getSize());
+            log.warn("Profile image file size exceeds limit: {} bytes", profileImage.getSize());
             throw new IMAGE_SIZE_EXCEEDED(
                 ErrorCode.IMAGE_SIZE_EXCEEDED, "Profile image file size must be less than 5MB");
         }
@@ -56,7 +56,7 @@ public class FileUploadValidator {
         String contentType = profileImage.getContentType();
 
         if (contentType == null || !allowedContentTypes.contains(contentType)) {
-            log.error("Invalid content type for profile image: {}", contentType);
+            log.warn("Invalid content type for profile image: {}", contentType);
             throw new BusinessException(
                 ErrorCode.INVALID_REQUEST,
                 "Profile image must be an image file (JPEG, PNG, JPG, GIF, WEBP, BMP, HEIC)"
@@ -68,20 +68,20 @@ public class FileUploadValidator {
 
     public static void validateProblemImageParameters(UUID problemId, MultipartFile problemImage) {
         if (problemId == null) {
-            log.error("GymAreaId cannot be null");
+            log.warn("problemId cannot be null");
             throw new BusinessException(
                 ErrorCode.INVALID_REQUEST, "problemId cannot be null");
         }
 
         if (problemImage == null || problemImage.isEmpty()) {
-            log.error("Problem image file cannot be null or empty");
+            log.warn("Problem image file cannot be null or empty");
             throw new BusinessException(
                 ErrorCode.INVALID_REQUEST, "Problem image file cannot be null or empty");
         }
 
         // 파일 크기 검증 (예: 5MB 제한)
         if (problemImage.getSize() > MAX_IMAGE_SIZE) {
-            log.error("Problem image file size exceeds limit: fileSize={} bytes, limit={} btyes",
+            log.warn("Problem image file size exceeds limit: fileSize={} bytes, limit={} btyes",
                 problemImage.getSize(), MAX_IMAGE_SIZE);
             throw new IMAGE_SIZE_EXCEEDED(
                 ErrorCode.IMAGE_SIZE_EXCEEDED, "Problem image file size must be less than 10MB");
@@ -90,7 +90,7 @@ public class FileUploadValidator {
         // Content Type 검증
         String contentType = problemImage.getContentType();
         if (contentType == null || !allowedContentTypes.contains(contentType)) {
-            log.error("Invalid content type for problem image: {}", contentType);
+            log.warn("Invalid content type for problem image: {}", contentType);
             throw new BusinessException(
                 ErrorCode.INVALID_REQUEST,
                 "Problem image must be an image file (JPEG, PNG, JPG, GIF, WEBP, BMP, HEIC)"
