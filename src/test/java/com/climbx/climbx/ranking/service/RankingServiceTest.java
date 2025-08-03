@@ -5,12 +5,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.repository.RankingRepository;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
-import com.climbx.climbx.user.enums.CriteriaType;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -97,7 +97,7 @@ class RankingServiceTest {
         @DisplayName("연속 출석일 기준 오름차순 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageByStreakAsc() {
             // given
-            CriteriaType criteria = CriteriaType.STREAK;
+            CriteriaType criteria = CriteriaType.CURRENT_STREAK;
             Integer page = 0;
             Integer perPage = 10;
             Pageable pageable = PageRequest.of(page, perPage);
@@ -173,7 +173,7 @@ class RankingServiceTest {
         @DisplayName("최장 연속 출석일 기준 랭킹을 성공적으로 조회한다")
         void shouldGetRankingPageByLongestStreak() {
             // given
-            CriteriaType criteria = CriteriaType.STREAK;
+            CriteriaType criteria = CriteriaType.LONGEST_STREAK;
             Integer page = 0;
             Integer perPage = 10;
             Pageable pageable = PageRequest.of(page, perPage);

@@ -1,9 +1,10 @@
 package com.climbx.climbx.ranking;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.service.RankingService;
-import com.climbx.climbx.user.enums.CriteriaType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -36,5 +37,12 @@ public class RankingController implements RankingApiDocumentation {
             criteria, pageable.getPageNumber(), pageable.getPageSize());
 
         return rankingService.getRankingPage(criteria, pageable);
+    }
+
+    @GetMapping("/criteria")
+    @SuccessStatus(value = HttpStatus.OK)
+    public List<String> getCriteriaTypes() {
+        log.info("랭킹 기준 조회");
+        return rankingService.getCriteriaTypeNames();
     }
 }

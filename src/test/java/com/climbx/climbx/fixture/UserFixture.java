@@ -1,12 +1,12 @@
 package com.climbx.climbx.fixture;
 
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserRankingHistoryEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
-import com.climbx.climbx.user.enums.CriteriaType;
 import java.time.LocalDate;
 import java.util.Collections;
 
@@ -166,7 +166,7 @@ public class UserFixture {
             .ranking(ranking)
             .rating(rating)
             .tier("BRONZE1")
-            .categoryRatings(Collections.emptyMap())
+            .categoryRatings(Collections.emptyList())
             .currentStreak(DEFAULT_CURRENT_STREAK)
             .longestStreak(DEFAULT_LONGEST_STREAK)
             .solvedCount(DEFAULT_SOLVED_PROBLEMS_COUNT)
@@ -194,7 +194,7 @@ public class UserFixture {
             .ranking(ranking)
             .rating(rating)
             .tier("SILVER1")
-            .categoryRatings(Collections.emptyMap())
+            .categoryRatings(Collections.emptyList())
             .currentStreak(currentStreak)
             .longestStreak(longestStreak)
             .solvedCount(solvedProblemsCount)

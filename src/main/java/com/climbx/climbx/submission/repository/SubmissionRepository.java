@@ -2,11 +2,13 @@ package com.climbx.climbx.submission.repository;
 
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.submission.dto.TagRatingPairDto;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -95,7 +97,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
         WHERE (:userId IS NULL OR v.userId = :userId)
           AND (:problemId IS NULL OR p.problemId = :problemId)
           AND (:holdColor IS NULL OR p.holdColor = :holdColor)
-          AND (:ratingFrom IS NULL OR p.problemRating >= :ratingFrom)  
+          AND (:ratingFrom IS NULL OR p.problemRating >= :ratingFrom)
           AND (:ratingTo IS NULL OR p.problemRating <= :ratingTo)
         """)
     Page<SubmissionEntity> findSubmissionsWithFilters(
@@ -106,4 +108,47 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
         @Param("ratingTo") Integer ratingTo,
         Pageable pageable
     );
+
+    // 1) Primary 만
+    @Query("""
+          SELECT new com.climbx.climbx.submission.dto.TagRatingPairDto(
+                p.primaryTag, p.problemRating
+            )
+          FROM SubmissionEntity s
+          JOIN s.videoEntity v
+          JOIN s.problemEntity p
+          WHERE v.userId = :userId
+            AND (:accepted IS NULL OR s.status = :accepted)
+            AND (p.primaryTag IS NOT NULL)
+        """)
+    List<TagRatingPairDto> summarizeByPrimary(@Param("userId") Long userId,
+        @Param("accepted") StatusType accepted);
+
+    // 2) Secondary 만
+    @Query("""
+          SELECT new com.climbx.climbx.submission.dto.TagRatingPairDto(
+                p.secondaryTag, p.problemRating
+            )
+          FROM SubmissionEntity s
+          JOIN s.videoEntity v
+          JOIN s.problemEntity p
+          WHERE v.userId = :userId
+            AND (:accepted IS NULL OR s.status = :accepted)
+            AND (p.secondaryTag IS NOT NULL)
+        """)
+    List<TagRatingPairDto> summarizeBySecondary(@Param("userId") Long userId,
+        @Param("accepted") StatusType accepted);
+
+    default List<TagRatingPairDto> getUserAcceptedSubmissionTagSummary(
+        Long userId,
+        StatusType accepted
+    ) {
+        // accepted 가 null 이면 모든 상태의 Submission 을 대상으로 함
+        List<TagRatingPairDto> primaryTags = summarizeByPrimary(userId, accepted);
+        List<TagRatingPairDto> secondaryTags = summarizeBySecondary(userId, accepted);
+
+        // Primary 와 Secondary 를 합쳐서 반환
+        return Stream.concat(primaryTags.stream(), secondaryTags.stream())
+            .toList();
+    }
 }

@@ -1,7 +1,7 @@
 package com.climbx.climbx.user.entity;
 
 import com.climbx.climbx.common.entity.BaseTimeEntity;
-import com.climbx.climbx.user.enums.CriteriaType;
+import com.climbx.climbx.common.enums.CriteriaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,8 +1,8 @@
 package com.climbx.climbx.ranking;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
-import com.climbx.climbx.user.enums.CriteriaType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

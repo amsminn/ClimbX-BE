@@ -3,6 +3,7 @@ package com.climbx.climbx.problem.entity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.problem.enums.ProblemType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import java.util.UUID;
@@ -51,8 +53,17 @@ public class ProblemEntity extends BaseTimeEntity {
     private String holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
 
     @Column(name = "problem_rating") // Todo nullable = false
-    @Min(value = 1L)
+    @Min(value = 1)
+    @Max(value = 30)
     private Integer problemRating; // 문제 난이도
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "primary_tag", length = 16)
+    private ProblemType primaryTag;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "secondary_tag", length = 16)
+    private ProblemType secondaryTag;
 
     @Column(name = "problem_image_cdn_url", length = 512)
     @Size(max = 512)
