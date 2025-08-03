@@ -10,11 +10,10 @@ import lombok.Builder;
 public record SubmissionResponseDto(
 
     UUID videoId,
-    Long problemId,
+    UUID problemId,
     String problemLocalLevel,
     String problemHoldColor,
     Integer problemRating,
-    Long spotId,
     String gymName,
     StatusType status,
     String userNickname,
@@ -31,7 +30,6 @@ public record SubmissionResponseDto(
             .problemLocalLevel(submissionEntity.problemEntity().localLevel())
             .problemHoldColor(submissionEntity.problemEntity().holdColor())
             .problemRating(submissionEntity.problemEntity().problemRating())
-            .spotId(submissionEntity.problemEntity().spotId())
             .gymName(submissionEntity.problemEntity().gym().name())
             .status(submissionEntity.status())
             .userNickname(submissionEntity.videoEntity().userAccountEntity().nickname())

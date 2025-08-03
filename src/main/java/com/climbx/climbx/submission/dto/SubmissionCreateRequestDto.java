@@ -1,6 +1,5 @@
 package com.climbx.climbx.submission.dto;
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Builder;
@@ -12,8 +11,7 @@ public record SubmissionCreateRequestDto(
     UUID videoId,
 
     @NotNull
-    @Min(1)
-    Long problemId
+    UUID problemId
 ) {
 
 }

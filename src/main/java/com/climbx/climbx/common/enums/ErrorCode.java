@@ -15,6 +15,7 @@ public enum ErrorCode {
      */
     // 4xx: Client errors
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "유효하지 않은 파라미터입니다."),
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "유효성 검사에 실패했습니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
@@ -22,6 +23,7 @@ public enum ErrorCode {
     MISSING_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "필수 파라미터가 누락되었습니다."),
     METHOD_ARGUMENT_TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "메서드 파라미터 타입이 일치하지 않습니다."),
     RATE_LIMIT_EXCEEDED(HttpStatus.TOO_MANY_REQUESTS, "요청 허용 횟수를 초과했습니다."),
+    IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "이미지 파일 크기가 5MB 제한을 초과했습니다."),
 
     // 5xx: Server errors
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
@@ -37,7 +39,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
     USER_STAT_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 통계 정보를 찾을 수 없습니다."),
     DUPLICATED_NICKNAME(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
-    NICKNAME_MISMATCH(HttpStatus.BAD_REQUEST, "닉네임이 일치하지 않습니다."),
+    NICKNAME_MISMATCH(HttpStatus.FORBIDDEN, "닉네임이 일치하지 않습니다."),
     VIDEO_NOT_FOUND(HttpStatus.NOT_FOUND, "비디오를 찾을 수 없습니다."),
     PROBLEM_NOT_FOUND(HttpStatus.NOT_FOUND, "문제를 찾을 수 없습니다."),
     FORBIDDEN_SUBMISSION(HttpStatus.FORBIDDEN, "제출물에 대한 권한이 없습니다."),
@@ -50,6 +52,7 @@ public enum ErrorCode {
      * Gym errors
      */
     GYM_NOT_FOUND(HttpStatus.NOT_FOUND, "클라이밍장을 찾을 수 없습니다."),
+    GYM_AREA_NOT_FOUND(HttpStatus.NOT_FOUND, "클라이밍장 벽(구역)을 찾을 수 없습니다."),
 
     /**
      * Ranking errors

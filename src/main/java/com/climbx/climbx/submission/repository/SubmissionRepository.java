@@ -18,13 +18,15 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
 
 
     /**
-     * 사용자가 푼(accepted=true) Submission 에서 video.userAccount.userId = :userId 인 것들만 추리고, 그 안의
-     * Problem(p) 을 DISTINCT 하여 p.rating DESC 순으로 정렬한 뒤 Pageable 로 페이지(=상위 N개) 리미트
+     * 사용자가 푼(accepted=true) Submission 에서 video.userAccount.userId = :userId 인 것들만 추린 뒤 gymArea를
+     * fetch join함. 그 안의 Problem(p) 을 DISTINCT 하여 p.rating DESC 순으로 정렬한 뒤 Pageable 로 페이지(=상위 N개)
+     * 리미트
      */
     @Query("""
         SELECT DISTINCT s.problemEntity
           FROM SubmissionEntity s
           JOIN s.videoEntity v
+          JOIN FETCH s.problemEntity.gymArea
          WHERE v.userId = :userId
            AND s.status = :status
          ORDER BY s.problemEntity.problemRating DESC

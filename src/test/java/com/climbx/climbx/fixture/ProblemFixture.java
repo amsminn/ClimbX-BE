@@ -2,7 +2,9 @@ package com.climbx.climbx.fixture;
 
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
+import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import java.util.UUID;
 
 public class ProblemFixture {
 
@@ -10,103 +12,63 @@ public class ProblemFixture {
     public static final String DEFAULT_LOCAL_LEVEL = "빨강";
     public static final String DEFAULT_HOLD_COLOR = "파랑";
     public static final String DEFAULT_IMAGE_URL = "http://example.com/image.jpg";
-    public static final Long DEFAULT_SPOT_ID = 1L;
-    public static final Double DEFAULT_SPOT_X_RATIO = 50.0;
-    public static final Double DEFAULT_SPOT_Y_RATIO = 30.0;
 
-    public static ProblemEntity createProblemEntity(Long problemId, GymEntity gym) {
-        return createProblemEntity(problemId, gym, DEFAULT_LOCAL_LEVEL, DEFAULT_HOLD_COLOR,
-            DEFAULT_PROBLEM_RATING, DEFAULT_SPOT_ID, DEFAULT_SPOT_X_RATIO, DEFAULT_SPOT_Y_RATIO);
+    public static ProblemEntity createProblemEntity(UUID problemId, GymEntity gym,
+        GymAreaEntity gymArea) {
+        return createProblemEntity(problemId, gym, gymArea, DEFAULT_LOCAL_LEVEL, DEFAULT_HOLD_COLOR,
+            DEFAULT_PROBLEM_RATING);
     }
 
     public static ProblemEntity createProblemEntity(
-        Long problemId,
+        UUID problemId,
         GymEntity gym,
+        GymAreaEntity gymArea,
         String localLevel,
         String holdColor,
         Integer problemRating
-    ) {
-        return createProblemEntity(problemId, gym, localLevel, holdColor, problemRating,
-            DEFAULT_SPOT_ID, DEFAULT_SPOT_X_RATIO, DEFAULT_SPOT_Y_RATIO);
-    }
-
-    public static ProblemEntity createProblemEntity(
-        Long problemId,
-        GymEntity gym,
-        String localLevel,
-        String holdColor
-    ) {
-        return createProblemEntity(problemId, gym, localLevel, holdColor, DEFAULT_PROBLEM_RATING,
-            DEFAULT_SPOT_ID, DEFAULT_SPOT_X_RATIO, DEFAULT_SPOT_Y_RATIO);
-    }
-
-    public static ProblemEntity createProblemEntity(
-        Long problemId,
-        GymEntity gym,
-        String localLevel,
-        String holdColor,
-        Integer problemRating,
-        Long spotId,
-        Double spotXRatio,
-        Double spotYRatio
     ) {
         return ProblemEntity.builder()
             .problemId(problemId)
             .gym(gym)
+            .gymArea(gymArea)
             .localLevel(localLevel)
             .holdColor(holdColor)
             .problemRating(problemRating)
-            .spotId(spotId)
-            .spotXRatio(spotXRatio)
-            .spotYRatio(spotYRatio)
-            .imageUrl(DEFAULT_IMAGE_URL)
+            .problemImageCdnUrl(DEFAULT_IMAGE_URL)
             .build();
     }
 
     public static ProblemDetailsResponseDto createProblemResponseDto(
-        Long problemId,
+        UUID problemId,
         Long gymId,
-        String gymName
+        String gymName,
+        Long gymAreaId,
+        String gymAreaName
     ) {
-        return createProblemResponseDto(problemId, gymId, gymName, DEFAULT_LOCAL_LEVEL,
-            DEFAULT_HOLD_COLOR, DEFAULT_PROBLEM_RATING, DEFAULT_SPOT_ID, DEFAULT_SPOT_X_RATIO,
-            DEFAULT_SPOT_Y_RATIO);
+        return createProblemResponseDto(problemId, gymId, gymName, gymAreaId, gymAreaName,
+            DEFAULT_LOCAL_LEVEL, DEFAULT_HOLD_COLOR, DEFAULT_PROBLEM_RATING);
     }
 
     public static ProblemDetailsResponseDto createProblemResponseDto(
-        Long problemId,
+        UUID problemId,
         Long gymId,
         String gymName,
+        Long gymAreaId,
+        String gymAreaName,
         String localLevel,
         String holdColor,
         Integer problemRating
-    ) {
-        return createProblemResponseDto(problemId, gymId, gymName, localLevel, holdColor,
-            problemRating, DEFAULT_SPOT_ID, DEFAULT_SPOT_X_RATIO, DEFAULT_SPOT_Y_RATIO);
-    }
-
-    public static ProblemDetailsResponseDto createProblemResponseDto(
-        Long problemId,
-        Long gymId,
-        String gymName,
-        String localLevel,
-        String holdColor,
-        Integer problemRating,
-        Long spotId,
-        Double spotXRatio,
-        Double spotYRatio
     ) {
         return ProblemDetailsResponseDto.builder()
             .problemId(problemId)
             .gymId(gymId)
             .gymName(gymName)
+            .gymAreaId(gymAreaId)
+            .gymAreaName(gymAreaName)
             .localLevel(localLevel)
             .holdColor(holdColor)
             .problemRating(problemRating)
-            .spotId(spotId)
-            .spotXRatio(spotXRatio)
-            .spotYRatio(spotYRatio)
-            .imageUrl(DEFAULT_IMAGE_URL)
+            .problemImageCdnUrl(DEFAULT_IMAGE_URL)
             .build();
     }
 } 

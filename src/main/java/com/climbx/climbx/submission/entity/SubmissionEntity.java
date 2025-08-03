@@ -34,19 +34,19 @@ import org.hibernate.annotations.SQLRestriction;
 public class SubmissionEntity extends BaseTimeEntity {
 
     @Id
-    @Column(name = "video_id", updatable = false, nullable = false)
+    @Column(name = "video_id", columnDefinition = "BINARY(16)", updatable = false, nullable = false)
     private UUID videoId; // 비디오 ID, VideoEntity와 동일한 ID 사용
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "video_id")
+    @JoinColumn(name = "video_id", columnDefinition = "BINARY(16)")
     private VideoEntity videoEntity; // 비디오 엔티티
 
-    @Column(name = "problem_id", insertable = false, updatable = false, nullable = false)
-    private Long problemId; // 문제 ID, ProblemEntity와 동일한 ID 사용
+    @Column(name = "problem_id", columnDefinition = "BINARY(16)", insertable = false, updatable = false, nullable = false)
+    private UUID problemId; // 문제 ID, ProblemEntity와 동일한 ID 사용
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "problem_id")
+    @JoinColumn(name = "problem_id", columnDefinition = "BINARY(16)")
     private ProblemEntity problemEntity; // 문제 엔티티
 
     @Column(name = "status", length = 32, nullable = false)

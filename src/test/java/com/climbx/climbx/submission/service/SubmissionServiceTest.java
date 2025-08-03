@@ -8,9 +8,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.climbx.climbx.common.enums.StatusType;
+import com.climbx.climbx.fixture.GymAreaFixture;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
+import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.exception.ProblemNotFoundException;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -67,7 +70,8 @@ class SubmissionServiceTest {
 
     // 테스트 헬퍼 메서드들
     private SubmissionEntity createSubmission() {
-        return createSubmission(createVideo(1L, UUID.randomUUID()), createProblem(1L));
+        return createSubmission(createVideo(1L, UUID.randomUUID()),
+            createProblem(UUID.randomUUID()));
     }
 
     private SubmissionEntity createSubmission(VideoEntity video, ProblemEntity problem) {
@@ -94,9 +98,10 @@ class SubmissionServiceTest {
         return UserFixture.createUserAccountEntity(userId, nickname);
     }
 
-    private ProblemEntity createProblem(Long problemId) {
-        return ProblemFixture.createProblemEntity(problemId,
-            GymFixture.createGymEntity(1L, "테스트 클라이밍 센터", 37.5665, 126.9780));
+    private ProblemEntity createProblem(UUID problemId) {
+        GymEntity gym = GymFixture.createGymEntity(1L, "테스트 클라이밍 센터", 37.5665, 126.9780);
+        GymAreaEntity gymArea = GymAreaFixture.createGymAreaEntity(1L, gym, "테스트 구역");
+        return ProblemFixture.createProblemEntity(problemId, gym, gymArea);
     }
 
     @Nested
@@ -148,7 +153,7 @@ class SubmissionServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
-            Long problemId = 1L;
+            UUID problemId = UUID.randomUUID();
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
             UserAccountEntity user = createUser(userId, nickname);
@@ -185,7 +190,8 @@ class SubmissionServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
-            SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, 1L);
+            UUID problemId = UUID.randomUUID();
+            SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
             UserAccountEntity user = createUser(userId, nickname);
 
@@ -210,7 +216,8 @@ class SubmissionServiceTest {
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
-            SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, 1L);
+            UUID problemId = UUID.randomUUID();
+            SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
             UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(otherUserId, videoId);
@@ -235,7 +242,7 @@ class SubmissionServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
-            Long problemId = 999L;
+            UUID problemId = UUID.randomUUID();
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
             UserAccountEntity user = createUser(userId, nickname);
@@ -265,7 +272,7 @@ class SubmissionServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
-            Long problemId = 1L;
+            UUID problemId = UUID.randomUUID();
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
             UserAccountEntity user = createUser(userId, nickname);
@@ -340,9 +347,10 @@ class SubmissionServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
+            UUID problemId = UUID.randomUUID();
             UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
-            SubmissionEntity submission = createSubmission(video, createProblem(1L));
+            SubmissionEntity submission = createSubmission(video, createProblem(problemId));
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(user));
@@ -368,9 +376,10 @@ class SubmissionServiceTest {
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
+            UUID problemId = UUID.randomUUID();
             UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(otherUserId, videoId);
-            SubmissionEntity submission = createSubmission(video, createProblem(1L));
+            SubmissionEntity submission = createSubmission(video, createProblem(problemId));
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(user));
@@ -397,12 +406,13 @@ class SubmissionServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
+            UUID problemId = UUID.randomUUID();
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("정당한 이의제기 사유")
                 .build();
             UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
-            SubmissionEntity submission = createSubmission(video, createProblem(1L));
+            SubmissionEntity submission = createSubmission(video, createProblem(problemId));
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(user));
@@ -429,12 +439,13 @@ class SubmissionServiceTest {
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
+            UUID problemId = UUID.randomUUID();
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("이의제기 사유")
                 .build();
             UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(otherUserId, videoId);
-            SubmissionEntity submission = createSubmission(video, createProblem(1L));
+            SubmissionEntity submission = createSubmission(video, createProblem(problemId));
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(user));
@@ -456,6 +467,7 @@ class SubmissionServiceTest {
             String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
+            UUID problemId = UUID.randomUUID();
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("동일한 이의제기 사유")
                 .build();
@@ -464,7 +476,7 @@ class SubmissionServiceTest {
             SubmissionEntity submission = SubmissionEntity.builder()
                 .videoId(videoId)
                 .videoEntity(video)
-                .problemEntity(createProblem(1L))
+                .problemEntity(createProblem(problemId))
                 .status(StatusType.PENDING)
                 .appealContent(request.reason()) // 이미 동일한 내용으로 이의제기 되어 있음
                 .build();

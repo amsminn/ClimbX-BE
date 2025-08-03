@@ -13,7 +13,7 @@ import java.util.Collections;
 public class UserFixture {
 
     public static final String DEFAULT_NICKNAME = "testUser";
-    public static final String DEFAULT_STATUS_MESSAGE = "Test status message";
+    public static final String DEFAULT_STATUS_MESSAGE = "Test activeStatus message";
     public static final String DEFAULT_PROFILE_IMAGE_URL = "http://example.com/profile.jpg";
     public static final Integer DEFAULT_RATING = 1500;
     public static final Integer DEFAULT_CURRENT_STREAK = 5;
@@ -32,7 +32,7 @@ public class UserFixture {
             .userId(1L)
             .nickname(nickname)
             .statusMessage(DEFAULT_STATUS_MESSAGE)
-            .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
+            .profileImageCdnUrl(DEFAULT_PROFILE_IMAGE_URL)
             .role(RoleType.USER)
             .build();
     }
@@ -78,7 +78,7 @@ public class UserFixture {
             .userId(userId)
             .nickname(nickname)
             .statusMessage(statusMessage)
-            .profileImageUrl(profileImageUrl)
+            .profileImageCdnUrl(profileImageUrl)
             .role(RoleType.valueOf(role))
             .userStatEntity(userStat)
             .build();
@@ -94,7 +94,7 @@ public class UserFixture {
             .userId(user.userId())
             .nickname(user.nickname())
             .statusMessage(user.statusMessage())
-            .profileImageUrl(user.profileImageUrl())
+            .profileImageCdnUrl(user.profileImageCdnUrl())
             .role(user.role())
             .userStatEntity(userStat)
             .build();
@@ -140,6 +140,8 @@ public class UserFixture {
             .currentStreak(currentStreak)
             .longestStreak(longestStreak)
             .solvedCount(solvedProblemsCount)
+            .submissionCount(0)
+            .contributionCount(0)
             .rivalCount(rivalCount)
             .build();
     }
@@ -160,7 +162,7 @@ public class UserFixture {
         return UserProfileResponseDto.builder()
             .nickname(nickname)
             .statusMessage(DEFAULT_STATUS_MESSAGE)
-            .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
+            .profileImageCdnUrl(DEFAULT_PROFILE_IMAGE_URL)
             .ranking(ranking)
             .rating(rating)
             .tier("BRONZE1")
@@ -188,7 +190,7 @@ public class UserFixture {
         return UserProfileResponseDto.builder()
             .nickname(nickname)
             .statusMessage(statusMessage)
-            .profileImageUrl(profileImageUrl)
+            .profileImageCdnUrl(profileImageUrl)
             .ranking(ranking)
             .rating(rating)
             .tier("SILVER1")

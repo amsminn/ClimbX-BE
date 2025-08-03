@@ -8,7 +8,7 @@ public record UserRankingResponseDto(
 
     String nickname,
     String statusMessage,
-    String profileImageUrl, // null 허용
+    String profileImageCdnUrl, // null 허용
     Integer rating,
     Integer currentStreak,
     Integer longestStreak,
@@ -19,7 +19,7 @@ public record UserRankingResponseDto(
         return UserRankingResponseDto.builder()
             .nickname(user.userAccountEntity().nickname())
             .statusMessage(user.userAccountEntity().statusMessage())
-            .profileImageUrl(user.userAccountEntity().profileImageUrl())
+            .profileImageCdnUrl(user.userAccountEntity().profileImageCdnUrl())
             .rating(user.rating())
             .currentStreak(user.currentStreak())
             .longestStreak(user.longestStreak())
