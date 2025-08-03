@@ -110,6 +110,22 @@ public class UserServiceTest {
             given(ratingUtil.getTier(1200)).willReturn("BRONZE1");
             given(ratingUtil.getTier(1300)).willReturn("SILVER1");
             given(ratingUtil.getTier(1400)).willReturn("GOLD1");
+            
+            // Mock category ratings calculation
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, null))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, StatusType.ACCEPTED))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, null))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(3L, StatusType.ACCEPTED))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(3L, null))
+                .willReturn(List.of());
+            given(ratingUtil.calculateCategoryRating(any(), any()))
+                .willReturn(List.of());
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -150,6 +166,19 @@ public class UserServiceTest {
             given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
                 UserFixture.DEFAULT_RATING, userStat2.updatedAt(), 2L)
             ).willReturn(UserFixture.DEFAULT_RANKING);
+            given(ratingUtil.getTier(UserFixture.DEFAULT_RATING)).willReturn("BRONZE1");
+            
+            // Mock category ratings calculation
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, null))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, StatusType.ACCEPTED))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, null))
+                .willReturn(List.of());
+            given(ratingUtil.calculateCategoryRating(any(), any()))
+                .willReturn(List.of());
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -179,6 +208,15 @@ public class UserServiceTest {
             given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
                 UserFixture.DEFAULT_RATING, userStat1.updatedAt(), 1L)
             ).willReturn(UserFixture.DEFAULT_RANKING);
+            given(ratingUtil.getTier(UserFixture.DEFAULT_RATING)).willReturn("BRONZE1");
+            
+            // Mock category ratings calculation
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, null))
+                .willReturn(List.of());
+            given(ratingUtil.calculateCategoryRating(any(), any()))
+                .willReturn(List.of());
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -215,6 +253,20 @@ public class UserServiceTest {
             given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
                 1600, userStat2.updatedAt(), 2L)
             ).willReturn(5);
+            given(ratingUtil.getTier(1100)).willReturn("BRONZE1");
+            given(ratingUtil.getTier(1600)).willReturn("GOLD1");
+            
+            // Mock category ratings calculation
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, null))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, StatusType.ACCEPTED))
+                .willReturn(List.of());
+            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, null))
+                .willReturn(List.of());
+            given(ratingUtil.calculateCategoryRating(any(), any()))
+                .willReturn(List.of());
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
