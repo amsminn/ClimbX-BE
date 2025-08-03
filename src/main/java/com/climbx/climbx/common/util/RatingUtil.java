@@ -98,6 +98,8 @@ public class RatingUtil {
                     .rating(
                         topProblemScore + allSubmissionScore + solvedCountScore
                     ).build();
-            }).toList();
+            }).sorted(Comparator.comparing(TagRatingResponseDto::rating).reversed())
+            .toList()
+            .subList(0, Math.min(8, allByTag.size()));
     }
 }
