@@ -1,5 +1,6 @@
 package com.climbx.climbx.user.service;
 
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.service.S3Service;
@@ -12,7 +13,6 @@ import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
-import com.climbx.climbx.user.enums.CriteriaType;
 import com.climbx.climbx.user.exception.DuplicateNicknameException;
 import com.climbx.climbx.user.exception.NicknameMismatchException;
 import com.climbx.climbx.user.exception.UserNotFoundException;

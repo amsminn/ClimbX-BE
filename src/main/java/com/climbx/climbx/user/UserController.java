@@ -1,11 +1,11 @@
 package com.climbx.climbx.user;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
-import com.climbx.climbx.user.enums.CriteriaType;
 import com.climbx.climbx.user.service.UserService;
 import java.time.LocalDate;
 import java.util.List;

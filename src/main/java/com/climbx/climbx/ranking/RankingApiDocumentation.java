@@ -1,8 +1,8 @@
 package com.climbx.climbx.ranking;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
-import com.climbx.climbx.ranking.enums.RankingCriteria;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -120,7 +120,7 @@ public interface RankingApiDocumentation {
             example = "rating"
         )
         @NotNull(message = "랭킹 기준은 필수입니다")
-        RankingCriteria criteria,
+        CriteriaType criteria,
 
         @Parameter(
             name = "pageable",

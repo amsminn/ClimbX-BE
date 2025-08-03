@@ -1,8 +1,8 @@
 package com.climbx.climbx.user.repository;
 
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.entity.UserRankingHistoryEntity;
-import com.climbx.climbx.user.enums.CriteriaType;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

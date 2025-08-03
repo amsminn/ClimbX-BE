@@ -1,12 +1,13 @@
 package com.climbx.climbx.ranking.service;
 
+import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.ranking.dto.RankingResponseDto;
 import com.climbx.climbx.ranking.dto.UserRankingResponseDto;
-import com.climbx.climbx.ranking.enums.RankingCriteria;
 import com.climbx.climbx.ranking.repository.RankingRepository;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,11 +24,11 @@ public class RankingService {
     private final RankingRepository rankingRepository;
 
     public RankingResponseDto getRankingPage(
-        RankingCriteria criteria,
+        CriteriaType criteria,
         Pageable pageable
     ) {
         Sort sort = Sort.by(
-            Sort.Order.desc(criteria.getLowerCaseName()),
+            Sort.Order.desc(criteria.fieldName()),
             Sort.Order.asc("updatedAt"),
             Sort.Order.asc("userId")
         );
@@ -59,5 +60,12 @@ public class RankingService {
             .hasNext(hasNext)
             .nextCursor(nextCursor)
             .build();
+    }
+
+    public List<String> getCriteriaTypeNames() {
+        return Stream.of(CriteriaType.values())
+            .map(CriteriaType::name)
+            .map(String::toLowerCase)
+            .toList();
     }
 }
