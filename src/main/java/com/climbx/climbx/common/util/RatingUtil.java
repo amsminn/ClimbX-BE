@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class RatingUtil {
 
+    static final int CATEGORY_TYPE_LIMIT = 8;
     private final List<TierDefinitionDto> tierList;
 
     public TierDefinitionDto getTierDefinition(int rating) {
@@ -100,6 +101,6 @@ public class RatingUtil {
                     ).build();
             }).sorted(Comparator.comparing(TagRatingResponseDto::rating).reversed())
             .toList()
-            .subList(0, Math.min(8, allByTag.size()));
+            .subList(0, Math.min(CATEGORY_TYPE_LIMIT, allByTag.size()));
     }
 }

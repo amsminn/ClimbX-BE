@@ -36,8 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
-
-    static final int CATEGORY_TYPE_LIMIT = 8;
+    
     private final UserAccountRepository userAccountRepository;
     private final UserStatRepository userStatRepository;
     private final SubmissionRepository submissionRepository;
