@@ -2,7 +2,7 @@ package com.climbx.climbx.submission.repository;
 
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.problem.entity.ProblemEntity;
-import com.climbx.climbx.submission.dto.TagProjectionDto;
+import com.climbx.climbx.submission.dto.TagRatingPairDto;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import java.time.LocalDate;
@@ -111,7 +111,9 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
 
     // 1) Primary 만
     @Query("""
-          SELECT p.primaryTag as tag, p.problemRating as rating
+          SELECT new com.climbx.climbx.submission.dto.TagRatingPairDto(
+                p.primaryTag, p.problemRating
+            )
           FROM SubmissionEntity s
           JOIN s.videoEntity v
           JOIN s.problemEntity p
@@ -119,12 +121,14 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
             AND (:accepted IS NULL OR s.status = :accepted)
             AND (p.primaryTag IS NOT NULL)
         """)
-    List<TagProjectionDto> summarizeByPrimary(@Param("userId") Long userId,
+    List<TagRatingPairDto> summarizeByPrimary(@Param("userId") Long userId,
         @Param("accepted") StatusType accepted);
 
     // 2) Secondary 만
     @Query("""
-          SELECT p.secondaryTag as tag, p.problemRating as rating
+          SELECT new com.climbx.climbx.submission.dto.TagRatingPairDto(
+                p.secondaryTag, p.problemRating
+            )
           FROM SubmissionEntity s
           JOIN s.videoEntity v
           JOIN s.problemEntity p
@@ -132,16 +136,16 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
             AND (:accepted IS NULL OR s.status = :accepted)
             AND (p.secondaryTag IS NOT NULL)
         """)
-    List<TagProjectionDto> summarizeBySecondary(@Param("userId") Long userId,
+    List<TagRatingPairDto> summarizeBySecondary(@Param("userId") Long userId,
         @Param("accepted") StatusType accepted);
 
-    default List<TagProjectionDto> getUserAcceptedSubmissionTagSummary(
+    default List<TagRatingPairDto> getUserAcceptedSubmissionTagSummary(
         Long userId,
         StatusType accepted
     ) {
         // accepted 가 null 이면 모든 상태의 Submission 을 대상으로 함
-        List<TagProjectionDto> primaryTags = summarizeByPrimary(userId, accepted);
-        List<TagProjectionDto> secondaryTags = summarizeBySecondary(userId, accepted);
+        List<TagRatingPairDto> primaryTags = summarizeByPrimary(userId, accepted);
+        List<TagRatingPairDto> secondaryTags = summarizeBySecondary(userId, accepted);
 
         // Primary 와 Secondary 를 합쳐서 반환
         return Stream.concat(primaryTags.stream(), secondaryTags.stream())

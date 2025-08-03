@@ -3,7 +3,7 @@ package com.climbx.climbx.common.util;
 import com.climbx.climbx.common.dto.TierDefinitionDto;
 import com.climbx.climbx.common.exception.InvalidRatingValueException;
 import com.climbx.climbx.problem.enums.ProblemType;
-import com.climbx.climbx.submission.dto.TagProjectionDto;
+import com.climbx.climbx.submission.dto.TagRatingPairDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
 import java.util.Comparator;
 import java.util.List;
@@ -55,8 +55,8 @@ public class RatingUtil {
     }
 
     public List<TagRatingResponseDto> calculateCategoryRating(
-        List<TagProjectionDto> solvedTags,
-        List<TagProjectionDto> allTags
+        List<TagRatingPairDto> solvedTags,
+        List<TagRatingPairDto> allTags
     ) {
         // {Problem, tag} 형태로 solvedTags와 allTags를 받음.
         // Problem은 각각 2개씩 있을 수 있음
@@ -64,31 +64,31 @@ public class RatingUtil {
         log.info("Calculating category ratings for {} solved tags and {} all tags",
             solvedTags.size(), allTags.size());
         solvedTags.forEach(tag -> log.debug("Solved tag: {}, rating: {}",
-            tag.getTag(), tag.getRating()));
+            tag.tag(), tag.rating()));
         allTags.forEach(tag -> log.debug("All tag: {}, rating: {}",
-            tag.getTag(), tag.getRating()));
+            tag.tag(), tag.rating()));
 
-        Map<ProblemType, List<Long>> solvedByTag = solvedTags.stream()
+        Map<ProblemType, List<Integer>> solvedByTag = solvedTags.stream()
             .collect(Collectors.groupingBy(
-                TagProjectionDto::getTag,
-                Collectors.mapping(TagProjectionDto::getRating, Collectors.toList())
+                TagRatingPairDto::tag,
+                Collectors.mapping(TagRatingPairDto::rating, Collectors.toList())
             ));
 
-        Map<ProblemType, List<Long>> allByTag = allTags.stream()
+        Map<ProblemType, List<Integer>> allByTag = allTags.stream()
             .collect(Collectors.groupingBy(
-                TagProjectionDto::getTag,
-                Collectors.mapping(TagProjectionDto::getRating, Collectors.toList())
+                TagRatingPairDto::tag,
+                Collectors.mapping(TagRatingPairDto::rating, Collectors.toList())
             ));
 
         return allByTag.keySet().stream()
             .map(tag -> {
-                List<Long> solvedRatings = solvedByTag.getOrDefault(tag, List.of());
-                List<Long> allRatings = allByTag.getOrDefault(tag, List.of());
+                List<Integer> solvedRatings = solvedByTag.getOrDefault(tag, List.of());
+                List<Integer> allRatings = allByTag.getOrDefault(tag, List.of());
 
                 int topProblemScore = 2 * solvedRatings.stream()
                     .sorted(Comparator.reverseOrder())
                     .limit(50)
-                    .mapToInt(Long::intValue)
+                    .mapToInt(Integer::intValue)
                     .sum();
                 int allSubmissionScore = 10 * Math.min(allRatings.size(), 50);
                 int solvedCountScore = (int) Math.round(

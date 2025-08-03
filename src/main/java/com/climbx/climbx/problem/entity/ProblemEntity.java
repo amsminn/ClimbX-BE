@@ -57,9 +57,11 @@ public class ProblemEntity extends BaseTimeEntity {
     @Max(value = 30)
     private Integer problemRating; // 문제 난이도
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "primary_tag", length = 16)
     private ProblemType primaryTag;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "secondary_tag", length = 16)
     private ProblemType secondaryTag;
 

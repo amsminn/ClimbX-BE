@@ -36,7 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
-    
+
     private final UserAccountRepository userAccountRepository;
     private final UserStatRepository userStatRepository;
     private final SubmissionRepository submissionRepository;

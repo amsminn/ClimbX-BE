@@ -3,6 +3,8 @@ package com.climbx.climbx.problem.entity;
 import com.climbx.climbx.problem.enums.ProblemType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -34,6 +36,7 @@ public class ProblemTag {
     private Long problemId;
 
     @Id
+    @Enumerated(EnumType.STRING)
     @Column(name = "tag", updatable = false)
     private ProblemType tag;
 
