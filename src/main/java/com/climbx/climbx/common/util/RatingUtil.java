@@ -2,7 +2,14 @@ package com.climbx.climbx.common.util;
 
 import com.climbx.climbx.common.dto.TierDefinitionDto;
 import com.climbx.climbx.common.exception.InvalidRatingValueException;
+import com.climbx.climbx.problem.enums.ProblemType;
+import com.climbx.climbx.submission.dto.TagProjectionDto;
+import com.climbx.climbx.user.dto.TagRatingResponseDto;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -45,20 +52,50 @@ public class RatingUtil {
         return topProblemScore + submissionCountScore + solvedCountScore + contributionScore;
     }
 
-    public int calculateCategoryRating(
-        List<Integer> topProblemRatings,
-        int submissionCount,
-        int solvedCount
+    public List<TagRatingResponseDto> calculateCategoryRating(
+        List<TagProjectionDto> solvedTags,
+        List<TagProjectionDto> allTags
     ) {
-        int topProblemScore = 2 * topProblemRatings.stream()
-            .mapToInt(Integer::intValue)
-            .map(rating -> getTierDefinition(rating).score())
-            .sum();
+        // {Problem, tag} 형태로 solvedTags와 allTags를 받음.
+        // Problem은 각각 2개씩 있을 수 있음
 
-        int submissionCountScore = 10 * Math.min(submissionCount, 50);
+        Map<ProblemType, List<Long>> solvedByTag = solvedTags.stream()
+            .collect(Collectors.groupingBy(
+                TagProjectionDto::getTag,
+                Collectors.mapping(TagProjectionDto::getRating, Collectors.toList())
+            ));
 
-        int solvedCountScore = (int) Math.round(1000 * (1 - Math.pow(0.98, solvedCount)));
+        Map<ProblemType, List<Long>> allByTag = allTags.stream()
+            .collect(Collectors.groupingBy(
+                TagProjectionDto::getTag,
+                Collectors.mapping(TagProjectionDto::getRating, Collectors.toList())
+            ));
 
-        return topProblemScore + submissionCountScore + solvedCountScore;
+        return Stream.concat(solvedByTag.keySet().stream(), allByTag.keySet().stream())
+            .distinct()
+            .map(tag -> {
+                List<Long> solvedRatings = solvedByTag.getOrDefault(tag, List.of());
+                List<Long> allRatings = allByTag.getOrDefault(tag, List.of());
+
+                int topProblemScore = 2 * solvedRatings.stream()
+                    .sorted(Comparator.reverseOrder())
+                    .limit(50)
+                    .mapToInt(Long::intValue)
+                    .sum();
+                int allSubmissionScore = 10 * Math.min(
+                    allRatings.stream()
+                        .mapToInt(Long::intValue)
+                        .sum(),
+                    50
+                );
+                int solvedCountScore = (int) Math.round(
+                    1000 * (1 - Math.pow(0.98, solvedRatings.size()))
+                );
+                return TagRatingResponseDto.builder()
+                    .category(tag.displayName())
+                    .rating(
+                        topProblemScore + allSubmissionScore + solvedCountScore
+                    ).build();
+            }).toList();
     }
 }

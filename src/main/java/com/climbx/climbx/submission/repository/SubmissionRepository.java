@@ -2,11 +2,13 @@ package com.climbx.climbx.submission.repository;
 
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.submission.dto.TagProjectionDto;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -95,7 +97,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
         WHERE (:userId IS NULL OR v.userId = :userId)
           AND (:problemId IS NULL OR p.problemId = :problemId)
           AND (:holdColor IS NULL OR p.holdColor = :holdColor)
-          AND (:ratingFrom IS NULL OR p.problemRating >= :ratingFrom)  
+          AND (:ratingFrom IS NULL OR p.problemRating >= :ratingFrom)
           AND (:ratingTo IS NULL OR p.problemRating <= :ratingTo)
         """)
     Page<SubmissionEntity> findSubmissionsWithFilters(
@@ -106,4 +108,48 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
         @Param("ratingTo") Integer ratingTo,
         Pageable pageable
     );
+
+    /**
+     * 유저의 제출물을 보고 tag별로 accept된 제출물 개수를 구하고, accepted된 문제들의 rating 합을 구함. 해당 제출이 tag에 속하는지는
+     * problemEntity의 primaryTag 또는secondarayTag가 일치하는지 확인함. 둘중 하나만 해당해도 속함. ' 한 문제가 여러 태그에 반영될 수
+     * 있음
+     */
+    // 1) Primary 만
+    @Query("""
+          SELECT p.primaryTag, p.problemRating
+          FROM SubmissionEntity s
+          JOIN s.videoEntity v
+          JOIN s.problemEntity p
+          WHERE v.userId = :userId
+            AND (:accepted IS NULL OR s.status = :accepted)
+            AND (p.primaryTag IS NOT NULL)
+        """)
+    List<TagProjectionDto> summarizeByPrimary(@Param("userId") Long userId,
+        @Param("accepted") StatusType accepted);
+
+    // 2) Secondary 만
+    @Query("""
+          SELECT p.secondaryTag, s, p.problemRating
+          FROM SubmissionEntity s
+          JOIN s.videoEntity v
+          JOIN s.problemEntity p
+          WHERE v.userId = :userId
+            AND (:accepted IS NULL OR s.status = :accepted)
+            AND (p.secondaryTag IS NOT NULL)
+        """)
+    List<TagProjectionDto> summarizeBySecondary(@Param("userId") Long userId,
+        @Param("accepted") StatusType accepted);
+
+    default List<TagProjectionDto> getUserAcceptedSubmissionTagSummary(
+        Long userId,
+        StatusType accepted
+    ) {
+        // accepted 가 null 이면 모든 상태의 Submission 을 대상으로 함
+        List<TagProjectionDto> primaryTags = summarizeByPrimary(userId, accepted);
+        List<TagProjectionDto> secondaryTags = summarizeBySecondary(userId, accepted);
+
+        // Primary 와 Secondary 를 합쳐서 반환
+        return Stream.concat(primaryTags.stream(), secondaryTags.stream())
+            .toList();
+    }
 }

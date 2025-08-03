@@ -9,6 +9,7 @@ import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
+import com.climbx.climbx.user.dto.TagRatingResponseDto;
 import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
@@ -21,9 +22,7 @@ import com.climbx.climbx.user.repository.UserAccountRepository;
 import com.climbx.climbx.user.repository.UserRankingHistoryRepository;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserService {
 
+    static final int CATEGORY_TYPE_LIMIT = 8;
     private final UserAccountRepository userAccountRepository;
     private final UserStatRepository userStatRepository;
     private final SubmissionRepository submissionRepository;
@@ -169,11 +169,17 @@ public class UserService {
     }
 
     private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
-        UserStatEntity userStat = findUserStatByUserId(userAccount.userId());
+        Long userId = userAccount.userId();
+
+        UserStatEntity userStat = findUserStatByUserId(userId);
         String tier = ratingUtil.getTier(userStat.rating());
         Integer ratingRank = userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-            userStat.rating(), userStat.updatedAt(), userStat.userId());
-        Map<String, Integer> categoryRatings = Collections.emptyMap();
+            userStat.rating(), userStat.updatedAt(), userId);
+
+        List<TagRatingResponseDto> categoryRatings = ratingUtil.calculateCategoryRating(
+            submissionRepository.getUserAcceptedSubmissionTagSummary(userId, StatusType.ACCEPTED),
+            submissionRepository.getUserAcceptedSubmissionTagSummary(userId, null)
+        );
 
         return UserProfileResponseDto.from(
             userAccount,

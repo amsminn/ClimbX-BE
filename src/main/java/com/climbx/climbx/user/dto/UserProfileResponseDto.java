@@ -2,7 +2,7 @@ package com.climbx.climbx.user.dto;
 
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
-import java.util.Map;
+import java.util.List;
 import lombok.Builder;
 
 @Builder
@@ -20,7 +20,7 @@ public record UserProfileResponseDto(
 
     String tier,
 
-    Map<String, Integer> categoryRatings,
+    List<TagRatingResponseDto> categoryRatings,
 
     Integer currentStreak,
 
@@ -40,7 +40,8 @@ public record UserProfileResponseDto(
         UserStatEntity stat,
         String tier,
         Integer ranking,
-        Map<String, Integer> categoryRatings) {
+        List<TagRatingResponseDto> categoryRatings
+    ) {
 
         return UserProfileResponseDto.builder()
             .nickname(account.nickname())

@@ -54,6 +54,14 @@ public class ProblemEntity extends BaseTimeEntity {
     @Min(value = 1L)
     private Integer problemRating; // 문제 난이도
 
+    @Column(name = "primary_tag", length = 32)
+    @Size(max = 32) // nullable
+    private String primaryTag;
+
+    @Column(name = "secondary_tag", length = 32)
+    @Size(max = 32) // nullable
+    private String secondaryTag;
+
     @Column(name = "problem_image_cdn_url", length = 512)
     @Size(max = 512)
     private String problemImageCdnUrl; // 문제 이미지 CDN URL

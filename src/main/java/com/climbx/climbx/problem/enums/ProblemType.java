@@ -2,7 +2,11 @@ package com.climbx.climbx.problem.enums;
 
 import com.climbx.climbx.common.exception.InvalidEnumValueException;
 import com.climbx.climbx.common.util.OptionalUtil;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
+@Getter
+@Accessors(fluent = true)
 public enum ProblemType {
 
     PINCH_HOLD("핀치 홀드"),
@@ -23,10 +27,10 @@ public enum ProblemType {
     DYNO("다이노"),
     COORDINATE("코디네이션");
 
-    private final String tag;
+    private final String displayName;
 
     ProblemType(String tag) {
-        this.tag = tag;
+        this.displayName = tag;
     }
 
     public static ProblemType from(String name) {
