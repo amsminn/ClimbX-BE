@@ -31,7 +31,7 @@ public interface ProblemApiDocumentation {
 
     @Operation(
         summary = "문제 목록 조회",
-        description = "클라이밍장 ID, 레벨, 홀드 색상 조건으로 문제 목록을 조회합니다. 모든 파라미터가 필수이며, 조건에 맞는 문제들을 spotId로 그룹화하여 반환합니다."
+        description = "클라이밍장 ID, 영역 ID, 레벨, 홀드 색상, 활성 상태 조건으로 문제 목록을 조회합니다. 모든 파라미터가 필수이며, 조건에 맞는 문제들을 리스트로 반환합니다."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -48,49 +48,32 @@ public interface ProblemApiDocumentation {
                           "timeStamp": "2024-01-01T10:00:00Z",
                           "responseTimeMs": 145,
                           "path": "/api/problems",
-                          "data": {
-                            "gymId": 1,
-                            "map2DUrl": "http://fake-url",
-                            "spotDetailsResponseDtoList": [
-                              {
-                                "spotId": 1,
-                                "problemDetailsResponseDtoList": [
-                                  {
-                                    "problemId": 1,
-                                    "gymId": 1,
-                                    "gymName": "테스트 클라이밍장",
-                                    "localLevel": "빨강",
-                                    "holdColor": "파랑",
-                                    "problemRating": 1200,
-                                    "imageUrl": "https://example.com/problem1.jpg"
-                                  },
-                                  {
-                                    "problemId": 2,
-                                    "gymId": 1,
-                                    "gymName": "테스트 클라이밍장",
-                                    "localLevel": "빨강",
-                                    "holdColor": "파랑",
-                                    "problemRating": 1300,
-                                    "imageUrl": "https://example.com/problem2.jpg"
-                                  }
-                                ]
-                              },
-                              {
-                                "spotId": 2,
-                                "problemDetailsResponseDtoList": [
-                                  {
-                                    "problemId": 3,
-                                    "gymId": 1,
-                                    "gymName": "테스트 클라이밍장",
-                                    "localLevel": "빨강",
-                                    "holdColor": "파랑",
-                                    "problemRating": 1400,
-                                    "imageUrl": "https://example.com/problem3.jpg"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
+                          "data": [
+                            {
+                              "problemId": "123e4567-e89b-12d3-a456-426614174000",
+                              "gymId": 1,
+                              "gymName": "테스트 클라이밍장",
+                              "gymAreaId": 1,
+                              "gymAreaName": "메인 월",
+                              "localLevel": "V3",
+                              "holdColor": "빨강",
+                              "problemRating": 1500,
+                              "problemImageCdnUrl": "https://cdn.example.com/problem1.jpg",
+                              "activeStatus": "ACTIVE"
+                            },
+                            {
+                              "problemId": "987f6543-d21e-43c2-b765-321098765432",
+                              "gymId": 1,
+                              "gymName": "테스트 클라이밍장",
+                              "gymAreaId": 1,
+                              "gymAreaName": "메인 월",
+                              "localLevel": "V3",
+                              "holdColor": "빨강",
+                              "problemRating": 1600,
+                              "problemImageCdnUrl": "https://cdn.example.com/problem2.jpg",
+                              "activeStatus": "ACTIVE"
+                            }
+                          ]
                         }
                         """
                 )
@@ -106,9 +89,29 @@ public interface ProblemApiDocumentation {
                     value = """
                         {
                           "httpStatus": 400,
-                          "statusMessage": "모든 파라미터(gymId, localLevel, holdColor)가 필요합니다.",
+                          "statusMessage": "모든 파라미터(gymId, gymAreaId, localLevel, holdColor, activeStatus)가 필요합니다.",
                           "timeStamp": "2024-01-01T10:00:00Z",
                           "responseTimeMs": 45,
+                          "path": "/api/problems",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "클라이밍장 또는 영역을 찾을 수 없음",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "리소스 없음",
+                    value = """
+                        {
+                          "httpStatus": 404,
+                          "statusMessage": "GYM_NOT_FOUND",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 123,
                           "path": "/api/problems",
                           "data": null
                         }
@@ -160,23 +163,23 @@ public interface ProblemApiDocumentation {
             name = "localLevel",
             description = "문제 레벨 (클라이밍장별 난이도)",
             required = true,
-            example = "빨강"
+            example = "V3"
         )
-        @Size(min = 1, max = 20)
+        @Size(min = 1, max = 32)
         String localLevel,
 
         @Parameter(
             name = "holdColor",
             description = "홀드 색상",
             required = true,
-            example = "초록"
+            example = "빨강"
         )
-        @Size(min = 1, max = 20)
+        @Size(min = 1, max = 32)
         String holdColor,
 
         @Parameter(
             name = "activeStatus",
-            description = "문제 상태 (예: ACTIVE, INACTIVE)",
+            description = "문제 상태 (ACTIVE: 활성, INACTIVE: 비활성)",
             required = true,
             example = "ACTIVE"
         )
@@ -203,16 +206,16 @@ public interface ProblemApiDocumentation {
                           "responseTimeMs": 234,
                           "path": "/api/problems",
                           "data": {
-                            "problemId": 123,
+                            "problemId": "123e4567-e89b-12d3-a456-426614174000",
+                            "gymId": 1,
+                            "gymName": "테스트 클라이밍장",
                             "gymAreaId": 1,
+                            "areaName": "메인 월",
                             "localLevel": "V3",
                             "holdColor": "빨강",
                             "problemRating": 1500,
-                            "spotId": 5,
-                            "spotXRatio": 25.5,
-                            "spotYRatio": 30.2,
-                            "imageCdnUrl": "https://cdn.example.com/problem-images/1_1640995200000.jpg",
-                            "status": "ACTIVE"
+                            "problemImageCdnUrl": "https://cdn.example.com/problem-images/1_1640995200000.jpg",
+                            "activeStatus": "ACTIVE"
                           }
                         }
                         """
@@ -250,6 +253,26 @@ public interface ProblemApiDocumentation {
                         {
                           "httpStatus": 404,
                           "statusMessage": "GYM_AREA_NOT_FOUND",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 123,
+                          "path": "/api/problems",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "서버 내부 오류",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "서버 오류",
+                    value = """
+                        {
+                          "httpStatus": 500,
+                          "statusMessage": "서버 내부 오류가 발생했습니다.",
                           "timeStamp": "2024-01-01T10:00:00Z",
                           "responseTimeMs": 123,
                           "path": "/api/problems",
