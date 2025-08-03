@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import java.util.UUID;
@@ -51,7 +52,8 @@ public class ProblemEntity extends BaseTimeEntity {
     private String holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
 
     @Column(name = "problem_rating") // Todo nullable = false
-    @Min(value = 1L)
+    @Min(value = 1)
+    @Max(value = 30)
     private Integer problemRating; // 문제 난이도
 
     @Column(name = "primary_tag", length = 32)

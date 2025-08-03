@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RatingUtil {
 
     private final List<TierDefinitionDto> tierList;
@@ -58,6 +60,13 @@ public class RatingUtil {
     ) {
         // {Problem, tag} 형태로 solvedTags와 allTags를 받음.
         // Problem은 각각 2개씩 있을 수 있음
+
+        log.info("Calculating category ratings for {} solved tags and {} all tags",
+            solvedTags.size(), allTags.size());
+        solvedTags.forEach(tag -> log.debug("Solved tag: {}, rating: {}",
+            tag.getTag(), tag.getRating()));
+        allTags.forEach(tag -> log.debug("All tag: {}, rating: {}",
+            tag.getTag(), tag.getRating()));
 
         Map<ProblemType, List<Long>> solvedByTag = solvedTags.stream()
             .collect(Collectors.groupingBy(

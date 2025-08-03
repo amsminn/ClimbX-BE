@@ -109,14 +109,9 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
         Pageable pageable
     );
 
-    /**
-     * 유저의 제출물을 보고 tag별로 accept된 제출물 개수를 구하고, accepted된 문제들의 rating 합을 구함. 해당 제출이 tag에 속하는지는
-     * problemEntity의 primaryTag 또는secondarayTag가 일치하는지 확인함. 둘중 하나만 해당해도 속함. ' 한 문제가 여러 태그에 반영될 수
-     * 있음
-     */
     // 1) Primary 만
     @Query("""
-          SELECT p.primaryTag, p.problemRating
+          SELECT p.primaryTag as tag, p.problemRating as rating
           FROM SubmissionEntity s
           JOIN s.videoEntity v
           JOIN s.problemEntity p
@@ -129,7 +124,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
 
     // 2) Secondary 만
     @Query("""
-          SELECT p.secondaryTag, s, p.problemRating
+          SELECT p.secondaryTag as tag, s, p.problemRating as rating
           FROM SubmissionEntity s
           JOIN s.videoEntity v
           JOIN s.problemEntity p
