@@ -34,7 +34,7 @@ public class ProblemTag {
     private Long problemId;
 
     @Id
-    @Column(name = "tag_id", updatable = false)
+    @Column(name = "tag", updatable = false)
     private ProblemType tag;
 
     @Builder.Default
