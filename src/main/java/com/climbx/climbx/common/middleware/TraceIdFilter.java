@@ -31,9 +31,7 @@ public class TraceIdFilter extends OncePerRequestFilter {
 
         String traceId = extractTraceId(request);
 
-        if (traceId != null) {
-            MDC.put(TRACE_ID_MDC_KEY, traceId);
-        }
+        MDC.put(TRACE_ID_MDC_KEY, traceId);
 
         try {
             filterChain.doFilter(request, response);
