@@ -11,6 +11,11 @@ import com.climbx.climbx.admin.submissions.dto.SubmissionReviewResponseDto;
 import com.climbx.climbx.admin.submissions.exception.StatusModifyToPendingException;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.fixture.GymAreaFixture;
+import com.climbx.climbx.fixture.GymFixture;
+import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
+import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
@@ -92,10 +97,21 @@ class AdminSubmissionServiceTest {
                 .userAccountEntity(userAccount)
                 .build();
 
-            List<ProblemEntity> topProblems = List.of(
-                ProblemEntity.builder().problemRating(1300).build(),
-                ProblemEntity.builder().problemRating(1250).build(),
-                ProblemEntity.builder().problemRating(1200).build()
+            GymEntity gym1 = GymFixture.createGymEntity(1L, "gym1", 0.0, 0.0);
+            GymEntity gym2 = GymFixture.createGymEntity(2L, "gym2", 0.0, 0.0);
+            GymEntity gym3 = GymFixture.createGymEntity(3L, "gym3", 0.0, 0.0);
+
+            GymAreaEntity gymArea1 = GymAreaFixture.createGymAreaEntity(1L, gym1, "area1");
+            GymAreaEntity gymArea2 = GymAreaFixture.createGymAreaEntity(2L, gym2, "area2");
+            GymAreaEntity gymArea3 = GymAreaFixture.createGymAreaEntity(3L, gym3, "area3");
+
+            List<ProblemInfoResponseDto> topProblems = List.of(
+                ProblemInfoResponseDto.from(
+                    ProblemEntity.builder().problemRating(1300).build(), gym1, gymArea1),
+                ProblemInfoResponseDto.from(
+                    ProblemEntity.builder().problemRating(1250).build(), gym2, gymArea2),
+                ProblemInfoResponseDto.from(
+                    ProblemEntity.builder().problemRating(1200).build(), gym3, gymArea3)
             );
 
             given(submissionRepository.findById(videoId))

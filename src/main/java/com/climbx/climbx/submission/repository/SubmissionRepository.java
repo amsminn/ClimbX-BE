@@ -1,7 +1,7 @@
 package com.climbx.climbx.submission.repository;
 
 import com.climbx.climbx.common.enums.StatusType;
-import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.submission.dto.TagRatingPairDto;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -18,22 +18,36 @@ import org.springframework.data.repository.query.Param;
 
 public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UUID> {
 
-
     /**
      * 사용자가 푼(accepted=true) Submission 에서 video.userAccount.userId = :userId 인 것들만 추린 뒤 gymArea를
      * fetch join함. 그 안의 Problem(p) 을 DISTINCT 하여 p.rating DESC 순으로 정렬한 뒤 Pageable 로 페이지(=상위 N개)
      * 리미트
      */
     @Query("""
-        SELECT DISTINCT s.problemEntity
-          FROM SubmissionEntity s
-          JOIN s.videoEntity v
-          JOIN FETCH s.problemEntity.gymArea
-         WHERE v.userId = :userId
-           AND s.status = :status
-         ORDER BY s.problemEntity.problemRating DESC
+        SELECT DISTINCT new com.climbx.climbx.problem.dto.ProblemInfoResponseDto(
+            p.problemId,
+            g.gymId,
+            g.name,
+            ga.gymAreaId,
+            ga.areaName,
+            p.localLevel,
+            p.holdColor,
+            p.problemRating,
+            p.problemTier,
+            p.problemImageCdnUrl,
+            p.activeStatus,
+            p.createdAt
+        )
+        FROM SubmissionEntity s
+        JOIN s.videoEntity v
+        JOIN s.problemEntity p
+        JOIN p.gym g
+        JOIN p.gymArea ga
+        WHERE v.userId = :userId
+          AND s.status = :status
+        ORDER BY p.problemRating DESC
         """)
-    List<ProblemEntity> getUserTopProblems(
+    List<ProblemInfoResponseDto> getUserTopProblems(
         @Param("userId") Long userId,
         @Param("status") StatusType status,
         Pageable pageable

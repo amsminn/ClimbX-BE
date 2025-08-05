@@ -5,7 +5,7 @@ import com.climbx.climbx.admin.submissions.dto.SubmissionReviewResponseDto;
 import com.climbx.climbx.admin.submissions.exception.StatusModifyToPendingException;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.util.RatingUtil;
-import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
@@ -90,7 +90,7 @@ public class AdminSubmissionService {
                 StatusType.ACCEPTED,
                 Pageable.ofSize(50)
             ).stream()
-            .map(ProblemEntity::problemRating)
+            .map(ProblemInfoResponseDto::problemRating)
             .toList();
     }
 }

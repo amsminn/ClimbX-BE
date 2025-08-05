@@ -1,7 +1,7 @@
 package com.climbx.climbx.fixture;
 
 import com.climbx.climbx.gym.entity.GymEntity;
-import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import java.util.UUID;
@@ -38,7 +38,7 @@ public class ProblemFixture {
             .build();
     }
 
-    public static ProblemDetailsResponseDto createProblemResponseDto(
+    public static ProblemInfoResponseDto createProblemResponseDto(
         UUID problemId,
         Long gymId,
         String gymName,
@@ -49,7 +49,7 @@ public class ProblemFixture {
             DEFAULT_LOCAL_LEVEL, DEFAULT_HOLD_COLOR, DEFAULT_PROBLEM_RATING);
     }
 
-    public static ProblemDetailsResponseDto createProblemResponseDto(
+    public static ProblemInfoResponseDto createProblemResponseDto(
         UUID problemId,
         Long gymId,
         String gymName,
@@ -59,7 +59,7 @@ public class ProblemFixture {
         String holdColor,
         Integer problemRating
     ) {
-        return ProblemDetailsResponseDto.builder()
+        return ProblemInfoResponseDto.builder()
             .problemId(problemId)
             .gymId(gymId)
             .gymName(gymName)
