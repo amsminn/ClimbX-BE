@@ -16,10 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/admin/gyms")
 @RequiredArgsConstructor
-public class AdminGymController {
+public class AdminGymController implements AdminGymApiDocumentation {
 
     private final AdminGymService adminGymService;
 
+    @Override
     @PostMapping("/upload/2d-map")
     @SuccessStatus(HttpStatus.OK)
     public void uploadGym2dMap(
@@ -27,7 +28,6 @@ public class AdminGymController {
         @RequestPart(name = "baseImage") MultipartFile baseImage,
         @RequestPart(name = "overlayImages") List<MultipartFile> overlayImages // 벽이름.png 형태로 업로드해야됨
     ) {
-
         adminGymService.uploadGym2dMap(gymId, baseImage, overlayImages);
     }
 
