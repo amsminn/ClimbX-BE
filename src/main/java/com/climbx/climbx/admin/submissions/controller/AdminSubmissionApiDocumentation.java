@@ -1,4 +1,4 @@
-package com.climbx.climbx.admin.submissions;
+package com.climbx.climbx.admin.submissions.controller;
 
 import com.climbx.climbx.admin.submissions.dto.SubmissionReviewRequestDto;
 import com.climbx.climbx.admin.submissions.dto.SubmissionReviewResponseDto;

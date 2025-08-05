@@ -1,6 +1,7 @@
 package com.climbx.climbx.gym.dto;
 
 import com.climbx.climbx.gym.entity.GymEntity;
+import java.util.List;
 import lombok.Builder;
 
 @Builder
@@ -12,7 +13,8 @@ public record GymInfoResponseDto(
     Double longitude,
     String address,
     String phoneNumber,
-    String map2dUrl
+    String baseMapUrl,
+    List<String> overlayMapUrls
 ) {
 
     public static GymInfoResponseDto from(GymEntity gym) {
@@ -23,7 +25,12 @@ public record GymInfoResponseDto(
             .longitude(gym.longitude())
             .address(gym.address())
             .phoneNumber(gym.phoneNumber())
-            .map2dUrl(gym.map2dUrl())
+            .baseMapUrl(gym.map2dUrls() == null ? null : gym.map2dUrls().baseMapUrl())
+            .overlayMapUrls(gym.map2dUrls() == null
+                ? List.of()
+                : gym.map2dUrls().overlayMapUrls() == null
+                    ? List.of()
+                    : gym.map2dUrls().overlayMapUrls())
             .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.climbx.climbx.gym.entity;
 
 import com.climbx.climbx.common.entity.BaseTimeEntity;
+import com.climbx.climbx.gym.dto.Gym2dMapInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +20,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "gyms")
@@ -57,8 +60,13 @@ public class GymEntity extends BaseTimeEntity {
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
     private String phoneNumber; // 전화번호, 형식: 010-1234-5678
 
-    @Column(name = "map_2d_url", length = 255)
-    private String map2dUrl; // 2D 지도 URL
+    @Column(name = "map_2d_urls", columnDefinition = "JSON")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Gym2dMapInfo map2dUrls; // 2D 지도 URL 목록
+
+    public void setMap2dUrls(Gym2dMapInfo gym2dMapInfo) {
+        this.map2dUrls = gym2dMapInfo;
+    }
 
     // Todo : 매장 메타데이터 json 컬럼
 }

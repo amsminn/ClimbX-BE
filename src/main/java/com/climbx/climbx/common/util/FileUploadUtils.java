@@ -39,4 +39,12 @@ public class FileUploadUtils {
         return String.format("problem-images/area-%d/%s-%s%s", gymAreaId, now, problemId,
             fileExtension);
     }
+
+    public static String generateGym2dMapBaseImageKey(Long gymId, String imageName) {
+        return String.format("2d-map/%d/base-images/%s", gymId, imageName);
+    }
+
+    public static String generateGym2dMapOverlayImageKey(Long gymId, String imageName) {
+        return String.format("2d-map/%d/overlay-images/%s", gymId, imageName);
+    }
 }

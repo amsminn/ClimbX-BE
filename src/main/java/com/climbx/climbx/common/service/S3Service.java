@@ -5,6 +5,7 @@ import static com.climbx.climbx.common.util.FileUploadUtils.extractFileExtension
 import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.exception.BusinessException;
 import com.climbx.climbx.common.util.FileUploadUtils;
+import com.climbx.climbx.gym.dto.Gym2dMapInfo;
 import com.climbx.climbx.video.exception.AwsBucketNameNotConfiguredException;
 import com.climbx.climbx.video.exception.AwsBucketNotFoundException;
 import com.climbx.climbx.video.exception.AwsCloudFrontDomainNotConfiguredException;
@@ -12,6 +13,8 @@ import com.climbx.climbx.video.exception.FileExtensionNotExistsException;
 import com.github.benmanes.caffeine.cache.Cache;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +50,9 @@ public class S3Service {
 
     @Value("${aws.s3.problem-image-bucket-name}")
     private String problemImageBucketName;
+
+    @Value("${aws.s3.climbing-gym-image-bucket-name}")
+    private String climbingGymImageBucketName;
 
     @Value("${aws.s3.presigned-url-expiration}")
     private long presignedUrlExpiration;
@@ -169,6 +175,65 @@ public class S3Service {
             );
             throw new BusinessException(ErrorCode.INTERNAL_ERROR,
                 "Failed to read problem image file");
+        }
+    }
+
+    /**
+     * 클라이밍장 2D 맵 이미지들을 S3에 업로드하고 Gym2dMapInfo 객체를 반환합니다.
+     */
+    public Gym2dMapInfo uploadGym2dMapImages(
+        Long gymId,
+        MultipartFile baseImage,
+        List<MultipartFile> overlayImages
+    ) {
+        log.info("Uploading gym 2D map images: gymId={}, baseImage={}, overlayImages={}",
+            gymId, baseImage.getOriginalFilename(), overlayImages.size());
+
+        // 버킷 이름이 설정되어 있지 않으면 예외 발생
+        if (climbingGymImageBucketName == null || climbingGymImageBucketName.isEmpty()) {
+            log.error("Climbing gym image S3 bucket name is not configured");
+            throw new AwsBucketNameNotConfiguredException(
+                ErrorCode.S3_BUCKET_NAME_NOT_CONFIGURED,
+                "Climbing gym image S3 bucket name is not configured."
+            );
+        }
+
+        // 버킷 존재 여부 확인
+        ensureBucketExists(climbingGymImageBucketName);
+
+        try {
+            // Base 이미지 업로드
+            String baseImageKey = FileUploadUtils.generateGym2dMapBaseImageKey(gymId,
+                baseImage.getOriginalFilename());
+
+            uploadFileToS3(climbingGymImageBucketName, baseImageKey, baseImage);
+            String baseImageCdnUrl = generateCdnUrl(baseImageKey);
+
+            // Overlay 이미지들 업로드
+            List<String> overlayImageCdnUrls = new ArrayList<>();
+            for (int i = 0; i < overlayImages.size(); i++) {
+                MultipartFile overlayImage = overlayImages.get(i);
+                String overlayImageKey = FileUploadUtils.generateGym2dMapOverlayImageKey(gymId,
+                    overlayImage.getOriginalFilename());
+
+                uploadFileToS3(climbingGymImageBucketName, overlayImageKey, overlayImage);
+                String overlayImageCdnUrl = generateCdnUrl(overlayImageKey);
+                overlayImageCdnUrls.add(overlayImageCdnUrl);
+            }
+
+            // Gym2dMapInfo 객체 생성
+            Gym2dMapInfo gym2dMapInfo = new Gym2dMapInfo(baseImageCdnUrl, overlayImageCdnUrls);
+
+            log.info(
+                "Successfully uploaded gym 2D map images: gymId={}, baseMapUrl={}, overlayMapUrls={}",
+                gymId, baseImageCdnUrl, overlayImageCdnUrls.size());
+
+            return gym2dMapInfo;
+
+        } catch (IOException e) {
+            log.error("Failed to read gym 2D map image files: gymId={}", gymId, e);
+            throw new BusinessException(
+                ErrorCode.INTERNAL_ERROR, "Failed to read gym 2D map image files");
         }
     }
 
