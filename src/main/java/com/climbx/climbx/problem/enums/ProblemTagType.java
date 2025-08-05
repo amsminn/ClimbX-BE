@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
-public enum ProblemType {
+public enum ProblemTagType {
 
     PINCH_HOLD("핀치 홀드"),
     CRIMP_HOLD("크림프 홀드"),
@@ -31,7 +31,7 @@ public enum ProblemType {
 
     private final String displayName;
 
-    public static ProblemType from(String name) {
+    public static ProblemTagType from(String name) {
         return OptionalUtil.tryOf(() -> valueOf(name))
             .orElseThrow(() -> new InvalidEnumValueException("ProblemType", name));
     }

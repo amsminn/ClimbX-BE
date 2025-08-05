@@ -2,7 +2,7 @@ package com.climbx.climbx.common.util;
 
 import com.climbx.climbx.common.dto.TierDefinitionDto;
 import com.climbx.climbx.common.exception.InvalidRatingValueException;
-import com.climbx.climbx.problem.enums.ProblemType;
+import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.submission.dto.TagRatingPairDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
 import java.util.Comparator;
@@ -68,13 +68,13 @@ public class RatingUtil {
         allTags.forEach(tag -> log.debug("All tag: {}, rating: {}",
             tag.tag(), tag.rating()));
 
-        Map<ProblemType, List<Integer>> solvedByTag = solvedTags.stream()
+        Map<ProblemTagType, List<Integer>> solvedByTag = solvedTags.stream()
             .collect(Collectors.groupingBy(
                 TagRatingPairDto::tag,
                 Collectors.mapping(TagRatingPairDto::rating, Collectors.toList())
             ));
 
-        Map<ProblemType, List<Integer>> allByTag = allTags.stream()
+        Map<ProblemTagType, List<Integer>> allByTag = allTags.stream()
             .collect(Collectors.groupingBy(
                 TagRatingPairDto::tag,
                 Collectors.mapping(TagRatingPairDto::rating, Collectors.toList())
