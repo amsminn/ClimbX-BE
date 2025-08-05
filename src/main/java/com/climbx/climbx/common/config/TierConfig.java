@@ -15,7 +15,7 @@ public class TierConfig {
     public List<TierDefinitionDto> tierList() {
         List<TierDefinitionDto> tierList = new ArrayList<>();
         List<String> normalTierNames = List.of(
-            "브론즈", "실버", "골드", "플래티넘", "다이아몬드"
+            "Bronze", "Silver", "Gold", "Platinum", "Diamond"
         );
         for (int i = 0; i < normalTierNames.size(); i++) {
             String name = normalTierNames.get(i);
@@ -27,7 +27,7 @@ public class TierConfig {
             }
         }
         tierList.add(new TierDefinitionDto(
-            "마스터", null, 2250, 3000, 30
+            "Master", null, 2250, 3000, 30
         ));
         log.info("티어 목록 초기화 완료: {}", tierList);
         return tierList;
