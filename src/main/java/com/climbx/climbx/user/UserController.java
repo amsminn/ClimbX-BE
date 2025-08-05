@@ -2,7 +2,7 @@ package com.climbx.climbx.user;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.common.enums.CriteriaType;
-import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
@@ -92,7 +92,7 @@ class UserController implements UserApiDocumentation {
     @Override
     @GetMapping("/{nickname}/top-problems")
     @SuccessStatus(value = HttpStatus.OK)
-    public List<ProblemDetailsResponseDto> getUserTopProblems(
+    public List<ProblemInfoResponseDto> getUserTopProblems(
         @PathVariable
         String nickname,
 

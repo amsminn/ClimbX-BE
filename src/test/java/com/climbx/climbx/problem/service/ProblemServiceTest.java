@@ -21,6 +21,7 @@ import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.GymAreaRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -80,25 +81,32 @@ public class ProblemServiceTest {
             ProblemEntity problemEntity3 = ProblemFixture.createProblemEntity(problemId3, gymEntity,
                 gymArea3, localLevel, holdColor, 1400);
 
-            List<ProblemEntity> mockProblems = List.of(problemEntity1, problemEntity2,
-                problemEntity3);
+            ProblemInfoResponseDto problemInfDto1 = ProblemInfoResponseDto.from(problemEntity1,
+                gymEntity,
+                gymArea1);
+            ProblemInfoResponseDto problemInfDto2 = ProblemInfoResponseDto.from(problemEntity2,
+                gymEntity,
+                gymArea2);
+            ProblemInfoResponseDto problemInfDto3 = ProblemInfoResponseDto.from(problemEntity3,
+                gymEntity,
+                gymArea3);
 
-            given(gymRepository.findById(gymId))
-                .willReturn(Optional.of(gymEntity));
-            given(gymAreaRepository.findById(gymAreaId))
-                .willReturn(Optional.of(gymArea1));
-            given(problemRepository.findByGymAndAreaAndLevelAndColorAndActiveStatus(
-                gymId, gymAreaId, localLevel, holdColor, ActiveStatusType.ACTIVE
+            List<ProblemInfoResponseDto> mockProblems = List.of(problemInfDto1, problemInfDto2,
+                problemInfDto3);
+
+            given(problemRepository.findByGymAndAreaAndLevelAndColorAndProblemTierAndActiveStatus(
+                gymId, gymAreaId, localLevel, holdColor, ProblemTierType.D1, ActiveStatusType.ACTIVE
             )).willReturn(mockProblems);
 
             // when
             List<ProblemInfoResponseDto> result = problemService.getProblemsWithFilters(
-                gymId, gymAreaId, localLevel, holdColor, ActiveStatusType.ACTIVE);
+                gymId, gymAreaId, localLevel, holdColor, ProblemTierType.D1,
+                ActiveStatusType.ACTIVE);
 
             // then
             then(problemRepository).should(times(1))
-                .findByGymAndAreaAndLevelAndColorAndActiveStatus(gymId, gymAreaId, localLevel,
-                    holdColor, ActiveStatusType.ACTIVE);
+                .findByGymAndAreaAndLevelAndColorAndProblemTierAndActiveStatus(gymId, gymAreaId,
+                    localLevel, holdColor, ProblemTierType.D1, ActiveStatusType.ACTIVE);
 
             assertThat(result).hasSize(3); // 모든 문제가 하나의 그룹으로
         }

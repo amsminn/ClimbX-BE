@@ -5,6 +5,7 @@ import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,7 +33,7 @@ public interface ProblemApiDocumentation {
 
     @Operation(
         summary = "문제 목록 조회",
-        description = "클라이밍장 ID, 영역 ID, 레벨, 홀드 색상, 활성 상태 조건으로 문제 목록을 조회합니다. 모든 파라미터가 필수이며, 조건에 맞는 문제들을 리스트로 반환합니다."
+        description = "클라이밍장 ID, 영역 ID, 난이도 색상, 홀드 색상, 티어, 활성 상태 조건으로 문제 목록을 조회합니다. 조건에 맞는 문제들을 리스트로 반환합니다."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -59,6 +60,7 @@ public interface ProblemApiDocumentation {
                               "localLevel": "V3",
                               "holdColor": "빨강",
                               "problemRating": 1500,
+                              "problemTier": "P3",
                               "problemImageCdnUrl": "https://cdn.example.com/problem1.jpg",
                               "activeStatus": "ACTIVE"
                             },
@@ -71,50 +73,11 @@ public interface ProblemApiDocumentation {
                               "localLevel": "V3",
                               "holdColor": "빨강",
                               "problemRating": 1600,
+                              "problemTier": "P2",
                               "problemImageCdnUrl": "https://cdn.example.com/problem2.jpg",
                               "activeStatus": "ACTIVE"
                             }
                           ]
-                        }
-                        """
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "잘못된 요청 또는 필수 파라미터 누락",
-            content = @Content(
-                schema = @Schema(implementation = ApiResponseDto.class),
-                examples = @ExampleObject(
-                    name = "잘못된 요청",
-                    value = """
-                        {
-                          "httpStatus": 400,
-                          "statusMessage": "모든 파라미터(gymId, gymAreaId, localLevel, holdColor, activeStatus)가 필요합니다.",
-                          "timeStamp": "2024-01-01T10:00:00Z",
-                          "responseTimeMs": 45,
-                          "path": "/api/problems",
-                          "data": null
-                        }
-                        """
-                )
-            )
-        ),
-        @ApiResponse(
-            responseCode = "404",
-            description = "클라이밍장 또는 영역을 찾을 수 없음",
-            content = @Content(
-                schema = @Schema(implementation = ApiResponseDto.class),
-                examples = @ExampleObject(
-                    name = "리소스 없음",
-                    value = """
-                        {
-                          "httpStatus": 404,
-                          "statusMessage": "GYM_NOT_FOUND",
-                          "timeStamp": "2024-01-01T10:00:00Z",
-                          "responseTimeMs": 123,
-                          "path": "/api/problems",
-                          "data": null
                         }
                         """
                 )
@@ -145,7 +108,7 @@ public interface ProblemApiDocumentation {
         @Parameter(
             name = "gymId",
             description = "클라이밍장 ID",
-            required = true,
+            required = false,
             example = "1"
         )
         @Min(1L)
@@ -154,7 +117,7 @@ public interface ProblemApiDocumentation {
         @Parameter(
             name = "gymAreaId",
             description = "클라이밍장 영역 ID",
-            required = true,
+            required = false,
             example = "1"
         )
         @Min(1L)
@@ -163,7 +126,7 @@ public interface ProblemApiDocumentation {
         @Parameter(
             name = "localLevel",
             description = "문제 레벨 (클라이밍장별 난이도)",
-            required = true,
+            required = false,
             example = "V3"
         )
         @Size(min = 1, max = 32)
@@ -172,16 +135,24 @@ public interface ProblemApiDocumentation {
         @Parameter(
             name = "holdColor",
             description = "홀드 색상",
-            required = true,
+            required = false,
             example = "빨강"
         )
         @Size(min = 1, max = 32)
         String holdColor,
 
         @Parameter(
+            name = "problemTier",
+            description = "문제 티어 (선택사항, 예: G3, P3, P2)",
+            required = false,
+            example = "P3"
+        )
+        ProblemTierType problemTier,
+
+        @Parameter(
             name = "activeStatus",
             description = "문제 상태 (ACTIVE: 활성, INACTIVE: 비활성)",
-            required = true,
+            required = false,
             example = "ACTIVE"
         )
         ActiveStatusType activeStatus

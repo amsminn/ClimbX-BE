@@ -5,8 +5,7 @@ import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.common.util.RatingUtil;
-import com.climbx.climbx.problem.dto.ProblemDetailsResponseDto;
-import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
@@ -121,19 +120,15 @@ public class UserService {
         return buildProfile(userAccountEntity);
     }
 
-    public List<ProblemDetailsResponseDto> getUserTopProblems(String nickname, Integer limit) {
+    public List<ProblemInfoResponseDto> getUserTopProblems(String nickname, Integer limit) {
         UserAccountEntity userAccount = findUserByNickname(nickname);
         Pageable pageable = PageRequest.of(0, limit);
 
-        List<ProblemEntity> problemEntities = submissionRepository.getUserTopProblems(
+        return submissionRepository.getUserTopProblems(
             userAccount.userId(),
             StatusType.ACCEPTED,
             pageable
         );
-
-        return problemEntities.stream()
-            .map(problem -> ProblemDetailsResponseDto.from(problem, problem.gymArea()))
-            .toList();
     }
 
     public List<DailyHistoryResponseDto> getUserStreak(
