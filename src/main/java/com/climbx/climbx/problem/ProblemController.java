@@ -5,6 +5,7 @@ import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
+import com.climbx.climbx.problem.enums.ProblemTier;
 import com.climbx.climbx.problem.service.ProblemService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -32,25 +33,30 @@ public class ProblemController implements ProblemApiDocumentation {
     @GetMapping
     @SuccessStatus(value = HttpStatus.OK)
     public List<ProblemInfoResponseDto> getProblemsWithFilters(
-        @RequestParam(value = "gymId")
+        @RequestParam(value = "gymId", required = false)
         Long gymId,
 
-        @RequestParam(value = "gymAreaId", required = true)
+        @RequestParam(value = "gymAreaId", required = false)
         Long gymAreaId,
 
-        @RequestParam(value = "localLevel", required = true)
+        @RequestParam(value = "localLevel", required = false)
         String localLevel,
 
-        @RequestParam(value = "holdColor", required = true)
+        @RequestParam(value = "holdColor", required = false)
         String holdColor,
 
-        @RequestParam(value = "activeStatus", required = true)
+        @RequestParam(value = "problemTier", required = false)
+        ProblemTier problemTier,
+
+        @RequestParam(value = "activeStatus", required = false)
         ActiveStatusType activeStatus
     ) {
-        log.info("문제 조회: gymId={}, gymAreaId={}, localLevel={}, holdColor={}, activeStatus={}",
-            gymId, gymAreaId, localLevel, holdColor, activeStatus);
+        log.info(
+            "문제 조회: gymId={}, gymAreaId={}, localLevel={}, holdColor={}, tier={}, activeStatus={}",
+            gymId, gymAreaId, localLevel, holdColor, problemTier, activeStatus);
+
         return problemService.getProblemsWithFilters(gymId, gymAreaId, localLevel, holdColor,
-            activeStatus);
+            problemTier, activeStatus);
     }
 
     @Override

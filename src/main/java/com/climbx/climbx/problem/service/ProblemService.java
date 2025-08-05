@@ -5,13 +5,13 @@ import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.exception.InvalidParameterException;
 import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.gym.entity.GymEntity;
-import com.climbx.climbx.gym.exception.GymNotFoundException;
 import com.climbx.climbx.gym.repository.GymRepository;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.enums.ProblemTier;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.GymAreaRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -39,25 +39,12 @@ public class ProblemService {
         Long gymAreaId,
         String localLevel,
         String holdColor,
+        ProblemTier problemTier,
         ActiveStatusType activeStatus
     ) {
-        // Gym 정보 조회
-        GymEntity gym = gymRepository.findById(gymId)
-            .orElseThrow(() -> new GymNotFoundException(gymId));
-
-        // GymArea 정보 조회
-        GymAreaEntity gymArea = gymAreaRepository.findById(gymAreaId)
-            .orElseThrow(() -> new GymAreaNotFoundException(gymAreaId));
-
         // 필터링된 문제들 조회
-        List<ProblemInfoResponseDto> problems = problemRepository
-            .findByGymAndAreaAndLevelAndColorAndActiveStatus(gymId, gymAreaId, localLevel,
-                holdColor, activeStatus)
-            .stream()
-            .map(problem -> ProblemInfoResponseDto.from(problem, gymId, gymArea))
-            .toList();
-
-        return problems;
+        return problemRepository.findByGymAndAreaAndLevelAndColorAndProblemTierAndActiveStatus(
+            gymId, gymAreaId, localLevel, holdColor, problemTier, activeStatus);
     }
 
     @Transactional
