@@ -6,14 +6,18 @@ import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.enums.ProblemTierType;
+import com.climbx.climbx.problem.dto.ProblemVoteRequestDto;
 import com.climbx.climbx.problem.service.ProblemService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,4 +79,19 @@ public class ProblemController implements ProblemApiDocumentation {
             request.gymAreaId(), request.localLevel(), request.holdColor());
         return problemService.registerProblem(request, problemImage);
     }
-} 
+
+    @PostMapping("/{problemId}/votes")
+    @SuccessStatus(value = HttpStatus.CREATED)
+    public void voteProblem(
+        @AuthenticationPrincipal
+        Long userId,
+
+        @PathVariable
+        UUID problemId,
+
+        @Valid
+        ProblemVoteRequestDto voteRequest
+    ) {
+
+    }
+}

@@ -2,6 +2,7 @@ package com.climbx.climbx.problem.service;
 
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.common.enums.ErrorCode;
+import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.exception.InvalidParameterException;
 import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
@@ -11,10 +12,15 @@ import com.climbx.climbx.gym.repository.GymRepository;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
+import com.climbx.climbx.problem.dto.ProblemVoteRequestDto;
+import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.enums.ProblemTierType;
+import com.climbx.climbx.problem.exception.ForbiddenProblemVoteException;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.ProblemRepository;
+import com.climbx.climbx.submission.entity.SubmissionEntity;
+import com.climbx.climbx.submission.repository.SubmissionRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
-    private final GymRepository gymRepository;
+    private final SubmissionRepository submissionRepository;
     private final GymAreaRepository gymAreaRepository;
     private final S3Service s3Service;
 
@@ -92,5 +98,26 @@ public class ProblemService {
             imageCdnUrl);
 
         return ProblemCreateResponseDto.from(savedProblem);
+    }
+
+    @Transactional
+    public ProblemInfoResponseDto voteProblem(
+        Long userId,
+        UUID problemId,
+        ProblemVoteRequestDto voteRequest
+    ) {
+        log.info("난이도 투표 요청: userId={}, problemId={}, vote={}",
+            userId, problemId, voteRequest);
+
+        SubmissionEntity submission = submissionRepository.findByProblemIdAndVideoEntity_UserIdAndStatus(
+            problemId,
+            userId,
+            StatusType.ACCEPTED
+        ).orElseThrow(() -> new ForbiddenProblemVoteException(problemId, userId));
+
+        ProblemEntity problem = submission.problemEntity();
+
+        // 임시 반환. SWM-155 이슈에서 난이도 기여 구현 완료 후 변경 예정
+        return ProblemInfoResponseDto.from(problem, 1L, problem.gymArea());
     }
 }

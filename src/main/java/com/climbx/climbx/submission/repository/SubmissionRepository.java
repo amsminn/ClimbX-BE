@@ -7,15 +7,19 @@ import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+@SQLRestriction("deleted_at IS NOT NULL")
 public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UUID> {
 
     /**
@@ -165,4 +169,10 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
         return Stream.concat(primaryTags.stream(), secondaryTags.stream())
             .toList();
     }
+
+    // ProblemEntity를 fetch join
+    @EntityGraph(attributePaths = "problemEntity")
+    Optional<SubmissionEntity> findByProblemIdAndVideoEntity_UserIdAndStatus(
+        UUID problemId, Long userId, StatusType status
+    );
 }
