@@ -3,7 +3,7 @@ package com.climbx.climbx.problem.entity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.gym.entity.GymEntity;
-import com.climbx.climbx.problem.enums.ProblemTier;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.enums.ProblemType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,8 +58,9 @@ public class ProblemEntity extends BaseTimeEntity {
     @Max(value = 30)
     private Integer problemRating; // 문제 난이도
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "problem_tier", length = 16) // Todo nullable = false
-    private ProblemTier problemTier;
+    private ProblemTierType problemTier;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "primary_tag", length = 16)

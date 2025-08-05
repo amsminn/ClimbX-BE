@@ -5,7 +5,7 @@ import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
-import com.climbx.climbx.problem.enums.ProblemTier;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.service.ProblemService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -46,7 +46,7 @@ public class ProblemController implements ProblemApiDocumentation {
         String holdColor,
 
         @RequestParam(value = "problemTier", required = false)
-        ProblemTier problemTier,
+        ProblemTierType problemTier,
 
         @RequestParam(value = "activeStatus", required = false)
         ActiveStatusType activeStatus

@@ -21,7 +21,7 @@ import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
-import com.climbx.climbx.problem.enums.ProblemTier;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.GymAreaRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -95,17 +95,18 @@ public class ProblemServiceTest {
                 problemInfDto3);
 
             given(problemRepository.findByGymAndAreaAndLevelAndColorAndProblemTierAndActiveStatus(
-                gymId, gymAreaId, localLevel, holdColor, ProblemTier.D1, ActiveStatusType.ACTIVE
+                gymId, gymAreaId, localLevel, holdColor, ProblemTierType.D1, ActiveStatusType.ACTIVE
             )).willReturn(mockProblems);
 
             // when
             List<ProblemInfoResponseDto> result = problemService.getProblemsWithFilters(
-                gymId, gymAreaId, localLevel, holdColor, ProblemTier.D1, ActiveStatusType.ACTIVE);
+                gymId, gymAreaId, localLevel, holdColor, ProblemTierType.D1,
+                ActiveStatusType.ACTIVE);
 
             // then
             then(problemRepository).should(times(1))
                 .findByGymAndAreaAndLevelAndColorAndProblemTierAndActiveStatus(gymId, gymAreaId,
-                    localLevel, holdColor, ProblemTier.D1, ActiveStatusType.ACTIVE);
+                    localLevel, holdColor, ProblemTierType.D1, ActiveStatusType.ACTIVE);
 
             assertThat(result).hasSize(3); // 모든 문제가 하나의 그룹으로
         }

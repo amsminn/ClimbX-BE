@@ -11,7 +11,7 @@ import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
-import com.climbx.climbx.problem.enums.ProblemTier;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.GymAreaRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -39,7 +39,7 @@ public class ProblemService {
         Long gymAreaId,
         String localLevel,
         String holdColor,
-        ProblemTier problemTier,
+        ProblemTierType problemTier,
         ActiveStatusType activeStatus
     ) {
         // 필터링된 문제들 조회

@@ -3,7 +3,7 @@ package com.climbx.climbx.problem.repository;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
-import com.climbx.climbx.problem.enums.ProblemTier;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,19 +30,19 @@ public interface ProblemRepository extends JpaRepository<ProblemEntity, UUID> {
                 FROM ProblemEntity p 
                 JOIN  p.gymArea ga 
                 JOIN  p.gym g 
-                WHERE (p.gym.gymId = :gymId OR :gymId IS NULL) AND 
-                (p.gymArea.gymAreaId = :gymAreaId OR :gymAreaId IS NULL) AND 
-                (p.localLevel = :localLevel OR :localLevel IS NULL) AND 
-                (p.holdColor = :holdColor OR :holdColor IS NULL) AND 
-                (p.problemTier = :problemTier OR :problemTier IS NULL) AND 
-                (p.activeStatus = :activeStatus OR :activeStatus IS NULL)
+                WHERE (:gymId IS NULL OR p.gym.gymId = :gymId) AND 
+                (:gymAreaId IS NULL OR p.gymArea.gymAreaId = :gymAreaId) AND 
+                (:localLevel IS NULL OR p.localLevel = :localLevel) AND 
+                (:holdColor IS NULL OR p.holdColor = :holdColor) AND 
+                (:problemTier IS NULL OR p.problemTier = :problemTier)  AND 
+                (:activeStatus IS NULL OR p.activeStatus = :activeStatus)
         """)
     List<ProblemInfoResponseDto> findByGymAndAreaAndLevelAndColorAndProblemTierAndActiveStatus(
         @Param("gymId") Long gymId,
         @Param("gymAreaId") Long gymAreaId,
         @Param("localLevel") String localLevel,
         @Param("holdColor") String holdColor,
-        @Param("problemTier") ProblemTier problemTier,
+        @Param("problemTier") ProblemTierType problemTier,
         @Param("activeStatus") ActiveStatusType activeStatus
     );
 }

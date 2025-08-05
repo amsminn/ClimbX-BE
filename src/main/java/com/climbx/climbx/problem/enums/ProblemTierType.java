@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
-public enum ProblemTier {
+public enum ProblemTierType {
 
     M(30, 30, 31),
     D1(28, 29, 30),

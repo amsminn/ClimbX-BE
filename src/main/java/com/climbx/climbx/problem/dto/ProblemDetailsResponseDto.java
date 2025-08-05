@@ -3,7 +3,7 @@ package com.climbx.climbx.problem.dto;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
-import com.climbx.climbx.problem.enums.ProblemTier;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import java.util.UUID;
 import lombok.Builder;
 
@@ -18,7 +18,7 @@ public record ProblemDetailsResponseDto(
     String localLevel,
     String holdColor,
     Integer problemRating,
-    ProblemTier problemTier,
+    ProblemTierType problemTier,
     String problemImageCdnUrl,
     ActiveStatusType activeStatus
 ) {
