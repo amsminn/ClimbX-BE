@@ -1,10 +1,16 @@
 package com.climbx.climbx.problem.entity;
 
+import com.climbx.climbx.problem.enums.ProblemTagType;
 import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -14,33 +20,14 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @Builder
+@EqualsAndHashCode
 public class ContributionTagId implements Serializable {
 
-    @Column(name = "contribution_id")
-    private Long contributionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contribution_id", nullable = false)
+    private ContributionEntity contributionEntity;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tag", length = 16, nullable = false)
-    private String tag;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ContributionTagId)) {
-            return false;
-        }
-
-        ContributionTagId that = (ContributionTagId) o;
-
-        if (!contributionId.equals(that.contributionId)) {
-            return false;
-        }
-        return tag.equals(that.tag);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(contributionId, tag);
-    }
+    private ProblemTagType tag;
 }

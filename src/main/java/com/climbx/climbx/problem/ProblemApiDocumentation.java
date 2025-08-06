@@ -6,6 +6,7 @@ import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.enums.ProblemTierType;
+import com.climbx.climbx.problem.dto.ProblemVoteRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,6 +20,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -269,5 +271,123 @@ public interface ProblemApiDocumentation {
         )
         @NotNull
         MultipartFile problemImage
+    );
+
+    @Operation(
+        summary = "문제 투표",
+        description = "클라이밍 문제에 대한 티어 및 태그를 투표합니다. 사용자가 문제의 난이도와 특성에 대해 의견을 제시할 수 있습니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "문제 투표 성공",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "투표 성공",
+                    value = """
+                        {
+                          "httpStatus": 201,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 156,
+                          "path": "/api/problems/123e4567-e89b-12d3-a456-426614174000/votes",
+                          "data": {
+                            "problemId": "123e4567-e89b-12d3-a456-426614174000",
+                            "gymId": 1,
+                            "gymName": "테스트 클라이밍장",
+                            "gymAreaId": 1,
+                            "gymAreaName": "메인 월",
+                            "localLevel": "V3",
+                            "holdColor": "빨강",
+                            "problemRating": 1520,
+                            "problemImageCdnUrl": "https://cdn.example.com/problem1.jpg",
+                            "activeStatus": "ACTIVE"
+                          }
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "잘못된 요청 또는 유효성 검사 실패",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "유효성 검사 실패",
+                    value = """
+                        {
+                          "httpStatus": 400,
+                          "statusMessage": "VALIDATION_FAILED",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 45,
+                          "path": "/api/problems/123e4567-e89b-12d3-a456-426614174000/votes",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "문제를 찾을 수 없음",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "문제 없음",
+                    value = """
+                        {
+                          "httpStatus": 404,
+                          "statusMessage": "PROBLEM_NOT_FOUND",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 78,
+                          "path": "/api/problems/123e4567-e89b-12d3-a456-426614174000/votes",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "인증되지 않은 사용자",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "인증 실패",
+                    value = """
+                        {
+                          "httpStatus": 401,
+                          "statusMessage": "UNAUTHORIZED",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 23,
+                          "path": "/api/problems/123e4567-e89b-12d3-a456-426614174000/votes",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        )
+    })
+    ProblemInfoResponseDto voteProblem(
+        @Parameter(
+            description = "투표하는 사용자 ID",
+            required = true
+        )
+        Long userId,
+
+        @Parameter(
+            description = "투표할 문제 ID",
+            required = true
+        )
+        UUID problemId,
+
+        @Parameter(
+            description = "문제 투표 요청 데이터 (티어, 댓글, 태그)",
+            required = true
+        )
+        @Valid
+        ProblemVoteRequestDto voteRequest
     );
 }

@@ -5,8 +5,6 @@ import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.problem.enums.ProblemTagType;
-import com.climbx.climbx.problem.enums.ProblemTierType;
-import com.climbx.climbx.problem.enums.ProblemTagType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -55,8 +53,9 @@ public class ProblemEntity extends BaseTimeEntity {
     @Size(min = 1, max = 32)
     private String holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
 
+    @Builder.Default
     @Column(name = "problem_rating") // Todo nullable = false
-    @Min(value = 1)
+    @Min(value = 0)
     @Max(value = 30)
     private Integer problemRating; // 문제 난이도
 
@@ -76,7 +75,18 @@ public class ProblemEntity extends BaseTimeEntity {
     @Size(max = 512)
     private String problemImageCdnUrl; // 문제 이미지 CDN URL
 
-    @Column(name = "active_status", length = 16, nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "active_status", length = 16, nullable = false)
     private ActiveStatusType activeStatus; // 문제 상태 (예: 활성화, 비활성화 등)
+
+    public void updateRatingAndTierAndTags(
+        Integer newRating,
+        ProblemTierType newTier,
+        List<ProblemTagType> newTags
+    ) {
+        this.problemRating = newRating;
+        this.tier = newTier;
+        this.primaryTag = !newTags.isEmpty() ? newTags.getFirst() : null;
+        this.secondaryTag = newTags.size() > 1 ? newTags.get(1) : null;
+    }
 }

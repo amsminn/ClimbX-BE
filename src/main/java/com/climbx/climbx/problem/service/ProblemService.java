@@ -5,7 +5,6 @@ import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.exception.InvalidParameterException;
 import com.climbx.climbx.common.service.S3Service;
-import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.gym.repository.GymAreaRepository;
 import com.climbx.climbx.gym.repository.GymRepository;
@@ -19,6 +18,8 @@ import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.entity.ProblemTagEntity;
+import com.climbx.climbx.problem.enums.ProblemTagType;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.ForbiddenProblemVoteException;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.ContributionRepository;
@@ -52,6 +53,7 @@ public class ProblemService {
     private final ContributionRepository contributionRepository;
     private final ContributionTagRepository contributionTagRepository;
     private final ProblemTagRepository problemTagRepository;
+    private final RatingUtil ratingUtil;
     private final S3Service s3Service;
 
     public List<ProblemInfoResponseDto> getProblemsWithFilters(
@@ -151,8 +153,8 @@ public class ProblemService {
                     .build()
             );
 
-            ProblemTagEntity problemTag = problemTagRepository.findByProblemIdAndTag(
-                    problem.problemId(), tag)
+            ProblemTagEntity problemTag = problemTagRepository.findByProblemEntityAndTag(
+                    problem, tag)
                 .orElseGet(() -> problemTagRepository.save(
                     ProblemTagEntity.builder()
                         .problemEntity(problem)
@@ -163,7 +165,27 @@ public class ProblemService {
             problemTag.addPriority(1); // TODO: 추후 유저 레이팅에 따른 영향력 설계 필요
         });
 
-        // 임시 반환. SWM-155 이슈에서 난이도 기여 구현 완료 후 변경 예정
-        return ProblemInfoResponseDto.from(problem, 1L, problem.gymArea());
+        Integer newRating = ratingUtil.calculateProblemTier(
+            contributionRepository.findAllByProblemEntity_ProblemId(problem.problemId())
+                .stream()
+                .map(ContributionEntity::toVoteTierDto)
+                .toList()
+        );
+
+        ProblemTierType newTier = ProblemTierType.fromValue(newRating);
+
+        List<ProblemTagType> primary2tags = problemTagRepository
+            .findTop2ByProblemEntityOrderByPriorityDesc(problem)
+            .stream()
+            .map(ProblemTagEntity::tag)
+            .toList();
+
+        problem.updateRatingAndTierAndTags(
+            newRating,
+            newTier,
+            primary2tags
+        );
+
+        return ProblemInfoResponseDto.from(problem, problem.gym().gymId(), problem.gymArea());
     }
 }

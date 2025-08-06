@@ -1,5 +1,7 @@
 package com.climbx.climbx.problem.entity;
 
+import com.climbx.climbx.auth.dto.VoteTierDto;
+import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import jakarta.persistence.Column;
@@ -28,7 +30,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @Builder
-public class ContributionEntity {
+public class ContributionEntity extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -46,10 +48,17 @@ public class ContributionEntity {
     @Column(name = "contribution_id", nullable = false, updatable = false)
     private Long contributionId;
 
-    @Column(name = "tier", length = 16, nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "tier", length = 16, nullable = false)
     private ProblemTierType tier;
 
     @Column(name = "comment", length = 512) // nullable
     private String comment; // 예시: "문제 어디가 어려웠고, 추천할 만한 문제인지 등
+
+    public static VoteTierDto toVoteTierDto(ContributionEntity c) {
+        return VoteTierDto.builder()
+            .tier(c.tier())
+            .dateTime(c.createdAt())
+            .build();
+    }
 }

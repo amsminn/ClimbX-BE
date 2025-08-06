@@ -19,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -80,20 +81,22 @@ public class ProblemController implements ProblemApiDocumentation {
         return problemService.registerProblem(request, problemImage);
     }
 
+    @Override
     @PostMapping("/{problemId}/votes")
     @SuccessStatus(value = HttpStatus.CREATED)
-    public void voteProblem(
+    public ProblemInfoResponseDto voteProblem(
         @AuthenticationPrincipal
         Long userId,
 
         @PathVariable
         UUID problemId,
 
+        @RequestBody
         @Valid
         ProblemVoteRequestDto voteRequest
     ) {
         log.info("문제 투표: userId={}, problemId={}, tier={}, tags={}", userId, problemId,
             voteRequest.tier(), voteRequest.tags());
-        problemService.voteProblem(userId, problemId, voteRequest);
+        return problemService.voteProblem(userId, problemId, voteRequest);
     }
 }

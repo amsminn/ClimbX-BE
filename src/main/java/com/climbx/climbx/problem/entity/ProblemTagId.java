@@ -4,10 +4,13 @@ import com.climbx.climbx.problem.enums.ProblemTagType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.io.Serializable;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -17,34 +20,14 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @Builder
+@EqualsAndHashCode
 public class ProblemTagId implements Serializable {
 
-    @Column(name = "problem_id")
-    private Long problemId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "problem_id")
+    ProblemEntity problemEntity;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tag")
     private ProblemTagType tag;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ProblemTagId)) {
-            return false;
-        }
-
-        ProblemTagId that = (ProblemTagId) o;
-
-        if (!problemId.equals(that.problemId)) {
-            return false;
-        }
-        return tag == that.tag;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(problemId, tag);
-    }
 }

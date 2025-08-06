@@ -1,10 +1,14 @@
 package com.climbx.climbx.common.util;
 
+import com.climbx.climbx.auth.dto.VoteTierDto;
 import com.climbx.climbx.common.dto.TierDefinitionDto;
 import com.climbx.climbx.common.exception.InvalidRatingValueException;
 import com.climbx.climbx.problem.enums.ProblemTagType;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.submission.dto.TagRatingPairDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -102,5 +106,38 @@ public class RatingUtil {
             }).sorted(Comparator.comparing(TagRatingResponseDto::rating).reversed())
             .toList()
             .subList(0, Math.min(CATEGORY_TYPE_LIMIT, allByTag.size()));
+    }
+
+    /**
+     * 문제의 난이도 티어를 계산합니다.
+     *
+     * @param voteTiers 투표 티어 목록(sorted by dateTime)
+     * @return 문제의 난이도 티어
+     */
+    public Integer calculateProblemTier(List<VoteTierDto> voteTiers) {
+        if (voteTiers.isEmpty()) {
+            // TODO: 암장의 난이도 분포에 따른 기본 티어 설정 로직 필요
+            return ProblemTierType.B3.value();
+        }
+
+        LocalDateTime lastVoteTime = voteTiers.getLast().dateTime();
+        int lastVoteIndex = voteTiers.size() - 1;
+
+        double weightedTierSum = 0.0;
+        double weightSum = 0.0;
+        for (int i = 0; i < voteTiers.size(); i++) {
+            VoteTierDto vote = voteTiers.get(i);
+
+            double indexDiffReliability = Math.pow(0.9, lastVoteIndex - i);
+            double dateDiffReliability = Math.pow(0.5, Duration.between(
+                lastVoteTime, vote.dateTime()).toDays());
+
+            double weight = Math.max(indexDiffReliability, dateDiffReliability);
+
+            weightedTierSum += vote.tier().value() * weight;
+            weightSum += weight;
+        }
+
+        return (int) Math.round(weightedTierSum / voteTiers.size());
     }
 }

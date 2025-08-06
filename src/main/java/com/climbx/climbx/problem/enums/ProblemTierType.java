@@ -1,5 +1,7 @@
 package com.climbx.climbx.problem.enums;
 
+import com.climbx.climbx.common.exception.InvalidRatingValueException;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -29,4 +31,11 @@ public enum ProblemTierType {
     private final int inclusiveMinValue;
     private final int value;
     private final int exclusiveMaxValue;
+
+    public static ProblemTierType fromValue(Integer value) {
+        return Stream.of(values())
+            .filter(t -> t.inclusiveMinValue <= value && value < t.exclusiveMaxValue)
+            .findFirst()
+            .orElseThrow(() -> new InvalidRatingValueException(value));
+    }
 }

@@ -19,6 +19,7 @@ public record ProblemInfoResponseDto(
     String gymAreaName,
     String localLevel,
     String holdColor,
+    ProblemTierType tier,
     Integer problemRating,
     ProblemTierType problemTier,
     String problemImageCdnUrl,
@@ -39,6 +40,7 @@ public record ProblemInfoResponseDto(
             .gymAreaName(gymArea.areaName())
             .localLevel(problem.localLevel())
             .holdColor(problem.holdColor())
+            .tier(problem.tier() == null ? ProblemTierType.B3 : problem.tier())
             .problemRating(problem.problemRating())
             .problemTier(problem.problemTier())
             .problemImageCdnUrl(problem.problemImageCdnUrl())

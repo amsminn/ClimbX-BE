@@ -1,5 +1,6 @@
 package com.climbx.climbx.problem.entity;
 
+import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +26,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @Builder
-public class ContributionTagEnitty {
+public class ContributionTagEnitty extends BaseTimeEntity {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
