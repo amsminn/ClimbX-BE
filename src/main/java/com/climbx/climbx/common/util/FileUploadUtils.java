@@ -40,13 +40,15 @@ public class FileUploadUtils {
             fileExtension);
     }
 
-    public static String generateGym2dMapBaseImageKey(Long gymId, String imageName) {
-        String safeFileName = imageName.replace("/", "_");
-        return String.format("2d-map/%d/base-images/%s", gymId, safeFileName);
+    public static String generateGymMap2dImageKey(Long gymId, String extension) {
+        String now = LocalDateTime.now()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
+        return String.format("2d-map/%d/map-2d-images/%s.%s", gymId, now, extension);
     }
 
-    public static String generateGym2dMapOverlayImageKey(Long gymId, String imageName) {
-        String safeFileName = imageName.replace("/", "_");
-        return String.format("2d-map/%d/overlay-images/%s", gymId, safeFileName);
+    public static String generateGymAreaImageKey(Long gymId, Long areaId, String extension) {
+        String now = LocalDateTime.now()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
+        return String.format("2d-map/%d/area-images/%s-%d.%s", gymId, now, areaId, extension);
     }
 }

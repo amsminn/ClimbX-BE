@@ -5,7 +5,6 @@ import static com.climbx.climbx.common.util.FileUploadUtils.extractFileExtension
 import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.exception.BusinessException;
 import com.climbx.climbx.common.util.FileUploadUtils;
-import com.climbx.climbx.gym.dto.Gym2dMapInfo;
 import com.climbx.climbx.video.exception.AwsBucketNameNotConfiguredException;
 import com.climbx.climbx.video.exception.AwsBucketNotFoundException;
 import com.climbx.climbx.video.exception.AwsCloudFrontDomainNotConfiguredException;
@@ -14,7 +13,9 @@ import com.github.benmanes.caffeine.cache.Cache;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -181,15 +182,14 @@ public class S3Service {
     }
 
     /**
-     * 클라이밍장 2D 맵 이미지들을 S3에 업로드하고 Gym2dMapInfo 객체를 반환합니다.
+     * 클라이밍장 2D 맵 이미지들을 S3에 업로드하고 map2dImageCdnUrl을 반환
      */
-    public Gym2dMapInfo uploadGym2dMapImages(
+    public String uploadGym2dMapImages(
         Long gymId,
-        MultipartFile baseImage,
-        List<MultipartFile> overlayImages
+        MultipartFile map2dImage
     ) {
-        log.info("Uploading gym 2D map images: gymId={}, baseImage={}, overlayImages={}",
-            gymId, baseImage.getOriginalFilename(), overlayImages.size());
+        log.info("Uploading gym 2D map images: gymId={}, map2dImage={}",
+            gymId, map2dImage.getOriginalFilename());
 
         // 버킷 이름이 설정되어 있지 않으면 예외 발생
         if (climbingGymImageBucketName == null || climbingGymImageBucketName.isEmpty()) {
@@ -203,43 +203,77 @@ public class S3Service {
         // 버킷 존재 여부 확인
         ensureBucketExists(climbingGymImageBucketName);
 
-        List<String> uploadedImageKeys = new ArrayList<>();     // 업로드가 성공한 이미지 키들을 저장할 리스트(실패 시 롤백 용도)
+        // 입력값 검증
+        if (map2dImage == null || map2dImage.isEmpty()) {
+            log.warn("Map 2D image file cannot be null or empty");
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,
+                "Map 2D image file cannot be null or empty");
+        }
+
         try {
             // Base 이미지 업로드
-            String baseImageKey = FileUploadUtils.generateGym2dMapBaseImageKey(gymId,
-                baseImage.getOriginalFilename());
+            String map2dImageKey = FileUploadUtils.generateGymMap2dImageKey(gymId,
+                map2dImage.getOriginalFilename());
 
-            uploadFileToS3(climbingGymImageBucketName, baseImageKey, baseImage);
-            uploadedImageKeys.add(baseImageKey);    // Base 이미지 키를 업로드 리스트에 추가
-            String baseImageCdnUrl = generateCdnUrl(baseImageKey);
+            uploadFileToS3(climbingGymImageBucketName, map2dImageKey, map2dImage);
 
-            // Overlay 이미지들 업로드
-            List<String> overlayImageCdnUrls = new ArrayList<>();
-            for (int i = 0; i < overlayImages.size(); i++) {
-                MultipartFile overlayImage = overlayImages.get(i);
-                String overlayImageKey = FileUploadUtils.generateGym2dMapOverlayImageKey(gymId,
-                    overlayImage.getOriginalFilename());
+            String map2dImageCdnUrl = generateCdnUrl(map2dImageKey);
 
-                uploadFileToS3(climbingGymImageBucketName, overlayImageKey, overlayImage);
-                uploadedImageKeys.add(overlayImageKey);     // Overlay 이미지 키를 업로드 리스트에 추가
-                String overlayImageCdnUrl = generateCdnUrl(overlayImageKey);
-                overlayImageCdnUrls.add(overlayImageCdnUrl);
-            }
+            log.info("Successfully uploaded gym 2D map images: gymId={}, map2dImageCdnUrl={}",
+                gymId, map2dImageCdnUrl);
 
-            // Gym2dMapInfo 객체 생성
-            Gym2dMapInfo gym2dMapInfo = new Gym2dMapInfo(baseImageCdnUrl, overlayImageCdnUrls);
-
-            log.info(
-                "Successfully uploaded gym 2D map images: gymId={}, baseMapUrl={}, overlayMapUrls={}",
-                gymId, baseImageCdnUrl, overlayImageCdnUrls.size());
-
-            return gym2dMapInfo;
+            return map2dImageCdnUrl;
 
         } catch (IOException e) {
             log.error("Failed to read gym 2D map image files: gymId={}", gymId, e);
-            cleanUpUploadedFiles(climbingGymImageBucketName, uploadedImageKeys);
             throw new BusinessException(
                 ErrorCode.INTERNAL_ERROR, "Failed to read gym 2D map image files");
+        }
+    }
+
+    /*
+     * 클라이밍장 벽 2D 사진을 S3에 업로드하고 Map으로 반환
+     */
+    public Map<Long, String> uploadGymAreaImages(
+        Long gymId,
+        Map<Long, MultipartFile> areaImages
+    ) {
+        if (climbingGymImageBucketName == null || climbingGymImageBucketName.isEmpty()) {
+            log.error("Climbing gym image S3 bucket name is not configured");
+            throw new AwsBucketNameNotConfiguredException(
+                ErrorCode.S3_BUCKET_NAME_NOT_CONFIGURED,
+                "Climbing gym image S3 bucket name is not configured."
+            );
+        }
+
+        // 버킷 존재 여부 확인
+        ensureBucketExists(climbingGymImageBucketName);
+
+        List<String> uploadedImageKeys = new ArrayList<>();     // 업로드가 성공한 이미지 키들을 저장할 리스트(실패 시 롤백 용도)
+        Map<Long, String> areaImageCdnUrls = new HashMap<>();
+        try {
+            for (Map.Entry<Long, MultipartFile> entry : areaImages.entrySet()) {
+                Long areaId = entry.getKey();
+                MultipartFile areaImage = entry.getValue();
+
+                String extension = extractFileExtension(areaImage.getOriginalFilename());
+                String areaImageKey = FileUploadUtils.generateGymAreaImageKey(gymId, areaId,
+                    extension);
+
+                uploadFileToS3(climbingGymImageBucketName, areaImageKey, areaImage);
+                uploadedImageKeys.add(areaImageKey);  // Area 이미지 키를 업로드 리스트에 추가
+
+                String areaImageCdnUrl = generateCdnUrl(areaImageKey);
+                areaImageCdnUrls.put(areaId, areaImageCdnUrl);
+            }
+
+            return areaImageCdnUrls;
+
+        } catch (IOException e) {
+            log.error("Failed to read gym area map image files: gymId={}", gymId, e);
+            cleanUpUploadedFiles(climbingGymImageBucketName, uploadedImageKeys);
+            throw new BusinessException(
+                ErrorCode.INTERNAL_ERROR, "Failed to read gym area map image files");
         }
     }
 

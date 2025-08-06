@@ -10,9 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 @Validated
 @Tag(name = "Admin Gym", description = "관리자 클라이밍장 관리 API")
@@ -205,17 +204,10 @@ public interface AdminGymApiDocumentation {
         Long gymId,
 
         @Parameter(
-            name = "baseImage",
-            description = "클라이밍장의 기본 2D 맵 이미지 파일 (PNG, JPG, JPEG 지원)",
-            required = true
-        )
-        MultipartFile baseImage,
-
-        @Parameter(
-            name = "overlayImages",
+            name = "",
             description = "클라이밍장의 오버레이 2D 맵 이미지 파일들 (벽이름.png 형태로 업로드, PNG, JPG, JPEG 지원)",
             required = true
         )
-        List<MultipartFile> overlayImages
+        MultipartHttpServletRequest request
     );
 }
