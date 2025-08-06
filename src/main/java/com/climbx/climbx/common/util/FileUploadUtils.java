@@ -41,10 +41,12 @@ public class FileUploadUtils {
     }
 
     public static String generateGym2dMapBaseImageKey(Long gymId, String imageName) {
-        return String.format("2d-map/%d/base-images/%s", gymId, imageName);
+        String safeFileName = imageName.replace("/", "_");
+        return String.format("2d-map/%d/base-images/%s", gymId, safeFileName);
     }
 
     public static String generateGym2dMapOverlayImageKey(Long gymId, String imageName) {
-        return String.format("2d-map/%d/overlay-images/%s", gymId, imageName);
+        String safeFileName = imageName.replace("/", "_");
+        return String.format("2d-map/%d/overlay-images/%s", gymId, safeFileName);
     }
 }
