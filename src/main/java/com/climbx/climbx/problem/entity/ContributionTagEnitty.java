@@ -7,7 +7,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -18,33 +17,20 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Entity
-@Table(name = "problem_tags")
-@IdClass(ProblemTagId.class)
+@Table(name = "contribution_tag")
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
 @Accessors(fluent = true)
 @Builder
-public class ProblemTag {
+public class ContributionTagEnitty {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "problem_id")
-    ProblemEntity problemEntity;
-
-    @Id
-    @Column(name = "problem_id", insertable = false, updatable = false, nullable = false)
-    private Long problemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contribution_id", nullable = false)
+    private ContributionEntity contributionEntity;
 
     @Id
     @Enumerated(EnumType.STRING)
-    @Column(name = "tag", updatable = false)
+    @Column(name = "tag", length = 32, nullable = false) // updatable은 추후 논의 필요
     private ProblemTagType tag;
-
-    @Builder.Default
-    @Column(name = "priority", nullable = false)
-    private Integer priority = 0;
-
-    public void addPriority(Integer priority) {
-        this.priority += priority;
-    }
 }
