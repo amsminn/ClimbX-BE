@@ -1,8 +1,11 @@
 package com.climbx.climbx.problem.entity;
 
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,6 +45,10 @@ public class ContributionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "contribution_id", nullable = false, updatable = false)
     private Long contributionId;
+
+    @Column(name = "tier", length = 16, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ProblemTierType tier;
 
     @Column(name = "comment", length = 512) // nullable
     private String comment; // 예시: "문제 어디가 어려웠고, 추천할 만한 문제인지 등

@@ -11,6 +11,7 @@ import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +34,7 @@ public class ProblemTagEntity {
 
     @Id
     @Column(name = "problem_id", insertable = false, updatable = false, nullable = false)
-    private Long problemId;
+    private UUID problemId;
 
     @Id
     @Enumerated(EnumType.STRING)

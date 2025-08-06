@@ -13,14 +13,24 @@ import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.dto.ProblemVoteRequestDto;
+import com.climbx.climbx.problem.entity.ContributionEntity;
+import com.climbx.climbx.problem.entity.ContributionTagEnitty;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.enums.ProblemTierType;
+import com.climbx.climbx.problem.entity.ProblemTagEntity;
 import com.climbx.climbx.problem.exception.ForbiddenProblemVoteException;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
+import com.climbx.climbx.problem.repository.ContributionRepository;
+import com.climbx.climbx.problem.repository.ContributionTagRepository;
+import com.climbx.climbx.problem.repository.GymAreaRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
+import com.climbx.climbx.problem.repository.ProblemTagRepository;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.entity.UserAccountEntity;
+import com.climbx.climbx.user.exception.UserNotFoundException;
+import com.climbx.climbx.user.repository.UserAccountRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +45,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ProblemService {
 
+    private final UserAccountRepository userAccountRepository;
     private final ProblemRepository problemRepository;
     private final SubmissionRepository submissionRepository;
     private final GymAreaRepository gymAreaRepository;
+    private final ContributionRepository contributionRepository;
+    private final ContributionTagRepository contributionTagRepository;
+    private final ProblemTagRepository problemTagRepository;
     private final S3Service s3Service;
 
     public List<ProblemInfoResponseDto> getProblemsWithFilters(
@@ -109,6 +123,9 @@ public class ProblemService {
         log.info("난이도 투표 요청: userId={}, problemId={}, vote={}",
             userId, problemId, voteRequest);
 
+        UserAccountEntity user = userAccountRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
+
         SubmissionEntity submission = submissionRepository.findByProblemIdAndVideoEntity_UserIdAndStatus(
             problemId,
             userId,
@@ -116,6 +133,35 @@ public class ProblemService {
         ).orElseThrow(() -> new ForbiddenProblemVoteException(problemId, userId));
 
         ProblemEntity problem = submission.problemEntity();
+
+        ContributionEntity contribution = ContributionEntity.builder()
+            .userAccountEntity(user)
+            .problemEntity(problem)
+            .tier(voteRequest.tier())
+            .comment(voteRequest.comment())
+            .build();
+
+        contributionRepository.save(contribution);
+
+        voteRequest.tags().forEach(tag -> {
+            contributionTagRepository.save(
+                ContributionTagEnitty.builder()
+                    .contributionEntity(contribution)
+                    .tag(tag)
+                    .build()
+            );
+
+            ProblemTagEntity problemTag = problemTagRepository.findByProblemIdAndTag(
+                    problem.problemId(), tag)
+                .orElseGet(() -> problemTagRepository.save(
+                    ProblemTagEntity.builder()
+                        .problemEntity(problem)
+                        .tag(tag)
+                        .build()
+                ));
+
+            problemTag.addPriority(1); // TODO: 추후 유저 레이팅에 따른 영향력 설계 필요
+        });
 
         // 임시 반환. SWM-155 이슈에서 난이도 기여 구현 완료 후 변경 예정
         return ProblemInfoResponseDto.from(problem, 1L, problem.gymArea());

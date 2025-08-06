@@ -92,6 +92,8 @@ public class ProblemController implements ProblemApiDocumentation {
         @Valid
         ProblemVoteRequestDto voteRequest
     ) {
-
+        log.info("문제 투표: userId={}, problemId={}, tier={}, tags={}", userId, problemId,
+            voteRequest.tier(), voteRequest.tags());
+        problemService.voteProblem(userId, problemId, voteRequest);
     }
 }

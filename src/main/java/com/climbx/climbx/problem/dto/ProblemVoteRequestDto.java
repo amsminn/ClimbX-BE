@@ -16,6 +16,8 @@ public record ProblemVoteRequestDto(
     @NotNull
     ProblemTierType tier,
 
+    String comment, // nullable, 예시: "문제 어디가 어려웠고, 추천할 만한 문제인지 등"
+
     List<ProblemTagType> tags // nullable
 ) {
 

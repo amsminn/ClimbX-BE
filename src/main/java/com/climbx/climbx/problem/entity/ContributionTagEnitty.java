@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -18,6 +19,7 @@ import lombok.experimental.Accessors;
 
 @Entity
 @Table(name = "contribution_tag")
+@IdClass(ContributionTagId.class)
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @Getter
@@ -25,6 +27,7 @@ import lombok.experimental.Accessors;
 @Builder
 public class ContributionTagEnitty {
 
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contribution_id", nullable = false)
     private ContributionEntity contributionEntity;
