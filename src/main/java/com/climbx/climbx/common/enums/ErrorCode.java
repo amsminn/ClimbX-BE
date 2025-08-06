@@ -95,6 +95,7 @@ public enum ErrorCode {
     S3_BUCKET_NAME_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 버킷 이름이 설정되지 않았습니다."),
     CLOUDFRONT_DOMAIN_NOT_CONFIGURED(HttpStatus.INTERNAL_SERVER_ERROR,
         "CloudFront 도메인이 설정되지 않았습니다."),
+    S3_FILE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 삭제에 실패했습니다."),
     ;
 
     private final HttpStatus status;

@@ -26,7 +26,9 @@ import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -201,12 +203,14 @@ public class S3Service {
         // 버킷 존재 여부 확인
         ensureBucketExists(climbingGymImageBucketName);
 
+        List<String> uploadedImageKeys = new ArrayList<>();     // 업로드가 성공한 이미지 키들을 저장할 리스트(실패 시 롤백 용도)
         try {
             // Base 이미지 업로드
             String baseImageKey = FileUploadUtils.generateGym2dMapBaseImageKey(gymId,
                 baseImage.getOriginalFilename());
 
             uploadFileToS3(climbingGymImageBucketName, baseImageKey, baseImage);
+            uploadedImageKeys.add(baseImageKey);    // Base 이미지 키를 업로드 리스트에 추가
             String baseImageCdnUrl = generateCdnUrl(baseImageKey);
 
             // Overlay 이미지들 업로드
@@ -217,6 +221,7 @@ public class S3Service {
                     overlayImage.getOriginalFilename());
 
                 uploadFileToS3(climbingGymImageBucketName, overlayImageKey, overlayImage);
+                uploadedImageKeys.add(overlayImageKey);     // Overlay 이미지 키를 업로드 리스트에 추가
                 String overlayImageCdnUrl = generateCdnUrl(overlayImageKey);
                 overlayImageCdnUrls.add(overlayImageCdnUrl);
             }
@@ -232,6 +237,7 @@ public class S3Service {
 
         } catch (IOException e) {
             log.error("Failed to read gym 2D map image files: gymId={}", gymId, e);
+            cleanUpUploadedFiles(climbingGymImageBucketName, uploadedImageKeys);
             throw new BusinessException(
                 ErrorCode.INTERNAL_ERROR, "Failed to read gym 2D map image files");
         }
@@ -267,6 +273,25 @@ public class S3Service {
 
         s3Client.putObject(putObjectRequest, requestBody);
         log.debug("File uploaded to S3 bucket {} successfully: {}", bucketName, s3Key);
+    }
+
+    private void cleanUpUploadedFiles(String bucketName, List<String> uploadedImageKeys) {
+        log.info("S3에서 파일 삭제를 시도합니다. Key: {}", uploadedImageKeys.toString());
+
+        for (String uploadedImageKey : uploadedImageKeys) {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(uploadedImageKey)
+                .build();
+            try {
+                s3Client.deleteObject(deleteObjectRequest);
+                log.info("S3에서 파일을 성공적으로 삭제했습니다. Key: {}", uploadedImageKey);
+            } catch (S3Exception e) {
+                log.error("S3 파일 삭제 중 오류가 발생했습니다. Key: {}", uploadedImageKey, e);
+                // 필요에 따라 사용자 정의 예외를 던질 수 있습니다.
+                throw new BusinessException(ErrorCode.S3_FILE_DELETE_FAILED, "S3 파일 삭제에 실패했습니다.");
+            }
+        }
     }
 
     private String generateCdnUrl(String s3Key) {
