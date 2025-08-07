@@ -147,25 +147,34 @@ public class ProblemService {
 
         contributionRepository.save(contribution);
 
-        voteRequest.tags().forEach(tag -> {
-            contributionTagRepository.save(
-                ContributionTagEnitty.builder()
-                    .contributionEntity(contribution)
-                    .tag(tag)
-                    .build()
-            );
-
-            ProblemTagEntity problemTag = problemTagRepository.findByProblemEntityAndTag(
-                    problem, tag)
-                .orElseGet(() -> problemTagRepository.save(
-                    ProblemTagEntity.builder()
-                        .problemEntity(problem)
+        if (voteRequest.tags() != null) {
+            voteRequest.tags().forEach(tag -> {
+                contributionTagRepository.save(
+                    ContributionTagEnitty.builder()
+                        .contributionEntity(contribution)
                         .tag(tag)
                         .build()
-                ));
+                );
 
-            problemTag.addPriority(1); // TODO: 추후 유저 레이팅에 따른 영향력 설계 필요
-        });
+                ProblemTagEntity problemTag = problemTagRepository.findByProblemEntityAndTag(
+                        problem, tag)
+                    .orElseGet(() -> problemTagRepository.save(
+                        ProblemTagEntity.builder()
+                            .problemEntity(problem)
+                            .tag(tag)
+                            .build()
+                    ));
+
+                problemTag.addPriority(1); // TODO: 추후 유저 레이팅에 따른 영향력 설계 필요
+            });
+
+            Integer newProblemRating = ratingUtil.calculateProblemTier(
+                contributionRepository.findAllByProblemEntity_ProblemId(problem.problemId())
+                    .stream()
+                    .map(ContributionEntity::toVoteTierDto)
+                    .toList()
+            );
+        }
 
         Integer newProblemRating = ratingUtil.calculateProblemTier(
             contributionRepository.findAllByProblemEntity_ProblemId(problem.problemId())
