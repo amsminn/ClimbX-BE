@@ -116,7 +116,7 @@ public class RatingUtil {
 
             double indexDiffReliability = Math.pow(0.9, lastVoteIndex - i);
             double dateDiffReliability = Math.pow(0.5, Duration.between(
-                lastVoteTime, vote.dateTime()).toDays());
+                vote.dateTime(), lastVoteTime).toDays());
 
             double weight = Math.max(indexDiffReliability, dateDiffReliability);
 
