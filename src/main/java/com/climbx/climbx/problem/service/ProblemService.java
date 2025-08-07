@@ -29,13 +29,16 @@ import com.climbx.climbx.problem.repository.ProblemRepository;
 import com.climbx.climbx.problem.repository.ProblemTagRepository;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.UserTierType;
 import com.climbx.climbx.user.entity.UserAccountEntity;
+import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -165,14 +168,14 @@ public class ProblemService {
             problemTag.addPriority(1); // TODO: 추후 유저 레이팅에 따른 영향력 설계 필요
         });
 
-        Integer newRating = ratingUtil.calculateProblemTier(
+        Integer newProblemRating = ratingUtil.calculateProblemTier(
             contributionRepository.findAllByProblemEntity_ProblemId(problem.problemId())
                 .stream()
                 .map(ContributionEntity::toVoteTierDto)
                 .toList()
         );
 
-        ProblemTierType newTier = ProblemTierType.fromValue(newRating);
+        ProblemTierType newProblemTier = ProblemTierType.fromValue(newProblemRating);
 
         List<ProblemTagType> primary2tags = problemTagRepository
             .findTop2ByProblemEntityOrderByPriorityDesc(problem)
@@ -181,10 +184,32 @@ public class ProblemService {
             .toList();
 
         problem.updateRatingAndTierAndTags(
-            newRating,
-            newTier,
+            newProblemRating,
+            newProblemTier,
             primary2tags
         );
+
+        UserStatEntity userStat = user.userStatEntity();
+        Integer newUserRating = ratingUtil.calculateUserRating(
+            submissionRepository.getUserTopProblems(
+                    user.userId(),
+                    StatusType.ACCEPTED,
+                    Pageable.ofSize(50)
+                ).stream()
+                .map(ProblemEntity::problemRating)
+                .toList(),
+            userStat.submissionCount(),
+            userStat.solvedCount(),
+            userStat.contributionCount()
+        );
+
+        log.info("user {} prev rating: {}, prev tier: {}", user.userId(), newUserRating,
+            UserTierType.fromValue(newUserRating));
+
+        userStat.setRating(newUserRating);
+
+        log.info("user {} new rating: {}, new tier: {}", user.userId(), newUserRating,
+            UserTierType.fromValue(newUserRating));
 
         return ProblemInfoResponseDto.from(problem, problem.gym().gymId(), problem.gymArea());
     }

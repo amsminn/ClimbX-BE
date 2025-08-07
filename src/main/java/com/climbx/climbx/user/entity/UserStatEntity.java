@@ -44,6 +44,7 @@ public class UserStatEntity extends BaseTimeEntity {
     @Min(0)
     private Integer rating = 0; // 레이팅, 기본값은 0
 
+
     @Builder.Default
     @Column(name = "current_streak", nullable = false)
     @NotNull

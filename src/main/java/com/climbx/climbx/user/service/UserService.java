@@ -7,6 +7,7 @@ import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.UserTierType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
 import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
@@ -166,7 +167,7 @@ public class UserService {
         Long userId = userAccount.userId();
 
         UserStatEntity userStat = findUserStatByUserId(userId);
-        String tier = ratingUtil.getTier(userStat.rating());
+        UserTierType tier = UserTierType.fromValue(userStat.rating());
         Integer ratingRank = userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
             userStat.rating(), userStat.updatedAt(), userId);
 

@@ -2,7 +2,6 @@ package com.climbx.climbx.common.util;
 
 import com.climbx.climbx.auth.dto.VoteTierDto;
 import com.climbx.climbx.common.dto.TierDefinitionDto;
-import com.climbx.climbx.common.exception.InvalidRatingValueException;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.submission.dto.TagRatingPairDto;
@@ -25,19 +24,6 @@ public class RatingUtil {
     static final int CATEGORY_TYPE_LIMIT = 8;
     private final List<TierDefinitionDto> tierList;
 
-    public TierDefinitionDto getTierDefinition(int rating) {
-        return tierList.stream()
-            .filter(tier -> tier.minRating() <= rating && rating <= tier.maxRating())
-            .findFirst()
-            .orElseThrow(() -> new InvalidRatingValueException(rating));
-    }
-
-    public String getTier(int rating) {
-        TierDefinitionDto tierDefinition = getTierDefinition(rating);
-        return tierDefinition.name() + (tierDefinition.level() != null ? tierDefinition.level()
-            .toString() : "");
-    }
-
     public int calculateUserRating(
         List<Integer> topProblemRatings,
         int submissionCount,
@@ -46,7 +32,7 @@ public class RatingUtil {
     ) {
         int topProblemScore = topProblemRatings.stream()
             .mapToInt(Integer::intValue)
-            .map(rating -> getTierDefinition(rating).score())
+            .map(rating -> ProblemTierType.fromValue(rating).value())
             .sum();
 
         int submissionCountScore = 10 * Math.min(submissionCount, 50);

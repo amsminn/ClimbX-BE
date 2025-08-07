@@ -38,18 +38,7 @@ public class ProblemFixture {
             .build();
     }
 
-    public static ProblemInfoResponseDto createProblemResponseDto(
-        UUID problemId,
-        Long gymId,
-        String gymName,
-        Long gymAreaId,
-        String gymAreaName
-    ) {
-        return createProblemResponseDto(problemId, gymId, gymName, gymAreaId, gymAreaName,
-            DEFAULT_LOCAL_LEVEL, DEFAULT_HOLD_COLOR, DEFAULT_PROBLEM_RATING);
-    }
-
-    public static ProblemInfoResponseDto createProblemResponseDto(
+    public static ProblemDetailsResponseDto createProblemResponseDto(
         UUID problemId,
         Long gymId,
         String gymName,
