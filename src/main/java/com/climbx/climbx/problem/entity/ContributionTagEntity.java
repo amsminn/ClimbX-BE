@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @Builder
-public class ContributionTagEnitty extends BaseTimeEntity {
+public class ContributionTagEntity extends BaseTimeEntity {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)

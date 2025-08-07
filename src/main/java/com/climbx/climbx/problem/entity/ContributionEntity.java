@@ -41,7 +41,7 @@ public class ContributionEntity extends BaseTimeEntity {
     ProblemEntity problemEntity;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "contributionEntity")
-    private List<ContributionTagEnitty> contributionTags;
+    private List<ContributionTagEntity> contributionTags;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

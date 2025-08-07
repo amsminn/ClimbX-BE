@@ -1,7 +1,7 @@
 package com.climbx.climbx.problem.dto;
 
 import com.climbx.climbx.problem.entity.ContributionEntity;
-import com.climbx.climbx.problem.entity.ContributionTagEnitty;
+import com.climbx.climbx.problem.entity.ContributionTagEntity;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import java.util.List;
@@ -24,7 +24,7 @@ public record ContributionResponseDto(
             .nickname(c.userAccountEntity().nickname())
             .tier(c.tier())
             .tags(c.contributionTags().stream()
-                .map(ContributionTagEnitty::tag)
+                .map(ContributionTagEntity::tag)
                 .toList())
             .comment(c.comment())
             .build();

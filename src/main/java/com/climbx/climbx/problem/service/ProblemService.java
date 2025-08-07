@@ -15,7 +15,7 @@ import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.ContributionEntity;
-import com.climbx.climbx.problem.entity.ContributionTagEnitty;
+import com.climbx.climbx.problem.entity.ContributionTagEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.entity.ProblemTagEntity;
 import com.climbx.climbx.problem.enums.ProblemTagType;
@@ -150,7 +150,7 @@ public class ProblemService {
         if (voteRequest.tags() != null) {
             voteRequest.tags().forEach(tag -> {
                 contributionTagRepository.save(
-                    ContributionTagEnitty.builder()
+                    ContributionTagEntity.builder()
                         .contributionEntity(contribution)
                         .tag(tag)
                         .build()
