@@ -31,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 @Transactional(readOnly = true)
@@ -82,12 +83,9 @@ public class SubmissionService {
     }
 
     @Transactional
-    public SubmissionResponseDto createSubmission(String nickname,
-        SubmissionCreateRequestDto request) {
-        UserAccountEntity user = userAccountRepository.findByNickname(nickname)
-            .orElseThrow(() -> new UserNotFoundException(nickname));
-
-        Long userId = user.userId();
+    public SubmissionResponseDto createSubmission(Long userId, SubmissionCreateRequestDto request) {
+        log.info("isReadOnly: {}",
+            TransactionAspectSupport.currentTransactionStatus().isReadOnly());
 
         VideoEntity video = videoRepository.findByVideoIdAndStatus(
             request.videoId(),
@@ -117,6 +115,9 @@ public class SubmissionService {
 
         submissionRepository.save(submissionEntity);
 
+        UserAccountEntity user = userAccountRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
+
         UserStatEntity userStat = user.userStatEntity();
         userStat.incrementSubmissionCount();
 
@@ -131,11 +132,9 @@ public class SubmissionService {
     }
 
     @Transactional
-    public SubmissionCancelResponseDto cancelSubmission(String nickname, UUID videoId) {
-        UserAccountEntity user = userAccountRepository.findByNickname(nickname)
-            .orElseThrow(() -> new UserNotFoundException(nickname));
-
-        Long userId = user.userId();
+    public SubmissionCancelResponseDto cancelSubmission(Long userId, UUID videoId) {
+        UserAccountEntity user = userAccountRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
 
         SubmissionEntity submissionEntity = submissionRepository.findById(videoId)
             .orElseThrow(() -> new VideoNotFoundException(videoId));
@@ -158,12 +157,10 @@ public class SubmissionService {
     }
 
     @Transactional
-    public SubmissionAppealResponseDto appealSubmission(String nickname, UUID videoId,
+    public SubmissionAppealResponseDto appealSubmission(Long userId, UUID videoId,
         SubmissionAppealRequestDto request) {
-        UserAccountEntity user = userAccountRepository.findByNickname(nickname)
-            .orElseThrow(() -> new UserNotFoundException(nickname));
-
-        Long userId = user.userId();
+        UserAccountEntity user = userAccountRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
 
         SubmissionEntity submissionEntity = submissionRepository.findById(videoId)
             .orElseGet(() -> {
