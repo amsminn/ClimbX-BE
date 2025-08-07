@@ -7,7 +7,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record ProblemVoteRequestDto(
+public record ContributionRequestDto(
 
     @NotNull
     ProblemTierType tier,

@@ -2,10 +2,10 @@ package com.climbx.climbx.problem;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.common.enums.ActiveStatusType;
+import com.climbx.climbx.problem.dto.ContributionRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
-import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.dto.ProblemVoteRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -388,6 +388,6 @@ public interface ProblemApiDocumentation {
             required = true
         )
         @Valid
-        ProblemVoteRequestDto voteRequest
+        ContributionRequestDto voteRequest
     );
 }

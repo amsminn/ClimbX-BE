@@ -6,12 +6,9 @@ import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.exception.InvalidParameterException;
 import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.gym.entity.GymEntity;
-import com.climbx.climbx.gym.repository.GymAreaRepository;
-import com.climbx.climbx.gym.repository.GymRepository;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
-import com.climbx.climbx.problem.dto.ProblemVoteRequestDto;
 import com.climbx.climbx.problem.entity.ContributionEntity;
 import com.climbx.climbx.problem.entity.ContributionTagEnitty;
 import com.climbx.climbx.problem.entity.GymAreaEntity;
@@ -123,7 +120,7 @@ public class ProblemService {
     public ProblemInfoResponseDto voteProblem(
         Long userId,
         UUID problemId,
-        ProblemVoteRequestDto voteRequest
+        ContributionRequestDto voteRequest
     ) {
         log.info("난이도 투표 요청: userId={}, problemId={}, vote={}",
             userId, problemId, voteRequest);
@@ -212,5 +209,16 @@ public class ProblemService {
             UserTierType.fromValue(newUserRating));
 
         return ProblemInfoResponseDto.from(problem, problem.gym().gymId(), problem.gymArea());
+    }
+
+    public List<ContributionResponseDto> getProblemVotes(
+        UUID problemId,
+        Pageable pageable
+    ) {
+        List<ContributionEntity> contributions = contributionRepository
+            .findAllByProblemEntity_ProblemIdOrderByCreatedAtDesc(problemId, pageable);
+        return contributions.stream()
+            .map(ContributionResponseDto::from)
+            .toList();
     }
 }

@@ -2,11 +2,11 @@ package com.climbx.climbx.problem;
 
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.common.enums.ActiveStatusType;
+import com.climbx.climbx.problem.dto.ContributionRequestDto;
+import com.climbx.climbx.problem.dto.ContributionResponseDto;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
-import com.climbx.climbx.problem.enums.ProblemTierType;
-import com.climbx.climbx.problem.dto.ProblemVoteRequestDto;
 import com.climbx.climbx.problem.service.ProblemService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,10 +95,25 @@ public class ProblemController implements ProblemApiDocumentation {
 
         @RequestBody
         @Valid
-        ProblemVoteRequestDto voteRequest
+        ContributionRequestDto voteRequest
     ) {
         log.info("문제 투표: userId={}, problemId={}, tier={}, tags={}", userId, problemId,
             voteRequest.tier(), voteRequest.tags());
         return problemService.voteProblem(userId, problemId, voteRequest);
+    }
+}
+
+    @GetMapping("/{problemId}/votes")
+    @SuccessStatus(value = HttpStatus.OK)
+    public List<ContributionResponseDto> getProblemVotes(
+        @PathVariable // TODO: 스웨거 validation 추가
+        UUID problemId,
+
+        @PageableDefault(page = 0, size = 20)
+        Pageable pageable
+    ) {
+        log.info("문제 투표 목록 조회: problemId={}, page={}, size={}", problemId,
+            pageable.getPageNumber(), pageable.getPageSize());
+        return problemService.getProblemVotes(problemId, pageable);
     }
 }
