@@ -102,10 +102,11 @@ public class ProblemController implements ProblemApiDocumentation {
         return problemService.voteProblem(userId, problemId, voteRequest);
     }
 
+    @Override
     @GetMapping("/{problemId}/votes")
     @SuccessStatus(value = HttpStatus.OK)
     public List<ContributionResponseDto> getProblemVotes(
-        @PathVariable // TODO: 스웨거 validation 추가
+        @PathVariable
         UUID problemId,
 
         @PageableDefault(page = 0, size = 20)

@@ -3,6 +3,7 @@ package com.climbx.climbx.problem;
 import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ContributionRequestDto;
+import com.climbx.climbx.problem.dto.ContributionResponseDto;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
@@ -21,6 +22,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -389,5 +391,99 @@ public interface ProblemApiDocumentation {
         )
         @Valid
         ContributionRequestDto voteRequest
+    );
+
+    @Operation(
+        summary = "문제 투표 목록 조회",
+        description = "특정 클라이밍 문제에 대한 투표 목록을 페이징으로 조회합니다. 다른 사용자들이 제출한 티어, 태그, 댓글 정보를 확인할 수 있습니다."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "문제 투표 목록 조회 성공",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "투표 목록",
+                    value = """
+                        {
+                          "httpStatus": 200,
+                          "statusMessage": "SUCCESS",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 98,
+                          "path": "/api/problems/123e4567-e89b-12d3-a456-426614174000/votes",
+                          "data": [
+                            {
+                              "nickname": "클라이머123",
+                              "tier": "P3",
+                              "tags": ["BALANCE", "CRIMPY"],
+                              "comment": "발가락 힘이 중요한 문제입니다. 홀드가 작아서 핑거 스트렝스가 필요해요."
+                            },
+                            {
+                              "nickname": "볼더링마스터",
+                              "tier": "P2",
+                              "tags": ["OVERHANG", "DYNAMIC"],
+                              "comment": "다이나믹한 움직임이 핵심입니다. 충분한 웜업 후 시도하세요."
+                            }
+                          ]
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "문제를 찾을 수 없음",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "문제 없음",
+                    value = """
+                        {
+                          "httpStatus": 404,
+                          "statusMessage": "PROBLEM_NOT_FOUND",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 45,
+                          "path": "/api/problems/123e4567-e89b-12d3-a456-426614174000/votes",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "서버 내부 오류",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "서버 오류",
+                    value = """
+                        {
+                          "httpStatus": 500,
+                          "statusMessage": "서버 내부 오류가 발생했습니다.",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 123,
+                          "path": "/api/problems/123e4567-e89b-12d3-a456-426614174000/votes",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        )
+    })
+    List<ContributionResponseDto> getProblemVotes(
+        @Parameter(
+            description = "투표 목록을 조회할 문제 ID",
+            required = true,
+            example = "123e4567-e89b-12d3-a456-426614174000"
+        )
+        UUID problemId,
+
+        @Parameter(
+            description = "페이징 정보 (page: 페이지 번호, size: 페이지 크기)",
+            example = "page=0&size=20"
+        )
+        Pageable pageable
     );
 }
