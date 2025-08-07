@@ -185,13 +185,10 @@ class SubmissionServiceTest {
         @DisplayName("존재하지 않는 비디오로 제출 생성 시 예외를 던진다")
         void shouldThrowExceptionWhenVideoNotFound() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             UUID problemId = UUID.randomUUID();
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
-
-            UserAccountEntity user = createUser(userId, nickname);
 
             given(videoRepository.findByVideoIdAndStatus(videoId, StatusType.COMPLETED))
                 .willReturn(Optional.empty());
@@ -207,7 +204,6 @@ class SubmissionServiceTest {
         @DisplayName("다른 사용자의 비디오로 제출 생성 시 예외를 던진다")
         void shouldThrowExceptionWhenVideoOwnerMismatch() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
@@ -230,13 +226,11 @@ class SubmissionServiceTest {
         @DisplayName("존재하지 않는 문제로 제출 생성 시 예외를 던진다")
         void shouldThrowExceptionWhenProblemNotFound() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             UUID problemId = UUID.randomUUID();
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
-            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
 
             given(videoRepository.findByVideoIdAndStatus(videoId, StatusType.COMPLETED))
@@ -257,13 +251,11 @@ class SubmissionServiceTest {
         @DisplayName("이미 제출된 영상으로 제출 생성 시 예외를 던진다")
         void shouldThrowExceptionWhenVideoAlreadySubmitted() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             UUID problemId = UUID.randomUUID();
             SubmissionCreateRequestDto request = new SubmissionCreateRequestDto(videoId, problemId);
 
-            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity existingSubmission = createSubmission(video, createProblem(problemId));
 
@@ -329,11 +321,9 @@ class SubmissionServiceTest {
         @DisplayName("제출을 성공적으로 취소한다")
         void shouldCancelSubmissionSuccessfully() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             UUID problemId = UUID.randomUUID();
-            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(problemId));
 
@@ -354,12 +344,10 @@ class SubmissionServiceTest {
         @DisplayName("다른 사용자의 제출 취소 시 예외를 던진다")
         void shouldThrowExceptionWhenCancelOthersSubmission() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
             UUID problemId = UUID.randomUUID();
-            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(otherUserId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(problemId));
 
@@ -382,14 +370,12 @@ class SubmissionServiceTest {
         @DisplayName("제출 이의제기를 성공적으로 처리한다")
         void shouldAppealSubmissionSuccessfully() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             UUID problemId = UUID.randomUUID();
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("정당한 이의제기 사유")
                 .build();
-            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(problemId));
 
@@ -411,7 +397,6 @@ class SubmissionServiceTest {
         @DisplayName("다른 사용자의 제출에 이의제기 시 예외를 던진다")
         void shouldThrowExceptionWhenAppealOthersSubmission() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             Long otherUserId = 2L;
             UUID videoId = UUID.randomUUID();
@@ -419,7 +404,6 @@ class SubmissionServiceTest {
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("이의제기 사유")
                 .build();
-            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(otherUserId, videoId);
             SubmissionEntity submission = createSubmission(video, createProblem(problemId));
 
@@ -437,14 +421,12 @@ class SubmissionServiceTest {
         @DisplayName("동일한 내용으로 중복 이의제기 시 예외를 던진다")
         void shouldThrowExceptionWhenDuplicateAppeal() {
             // given
-            String nickname = "testUser";
             Long userId = 1L;
             UUID videoId = UUID.randomUUID();
             UUID problemId = UUID.randomUUID();
             SubmissionAppealRequestDto request = SubmissionAppealRequestDto.builder()
                 .reason("동일한 이의제기 사유")
                 .build();
-            UserAccountEntity user = createUser(userId, nickname);
             VideoEntity video = createVideo(userId, videoId);
             SubmissionEntity submission = SubmissionEntity.builder()
                 .videoId(videoId)
