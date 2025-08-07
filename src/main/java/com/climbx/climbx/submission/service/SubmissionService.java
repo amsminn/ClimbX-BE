@@ -1,7 +1,6 @@
 package com.climbx.climbx.submission.service;
 
 import com.climbx.climbx.common.enums.StatusType;
-import com.climbx.climbx.common.util.OptionalUtil;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.exception.ProblemNotFoundException;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -95,13 +94,11 @@ public class SubmissionService {
             StatusType.COMPLETED
         ).orElseThrow(() -> new VideoNotFoundException(request.videoId()));
 
-        OptionalUtil.tryOf(video::userId)
-            .filter(id -> !id.equals(userId))
-            .ifPresent(id -> {
-                log.warn("User {} attempted to submit video {} they do not own", userId,
-                    request.videoId());
-                throw new ForbiddenSubmissionException(userId, request.videoId());
-            });
+        if (!video.userId().equals(userId)) {
+            log.warn("User {} attempted to submit video {} they do not own", userId,
+                request.videoId());
+            throw new ForbiddenSubmissionException(userId, request.videoId());
+        }
 
         // 이미 제출된 영상인지 확인
         submissionRepository.findById(request.videoId())
