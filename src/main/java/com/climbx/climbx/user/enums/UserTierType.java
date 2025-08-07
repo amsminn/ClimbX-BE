@@ -1,4 +1,4 @@
-package com.climbx.climbx.user;
+package com.climbx.climbx.user.enums;
 
 import com.climbx.climbx.common.exception.InvalidRatingValueException;
 import java.util.stream.Stream;

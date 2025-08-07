@@ -1,8 +1,8 @@
 package com.climbx.climbx.user.dto;
 
-import com.climbx.climbx.user.UserTierType;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.enums.UserTierType;
 import java.util.List;
 import lombok.Builder;
 
