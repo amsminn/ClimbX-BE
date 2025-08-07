@@ -122,6 +122,7 @@ jobs:
               -e AWS_S3_PROFILE_IMAGE_BUCKET_NAME='${{ secrets.AWS_S3_PROFILE_IMAGE_BUCKET_NAME }}' \
               -e AWS_S3_PRESIGNED_URL_EXPIRATION='${{ secrets.AWS_S3_PRESIGNED_URL_EXPIRATION }}' \
               -e AWS_S3_PROBLEM_IMAGE_BUCKET_NAME='${{ secrets.AWS_S3_PROBLEM_IMAGE_BUCKET_NAME }}' \
+              -e AWS_S3_CLIMBING_GYM_IMAGE_BUCKET_NAME='${{ secrets.AWS_S3_CLIMBING_GYM_IMAGE_BUCKET_NAME }}' \
               -e AWS_CLOUDFRONT_DOMAIN='${{ secrets.AWS_CLOUDFRONT_DOMAIN }}' \
               -e AWS_S3_REGION='${{ vars.AWS_S3_REGION }}' \
               -e AWS_ACCESS_KEY_ID='${{ secrets.AWS_ACCESS_KEY_ID }}' \

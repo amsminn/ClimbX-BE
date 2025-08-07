@@ -1,7 +1,6 @@
-package com.climbx.climbx.problem.entity;
+package com.climbx.climbx.gym.entity;
 
 import com.climbx.climbx.common.entity.BaseTimeEntity;
-import com.climbx.climbx.gym.entity.GymEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -43,4 +42,8 @@ public class GymAreaEntity extends BaseTimeEntity {
     @Column(name = "area_image_cdn_url", length = 256)
     @Size(max = 256)
     private String areaImageCdnUrl;
+
+    public void setAreaImageCdnUrl(String areaImageCdnUrl) {
+        this.areaImageCdnUrl = areaImageCdnUrl;
+    }
 }

@@ -2,6 +2,7 @@ package com.climbx.climbx.problem.entity;
 
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.common.enums.ActiveStatusType;
+import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;

@@ -39,4 +39,16 @@ public class FileUploadUtils {
         return String.format("problem-images/area-%d/%s-%s%s", gymAreaId, now, problemId,
             fileExtension);
     }
+
+    public static String generateGymMap2dImageKey(Long gymId, String extension) {
+        String now = LocalDateTime.now()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
+        return String.format("2d-map/%d/map-2d-images/%s.%s", gymId, now, extension);
+    }
+
+    public static String generateGymAreaImageKey(Long gymId, Long areaId, String extension) {
+        String now = LocalDateTime.now()
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss"));
+        return String.format("2d-map/%d/area-images/%s-%d.%s", gymId, now, areaId, extension);
+    }
 }

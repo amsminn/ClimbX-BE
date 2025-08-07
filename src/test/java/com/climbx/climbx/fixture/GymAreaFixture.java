@@ -1,7 +1,7 @@
 package com.climbx.climbx.fixture;
 
+import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
-import com.climbx.climbx.problem.entity.GymAreaEntity;
 
 public class GymAreaFixture {
 

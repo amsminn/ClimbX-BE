@@ -133,35 +133,34 @@ INSERT INTO gyms (name,
                   longitude,
                   address,
                   phone_number,
-                  map_2d_url,
                   created_at,
                   updated_at)
 VALUES ('더클라임 클라이밍 B 홍대점', 37.5546882, 126.9202997, '서울 마포구 양화로 125 경남관광빌딩', '02-332-5014',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 일산점', 37.6507188, 126.7788853, '경기 고양시 일산동구 중앙로 1160 5층 더클라임', '031-905-5014',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 마곡점', 37.5606786, 126.8337683, '서울 강서구 마곡동로 62 마곡사이언스타워 7층', '02-2668-5014',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 양재점', 37.4851386, 127.0358583, '서울 강남구 남부순환로 2615 지하1층', '02-576-8821',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 신림점', 37.4821999, 126.928909, '서울 관악구 신원로 35 삼모더프라임타워 5층', '02-877-8821',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 연남점', 37.5576629, 126.9257955, '서울 마포구 양화로 186 3층', '02-2088-5071',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 강남점', 37.4975157, 127.0319786, '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층', '02-566-8821',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 사당점', 37.4743761, 126.9814529, '서울 관악구 과천대로 939 지층 B201호', '02-585-8821',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 신사점', 37.521096, 127.019134, '서울 강남구 압구정로2길 6 지하2층', '02-549-8821',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 논현점', 37.5082918, 127.0222621, '서울 서초구 강남대로 519 지하1층', '02-545-5014',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 문래점', 37.5206605, 126.8950132, '서울 영등포구 당산로 63 1동', '02-3667-5014',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 이수점', 37.4818365, 126.981545, '서울 동작구 동작대로 59 지하1층', '02-588-5014',
-        'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('더클라임 클라이밍 성수점', 37.5463876, 127.0650498, '서울 성동구 아차산로17길 49 생각공장 데시앙플렉스 B1층',
-        '02-499-5014', 'http://fake-url', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+        '02-499-5014', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
 -- Gym Areas
@@ -761,3 +760,4 @@ VALUES ((UNHEX(REPLACE("3f06af63-a93c-11e4-9797-00505690773f", "-", ""))),
 
 
 COMMIT;
+

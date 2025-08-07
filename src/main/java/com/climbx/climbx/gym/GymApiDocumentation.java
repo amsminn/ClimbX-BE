@@ -49,7 +49,11 @@ public interface GymApiDocumentation {
                             "longitude": 126.9780,
                             "address": "서울시 강남구 테헤란로 123",
                             "phoneNumber": "02-1234-5678",
-                            "map2DUrl": "https://example.com/map/gym1"
+                            "baseMapUrl": "https://cdn-url/2d-map/1/base-images/1-base.png",
+                            "overlayMapUrls": [
+                                "https://cdn-url/2d-map/1/overlay-images/1-사과.jpeg",
+                                "https://cdn-url/2d-map/1/overlay-images/1-배1.png"
+                            ]
                           }
                         }
                         """
@@ -148,7 +152,11 @@ public interface GymApiDocumentation {
                               "longitude": 126.9780,
                               "address": "서울시 강남구 테헤란로 123",
                               "phoneNumber": "02-1234-5678",
-                              "map2DUrl": "https://example.com/map/gym1"
+                              "baseMapUrl": "https://cdn-url/2d-map/1/base-images/1-base.png",
+                              "overlayMapUrls": [
+                                  "https://cdn-url/2d-map/1/overlay-images/1-사과.jpeg",
+                                  "https://cdn-url/2d-map/1/overlay-images/1-배1.png"
+                              ]
                             },
                             {
                               "gymId": 2,
@@ -157,7 +165,11 @@ public interface GymApiDocumentation {
                               "longitude": 127.0320,
                               "address": "서울시 서초구 강남대로 456",
                               "phoneNumber": "02-9876-5432",
-                              "map2DUrl": "https://example.com/map/gym2"
+                              "baseMapUrl": "https://cdn-url/2d-map/1/base-images/1-base.png",
+                              "overlayMapUrls": [
+                                  "https://cdn-url/2d-map/1/overlay-images/1-사과.jpeg",
+                                  "https://cdn-url/2d-map/1/overlay-images/1-배1.png"
+                              ]
                             }
                           ]
                         }
@@ -234,7 +246,11 @@ public interface GymApiDocumentation {
                               "longitude": 126.9780,
                               "address": "서울시 강남구 테헤란로 123",
                               "phoneNumber": "02-1234-5678",
-                              "map2DUrl": "https://example.com/map/gym1"
+                              "baseMapUrl": "https://cdn-url/2d-map/1/base-images/1-base.png",
+                              "overlayMapUrls": [
+                                  "https://cdn-url/2d-map/1/overlay-images/1-사과.jpeg",
+                                  "https://cdn-url/2d-map/1/overlay-images/1-배1.png"
+                              ]
                             },
                             {
                               "gymId": 3,
@@ -243,7 +259,11 @@ public interface GymApiDocumentation {
                               "longitude": 127.0396,
                               "address": "서울시 강남구 역삼로 789",
                               "phoneNumber": "02-5555-1234",
-                              "map2DUrl": "https://example.com/map/gym3"
+                              "baseMapUrl": "https://cdn-url/2d-map/1/base-images/1-base.png",
+                              "overlayMapUrls": [
+                                  "https://cdn-url/2d-map/1/overlay-images/1-사과.jpeg",
+                                  "https://cdn-url/2d-map/1/overlay-images/1-배1.png"
+                              ]
                             }
                           ]
                         }

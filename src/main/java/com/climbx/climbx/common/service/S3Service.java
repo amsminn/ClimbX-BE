@@ -12,6 +12,10 @@ import com.climbx.climbx.video.exception.FileExtensionNotExistsException;
 import com.github.benmanes.caffeine.cache.Cache;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +27,9 @@ import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -47,6 +53,9 @@ public class S3Service {
 
     @Value("${aws.s3.problem-image-bucket-name}")
     private String problemImageBucketName;
+
+    @Value("${aws.s3.climbing-gym-image-bucket-name}")
+    private String climbingGymImageBucketName;
 
     @Value("${aws.s3.presigned-url-expiration}")
     private long presignedUrlExpiration;
@@ -172,6 +181,102 @@ public class S3Service {
         }
     }
 
+    /**
+     * 클라이밍장 2D 맵 이미지들을 S3에 업로드하고 map2dImageCdnUrl을 반환
+     */
+    public String uploadGym2dMapImages(
+        Long gymId,
+        MultipartFile map2dImage
+    ) {
+        log.info("Uploading gym 2D map images: gymId={}, map2dImage={}",
+            gymId, map2dImage.getOriginalFilename());
+
+        // 버킷 이름이 설정되어 있지 않으면 예외 발생
+        if (climbingGymImageBucketName == null || climbingGymImageBucketName.isEmpty()) {
+            log.error("Climbing gym image S3 bucket name is not configured");
+            throw new AwsBucketNameNotConfiguredException(
+                ErrorCode.S3_BUCKET_NAME_NOT_CONFIGURED,
+                "Climbing gym image S3 bucket name is not configured."
+            );
+        }
+
+        // 버킷 존재 여부 확인
+        ensureBucketExists(climbingGymImageBucketName);
+
+        // 입력값 검증
+        if (map2dImage == null || map2dImage.isEmpty()) {
+            log.warn("Map 2D image file cannot be null or empty");
+            throw new BusinessException(ErrorCode.INVALID_REQUEST,
+                "Map 2D image file cannot be null or empty");
+        }
+
+        try {
+            // Base 이미지 업로드
+            String map2dImageKey = FileUploadUtils.generateGymMap2dImageKey(gymId,
+                map2dImage.getOriginalFilename());
+
+            uploadFileToS3(climbingGymImageBucketName, map2dImageKey, map2dImage);
+
+            String map2dImageCdnUrl = generateCdnUrl(map2dImageKey);
+
+            log.info("Successfully uploaded gym 2D map images: gymId={}, map2dImageCdnUrl={}",
+                gymId, map2dImageCdnUrl);
+
+            return map2dImageCdnUrl;
+
+        } catch (IOException e) {
+            log.error("Failed to read gym 2D map image files: gymId={}", gymId, e);
+            throw new BusinessException(
+                ErrorCode.INTERNAL_ERROR, "Failed to read gym 2D map image files");
+        }
+    }
+
+    /*
+     * 클라이밍장 벽 2D 사진을 S3에 업로드하고 Map으로 반환
+     */
+    public Map<Long, String> uploadGymAreaImages(
+        Long gymId,
+        Map<Long, MultipartFile> areaImages
+    ) {
+        if (climbingGymImageBucketName == null || climbingGymImageBucketName.isEmpty()) {
+            log.error("Climbing gym image S3 bucket name is not configured");
+            throw new AwsBucketNameNotConfiguredException(
+                ErrorCode.S3_BUCKET_NAME_NOT_CONFIGURED,
+                "Climbing gym image S3 bucket name is not configured."
+            );
+        }
+
+        // 버킷 존재 여부 확인
+        ensureBucketExists(climbingGymImageBucketName);
+
+        List<String> uploadedImageKeys = new ArrayList<>();     // 업로드가 성공한 이미지 키들을 저장할 리스트(실패 시 롤백 용도)
+        Map<Long, String> areaImageCdnUrls = new HashMap<>();
+        try {
+            for (Map.Entry<Long, MultipartFile> entry : areaImages.entrySet()) {
+                Long areaId = entry.getKey();
+                MultipartFile areaImage = entry.getValue();
+
+                String extension = extractFileExtension(areaImage.getOriginalFilename());
+                String areaImageKey = FileUploadUtils.generateGymAreaImageKey(gymId, areaId,
+                    extension);
+
+                uploadFileToS3(climbingGymImageBucketName, areaImageKey, areaImage);
+                uploadedImageKeys.add(areaImageKey);  // Area 이미지 키를 업로드 리스트에 추가
+
+                String areaImageCdnUrl = generateCdnUrl(areaImageKey);
+                areaImageCdnUrls.put(areaId, areaImageCdnUrl);
+            }
+
+            return areaImageCdnUrls;
+
+        } catch (IOException e) {
+            log.error("Failed to read gym area map image files: gymId={}", gymId, e);
+            cleanUpUploadedFiles(climbingGymImageBucketName, uploadedImageKeys);
+            throw new BusinessException(
+                ErrorCode.INTERNAL_ERROR, "Failed to read gym area map image files");
+        }
+    }
+
     private void ensureBucketExists(String bucketName) {
         if (existingBuckets.getIfPresent(bucketName) == null) {
             log.debug("Bucket '{}' not found in cache, checking existence", bucketName);
@@ -202,6 +307,25 @@ public class S3Service {
 
         s3Client.putObject(putObjectRequest, requestBody);
         log.debug("File uploaded to S3 bucket {} successfully: {}", bucketName, s3Key);
+    }
+
+    private void cleanUpUploadedFiles(String bucketName, List<String> uploadedImageKeys) {
+        log.info("S3에서 파일 삭제를 시도합니다. Key: {}", uploadedImageKeys.toString());
+
+        for (String uploadedImageKey : uploadedImageKeys) {
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                .bucket(bucketName)
+                .key(uploadedImageKey)
+                .build();
+            try {
+                s3Client.deleteObject(deleteObjectRequest);
+                log.info("S3에서 파일을 성공적으로 삭제했습니다. Key: {}", uploadedImageKey);
+            } catch (S3Exception e) {
+                log.error("S3 파일 삭제 중 오류가 발생했습니다. Key: {}", uploadedImageKey, e);
+                // 필요에 따라 사용자 정의 예외를 던질 수 있습니다.
+                throw new BusinessException(ErrorCode.S3_FILE_DELETE_FAILED, "S3 파일 삭제에 실패했습니다.");
+            }
+        }
     }
 
     private String generateCdnUrl(String s3Key) {
