@@ -124,6 +124,6 @@ public class RatingUtil {
             weightSum += weight;
         }
 
-        return (int) Math.round(weightedTierSum / voteTiers.size());
+        return (int) Math.round(weightedTierSum / weightSum);
     }
 }
