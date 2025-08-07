@@ -19,7 +19,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-@SQLRestriction("deleted_at IS NOT NULL")
+@SQLRestriction("deleted_at IS NULL")
 public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UUID> {
 
     /**
