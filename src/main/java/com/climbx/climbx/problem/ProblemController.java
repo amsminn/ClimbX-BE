@@ -7,6 +7,7 @@ import com.climbx.climbx.problem.dto.ContributionResponseDto;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.service.ProblemService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -94,14 +95,12 @@ public class ProblemController implements ProblemApiDocumentation {
         UUID problemId,
 
         @RequestBody
-        @Valid
         ContributionRequestDto voteRequest
     ) {
         log.info("문제 투표: userId={}, problemId={}, tier={}, tags={}", userId, problemId,
             voteRequest.tier(), voteRequest.tags());
         return problemService.voteProblem(userId, problemId, voteRequest);
     }
-}
 
     @GetMapping("/{problemId}/votes")
     @SuccessStatus(value = HttpStatus.OK)

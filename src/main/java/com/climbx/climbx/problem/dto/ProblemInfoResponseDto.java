@@ -20,8 +20,7 @@ public record ProblemInfoResponseDto(
     String localLevel,
     String holdColor,
     ProblemTierType tier,
-    Integer problemRating,
-    ProblemTierType problemTier,
+    Integer rating,
     String problemImageCdnUrl,
     ActiveStatusType activeStatus,
     LocalDateTime createdAt
@@ -41,8 +40,7 @@ public record ProblemInfoResponseDto(
             .localLevel(problem.localLevel())
             .holdColor(problem.holdColor())
             .tier(problem.tier() == null ? ProblemTierType.B3 : problem.tier())
-            .problemRating(problem.problemRating())
-            .problemTier(problem.problemTier())
+            .rating(problem.rating())
             .problemImageCdnUrl(problem.problemImageCdnUrl())
             .activeStatus(problem.activeStatus())
             .createdAt(problem.createdAt())

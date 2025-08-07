@@ -36,8 +36,8 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
             ga.areaName,
             p.localLevel,
             p.holdColor,
-            p.problemRating,
-            p.problemTier,
+            p.tier,
+            p.rating,
             p.problemImageCdnUrl,
             p.activeStatus,
             p.createdAt
@@ -45,11 +45,11 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
         FROM SubmissionEntity s
         JOIN s.videoEntity v
         JOIN s.problemEntity p
-        JOIN p.gym g
+        JOIN p.gymEntity g
         JOIN p.gymArea ga
         WHERE v.userId = :userId
           AND s.status = :status
-        ORDER BY p.problemRating DESC
+        ORDER BY p.rating DESC
         """)
     List<ProblemInfoResponseDto> getUserTopProblems(
         @Param("userId") Long userId,
@@ -111,12 +111,12 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
         JOIN FETCH s.videoEntity v
         JOIN FETCH v.userAccountEntity u
         JOIN FETCH s.problemEntity p
-        JOIN FETCH p.gym g
+        JOIN FETCH p.gymEntity g
         WHERE (:userId IS NULL OR v.userId = :userId)
           AND (:problemId IS NULL OR p.problemId = :problemId)
           AND (:holdColor IS NULL OR p.holdColor = :holdColor)
-          AND (:ratingFrom IS NULL OR p.problemRating >= :ratingFrom)
-          AND (:ratingTo IS NULL OR p.problemRating <= :ratingTo)
+          AND (:ratingFrom IS NULL OR p.rating >= :ratingFrom)
+          AND (:ratingTo IS NULL OR p.rating <= :ratingTo)
         """)
     Page<SubmissionEntity> findSubmissionsWithFilters(
         @Param("userId") Long userId,
@@ -130,7 +130,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
     // 1) Primary 만
     @Query("""
           SELECT new com.climbx.climbx.submission.dto.TagRatingPairDto(
-                p.primaryTag, p.problemRating
+                p.primaryTag, p.rating
             )
           FROM SubmissionEntity s
           JOIN s.videoEntity v
@@ -145,7 +145,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
     // 2) Secondary 만
     @Query("""
           SELECT new com.climbx.climbx.submission.dto.TagRatingPairDto(
-                p.secondaryTag, p.problemRating
+                p.secondaryTag, p.rating
             )
           FROM SubmissionEntity s
           JOIN s.videoEntity v

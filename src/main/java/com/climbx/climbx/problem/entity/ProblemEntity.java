@@ -5,6 +5,7 @@ import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.problem.enums.ProblemTagType;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +18,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,7 +41,7 @@ public class ProblemEntity extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id", nullable = false)
-    private GymEntity gym;
+    private GymEntity gymEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_area_id", nullable = false)
@@ -57,11 +59,11 @@ public class ProblemEntity extends BaseTimeEntity {
     @Column(name = "problem_rating") // Todo nullable = false
     @Min(value = 0)
     @Max(value = 30)
-    private Integer problemRating; // 문제 난이도
+    private Integer rating = 0; // 문제 난이도
 
     @Enumerated(EnumType.STRING)
     @Column(name = "problem_tier", length = 16) // Todo nullable = false
-    private ProblemTierType problemTier;
+    private ProblemTierType tier;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "primary_tag", length = 16)
@@ -84,7 +86,7 @@ public class ProblemEntity extends BaseTimeEntity {
         ProblemTierType newTier,
         List<ProblemTagType> newTags
     ) {
-        this.problemRating = newRating;
+        this.rating = newRating;
         this.tier = newTier;
         this.primaryTag = !newTags.isEmpty() ? newTags.getFirst() : null;
         this.secondaryTag = newTags.size() > 1 ? newTags.get(1) : null;

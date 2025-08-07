@@ -6,7 +6,7 @@ import com.climbx.climbx.problem.dto.ContributionRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
-import com.climbx.climbx.problem.dto.ProblemVoteRequestDto;
+import com.climbx.climbx.problem.enums.ProblemTierType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

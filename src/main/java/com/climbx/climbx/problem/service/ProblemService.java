@@ -5,15 +5,18 @@ import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.exception.InvalidParameterException;
 import com.climbx.climbx.common.service.S3Service;
+import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.repository.GymAreaRepository;
+import com.climbx.climbx.problem.dto.ContributionRequestDto;
+import com.climbx.climbx.problem.dto.ContributionResponseDto;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.ContributionEntity;
 import com.climbx.climbx.problem.entity.ContributionTagEnitty;
-import com.climbx.climbx.problem.entity.GymAreaEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
-import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.entity.ProblemTagEntity;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
@@ -21,7 +24,6 @@ import com.climbx.climbx.problem.exception.ForbiddenProblemVoteException;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.ContributionRepository;
 import com.climbx.climbx.problem.repository.ContributionTagRepository;
-import com.climbx.climbx.problem.repository.GymAreaRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import com.climbx.climbx.problem.repository.ProblemTagRepository;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
@@ -97,11 +99,11 @@ public class ProblemService {
         // Problem 엔티티 생성
         ProblemEntity problem = ProblemEntity.builder()
             .problemId(problemId)
-            .gym(gym)
+            .gymEntity(gym)
             .gymArea(gymArea)
             .localLevel(request.localLevel())
             .holdColor(request.holdColor())
-            // Todo .problemRating()
+            // Todo .rating()
             .problemImageCdnUrl(imageCdnUrl)
             .activeStatus(ActiveStatusType.ACTIVE)
             .build();
@@ -193,7 +195,7 @@ public class ProblemService {
                     StatusType.ACCEPTED,
                     Pageable.ofSize(50)
                 ).stream()
-                .map(ProblemEntity::problemRating)
+                .map(ProblemInfoResponseDto::rating)
                 .toList(),
             userStat.submissionCount(),
             userStat.solvedCount(),
@@ -208,7 +210,7 @@ public class ProblemService {
         log.info("user {} new rating: {}, new tier: {}", user.userId(), newUserRating,
             UserTierType.fromValue(newUserRating));
 
-        return ProblemInfoResponseDto.from(problem, problem.gym().gymId(), problem.gymArea());
+        return ProblemInfoResponseDto.from(problem, problem.gymEntity(), problem.gymArea());
     }
 
     public List<ContributionResponseDto> getProblemVotes(

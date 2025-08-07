@@ -29,16 +29,16 @@ public class ProblemFixture {
     ) {
         return ProblemEntity.builder()
             .problemId(problemId)
-            .gym(gym)
+            .gymEntity(gym)
             .gymArea(gymArea)
             .localLevel(localLevel)
             .holdColor(holdColor)
-            .problemRating(problemRating)
+            .rating(problemRating)
             .problemImageCdnUrl(DEFAULT_IMAGE_URL)
             .build();
     }
 
-    public static ProblemDetailsResponseDto createProblemResponseDto(
+    public static ProblemInfoResponseDto createProblemResponseDto(
         UUID problemId,
         Long gymId,
         String gymName,
@@ -46,7 +46,7 @@ public class ProblemFixture {
         String gymAreaName,
         String localLevel,
         String holdColor,
-        Integer problemRating
+        Integer rating
     ) {
         return ProblemInfoResponseDto.builder()
             .problemId(problemId)
@@ -56,7 +56,7 @@ public class ProblemFixture {
             .gymAreaName(gymAreaName)
             .localLevel(localLevel)
             .holdColor(holdColor)
-            .problemRating(problemRating)
+            .rating(rating)
             .problemImageCdnUrl(DEFAULT_IMAGE_URL)
             .build();
     }
