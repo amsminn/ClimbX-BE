@@ -1,4 +1,4 @@
-package com.climbx.climbx.common.dto;
+package com.climbx.climbx.problem.dto;
 
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import java.time.LocalDateTime;

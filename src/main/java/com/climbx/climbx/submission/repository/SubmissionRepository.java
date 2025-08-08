@@ -2,7 +2,7 @@ package com.climbx.climbx.submission.repository;
 
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
-import com.climbx.climbx.submission.dto.TagRatingPairDto;
+import com.climbx.climbx.problem.dto.TagRatingPairDto;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import java.time.LocalDate;
@@ -129,7 +129,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
 
     // 1) Primary 만
     @Query("""
-          SELECT new com.climbx.climbx.submission.dto.TagRatingPairDto(
+          SELECT new com.climbx.climbx.problem.dto.TagRatingPairDto(
                 p.primaryTag, p.rating
             )
           FROM SubmissionEntity s
@@ -144,7 +144,7 @@ public interface SubmissionRepository extends JpaRepository<SubmissionEntity, UU
 
     // 2) Secondary 만
     @Query("""
-          SELECT new com.climbx.climbx.submission.dto.TagRatingPairDto(
+          SELECT new com.climbx.climbx.problem.dto.TagRatingPairDto(
                 p.secondaryTag, p.rating
             )
           FROM SubmissionEntity s

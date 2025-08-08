@@ -1,9 +1,9 @@
 package com.climbx.climbx.common.util;
 
-import com.climbx.climbx.common.dto.VoteTierDto;
+import com.climbx.climbx.problem.dto.TagRatingPairDto;
+import com.climbx.climbx.problem.dto.VoteTierDto;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
-import com.climbx.climbx.submission.dto.TagRatingPairDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
 import java.time.Duration;
 import java.time.LocalDateTime;
