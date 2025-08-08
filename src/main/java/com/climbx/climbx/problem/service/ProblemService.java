@@ -29,8 +29,6 @@ import com.climbx.climbx.problem.repository.ProblemTagRepository;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.entity.UserAccountEntity;
-import com.climbx.climbx.user.entity.UserStatEntity;
-import com.climbx.climbx.user.enums.UserTierType;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import java.util.List;
@@ -189,28 +187,6 @@ public class ProblemService {
             newProblemTier,
             primary2tags
         );
-
-        UserStatEntity userStat = user.userStatEntity();
-        Integer newUserRating = ratingUtil.calculateUserRating(
-            submissionRepository.getUserTopProblems(
-                    user.userId(),
-                    StatusType.ACCEPTED,
-                    Pageable.ofSize(50)
-                ).stream()
-                .map(ProblemInfoResponseDto::rating)
-                .toList(),
-            userStat.submissionCount(),
-            userStat.solvedCount(),
-            userStat.contributionCount()
-        );
-
-        log.info("user {} prev rating: {}, prev tier: {}", user.userId(), newUserRating,
-            UserTierType.fromValue(newUserRating));
-
-        userStat.setRating(newUserRating);
-
-        log.info("user {} new rating: {}, new tier: {}", user.userId(), newUserRating,
-            UserTierType.fromValue(newUserRating));
 
         return ProblemInfoResponseDto.from(problem, problem.gymEntity(), problem.gymArea());
     }
