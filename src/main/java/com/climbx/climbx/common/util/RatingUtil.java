@@ -1,7 +1,6 @@
 package com.climbx.climbx.common.util;
 
-import com.climbx.climbx.auth.dto.VoteTierDto;
-import com.climbx.climbx.common.dto.TierDefinitionDto;
+import com.climbx.climbx.common.dto.VoteTierDto;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.submission.dto.TagRatingPairDto;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Component;
 public class RatingUtil {
 
     static final int CATEGORY_TYPE_LIMIT = 8;
-    private final List<TierDefinitionDto> tierList;
 
     public int calculateUserRating(
         List<Integer> topProblemRatings,

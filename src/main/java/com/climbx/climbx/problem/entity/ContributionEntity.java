@@ -1,6 +1,6 @@
 package com.climbx.climbx.problem.entity;
 
-import com.climbx.climbx.auth.dto.VoteTierDto;
+import com.climbx.climbx.common.dto.VoteTierDto;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.user.entity.UserAccountEntity;
