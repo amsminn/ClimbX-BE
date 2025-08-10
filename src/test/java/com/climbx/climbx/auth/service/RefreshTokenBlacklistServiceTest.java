@@ -74,7 +74,8 @@ class RefreshTokenBlacklistServiceTest {
         @DisplayName("null, 빈 문자열, 공백만 있는 토큰으로 검증 시 InvalidTokenException을 던진다")
         void shouldThrowInvalidTokenExceptionWhenTokenIsInvalid(String token) {
             // when & then
-            assertThatThrownBy(() -> refreshTokenBlacklistService.validateTokenNotBlacklisted(token))
+            assertThatThrownBy(
+                () -> refreshTokenBlacklistService.validateTokenNotBlacklisted(token))
                 .isInstanceOf(InvalidTokenException.class)
                 .hasMessage("유효하지 않은 토큰입니다.");
 

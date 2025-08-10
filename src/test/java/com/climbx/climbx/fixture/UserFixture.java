@@ -1,7 +1,7 @@
 package com.climbx.climbx.fixture;
 
-import static org.mockito.BDDMockito.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
 import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.common.enums.RoleType;
@@ -10,12 +10,12 @@ import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserRankingHistoryEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
-import com.climbx.climbx.user.repository.UserStatRepository;
-import java.util.Optional;
 import com.climbx.climbx.user.enums.UserTierType;
+import com.climbx.climbx.user.repository.UserStatRepository;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class UserFixture {
 
@@ -196,7 +196,8 @@ public class UserFixture {
         given(userStatRepository.findByUserId(userId))
             .willReturn(Optional.of(stat));
         given(
-            userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating, stat.updatedAt(), userId)
+            userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating, stat.updatedAt(),
+                userId)
         ).willReturn(expectedRank);
         return stat;
     }
@@ -218,7 +219,8 @@ public class UserFixture {
         given(userStatRepository.findByUserId(userId))
             .willReturn(Optional.of(userStatEntity));
         given(
-            userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating, userStatEntity.updatedAt(), userId)
+            userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating,
+                userStatEntity.updatedAt(), userId)
         ).willReturn(expectedRank);
         return userStatEntity;
     }
@@ -236,7 +238,8 @@ public class UserFixture {
             int rank = ranks.length > i ? ranks[i] : DEFAULT_RANKING;
             UserStatEntity stat = createUserStatEntity(userId, rating);
             given(userStatRepository.findByUserId(userId)).willReturn(Optional.of(stat));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating, stat.updatedAt(), userId))
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating, stat.updatedAt(),
+                userId))
                 .willReturn(rank);
         }
     }
