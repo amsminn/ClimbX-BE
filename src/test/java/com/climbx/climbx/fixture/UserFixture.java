@@ -1,5 +1,8 @@
 package com.climbx.climbx.fixture;
 
+import static org.mockito.BDDMockito.given;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -7,9 +10,12 @@ import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserRankingHistoryEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
+import com.climbx.climbx.user.repository.UserStatRepository;
+import java.util.Optional;
 import com.climbx.climbx.user.enums.UserTierType;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 
 public class UserFixture {
 
@@ -177,6 +183,81 @@ public class UserFixture {
             .contributionCount(0)
             .rivalCount(rivalCount)
             .build();
+    }
+
+    // Stubbing helpers to reduce repetition in tests
+    public static UserStatEntity stubUserStatAndRank(
+        UserStatRepository userStatRepository,
+        Long userId,
+        Integer rating,
+        Integer expectedRank
+    ) {
+        UserStatEntity stat = createUserStatEntity(userId, rating);
+        given(userStatRepository.findByUserId(userId))
+            .willReturn(Optional.of(stat));
+        given(
+            userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating, stat.updatedAt(), userId)
+        ).willReturn(expectedRank);
+        return stat;
+    }
+
+    public static UserStatEntity stubUserStatAndRank(
+        UserStatRepository userStatRepository,
+        Long userId
+    ) {
+        return stubUserStatAndRank(userStatRepository, userId, DEFAULT_RATING, DEFAULT_RANKING);
+    }
+
+    public static UserStatEntity stubUserStatAndRank(
+        UserStatRepository userStatRepository,
+        UserStatEntity userStatEntity,
+        Integer expectedRank
+    ) {
+        Long userId = userStatEntity.userId();
+        Integer rating = userStatEntity.rating();
+        given(userStatRepository.findByUserId(userId))
+            .willReturn(Optional.of(userStatEntity));
+        given(
+            userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating, userStatEntity.updatedAt(), userId)
+        ).willReturn(expectedRank);
+        return userStatEntity;
+    }
+
+    // Batch stubbing helper for user stats and ranks
+    public static void stubStatsFor(
+        UserStatRepository userStatRepository,
+        List<UserAccountEntity> accounts,
+        int[] ratings,
+        int[] ranks
+    ) {
+        for (int i = 0; i < accounts.size(); i++) {
+            Long userId = accounts.get(i).userId();
+            int rating = ratings.length > i ? ratings[i] : DEFAULT_RATING;
+            int rank = ranks.length > i ? ranks[i] : DEFAULT_RANKING;
+            UserStatEntity stat = createUserStatEntity(userId, rating);
+            given(userStatRepository.findByUserId(userId)).willReturn(Optional.of(stat));
+            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(rating, stat.updatedAt(), userId))
+                .willReturn(rank);
+        }
+    }
+
+    public static void stubStatsFor(
+        UserStatRepository userStatRepository,
+        List<UserAccountEntity> accounts
+    ) {
+        stubStatsFor(userStatRepository, accounts, new int[0], new int[0]);
+    }
+
+    // Assertion helper for user profile
+    public static void assertUserProfile(
+        UserProfileResponseDto actual,
+        String expectedNickname,
+        int expectedRating,
+        int expectedRanking
+    ) {
+        assertThat(actual.nickname()).isEqualTo(expectedNickname);
+        assertThat(actual.rating()).isEqualTo((long) expectedRating);
+        assertThat(actual.ranking()).isEqualTo((long) expectedRanking);
     }
 
     // DailyHistoryResponseDto 생성 메서드들

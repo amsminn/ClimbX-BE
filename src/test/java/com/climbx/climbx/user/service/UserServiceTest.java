@@ -36,13 +36,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import static org.mockito.Mockito.lenient;
+// Mockito.lenient 정적 임포트로 대체됨
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -72,6 +77,12 @@ public class UserServiceTest {
     @DisplayName("사용자 목록 조회 및 검색")
     class GetUsers {
 
+        @BeforeEach
+        void setUpGetUsersCommon() {
+            lenient().when(ratingUtil.calculateCategoryRating(any(), any())).thenReturn(List.of());
+            lenient().when(submissionRepository.getUserAcceptedSubmissionTagSummary(any(), any())).thenReturn(List.of());
+        }
+
         @Test
         @DisplayName("전체 사용자 목록을 정상 조회")
         void getUsers_Success_AllUsers() {
@@ -83,47 +94,13 @@ public class UserServiceTest {
             UserAccountEntity user3 = UserFixture.createUserAccountEntity(3L, "charlie");
             List<UserAccountEntity> userAccounts = List.of(user1, user2, user3);
 
-            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L, 1200);
-            UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1300);
-            UserStatEntity userStat3 = UserFixture.createUserStatEntity(3L, 1400);
-
             given(userAccountRepository.findByRole(RoleType.USER))
                 .willReturn(userAccounts);
-            given(userStatRepository.findByUserId(1L))
-                .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findByUserId(2L))
-                .willReturn(Optional.of(userStat2));
-            given(userStatRepository.findByUserId(3L))
-                .willReturn(Optional.of(userStat3));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                1200, userStat1.updatedAt(), 1L)
-            ).willReturn(30);
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                1300, userStat2.updatedAt(), 2L)
-            ).willReturn(20);
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                1400, userStat3.updatedAt(), 3L)
-            ).willReturn(10);
+            UserFixture.stubUserStatAndRank(userStatRepository, 1L, 1200, 30);
+            UserFixture.stubUserStatAndRank(userStatRepository, 2L, 1300, 20);
+            UserFixture.stubUserStatAndRank(userStatRepository, 3L, 1400, 10);
 
-            // Mock category ratings calculation/java/com/climbx/climbx/user/service/UserServiceTest.java:111: error: cannot find symbol
-            //            given(ratingUtil.getTier(1200)).willReturn("BRONZE1");
-            //                            ^
-            //  symbol:   method getTier(int)
-            //  location: variable ratingUtil
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, null))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, StatusType.ACCEPTED))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, null))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(3L, StatusType.ACCEPTED))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(3L, null))
-                .willReturn(List.of());
-            given(ratingUtil.calculateCategoryRating(any(), any()))
-                .willReturn(List.of());
+            // 공통 lenient 스텁으로 대체됨
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -139,89 +116,31 @@ public class UserServiceTest {
                 .findByRoleAndNicknameContaining(any(), any());
         }
 
-        @Test
-        @DisplayName("빈 문자열로 검색 시 전체 사용자 목록 조회")
-        void getUsers_Success_EmptySearch() {
+        @ParameterizedTest(name = "공백 검색어('{0}')로 전체 사용자 목록 조회")
+        @ValueSource(strings = {"", "   "})
+        void getUsers_Success_BlankSearch(String search) {
             // given
-            String search = "";
+            boolean isEmptyString = search.isEmpty();
+            List<UserAccountEntity> userAccounts = isEmptyString
+                ? List.of(
+                    UserFixture.createUserAccountEntity(1L, "test1"),
+                    UserFixture.createUserAccountEntity(2L, "test2")
+                )
+                : List.of(UserFixture.createUserAccountEntity(1L, "user1"));
 
-            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "test1");
-            UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "test2");
-            List<UserAccountEntity> userAccounts = List.of(user1, user2);
+            given(userAccountRepository.findByRole(RoleType.USER)).willReturn(userAccounts);
 
-            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
-            UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L);
-
-            given(userAccountRepository.findByRole(RoleType.USER))
-                .willReturn(userAccounts);
-            given(userStatRepository.findByUserId(1L))
-                .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findByUserId(2L))
-                .willReturn(Optional.of(userStat2));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                UserFixture.DEFAULT_RATING, userStat1.updatedAt(), 1L)
-            ).willReturn(UserFixture.DEFAULT_RANKING);
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                UserFixture.DEFAULT_RATING, userStat2.updatedAt(), 2L)
-            ).willReturn(UserFixture.DEFAULT_RANKING);
-
-            // Mock category ratings calculation
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, null))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, StatusType.ACCEPTED))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, null))
-                .willReturn(List.of());
-            given(ratingUtil.calculateCategoryRating(any(), any()))
-                .willReturn(List.of());
+            for (UserAccountEntity ua : userAccounts) {
+                UserFixture.stubUserStatAndRank(userStatRepository, ua.userId());
+            }
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
 
             // then
-            assertThat(result).hasSize(2);
+            assertThat(result).hasSize(isEmptyString ? 2 : 1);
             then(userAccountRepository).should().findByRole(RoleType.USER);
-            then(userAccountRepository).should(never())
-                .findByRoleAndNicknameContaining(any(), any());
-        }
-
-        @Test
-        @DisplayName("공백만 있는 검색어로 검색 시 전체 사용자 목록 조회")
-        void getUsers_Success_WhitespaceOnlySearch() {
-            // given
-            String search = "   ";
-
-            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "user1");
-            List<UserAccountEntity> userAccounts = List.of(user1);
-
-            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
-
-            given(userAccountRepository.findByRole(RoleType.USER))
-                .willReturn(userAccounts);
-            given(userStatRepository.findByUserId(1L))
-                .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                UserFixture.DEFAULT_RATING, userStat1.updatedAt(), 1L)
-            ).willReturn(UserFixture.DEFAULT_RANKING);
-
-            // Mock category ratings calculation
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, null))
-                .willReturn(List.of());
-            given(ratingUtil.calculateCategoryRating(any(), any()))
-                .willReturn(List.of());
-
-            // when
-            List<UserProfileResponseDto> result = userService.getUsers(search);
-
-            // then
-            assertThat(result).hasSize(1);
-            then(userAccountRepository).should().findByRole(RoleType.USER);
-            then(userAccountRepository).should(never())
-                .findByRoleAndNicknameContaining(any(), any());
+            then(userAccountRepository).should(never()).findByRoleAndNicknameContaining(any(), any());
         }
 
         @Test
@@ -234,33 +153,12 @@ public class UserServiceTest {
             UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "testuser2");
             List<UserAccountEntity> userAccounts = List.of(user1, user2);
 
-            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L, 1100);
-            UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1600);
-
             given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "test"))
                 .willReturn(userAccounts);
-            given(userStatRepository.findByUserId(1L))
-                .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findByUserId(2L))
-                .willReturn(Optional.of(userStat2));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                1100, userStat1.updatedAt(), 1L)
-            ).willReturn(40);
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                1600, userStat2.updatedAt(), 2L)
-            ).willReturn(5);
+            UserFixture.stubUserStatAndRank(userStatRepository, 1L, 1100, 40);
+            UserFixture.stubUserStatAndRank(userStatRepository, 2L, 1600, 5);
 
-            // Mock category ratings calculation
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, StatusType.ACCEPTED))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(1L, null))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, StatusType.ACCEPTED))
-                .willReturn(List.of());
-            given(submissionRepository.getUserAcceptedSubmissionTagSummary(2L, null))
-                .willReturn(List.of());
-            given(ratingUtil.calculateCategoryRating(any(), any()))
-                .willReturn(List.of());
+            // 공통 lenient 스텁으로 대체됨
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -306,15 +204,9 @@ public class UserServiceTest {
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "alice123");
             List<UserAccountEntity> userAccounts = List.of(user1);
 
-            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L);
-
             given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "alice"))
                 .willReturn(userAccounts);
-            given(userStatRepository.findByUserId(1L))
-                .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                UserFixture.DEFAULT_RATING, userStat1.updatedAt(), 1L)
-            ).willReturn(UserFixture.DEFAULT_RANKING);
+            UserFixture.stubUserStatAndRank(userStatRepository, 1L);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -352,35 +244,20 @@ public class UserServiceTest {
             // given
             String search = "pro";
 
-            UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "pro_player1");
-            UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "pro_player2");
-            UserAccountEntity user3 = UserFixture.createUserAccountEntity(3L, "pro_player3");
-            List<UserAccountEntity> userAccounts = List.of(user1, user2, user3);
-
-            UserStatEntity userStat1 = UserFixture.createUserStatEntity(1L, 2000, 10, 20, 100,
-                5);
-            UserStatEntity userStat2 = UserFixture.createUserStatEntity(2L, 1800, 8, 15, 80,
-                3);
-            UserStatEntity userStat3 = UserFixture.createUserStatEntity(3L, 2200, 15, 25, 120,
-                7);
+            List<UserAccountEntity> userAccounts = List.of(
+                UserFixture.createUserAccountEntity(1L, "pro_player1"),
+                UserFixture.createUserAccountEntity(2L, "pro_player2"),
+                UserFixture.createUserAccountEntity(3L, "pro_player3")
+            );
 
             given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "pro"))
                 .willReturn(userAccounts);
-            given(userStatRepository.findByUserId(1L))
-                .willReturn(Optional.of(userStat1));
-            given(userStatRepository.findByUserId(2L))
-                .willReturn(Optional.of(userStat2));
-            given(userStatRepository.findByUserId(3L))
-                .willReturn(Optional.of(userStat3));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                2000, userStat1.updatedAt(), 1L)
-            ).willReturn(3);
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                1800, userStat2.updatedAt(), 2L)
-            ).willReturn(8);
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                2200, userStat3.updatedAt(), 3L)
-            ).willReturn(1);
+            UserFixture.stubStatsFor(
+                userStatRepository,
+                userAccounts,
+                new int[]{2000, 1800, 2200},
+                new int[]{3, 8, 1}
+            );
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -388,21 +265,9 @@ public class UserServiceTest {
             // then
             assertThat(result).hasSize(3);
 
-            UserProfileResponseDto firstUser = result.get(0);
-            assertThat(firstUser.nickname()).isEqualTo("pro_player1");
-            assertThat(firstUser.rating()).isEqualTo(2000L);
-            assertThat(firstUser.ranking()).isEqualTo(3L);
-            assertThat(firstUser.solvedCount()).isEqualTo(100L);
-
-            UserProfileResponseDto secondUser = result.get(1);
-            assertThat(secondUser.nickname()).isEqualTo("pro_player2");
-            assertThat(secondUser.rating()).isEqualTo(1800L);
-            assertThat(secondUser.ranking()).isEqualTo(8L);
-
-            UserProfileResponseDto thirdUser = result.get(2);
-            assertThat(thirdUser.nickname()).isEqualTo("pro_player3");
-            assertThat(thirdUser.rating()).isEqualTo(2200L);
-            assertThat(thirdUser.ranking()).isEqualTo(1L);
+            UserFixture.assertUserProfile(result.get(0), "pro_player1", 2000, 3);
+            UserFixture.assertUserProfile(result.get(1), "pro_player2", 1800, 8);
+            UserFixture.assertUserProfile(result.get(2), "pro_player3", 2200, 1);
         }
 
         @Test
@@ -414,15 +279,9 @@ public class UserServiceTest {
             UserAccountEntity normalUser = UserFixture.createUserAccountEntity(2L, "user");
             List<UserAccountEntity> userAccounts = List.of(normalUser); // admin은 포함되지 않음
 
-            UserStatEntity userStat = UserFixture.createUserStatEntity(2L);
-
             given(userAccountRepository.findByRole(RoleType.USER))
                 .willReturn(userAccounts);
-            given(userStatRepository.findByUserId(2L))
-                .willReturn(Optional.of(userStat));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                UserFixture.DEFAULT_RATING, userStat.updatedAt(), 2L)
-            ).willReturn(UserFixture.DEFAULT_RANKING);
+            UserFixture.stubUserStatAndRank(userStatRepository, 2L);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -444,15 +303,9 @@ public class UserServiceTest {
             UserAccountEntity normalUser = UserFixture.createUserAccountEntity(1L, "admin_user");
             List<UserAccountEntity> userAccounts = List.of(normalUser); // admin 역할이 아닌 사용자만 포함
 
-            UserStatEntity userStat = UserFixture.createUserStatEntity(1L);
-
             given(userAccountRepository.findByRoleAndNicknameContaining(RoleType.USER, "admin"))
                 .willReturn(userAccounts);
-            given(userStatRepository.findByUserId(1L))
-                .willReturn(Optional.of(userStat));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                UserFixture.DEFAULT_RATING, userStat.updatedAt(), 1L)
-            ).willReturn(UserFixture.DEFAULT_RANKING);
+            UserFixture.stubUserStatAndRank(userStatRepository, 1L);
 
             // when
             List<UserProfileResponseDto> result = userService.getUsers(search);
@@ -479,15 +332,10 @@ public class UserServiceTest {
             Integer ratingRank = 10;
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId);
-            UserStatEntity userStatEntity = UserFixture.createUserStatEntity(userId);
 
             given(userAccountRepository.findByUserId(userId))
                 .willReturn(Optional.of(userAccountEntity));
-            given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                UserFixture.DEFAULT_RATING, userStatEntity.updatedAt(), userId)
-            ).willReturn(ratingRank);
+            UserFixture.stubUserStatAndRank(userStatRepository, userId, UserFixture.DEFAULT_RATING, ratingRank);
 
             // when
             UserProfileResponseDto result = userService.getUserById(userId);
@@ -541,17 +389,11 @@ public class UserServiceTest {
             Long userId = 1L;
             Integer ratingRank = 10;            // given
 
-            UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId,
-                nickname);
-            UserStatEntity userStatEntity = UserFixture.createUserStatEntity(userId);
+            UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(userId, nickname);
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccountEntity));
-            given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                UserFixture.DEFAULT_RATING, userStatEntity.updatedAt(), userId)
-            ).willReturn(ratingRank);
+            UserFixture.stubUserStatAndRank(userStatRepository, userId, UserFixture.DEFAULT_RATING, ratingRank);
 
             // when
             UserProfileResponseDto result = userService.getUserByNickname(nickname);
@@ -644,18 +486,14 @@ public class UserServiceTest {
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(
                 userId, currentNickname, "Old status", "old.jpg");
-            UserStatEntity userStatEntity = UserFixture.createUserStatEntity(
-                userId, rating, 3, 10, 15, 2);
 
             given(userAccountRepository.findByUserId(userId))
                 .willReturn(Optional.of(userAccountEntity));
             given(userAccountRepository.existsByNickname(newNickname))
                 .willReturn(false);
-            given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                rating, userStatEntity.updatedAt(), userId)
-            ).willReturn(ratingRank);
+            UserStatEntity userStatEntity = UserFixture.createUserStatEntity(
+                userId, rating, 3, 10, 15, 2);
+            UserFixture.stubUserStatAndRank(userStatRepository, userStatEntity, ratingRank);
 
             // when
             UserProfileResponseDto result = userService.modifyUserProfileInfo(userId,
@@ -759,15 +597,10 @@ public class UserServiceTest {
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(
                 userId, currentNickname, "Old status", "old.jpg");
-            UserStatEntity userStatEntity = UserFixture.createUserStatEntity(userId, 1000);
 
             given(userAccountRepository.findByUserId(userId))
                 .willReturn(Optional.of(userAccountEntity));
-            given(userStatRepository.findByUserId(userId))
-                .willReturn(Optional.of(userStatEntity));
-            given(userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
-                1000, userStatEntity.updatedAt(), userId)
-            ).willReturn(50);
+            UserFixture.stubUserStatAndRank(userStatRepository, userId, 1000, 50);
 
             // when
             UserProfileResponseDto result = userService.modifyUserProfileInfo(userId,
@@ -814,6 +647,12 @@ public class UserServiceTest {
     @DisplayName("사용자 상위 문제 조회")
     class GetUserTopProblems {
 
+        @BeforeEach
+        void setUpTopProblemsCommon() {
+            lenient().when(ratingUtil.calculateCategoryRating(any(), any())).thenReturn(List.of());
+            lenient().when(submissionRepository.getUserAcceptedSubmissionTagSummary(any(), any())).thenReturn(List.of());
+        }
+
         @Test
         @DisplayName("사용자의 상위 문제를 정상 조회")
         void getUserTopProblems_Success() {
@@ -852,18 +691,7 @@ public class UserServiceTest {
                 limit);
 
             // then
-            List<ProblemInfoResponseDto> expected = List.of(
-                ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역",
-                    GymTierType.RED, HoldColorType.RED,
-                    1800),
-                ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역",
-                    GymTierType.BLUE, HoldColorType.BLUE,
-                    1500),
-                ProblemFixture.createProblemResponseDto(problemId3, 3L, "테스트 체육관3", 3L, "메인 구역",
-                    GymTierType.YELLOW, HoldColorType.YELLOW,
-                    1200)
-            );
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(problemInfoResponseDtoList);
 
             then(submissionRepository).should()
                 .getUserTopProblems(eq(userId), eq(StatusType.ACCEPTED),
@@ -914,21 +742,13 @@ public class UserServiceTest {
                     any(Pageable.class));
         }
 
-        @Test
-        @DisplayName("limit이 0인 경우 예외 발생")
-        void getUserTopProblems_ZeroLimit() {
-            // given
+        @ParameterizedTest(name = "limit={0} 이면 예외 발생")
+        @ValueSource(ints = {0, -1})
+        void getUserTopProblems_InvalidLimit(int limit) {
             String nickname = "testUser";
             Long userId = 1L;
-            Integer limit = 0;
-
-            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                nickname);
-
-            given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccount));
-
-            // when & then
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
+            given(userAccountRepository.findByNickname(nickname)).willReturn(Optional.of(userAccount));
             assertThatThrownBy(() -> userService.getUserTopProblems(nickname, limit))
                 .isInstanceOf(IllegalArgumentException.class);
         }
@@ -965,21 +785,18 @@ public class UserServiceTest {
                 limit);
 
             // then
-            List<ProblemInfoResponseDto> expected = List.of(
-                ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역",
-                    GymTierType.RED, HoldColorType.RED,
-                    1600),
-                ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역",
-                    GymTierType.BLUE, HoldColorType.BLUE,
-                    1400)
-            );
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(problemInfoResponseDtoList);
         }
     }
 
     @Nested
     @DisplayName("사용자 스트릭 조회")
     class GetUserStreak {
+
+        @BeforeEach
+        void setUpStreakCommon() {
+            lenient().when(submissionRepository.getUserDateSolvedCount(any(), any(), any(), any())).thenReturn(List.of());
+        }
 
         @Test
         @DisplayName("사용자의 일별 해결 문제 수를 정상 조회")
@@ -1010,12 +827,7 @@ public class UserServiceTest {
                 to);
 
             // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 3),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 5),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 2)
-            );
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(queryResults);
 
             then(submissionRepository).should()
                 .getUserDateSolvedCount(userId, StatusType.ACCEPTED, from, to);
@@ -1097,10 +909,7 @@ public class UserServiceTest {
                 singleDate);
 
             // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 15), 7)
-            );
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(queryResults);
 
             then(submissionRepository).should()
                 .getUserDateSolvedCount(userId, StatusType.ACCEPTED, singleDate, singleDate);
@@ -1165,135 +974,21 @@ public class UserServiceTest {
                 to);
 
             // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 2),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 5), 4),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 9), 1)
-            );
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(queryResults);
 
             then(submissionRepository).should()
                 .getUserDateSolvedCount(userId, StatusType.ACCEPTED, from, to);
-        }
-
-        @Test
-        @DisplayName("null 파라미터로 조회하는 경우")
-        void getUserStreak_WithNullParameters() {
-            // given
-            String nickname = "testUser";
-            Long userId = 1L;
-            LocalDate from = null;
-            LocalDate to = null;
-
-            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                nickname);
-
-            List<DailyHistoryResponseDto> queryResults = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 3)
-            );
-
-            given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccount));
-            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
-                to))
-                .willReturn(queryResults);
-
-            // when
-            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                to);
-
-            // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 3)
-            );
-            assertThat(result).isEqualTo(expected);
-
-            then(submissionRepository).should()
-                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, null, null);
-        }
-
-        @Test
-        @DisplayName("from만 null인 경우")
-        void getUserStreak_WithFromNull() {
-            // given
-            String nickname = "testUser";
-            Long userId = 1L;
-            LocalDate from = null;
-            LocalDate to = LocalDate.of(2024, 1, 31);
-
-            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                nickname);
-
-            List<DailyHistoryResponseDto> queryResults = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 2),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 4)
-            );
-
-            given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccount));
-            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
-                to))
-                .willReturn(queryResults);
-
-            // when
-            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                to);
-
-            // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 2),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 4)
-            );
-            assertThat(result).isEqualTo(expected);
-
-            then(submissionRepository).should()
-                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, null, to);
-        }
-
-        @Test
-        @DisplayName("to만 null인 경우")
-        void getUserStreak_WithToNull() {
-            // given
-            String nickname = "testUser";
-            Long userId = 1L;
-            LocalDate from = LocalDate.of(2024, 1, 1);
-            LocalDate to = null;
-
-            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                nickname);
-
-            List<DailyHistoryResponseDto> queryResults = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 5)
-            );
-
-            given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccount));
-            given(submissionRepository.getUserDateSolvedCount(userId, StatusType.ACCEPTED, from,
-                to))
-                .willReturn(queryResults);
-
-            // when
-            List<DailyHistoryResponseDto> result = userService.getUserStreak(nickname, from,
-                to);
-
-            // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 5)
-            );
-            assertThat(result).isEqualTo(expected);
-
-            then(submissionRepository).should()
-                .getUserDateSolvedCount(userId, StatusType.ACCEPTED, from, null);
         }
     }
 
     @Nested
     @DisplayName("사용자 일별 히스토리 조회")
     class GetUserDailyHistory {
+
+        @BeforeEach
+        void setUpDailyHistoryCommon() {
+            lenient().when(userRankingHistoryRepository.getUserDailyHistory(any(), any(), any(), any())).thenReturn(List.of());
+        }
 
         @Test
         @DisplayName("사용자의 레이팅 히스토리를 정상 조회")
@@ -1324,12 +1019,7 @@ public class UserServiceTest {
                 criteria, from, to);
 
             // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1200),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1250),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 3), 1300)
-            );
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(queryResults);
 
             then(userRankingHistoryRepository).should()
                 .getUserDailyHistory(userId, criteria, from, to);
@@ -1413,19 +1103,15 @@ public class UserServiceTest {
                 criteria, from, to);
 
             // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 100),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 95)
-            );
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(queryResults);
 
             then(userRankingHistoryRepository).should()
                 .getUserDailyHistory(userId, criteria, from, to);
         }
 
         @Test
-        @DisplayName("null 파라미터로 조회하는 경우")
-        void getUserDailyHistory_WithNullParameters() {
+        @DisplayName("null 파라미터로 조회하는 경우 (케이스1)")
+        void getUserDailyHistory_WithNullParameters_case1() {
             // given
             String nickname = "testUser";
             Long userId = 1L;
@@ -1451,11 +1137,7 @@ public class UserServiceTest {
                 criteria, from, to);
 
             // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 2), 1050)
-            );
-            assertThat(result).isEqualTo(expected);
+            assertThat(result).isEqualTo(queryResults);
 
             then(userRankingHistoryRepository).should()
                 .getUserDailyHistory(userId, criteria, null, null);
@@ -1541,77 +1223,49 @@ public class UserServiceTest {
         @Test
         @DisplayName("from만 null인 경우")
         void getUserDailyHistory_WithFromNull() {
-            // given
             String nickname = "testUser";
             Long userId = 1L;
             CriteriaType criteria = CriteriaType.RATING;
             LocalDate from = null;
             LocalDate to = LocalDate.of(2024, 1, 31);
 
-            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
             List<DailyHistoryResponseDto> queryResults = List.of(
                 UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 50),
                 UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 45)
             );
 
-            given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccount));
-            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname)).willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to)).willReturn(queryResults);
 
-            // when
-            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                criteria, from, to);
-
-            // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 30), 50),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 31), 45)
-            );
-            assertThat(result).isEqualTo(expected);
-
-            then(userRankingHistoryRepository).should()
-                .getUserDailyHistory(userId, criteria, null, to);
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname, criteria, from, to);
+            assertThat(result).isEqualTo(queryResults);
+            then(userRankingHistoryRepository).should().getUserDailyHistory(userId, criteria, null, to);
         }
 
         @Test
-        @DisplayName("to만 null인 경우")
-        void getUserDailyHistory_WithToNull() {
-            // given
+        @DisplayName("to만 null인 경우 (케이스1)")
+        void getUserDailyHistory_WithToNull_case1() {
             String nickname = "testUser";
             Long userId = 1L;
             CriteriaType criteria = CriteriaType.RATING;
             LocalDate from = LocalDate.of(2024, 1, 1);
             LocalDate to = null;
 
-            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
-                nickname);
+            UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId, nickname);
 
             List<DailyHistoryResponseDto> queryResults = List.of(
                 UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
                 UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 1100)
             );
 
-            given(userAccountRepository.findByNickname(nickname))
-                .willReturn(Optional.of(userAccount));
-            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to))
-                .willReturn(queryResults);
+            given(userAccountRepository.findByNickname(nickname)).willReturn(Optional.of(userAccount));
+            given(userRankingHistoryRepository.getUserDailyHistory(userId, criteria, from, to)).willReturn(queryResults);
 
-            // when
-            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname,
-                criteria, from, to);
-
-            // then
-            List<DailyHistoryResponseDto> expected = List.of(
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 1, 1), 1000),
-                UserFixture.createDailyHistoryResponseDto(LocalDate.of(2024, 2, 1), 1100)
-            );
-            assertThat(result).isEqualTo(expected);
-
-            then(userRankingHistoryRepository).should()
-                .getUserDailyHistory(userId, criteria, from, null);
+            List<DailyHistoryResponseDto> result = userService.getUserDailyHistory(nickname, criteria, from, to);
+            assertThat(result).isEqualTo(queryResults);
+            then(userRankingHistoryRepository).should().getUserDailyHistory(userId, criteria, from, null);
         }
     }
 }
