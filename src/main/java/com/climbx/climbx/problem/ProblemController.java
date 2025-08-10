@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -115,5 +116,13 @@ public class ProblemController implements ProblemApiDocumentation {
         log.info("문제 투표 목록 조회: problemId={}, page={}, size={}", problemId,
             pageable.getPageNumber(), pageable.getPageSize());
         return problemService.getProblemVotes(problemId, pageable);
+    }
+
+    @Override
+    @DeleteMapping("/{problemId}")
+    @SuccessStatus(value = HttpStatus.NO_CONTENT)
+    public void softDeleteProblem(@PathVariable("problemId") UUID problemId) {
+        log.info("문제 삭제: problemId={}", problemId);
+        problemService.softDeleteProblem(problemId);
     }
 }

@@ -4,9 +4,12 @@ import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.enums.ProblemTierType;
+import jakarta.persistence.LockModeType;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -14,7 +17,7 @@ public interface ProblemRepository extends JpaRepository<ProblemEntity, UUID> {
 
     @Query("""
                 SELECT new com.climbx.climbx.problem.dto.ProblemInfoResponseDto(
-                    p.problemId,
+                    p.problemId, 
                     g.gymId,
                     g.name,
                     ga.gymAreaId,
@@ -27,14 +30,15 @@ public interface ProblemRepository extends JpaRepository<ProblemEntity, UUID> {
                     p.activeStatus,
                     p.createdAt
                 )
-                FROM ProblemEntity p
-                JOIN  p.gymArea ga
-                JOIN  p.gymEntity g
-                WHERE (:gymId IS NULL OR p.gymEntity.gymId = :gymId) AND
-                (:gymAreaId IS NULL OR p.gymArea.gymAreaId = :gymAreaId) AND
-                (:localLevel IS NULL OR p.localLevel = :localLevel) AND
-                (:holdColor IS NULL OR p.holdColor = :holdColor) AND
-                (:problemTier IS NULL OR p.tier = :problemTier) AND
+                FROM ProblemEntity p 
+                JOIN  p.gymArea ga 
+                JOIN  p.gymEntity g  
+                WHERE
+                (:gymId IS NULL OR p.gymEntity.gymId = :gymId) AND 
+                (:gymAreaId IS NULL OR p.gymArea.gymAreaId = :gymAreaId) AND 
+                (:localLevel IS NULL OR p.localLevel = :localLevel) AND 
+                (:holdColor IS NULL OR p.holdColor = :holdColor) AND 
+                (:problemTier IS NULL OR p.tier = :problemTier)  AND 
                 (:activeStatus IS NULL OR p.activeStatus = :activeStatus)
         """)
     List<ProblemInfoResponseDto> findByGymAndAreaAndLevelAndColorAndProblemTierAndActiveStatus(
@@ -45,4 +49,8 @@ public interface ProblemRepository extends JpaRepository<ProblemEntity, UUID> {
         @Param("problemTier") ProblemTierType problemTier,
         @Param("activeStatus") ActiveStatusType activeStatus
     );
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM ProblemEntity p WHERE p.problemId = :problemId")
+    Optional<ProblemEntity> findByIdForUpdate(@Param("problemId") UUID problemId);
 }
