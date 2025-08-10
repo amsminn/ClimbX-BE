@@ -44,6 +44,18 @@ public class UserService {
     private final S3Service s3Service;
     private final RatingUtil ratingUtil;
 
+    @Transactional
+    public UserProfileResponseDto updateRating(String nickname, Integer rating) {
+        UserAccountEntity userAccountEntity = findUserByNickname(nickname);
+        UserStatEntity userStatEntity = findUserStatByUserId(userAccountEntity.userId());
+
+        // 사용자 등급 업데이트
+        userStatEntity.setRating(rating);
+
+        // 사용자 프로필 빌드
+        return buildProfile(userAccountEntity);
+    }
+
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
 

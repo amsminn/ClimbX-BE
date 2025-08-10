@@ -4,6 +4,8 @@ import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.enums.GymTierType;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import jakarta.persistence.Column;
@@ -49,13 +51,13 @@ public class ProblemEntity extends BaseTimeEntity {
     @JoinColumn(name = "gym_area_id", nullable = false)
     private GymAreaEntity gymArea;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "local_level", length = 32, nullable = false)
-    @Size(min = 1, max = 32)
-    private String localLevel; // 클라이밍장별 레벨, 예: "빨강", "파랑", "초록" 등
+    private GymTierType localLevel; // 클라이밍장별 레벨, 예: "빨강", "파랑", "초록" 등
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "hold_color", length = 32, nullable = false)
-    @Size(min = 1, max = 32)
-    private String holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
+    private HoldColorType holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
 
     @Builder.Default
     @Column(name = "problem_rating") // Todo nullable = false

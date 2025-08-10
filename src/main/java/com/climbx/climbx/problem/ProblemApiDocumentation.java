@@ -3,6 +3,8 @@ package com.climbx.climbx.problem;
 import com.climbx.climbx.common.dto.ApiResponseDto;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ContributionRequestDto;
+import com.climbx.climbx.gym.enums.GymTierType;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.dto.ContributionResponseDto;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
@@ -19,9 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.util.List;
-import java.util.UUID;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -134,8 +134,7 @@ public interface ProblemApiDocumentation {
             required = false,
             example = "V3"
         )
-        @Size(min = 1, max = 32)
-        String localLevel,
+        GymTierType localLevel,
 
         @Parameter(
             name = "holdColor",
@@ -143,8 +142,7 @@ public interface ProblemApiDocumentation {
             required = false,
             example = "빨강"
         )
-        @Size(min = 1, max = 32)
-        String holdColor,
+        HoldColorType holdColor,
 
         @Parameter(
             name = "problemTier",

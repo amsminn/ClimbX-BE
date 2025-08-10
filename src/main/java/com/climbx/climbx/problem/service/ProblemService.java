@@ -8,6 +8,7 @@ import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.enums.GymTierType;
 import com.climbx.climbx.gym.repository.GymAreaRepository;
 import com.climbx.climbx.problem.dto.ContributionRequestDto;
 import com.climbx.climbx.problem.dto.ContributionResponseDto;
@@ -61,8 +62,8 @@ public class ProblemService {
     public List<ProblemInfoResponseDto> getProblemsWithFilters(
         Long gymId,
         Long gymAreaId,
-        String localLevel,
-        String holdColor,
+        GymTierType localLevel,
+        com.climbx.climbx.problem.enums.HoldColorType holdColor,
         ProblemTierType problemTier,
         ActiveStatusType activeStatus
     ) {
@@ -96,14 +97,18 @@ public class ProblemService {
         String imageCdnUrl = s3Service.uploadProblemImage(problemId, gymArea.gymAreaId(),
             problemImage);
 
+        GymTierType localTier = request.localLevel();
+        ProblemTierType problemTier = localTier.globalTier();
+
         // Problem 엔티티 생성
         ProblemEntity problem = ProblemEntity.builder()
             .problemId(problemId)
             .gymEntity(gym)
             .gymArea(gymArea)
-            .localLevel(request.localLevel())
+            .localLevel(localTier)
             .holdColor(request.holdColor())
-            // Todo .rating()
+            .rating(problemTier.value())
+            .tier(problemTier)
             .problemImageCdnUrl(imageCdnUrl)
             .activeStatus(ActiveStatusType.ACTIVE)
             .build();
@@ -203,7 +208,7 @@ public class ProblemService {
             .map(ContributionResponseDto::from)
             .toList();
     }
-    
+
     @Transactional
     public void softDeleteProblem(UUID problemId) {
         log.info("Soft deleting problem: problemId={}", problemId);

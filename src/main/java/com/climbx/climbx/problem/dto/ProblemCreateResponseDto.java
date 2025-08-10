@@ -1,6 +1,8 @@
 package com.climbx.climbx.problem.dto;
 
 import com.climbx.climbx.common.enums.ActiveStatusType;
+import com.climbx.climbx.gym.enums.GymTierType;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import java.util.UUID;
 import lombok.Builder;
@@ -13,8 +15,8 @@ public record ProblemCreateResponseDto(
     String gymName,
     Long gymAreaId,
     String areaName,
-    String localLevel,
-    String holdColor,
+    GymTierType localLevel,
+    HoldColorType holdColor,
     Integer problemRating,
     String problemImageCdnUrl,
     ActiveStatusType activeStatus

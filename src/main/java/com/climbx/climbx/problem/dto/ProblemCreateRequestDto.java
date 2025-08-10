@@ -1,7 +1,8 @@
 package com.climbx.climbx.problem.dto;
 
+import com.climbx.climbx.gym.enums.GymTierType;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
@@ -11,12 +12,10 @@ public record ProblemCreateRequestDto(
     Long gymAreaId,
 
     @NotNull
-    @Size(min = 1, max = 32)
-    String localLevel,
+    GymTierType localLevel,
 
     @NotNull
-    @Size(min = 1, max = 32)
-    String holdColor
+    HoldColorType holdColor
 ) {
 
 }

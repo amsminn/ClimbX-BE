@@ -3,6 +3,8 @@ package com.climbx.climbx.problem;
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import com.climbx.climbx.common.enums.ActiveStatusType;
 import com.climbx.climbx.problem.dto.ContributionRequestDto;
+import com.climbx.climbx.gym.enums.GymTierType;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.dto.ContributionResponseDto;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
@@ -49,10 +51,10 @@ public class ProblemController implements ProblemApiDocumentation {
         Long gymAreaId,
 
         @RequestParam(value = "localLevel", required = false)
-        String localLevel,
+        GymTierType localLevel,
 
         @RequestParam(value = "holdColor", required = false)
-        String holdColor,
+        HoldColorType holdColor,
 
         @RequestParam(value = "problemTier", required = false)
         ProblemTierType problemTier,
