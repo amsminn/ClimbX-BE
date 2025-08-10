@@ -22,6 +22,8 @@ import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.ForbiddenProblemVoteException;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
+import com.climbx.climbx.problem.exception.ProblemAlreadyDeletedException;
+import com.climbx.climbx.problem.exception.ProblemNotFoundException;
 import com.climbx.climbx.problem.repository.ContributionRepository;
 import com.climbx.climbx.problem.repository.ContributionTagRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -200,5 +202,21 @@ public class ProblemService {
         return contributions.stream()
             .map(ContributionResponseDto::from)
             .toList();
+    }
+    
+    @Transactional
+    public void softDeleteProblem(UUID problemId) {
+        log.info("Soft deleting problem: problemId={}", problemId);
+
+        ProblemEntity problem = problemRepository.findById(problemId)
+            .orElseThrow(() -> new ProblemNotFoundException(problemId));
+
+        if (problem.deletedAt() != null) {
+            throw new ProblemAlreadyDeletedException(
+                ErrorCode.PROBLEM_ALREADY_DELETED, "Problem has already been soft deleted");
+        }
+        problem.softDelete();
+
+        log.info("Problem soft deleted successfully: problemId={}", problemId);
     }
 }
