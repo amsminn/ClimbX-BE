@@ -36,6 +36,7 @@ import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -121,13 +122,14 @@ public class ProblemService {
             imageCdnUrl);
 
         // 기본 티어 투표 3건 삽입 (user/tag 없이 tier만 설정)
-        for (int i = 0; i < 3; i++) {
-            ContributionEntity defaultVote = ContributionEntity.builder()
+        List<ContributionEntity> defaultVotes = IntStream.range(0, 3)
+            .mapToObj(i -> ContributionEntity.builder()
                 .problemEntity(savedProblem)
                 .tier(problemTier)
-                .build();
-            contributionRepository.save(defaultVote);
-        }
+                .build())
+            .toList();
+
+        contributionRepository.saveAll(defaultVotes);
 
         return ProblemCreateResponseDto.from(savedProblem);
     }
