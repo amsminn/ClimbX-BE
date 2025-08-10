@@ -60,13 +60,13 @@ public class ProblemEntity extends BaseTimeEntity {
     private HoldColorType holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
 
     @Builder.Default
-    @Column(name = "problem_rating") // Todo nullable = false
+    @Column(name = "problem_rating", nullable = false)
     @Min(value = 0)
     @Max(value = 30)
     private Integer rating = 0; // 문제 난이도
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "problem_tier", length = 16) // Todo nullable = false
+    @Column(name = "problem_tier", length = 16, nullable = false)
     private ProblemTierType tier;
 
     @Enumerated(EnumType.STRING)
