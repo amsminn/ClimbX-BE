@@ -120,6 +120,15 @@ public class ProblemService {
             savedProblem.problemId(), savedProblem.localLevel(), savedProblem.holdColor(),
             imageCdnUrl);
 
+        // 기본 티어 투표 3건 삽입 (user/tag 없이 tier만 설정)
+        for (int i = 0; i < 3; i++) {
+            ContributionEntity defaultVote = ContributionEntity.builder()
+                .problemEntity(savedProblem)
+                .tier(problemTier)
+                .build();
+            contributionRepository.save(defaultVote);
+        }
+
         return ProblemCreateResponseDto.from(savedProblem);
     }
 
@@ -203,7 +212,7 @@ public class ProblemService {
         Pageable pageable
     ) {
         List<ContributionEntity> contributions = contributionRepository
-            .findAllByProblemEntity_ProblemIdOrderByCreatedAtDesc(problemId, pageable);
+            .findRecentUserVotes(problemId, pageable);
         return contributions.stream()
             .map(ContributionResponseDto::from)
             .toList();

@@ -14,11 +14,10 @@ import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.fixture.GymAreaFixture;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
-import com.climbx.climbx.gym.enums.GymTierType;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.enums.GymTierType;
 import com.climbx.climbx.gym.repository.GymAreaRepository;
-import com.climbx.climbx.gym.repository.GymRepository;
 import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
@@ -26,6 +25,7 @@ import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
+import com.climbx.climbx.problem.repository.ContributionRepository;
 import com.climbx.climbx.problem.repository.ProblemRepository;
 import java.util.List;
 import java.util.Optional;
@@ -45,11 +45,11 @@ public class ProblemServiceTest {
     @Mock
     private ProblemRepository problemRepository;
     @Mock
-    private GymRepository gymRepository;
-    @Mock
     private GymAreaRepository gymAreaRepository;
     @Mock
     private S3Service s3Service;
+    @Mock
+    private ContributionRepository contributionRepository;
 
     @InjectMocks
     private ProblemService problemService;
