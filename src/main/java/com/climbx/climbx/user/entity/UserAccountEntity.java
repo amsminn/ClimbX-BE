@@ -3,7 +3,6 @@ package com.climbx.climbx.user.entity;
 import com.climbx.climbx.auth.entity.UserAuthEntity;
 import com.climbx.climbx.common.entity.BaseTimeEntity;
 import com.climbx.climbx.common.enums.RoleType;
-import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.video.entity.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -69,9 +68,6 @@ public class UserAccountEntity extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "userAccountEntity", fetch = FetchType.LAZY)
     private List<VideoEntity> videoEntityList; // 비디오 엔티티와의 관계 (추가 예시)
-
-    @OneToMany(mappedBy = "userAccountEntity", fetch = FetchType.LAZY)
-    private List<SubmissionEntity> submissionEntityList; // 제출 엔티티와의 관계 (추가 예시)
 
     @OneToMany(mappedBy = "userAccountEntity", fetch = FetchType.LAZY)
     private List<UserAuthEntity> userAuthEntityList; // OAuth2 인증 정보와의 관계
