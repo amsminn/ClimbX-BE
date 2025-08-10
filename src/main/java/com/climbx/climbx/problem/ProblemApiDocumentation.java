@@ -498,6 +498,26 @@ public interface ProblemApiDocumentation {
             description = "문제 삭제 성공"
         ),
         @ApiResponse(
+            responseCode = "400",
+            description = "이미 삭제된 문제",
+            content = @Content(
+                schema = @Schema(implementation = ApiResponseDto.class),
+                examples = @ExampleObject(
+                    name = "이미 삭제된 문제",
+                    value = """
+                        {
+                          "httpStatus": 400,
+                          "statusMessage": "PROBLEM_ALREADY_DELETED",
+                          "timeStamp": "2024-01-01T10:00:00Z",
+                          "responseTimeMs": 123,
+                          "path": "/api/problems/123e4567-e89b-12d3-a456-426614174000",
+                          "data": null
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
             responseCode = "404",
             description = "문제를 찾을 수 없음",
             content = @Content(

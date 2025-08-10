@@ -208,7 +208,7 @@ public class ProblemService {
     public void softDeleteProblem(UUID problemId) {
         log.info("Soft deleting problem: problemId={}", problemId);
 
-        ProblemEntity problem = problemRepository.findById(problemId)
+        ProblemEntity problem = problemRepository.findByIdForUpdate(problemId)
             .orElseThrow(() -> new ProblemNotFoundException(problemId));
 
         if (problem.deletedAt() != null) {
