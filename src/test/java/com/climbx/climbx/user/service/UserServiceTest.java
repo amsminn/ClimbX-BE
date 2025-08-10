@@ -87,7 +87,6 @@ public class UserServiceTest {
         @DisplayName("전체 사용자 목록을 정상 조회")
         void getUsers_Success_AllUsers() {
             // given
-            String search = null;
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "alice");
             UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "bob");
@@ -103,7 +102,7 @@ public class UserServiceTest {
             // 공통 lenient 스텁으로 대체됨
 
             // when
-            List<UserProfileResponseDto> result = userService.getUsers(search);
+            List<UserProfileResponseDto> result = userService.getUsers(null);
 
             // then
             assertThat(result).hasSize(3);
@@ -148,7 +147,6 @@ public class UserServiceTest {
         @DisplayName("닉네임 검색으로 특정 사용자들 조회")
         void getUsers_Success_WithSearch() {
             // given
-            String search = "test";
 
             UserAccountEntity user1 = UserFixture.createUserAccountEntity(1L, "testuser1");
             UserAccountEntity user2 = UserFixture.createUserAccountEntity(2L, "testuser2");
@@ -162,7 +160,7 @@ public class UserServiceTest {
             // 공통 lenient 스텁으로 대체됨
 
             // when
-            List<UserProfileResponseDto> result = userService.getUsers(search);
+            List<UserProfileResponseDto> result = userService.getUsers("test");
 
             // then
             assertThat(result).hasSize(2);
@@ -478,15 +476,9 @@ public class UserServiceTest {
             Long userId = 1L;
             String currentNickname = "oldNickname";
             String newNickname = "newNickname";
-            String newStatusMessage = "New status";
             // String newProfileImageUrl = "new.jpg";
             Integer rating = 1200;
             Integer ratingRank = 20;
-
-            UserProfileInfoModifyRequestDto requestDto = UserProfileInfoModifyRequestDto.builder()
-                .newNickname(newNickname)
-                .newStatusMessage(newStatusMessage)
-                .build();
 
             UserAccountEntity userAccountEntity = UserFixture.createUserAccountEntity(
                 userId, currentNickname, "Old status", "old.jpg");
@@ -500,6 +492,11 @@ public class UserServiceTest {
             UserFixture.stubUserStatAndRank(userStatRepository, userStatEntity, ratingRank);
 
             // when
+            String newStatusMessage = "New status";
+            UserProfileInfoModifyRequestDto requestDto = UserProfileInfoModifyRequestDto.builder()
+                .newNickname(newNickname)
+                .newStatusMessage(newStatusMessage)
+                .build();
             UserProfileResponseDto result = userService.modifyUserProfileInfo(userId,
                 currentNickname,
                 requestDto);
