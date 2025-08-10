@@ -2,15 +2,17 @@ package com.climbx.climbx.fixture;
 
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.enums.GymTierType;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import java.util.UUID;
 
 public class ProblemFixture {
 
     public static final Integer DEFAULT_PROBLEM_RATING = 1200;
-    public static final String DEFAULT_LOCAL_LEVEL = "빨강";
-    public static final String DEFAULT_HOLD_COLOR = "파랑";
+    public static final GymTierType DEFAULT_LOCAL_LEVEL = GymTierType.RED;
+    public static final HoldColorType DEFAULT_HOLD_COLOR = HoldColorType.BLUE;
     public static final String DEFAULT_IMAGE_URL = "http://example.com/image.jpg";
 
     public static ProblemEntity createProblemEntity(UUID problemId, GymEntity gym,
@@ -23,8 +25,8 @@ public class ProblemFixture {
         UUID problemId,
         GymEntity gym,
         GymAreaEntity gymArea,
-        String localLevel,
-        String holdColor,
+        GymTierType localLevel,
+        HoldColorType holdColor,
         Integer problemRating
     ) {
         return ProblemEntity.builder()
@@ -44,8 +46,8 @@ public class ProblemFixture {
         String gymName,
         Long gymAreaId,
         String gymAreaName,
-        String localLevel,
-        String holdColor,
+        GymTierType localLevel,
+        HoldColorType holdColor,
         Integer rating
     ) {
         return ProblemInfoResponseDto.builder()

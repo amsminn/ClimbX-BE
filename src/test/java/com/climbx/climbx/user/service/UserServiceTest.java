@@ -13,14 +13,11 @@ import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.common.util.RatingUtil;
-import com.climbx.climbx.fixture.GymAreaFixture;
-import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
-import com.climbx.climbx.gym.entity.GymAreaEntity;
-import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.enums.GymTierType;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
-import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
@@ -636,7 +633,7 @@ public class UserServiceTest {
             String currentNickname = "oldNickname";
             String newNickname = "newNickname";
             String newStatusMessage = "New status";
-            String newProfileImageUrl = "new.jpg";
+            // String newProfileImageUrl = "new.jpg";
             Integer rating = 1200;
             Integer ratingRank = 20;
 
@@ -831,34 +828,16 @@ public class UserServiceTest {
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
                 nickname);
 
-            GymEntity gym1 = GymFixture.createGymEntity(1L, "테스트 체육관1", 37.5665, 126.9780);
-            GymEntity gym2 = GymFixture.createGymEntity(2L, "테스트 체육관2", 37.5665, 126.9780);
-            GymEntity gym3 = GymFixture.createGymEntity(3L, "테스트 체육관3", 37.5665, 126.9780);
-
-            GymAreaEntity gymArea1 = GymAreaFixture.createGymAreaEntity(1L, gym1, "메인 구역");
-            GymAreaEntity gymArea2 = GymAreaFixture.createGymAreaEntity(2L, gym2, "메인 구역");
-            GymAreaEntity gymArea3 = GymAreaFixture.createGymAreaEntity(3L, gym3, "메인 구역");
-
-            ProblemEntity problem1 = ProblemFixture.createProblemEntity(problemId1, gym1, gymArea1,
-                "고급",
-                "빨강", 1800);
-            ProblemEntity problem2 = ProblemFixture.createProblemEntity(problemId2, gym2, gymArea2,
-                "중급",
-                "파랑", 1500);
-            ProblemEntity problem3 = ProblemFixture.createProblemEntity(problemId3, gym3, gymArea3,
-                "초급",
-                "노랑", 1200);
-
             List<ProblemInfoResponseDto> problemInfoResponseDtoList = List.of(
                 ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L,
                     "메인 구역",
-                    "고급", "빨강", 1800),
+                    GymTierType.RED, HoldColorType.RED, 1800),
                 ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L,
                     "메인 구역",
-                    "중급", "파랑", 1500),
+                    GymTierType.BLUE, HoldColorType.BLUE, 1500),
                 ProblemFixture.createProblemResponseDto(problemId3, 3L, "테스트 체육관3", 3L,
                     "메인 구역",
-                    "초급", "노랑", 1200)
+                    GymTierType.YELLOW, HoldColorType.YELLOW, 1200)
             );
 
             given(userAccountRepository.findByNickname(nickname))
@@ -875,13 +854,13 @@ public class UserServiceTest {
             // then
             List<ProblemInfoResponseDto> expected = List.of(
                 ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역",
-                    "고급", "빨강",
+                    GymTierType.RED, HoldColorType.RED,
                     1800),
                 ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역",
-                    "중급", "파랑",
+                    GymTierType.BLUE, HoldColorType.BLUE,
                     1500),
                 ProblemFixture.createProblemResponseDto(problemId3, 3L, "테스트 체육관3", 3L, "메인 구역",
-                    "초급", "노랑",
+                    GymTierType.YELLOW, HoldColorType.YELLOW,
                     1200)
             );
             assertThat(result).isEqualTo(expected);
@@ -916,7 +895,6 @@ public class UserServiceTest {
 
             UserAccountEntity userAccount = UserFixture.createUserAccountEntity(userId,
                 nickname);
-            List<ProblemEntity> emptyProblems = List.of();
 
             given(userAccountRepository.findByNickname(nickname))
                 .willReturn(Optional.of(userAccount));
@@ -970,9 +948,9 @@ public class UserServiceTest {
 
             List<ProblemInfoResponseDto> problemInfoResponseDtoList = List.of(
                 ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역",
-                    "고급", "빨강", 1600),
+                    GymTierType.RED, HoldColorType.RED, 1600),
                 ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역",
-                    "중급", "파랑", 1400)
+                    GymTierType.BLUE, HoldColorType.BLUE, 1400)
             );
 
             given(userAccountRepository.findByNickname(nickname))
@@ -989,10 +967,10 @@ public class UserServiceTest {
             // then
             List<ProblemInfoResponseDto> expected = List.of(
                 ProblemFixture.createProblemResponseDto(problemId1, 1L, "테스트 체육관1", 1L, "메인 구역",
-                    "고급", "빨강",
+                    GymTierType.RED, HoldColorType.RED,
                     1600),
                 ProblemFixture.createProblemResponseDto(problemId2, 2L, "테스트 체육관2", 2L, "메인 구역",
-                    "중급", "파랑",
+                    GymTierType.BLUE, HoldColorType.BLUE,
                     1400)
             );
             assertThat(result).isEqualTo(expected);

@@ -14,6 +14,7 @@ import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.fixture.GymAreaFixture;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.fixture.ProblemFixture;
+import com.climbx.climbx.gym.enums.GymTierType;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.gym.repository.GymAreaRepository;
@@ -22,6 +23,7 @@ import com.climbx.climbx.problem.dto.ProblemCreateRequestDto;
 import com.climbx.climbx.problem.dto.ProblemCreateResponseDto;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.GymAreaNotFoundException;
 import com.climbx.climbx.problem.repository.ProblemRepository;
@@ -61,8 +63,8 @@ public class ProblemServiceTest {
         void getProblemSpotsWithAllFilters() {
             // given
             Long gymId = 1L;
-            String localLevel = "빨강";
-            String holdColor = "파랑";
+            GymTierType localLevel = GymTierType.RED;
+            HoldColorType holdColor = HoldColorType.BLUE;
             Long gymAreaId = 1L;
             UUID problemId1 = UUID.randomUUID();
             UUID problemId2 = UUID.randomUUID();
@@ -121,8 +123,8 @@ public class ProblemServiceTest {
         void createProblemWithImage() {
             // given
             Long gymAreaId = 1L;
-            String localLevel = "V3";
-            String holdColor = "빨강";
+            GymTierType localLevel = GymTierType.GREEN;
+            HoldColorType holdColor = HoldColorType.RED;
             Integer rating = 1500;
             UUID problemId = UUID.randomUUID();
 
@@ -189,8 +191,8 @@ public class ProblemServiceTest {
         void createProblemWithoutImage() {
             // given
             Long gymAreaId = 1L;
-            String localLevel = "V4";
-            String holdColor = "파랑";
+            GymTierType localLevel = GymTierType.BLUE;
+            HoldColorType holdColor = HoldColorType.BLUE;
             Integer problemRating = 1600;
             UUID problemId = UUID.randomUUID();
 
@@ -250,8 +252,8 @@ public class ProblemServiceTest {
             Long nonExistentGymAreaId = 999L;
             ProblemCreateRequestDto request = ProblemCreateRequestDto.builder()
                 .gymAreaId(nonExistentGymAreaId)
-                .localLevel("V5")
-                .holdColor("초록")
+                .localLevel(GymTierType.RED)
+                .holdColor(HoldColorType.GREEN)
                 .build();
 
             given(gymAreaRepository.findById(nonExistentGymAreaId))
