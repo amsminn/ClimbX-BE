@@ -206,8 +206,8 @@ public class S3Service {
 
         try {
             // Base 이미지 업로드
-            String map2dImageKey = FileUploadUtils.generateGymMap2dImageKey(gymId,
-                map2dImage.getOriginalFilename());
+            String extension = extractFileExtension(map2dImage.getOriginalFilename());
+            String map2dImageKey = FileUploadUtils.generateGymMap2dImageKey(gymId, extension);
 
             uploadFileToS3(imagesBucketName, map2dImageKey, map2dImage);
 
