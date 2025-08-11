@@ -48,14 +48,8 @@ public class S3Service {
     @Value("${aws.s3.videos-source-bucket-name}")
     private String videosSourceBucketName;
 
-    @Value("${aws.s3.profile-image-bucket-name}")
-    private String profileImageBucketName;
-
-    @Value("${aws.s3.problem-image-bucket-name}")
-    private String problemImageBucketName;
-
-    @Value("${aws.s3.climbing-gym-image-bucket-name}")
-    private String climbingGymImageBucketName;
+    @Value("${aws.s3.images-bucket-name}")
+    private String imagesBucketName;
 
     @Value("${aws.s3.presigned-url-expiration}")
     private long presignedUrlExpiration;
@@ -104,16 +98,16 @@ public class S3Service {
         FileUploadValidator.validateProfileImageParameters(userId, profileImage);
 
         // 버킷 이름이 설정되어 있지 않으면 예외 발생
-        if (profileImageBucketName == null || profileImageBucketName.isEmpty()) {
+        if (imagesBucketName == null || imagesBucketName.isEmpty()) {
             log.error("S3 bucket name is not configured");
             throw new AwsBucketNameNotConfiguredException(
                 ErrorCode.S3_BUCKET_NAME_NOT_CONFIGURED,
-                "Profile image S3 bucket name is not configured."
+                "Image S3 bucket name is not configured."
             );
         }
 
         // 버킷 존재 여부 확인
-        ensureBucketExists(profileImageBucketName);
+        ensureBucketExists(imagesBucketName);
 
         // 파일 확장자 추출
         String fileExtension = extractFileExtension(
@@ -124,7 +118,7 @@ public class S3Service {
 
         try {
             // S3에 파일 업로드
-            uploadFileToS3(profileImageBucketName, s3Key, profileImage);
+            uploadFileToS3(imagesBucketName, s3Key, profileImage);
 
             // CDN URL 생성
             String cdnUrl = generateCdnUrl(s3Key);
@@ -160,7 +154,7 @@ public class S3Service {
 
         try {
             // S3에 파일 업로드
-            uploadFileToS3(problemImageBucketName, s3Key, problemImage);
+            uploadFileToS3(imagesBucketName, s3Key, problemImage);
 
             // CDN URL 생성
             String cdnUrl = generateCdnUrl(s3Key);
@@ -192,16 +186,16 @@ public class S3Service {
             gymId, map2dImage.getOriginalFilename());
 
         // 버킷 이름이 설정되어 있지 않으면 예외 발생
-        if (climbingGymImageBucketName == null || climbingGymImageBucketName.isEmpty()) {
-            log.error("Climbing gym image S3 bucket name is not configured");
+        if (imagesBucketName == null || imagesBucketName.isEmpty()) {
+            log.error("Image S3 bucket name is not configured");
             throw new AwsBucketNameNotConfiguredException(
                 ErrorCode.S3_BUCKET_NAME_NOT_CONFIGURED,
-                "Climbing gym image S3 bucket name is not configured."
+                "Image S3 bucket name is not configured."
             );
         }
 
         // 버킷 존재 여부 확인
-        ensureBucketExists(climbingGymImageBucketName);
+        ensureBucketExists(imagesBucketName);
 
         // 입력값 검증
         if (map2dImage == null || map2dImage.isEmpty()) {
@@ -212,10 +206,10 @@ public class S3Service {
 
         try {
             // Base 이미지 업로드
-            String map2dImageKey = FileUploadUtils.generateGymMap2dImageKey(gymId,
-                map2dImage.getOriginalFilename());
+            String extension = extractFileExtension(map2dImage.getOriginalFilename());
+            String map2dImageKey = FileUploadUtils.generateGymMap2dImageKey(gymId, extension);
 
-            uploadFileToS3(climbingGymImageBucketName, map2dImageKey, map2dImage);
+            uploadFileToS3(imagesBucketName, map2dImageKey, map2dImage);
 
             String map2dImageCdnUrl = generateCdnUrl(map2dImageKey);
 
@@ -238,16 +232,16 @@ public class S3Service {
         Long gymId,
         Map<Long, MultipartFile> areaImages
     ) {
-        if (climbingGymImageBucketName == null || climbingGymImageBucketName.isEmpty()) {
-            log.error("Climbing gym image S3 bucket name is not configured");
+        if (imagesBucketName == null || imagesBucketName.isEmpty()) {
+            log.error("Image S3 bucket name is not configured");
             throw new AwsBucketNameNotConfiguredException(
                 ErrorCode.S3_BUCKET_NAME_NOT_CONFIGURED,
-                "Climbing gym image S3 bucket name is not configured."
+                "Image S3 bucket name is not configured."
             );
         }
 
         // 버킷 존재 여부 확인
-        ensureBucketExists(climbingGymImageBucketName);
+        ensureBucketExists(imagesBucketName);
 
         List<String> uploadedImageKeys = new ArrayList<>();     // 업로드가 성공한 이미지 키들을 저장할 리스트(실패 시 롤백 용도)
         Map<Long, String> areaImageCdnUrls = new HashMap<>();
@@ -260,7 +254,7 @@ public class S3Service {
                 String areaImageKey = FileUploadUtils.generateGymAreaImageKey(gymId, areaId,
                     extension);
 
-                uploadFileToS3(climbingGymImageBucketName, areaImageKey, areaImage);
+                uploadFileToS3(imagesBucketName, areaImageKey, areaImage);
                 uploadedImageKeys.add(areaImageKey);  // Area 이미지 키를 업로드 리스트에 추가
 
                 String areaImageCdnUrl = generateCdnUrl(areaImageKey);
@@ -271,7 +265,7 @@ public class S3Service {
 
         } catch (IOException e) {
             log.error("Failed to read gym area map image files: gymId={}", gymId, e);
-            cleanUpUploadedFiles(climbingGymImageBucketName, uploadedImageKeys);
+            cleanUpUploadedFiles(imagesBucketName, uploadedImageKeys);
             throw new BusinessException(
                 ErrorCode.INTERNAL_ERROR, "Failed to read gym area map image files");
         }
