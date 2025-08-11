@@ -14,4 +14,17 @@ public interface ContributionRepository extends JpaRepository<ContributionEntity
         UUID problemId,
         Pageable pageable
     );
+
+    // 조회용: 기본 투표(anonymous) 제외
+    List<ContributionEntity> findAllByProblemEntity_ProblemIdAndUserAccountEntityIsNotNullOrderByCreatedAtDesc(
+        UUID problemId,
+        Pageable pageable
+    );
+
+    // 읽기 좋은 래퍼 메서드
+    default List<ContributionEntity> findRecentUserVotes(UUID problemId, Pageable pageable) {
+        return findAllByProblemEntity_ProblemIdAndUserAccountEntityIsNotNullOrderByCreatedAtDesc(
+            problemId, pageable
+        );
+    }
 }

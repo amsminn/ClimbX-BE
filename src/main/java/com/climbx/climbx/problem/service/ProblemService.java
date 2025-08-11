@@ -8,6 +8,7 @@ import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
+import com.climbx.climbx.gym.enums.GymTierType;
 import com.climbx.climbx.gym.repository.GymAreaRepository;
 import com.climbx.climbx.problem.dto.ContributionRequestDto;
 import com.climbx.climbx.problem.dto.ContributionResponseDto;
@@ -18,6 +19,7 @@ import com.climbx.climbx.problem.entity.ContributionEntity;
 import com.climbx.climbx.problem.entity.ContributionTagEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.entity.ProblemTagEntity;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.ForbiddenProblemVoteException;
@@ -35,6 +37,7 @@ import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -61,8 +64,8 @@ public class ProblemService {
     public List<ProblemInfoResponseDto> getProblemsWithFilters(
         Long gymId,
         Long gymAreaId,
-        String localLevel,
-        String holdColor,
+        GymTierType localLevel,
+        HoldColorType holdColor,
         ProblemTierType problemTier,
         ActiveStatusType activeStatus
     ) {
@@ -96,14 +99,18 @@ public class ProblemService {
         String imageCdnUrl = s3Service.uploadProblemImage(problemId, gymArea.gymAreaId(),
             problemImage);
 
+        GymTierType localTier = request.localLevel();
+        ProblemTierType problemTier = localTier.globalTier();
+
         // Problem 엔티티 생성
         ProblemEntity problem = ProblemEntity.builder()
             .problemId(problemId)
             .gymEntity(gym)
             .gymArea(gymArea)
-            .localLevel(request.localLevel())
+            .localLevel(localTier)
             .holdColor(request.holdColor())
-            // Todo .rating()
+            .rating(problemTier.value())
+            .tier(problemTier)
             .problemImageCdnUrl(imageCdnUrl)
             .activeStatus(ActiveStatusType.ACTIVE)
             .build();
@@ -114,6 +121,16 @@ public class ProblemService {
             "Problem created successfully: problemId={}, localLevel={}, holdColor={}, imageCdnUrl={}",
             savedProblem.problemId(), savedProblem.localLevel(), savedProblem.holdColor(),
             imageCdnUrl);
+
+        // 기본 티어 투표 3건 삽입 (user/tag 없이 tier만 설정)
+        List<ContributionEntity> defaultVotes = IntStream.range(0, 3)
+            .mapToObj(i -> ContributionEntity.builder()
+                .problemEntity(savedProblem)
+                .tier(problemTier)
+                .build())
+            .toList();
+
+        contributionRepository.saveAll(defaultVotes);
 
         return ProblemCreateResponseDto.from(savedProblem);
     }
@@ -198,12 +215,12 @@ public class ProblemService {
         Pageable pageable
     ) {
         List<ContributionEntity> contributions = contributionRepository
-            .findAllByProblemEntity_ProblemIdOrderByCreatedAtDesc(problemId, pageable);
+            .findRecentUserVotes(problemId, pageable);
         return contributions.stream()
             .map(ContributionResponseDto::from)
             .toList();
     }
-    
+
     @Transactional
     public void softDeleteProblem(UUID problemId) {
         log.info("Soft deleting problem: problemId={}", problemId);

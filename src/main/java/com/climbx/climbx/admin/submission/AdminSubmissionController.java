@@ -1,8 +1,8 @@
-package com.climbx.climbx.admin.submissions.controller;
+package com.climbx.climbx.admin.submission;
 
-import com.climbx.climbx.admin.submissions.dto.SubmissionReviewRequestDto;
-import com.climbx.climbx.admin.submissions.dto.SubmissionReviewResponseDto;
-import com.climbx.climbx.admin.submissions.service.AdminSubmissionService;
+import com.climbx.climbx.admin.submission.dto.SubmissionReviewRequestDto;
+import com.climbx.climbx.admin.submission.dto.SubmissionReviewResponseDto;
+import com.climbx.climbx.admin.submission.service.AdminSubmissionService;
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

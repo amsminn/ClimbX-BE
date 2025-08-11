@@ -1,6 +1,8 @@
 package com.climbx.climbx.submission.dto;
 
 import com.climbx.climbx.common.enums.StatusType;
+import com.climbx.climbx.gym.enums.GymTierType;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,8 +13,8 @@ public record SubmissionResponseDto(
 
     UUID videoId,
     UUID problemId,
-    String problemLocalLevel,
-    String problemHoldColor,
+    GymTierType problemLocalLevel,
+    HoldColorType problemHoldColor,
     Integer problemRating,
     String gymName,
     StatusType status,

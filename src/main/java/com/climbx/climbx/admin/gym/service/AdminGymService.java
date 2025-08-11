@@ -1,4 +1,4 @@
-package com.climbx.climbx.admin.submissions.service;
+package com.climbx.climbx.admin.gym.service;
 
 import com.climbx.climbx.common.service.S3Service;
 import com.climbx.climbx.gym.entity.GymAreaEntity;

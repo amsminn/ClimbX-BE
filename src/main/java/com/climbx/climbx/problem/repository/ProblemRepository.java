@@ -1,8 +1,10 @@
 package com.climbx.climbx.problem.repository;
 
 import com.climbx.climbx.common.enums.ActiveStatusType;
+import com.climbx.climbx.gym.enums.GymTierType;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.problem.entity.ProblemEntity;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import jakarta.persistence.LockModeType;
 import java.util.List;
@@ -44,8 +46,8 @@ public interface ProblemRepository extends JpaRepository<ProblemEntity, UUID> {
     List<ProblemInfoResponseDto> findByGymAndAreaAndLevelAndColorAndProblemTierAndActiveStatus(
         @Param("gymId") Long gymId,
         @Param("gymAreaId") Long gymAreaId,
-        @Param("localLevel") String localLevel,
-        @Param("holdColor") String holdColor,
+        @Param("localLevel") GymTierType localLevel,
+        @Param("holdColor") HoldColorType holdColor,
         @Param("problemTier") ProblemTierType problemTier,
         @Param("activeStatus") ActiveStatusType activeStatus
     );

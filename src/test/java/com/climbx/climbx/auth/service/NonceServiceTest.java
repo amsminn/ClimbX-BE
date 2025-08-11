@@ -77,7 +77,8 @@ class NonceServiceTest {
         @DisplayName("null, 빈 문자열, 공백만 있는 nonce로 검증 시 IllegalArgumentException을 던진다")
         void shouldThrowIllegalArgumentExceptionWhenNonceIsInvalid(String nonce) {
             // when & then
-            assertThatThrownBy(() -> nonceService.validateAndUseNonce(nonce, OAuth2ProviderType.KAKAO))
+            assertThatThrownBy(
+                () -> nonceService.validateAndUseNonce(nonce, OAuth2ProviderType.KAKAO))
                 .isInstanceOf(InvalidNonceException.class);
 
             then(usedNonces).should(never()).getIfPresent(anyString());

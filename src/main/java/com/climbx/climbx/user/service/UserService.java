@@ -163,7 +163,7 @@ public class UserService {
         );
     }
 
-    private UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
+    public UserProfileResponseDto buildProfile(UserAccountEntity userAccount) {
         Long userId = userAccount.userId();
 
         UserStatEntity userStat = findUserStatByUserId(userId);

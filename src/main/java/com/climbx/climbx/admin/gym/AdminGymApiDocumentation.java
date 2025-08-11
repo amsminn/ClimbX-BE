@@ -1,4 +1,4 @@
-package com.climbx.climbx.admin.submissions.controller;
+package com.climbx.climbx.admin.gym;
 
 import com.climbx.climbx.common.dto.ApiResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
