@@ -21,6 +21,7 @@ import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.dto.RatingResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
@@ -127,7 +128,15 @@ class AdminSubmissionServiceTest {
                 userStat.submissionCount(),
                 userStat.solvedCount() + 1, // incrementSolvedProblemsCount 호출 후
                 userStat.contributionCount()
-            )).willReturn(newRating);
+            )).willReturn(
+                RatingResponseDto.builder()
+                    .totalRating(newRating)
+                    .topProblemRating(0)
+                    .submissionRating(0)
+                    .solvedRating(0)
+                    .contributionRating(0)
+                    .build()
+            );
 
             // When
             SubmissionReviewResponseDto result = adminSubmissionService.reviewSubmission(videoId,

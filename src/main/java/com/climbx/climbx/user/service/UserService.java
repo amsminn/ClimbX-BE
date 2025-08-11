@@ -8,6 +8,7 @@ import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
+import com.climbx.climbx.user.dto.RatingResponseDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
 import com.climbx.climbx.user.dto.UserProfileInfoModifyRequestDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
@@ -176,10 +177,29 @@ public class UserService {
             submissionRepository.getUserAcceptedSubmissionTagSummary(userId, null)
         );
 
+        Integer totalRating = userStat.rating();
+        Integer topProblemRating = userStat.topProblemRating();
+        Integer submissionRating = 10 * Math.min(50, userStat.submissionCount());
+        Integer solvedRating = (int) Math.round(
+            1000 * (1 - Math.pow(0.98, userStat.solvedCount()))
+        );
+        Integer contributionRating = (int) Math.round(
+            100 * (1 - Math.pow(0.9, userStat.contributionCount()))
+        );
+
+        RatingResponseDto rating = RatingResponseDto.builder()
+            .totalRating(totalRating)
+            .topProblemRating(topProblemRating)
+            .submissionRating(submissionRating)
+            .solvedRating(solvedRating)
+            .contributionRating(contributionRating)
+            .build();
+
         return UserProfileResponseDto.from(
             userAccount,
             userStat,
             tier,
+            rating,
             ratingRank,
             categoryRatings
         );

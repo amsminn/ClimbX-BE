@@ -17,7 +17,7 @@ public record UserProfileResponseDto(
 
     Integer ranking,
 
-    Integer rating,
+    RatingResponseDto rating,
 
     UserTierType tier,
 
@@ -40,6 +40,7 @@ public record UserProfileResponseDto(
         UserAccountEntity account,
         UserStatEntity stat,
         UserTierType tier,
+        RatingResponseDto rating,
         Integer ranking,
         List<TagRatingResponseDto> categoryRatings
     ) {
@@ -50,7 +51,7 @@ public record UserProfileResponseDto(
             .tier(tier)
             .profileImageCdnUrl(account.profileImageCdnUrl())
             .ranking(ranking)
-            .rating(stat.rating())
+            .rating(rating)
             .categoryRatings(categoryRatings)
             .currentStreak(stat.currentStreak())
             .longestStreak(stat.longestStreak())

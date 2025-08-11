@@ -32,6 +32,7 @@ public enum ErrorCode {
     TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "요청 시간이 초과되었습니다."),
     SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "서비스를 사용할 수 없습니다."),
     INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "유효하지 않은 Enum 값입니다."),
+    EMPTY_VOTE(HttpStatus.BAD_REQUEST, "투표가 비어 있습니다."),
 
     /**
      * User errors

@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 @RequiredArgsConstructor
 public enum GymTierType {
 
+    WHITE("하양", ProblemTierType.B3),
     YELLOW("노랑", ProblemTierType.B2),
     ORANGE("주황", ProblemTierType.B1),
     GREEN("초록", ProblemTierType.S2),
