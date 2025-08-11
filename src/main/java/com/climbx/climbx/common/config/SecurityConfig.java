@@ -29,13 +29,14 @@ public class SecurityConfig {
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
                 auth
+                    .requestMatchers(HttpMethod.GET, "/api/admin/health-check").permitAll()
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     .requestMatchers("/api/auth/me").authenticated()
                     .requestMatchers("/api/auth/signout").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/api/users/*").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/api/users/**").authenticated()
                     .requestMatchers(HttpMethod.POST, "/api/videos/upload").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/submissions/*").authenticated()
-                    .requestMatchers(HttpMethod.PATCH, "/api/submissions/*").authenticated()
+                    .requestMatchers(HttpMethod.POST, "/api/submissions/**").authenticated()
+                    .requestMatchers(HttpMethod.PATCH, "/api/submissions/**").authenticated()
                     .requestMatchers(HttpMethod.POST, "/api/problems/*").authenticated()
                     .anyRequest().permitAll()
             )
