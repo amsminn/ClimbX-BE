@@ -179,13 +179,9 @@ public class UserService {
 
         Integer totalRating = userStat.rating();
         Integer topProblemRating = userStat.topProblemRating();
-        Integer submissionRating = 10 * Math.min(50, userStat.submissionCount());
-        Integer solvedRating = (int) Math.round(
-            1000 * (1 - Math.pow(0.98, userStat.solvedCount()))
-        );
-        Integer contributionRating = (int) Math.round(
-            100 * (1 - Math.pow(0.9, userStat.contributionCount()))
-        );
+        Integer submissionRating = RatingUtil.calculateSubmissionScore(userStat.submissionCount());
+        Integer solvedRating = RatingUtil.calculateSolvedScore(userStat.solvedCount());
+        Integer contributionRating = RatingUtil.calculateContributionScore(userStat.contributionCount());
 
         RatingResponseDto rating = RatingResponseDto.builder()
             .totalRating(totalRating)

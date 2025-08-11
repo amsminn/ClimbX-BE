@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.climbx.climbx.common.enums.CriteriaType;
+import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
 import com.climbx.climbx.user.dto.RatingResponseDto;
@@ -151,7 +152,7 @@ public class UserFixture {
                     .totalRating(rating)
                     .topProblemRating(0)
                     .submissionRating(0)
-                    .solvedRating((int) Math.round(1000 * (1 - Math.pow(0.98, DEFAULT_SOLVED_PROBLEMS_COUNT))))
+                    .solvedRating(RatingUtil.calculateSolvedScore(DEFAULT_SOLVED_PROBLEMS_COUNT))
                     .contributionRating(0)
                     .build()
             )
@@ -187,7 +188,7 @@ public class UserFixture {
                     .totalRating(rating)
                     .topProblemRating(0)
                     .submissionRating(0)
-                    .solvedRating((int) Math.round(1000 * (1 - Math.pow(0.98, solvedProblemsCount))))
+                    .solvedRating(RatingUtil.calculateSolvedScore(solvedProblemsCount))
                     .contributionRating(0)
                     .build()
             )

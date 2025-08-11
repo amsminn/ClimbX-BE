@@ -23,6 +23,18 @@ import org.springframework.stereotype.Component;
 public class RatingUtil {
 
     static final int CATEGORY_TYPE_LIMIT = 8;
+    
+    public static int calculateSubmissionScore(int submissionCount) {
+        return 10 * Math.min(submissionCount, 50);
+    }
+
+    public static int calculateSolvedScore(int solvedCount) {
+        return (int) Math.round(1000 * (1 - Math.pow(0.98, solvedCount)));
+    }
+
+    public static int calculateContributionScore(int contributionCount) {
+        return (int) Math.round(100 * (1 - Math.pow(0.9, contributionCount)));
+    }
 
     public RatingResponseDto calculateUserRating(
         List<Integer> topProblemRatings,
@@ -35,11 +47,11 @@ public class RatingUtil {
             .map(rating -> ProblemTierType.fromValue(rating).value())
             .sum();
 
-        int submissionCountScore = 10 * Math.min(submissionCount, 50);
+        int submissionCountScore = calculateSubmissionScore(submissionCount);
 
-        int solvedCountScore = (int) Math.round(1000 * (1 - Math.pow(0.98, solvedCount)));
+        int solvedCountScore = calculateSolvedScore(solvedCount);
 
-        int contributionScore = (int) Math.round(100 * (1 - Math.pow(0.9, contributionCount)));
+        int contributionScore = calculateContributionScore(contributionCount);
 
         int totalRating =
             topProblemScore + submissionCountScore + solvedCountScore + contributionScore;
