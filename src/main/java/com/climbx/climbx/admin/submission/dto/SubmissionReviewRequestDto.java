@@ -1,4 +1,4 @@
-package com.climbx.climbx.admin.submissions.dto;
+package com.climbx.climbx.admin.submission.dto;
 
 import com.climbx.climbx.common.enums.StatusType;
 import jakarta.validation.constraints.NotBlank;

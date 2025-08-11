@@ -1,4 +1,4 @@
-package com.climbx.climbx.admin.submissions.exception;
+package com.climbx.climbx.admin.submission.exception;
 
 import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.exception.BusinessException;

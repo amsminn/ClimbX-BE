@@ -6,9 +6,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-import com.climbx.climbx.admin.submissions.dto.SubmissionReviewRequestDto;
-import com.climbx.climbx.admin.submissions.dto.SubmissionReviewResponseDto;
-import com.climbx.climbx.admin.submissions.exception.StatusModifyToPendingException;
+import com.climbx.climbx.admin.submission.dto.SubmissionReviewRequestDto;
+import com.climbx.climbx.admin.submission.dto.SubmissionReviewResponseDto;
+import com.climbx.climbx.admin.submission.exception.StatusModifyToPendingException;
+import com.climbx.climbx.admin.submission.service.AdminSubmissionService;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.fixture.GymAreaFixture;

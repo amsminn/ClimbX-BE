@@ -1,6 +1,6 @@
-package com.climbx.climbx.admin.submissions.controller;
+package com.climbx.climbx.admin.gym;
 
-import com.climbx.climbx.admin.submissions.service.AdminGymService;
+import com.climbx.climbx.admin.gym.service.AdminGymService;
 import com.climbx.climbx.common.annotation.SuccessStatus;
 import java.util.HashMap;
 import java.util.Map;
