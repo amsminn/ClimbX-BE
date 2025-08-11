@@ -15,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -144,18 +143,5 @@ class UserController implements UserApiDocumentation {
         log.info("사용자 히스토리 그래프 데이터 조회: nickname={}, criteria={}, from={}, to={}",
             nickname, criteria, from, to);
         return userService.getUserDailyHistory(nickname, criteria, from, to);
-    }
-
-    @PatchMapping("/{nickname}/rating")
-    @SuccessStatus(value = HttpStatus.OK)
-    public UserProfileResponseDto updateUserRating(
-        @PathVariable
-        String nickname,
-
-        @RequestBody
-        Integer rating
-    ) {
-        log.info("사용자 등급 업데이트: nickname={}, rating={}", nickname, rating);
-        return userService.updateRating(nickname, rating);
     }
 }
