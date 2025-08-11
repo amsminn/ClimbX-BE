@@ -19,6 +19,7 @@ import com.climbx.climbx.problem.entity.ContributionEntity;
 import com.climbx.climbx.problem.entity.ContributionTagEntity;
 import com.climbx.climbx.problem.entity.ProblemEntity;
 import com.climbx.climbx.problem.entity.ProblemTagEntity;
+import com.climbx.climbx.problem.enums.HoldColorType;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.problem.exception.ForbiddenProblemVoteException;
@@ -64,7 +65,7 @@ public class ProblemService {
         Long gymId,
         Long gymAreaId,
         GymTierType localLevel,
-        com.climbx.climbx.problem.enums.HoldColorType holdColor,
+        HoldColorType holdColor,
         ProblemTierType problemTier,
         ActiveStatusType activeStatus
     ) {
