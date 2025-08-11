@@ -1,9 +1,11 @@
 package com.climbx.climbx.common.util;
 
+import com.climbx.climbx.common.exception.EmptyVoteException;
 import com.climbx.climbx.problem.dto.TagRatingPairDto;
 import com.climbx.climbx.problem.dto.VoteTierDto;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
+import com.climbx.climbx.user.dto.RatingResponseDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -21,8 +23,20 @@ import org.springframework.stereotype.Component;
 public class RatingUtil {
 
     static final int CATEGORY_TYPE_LIMIT = 8;
+    
+    public static int calculateSubmissionScore(int submissionCount) {
+        return 10 * Math.min(submissionCount, 50);
+    }
 
-    public int calculateUserRating(
+    public static int calculateSolvedScore(int solvedCount) {
+        return (int) Math.round(1000 * (1 - Math.pow(0.98, solvedCount)));
+    }
+
+    public static int calculateContributionScore(int contributionCount) {
+        return (int) Math.round(100 * (1 - Math.pow(0.9, contributionCount)));
+    }
+
+    public RatingResponseDto calculateUserRating(
         List<Integer> topProblemRatings,
         int submissionCount,
         int solvedCount,
@@ -33,13 +47,22 @@ public class RatingUtil {
             .map(rating -> ProblemTierType.fromValue(rating).value())
             .sum();
 
-        int submissionCountScore = 10 * Math.min(submissionCount, 50);
+        int submissionCountScore = calculateSubmissionScore(submissionCount);
 
-        int solvedCountScore = (int) Math.round(1000 * (1 - Math.pow(0.98, solvedCount)));
+        int solvedCountScore = calculateSolvedScore(solvedCount);
 
-        int contributionScore = (int) Math.round(100 * (1 - Math.pow(0.9, contributionCount)));
+        int contributionScore = calculateContributionScore(contributionCount);
 
-        return topProblemScore + submissionCountScore + solvedCountScore + contributionScore;
+        int totalRating =
+            topProblemScore + submissionCountScore + solvedCountScore + contributionScore;
+
+        return RatingResponseDto.builder()
+            .totalRating(totalRating)
+            .topProblemRating(topProblemScore)
+            .submissionRating(submissionCountScore)
+            .solvedRating(solvedCountScore)
+            .contributionRating(contributionScore)
+            .build();
     }
 
     public List<TagRatingResponseDto> calculateCategoryRating(
@@ -100,8 +123,7 @@ public class RatingUtil {
      */
     public Integer calculateProblemTier(List<VoteTierDto> voteTiers) {
         if (voteTiers.isEmpty()) {
-            // TODO: 암장의 난이도 분포에 따른 기본 티어 설정 로직 필요
-            return ProblemTierType.B3.value();
+            throw new EmptyVoteException();
         }
 
         LocalDateTime lastVoteTime = voteTiers.getLast().dateTime();

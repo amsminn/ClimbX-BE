@@ -9,6 +9,7 @@ import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
+import com.climbx.climbx.user.dto.RatingResponseDto;
 import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserStatRepository;
@@ -63,18 +64,20 @@ public class AdminSubmissionService {
 
         if (submission.status() == StatusType.ACCEPTED) {
             userStat.incrementSolvedProblemsCount();
-            int newRating = ratingUtil.calculateUserRating(
+            RatingResponseDto rating = ratingUtil.calculateUserRating(
                 getUserTopProblemRatings(userId),
                 userStat.submissionCount(),
                 userStat.solvedCount(),
                 userStat.contributionCount()
             );
 
-            userStat.setRating(newRating);
+            userStat.setRating(rating.totalRating());
+            userStat.setTopProblemRating(rating.topProblemRating());
             // Category Rating은 batch에서 처리
 
-            log.info("User {} (ID: {}) new rating: {}", userStat.userAccountEntity().nickname(),
-                userId, newRating);
+            log.info("User {} (ID: {}) new rating: {}",
+                userStat.userAccountEntity().nickname(),
+                userId, rating.totalRating());
         }
 
         return SubmissionReviewResponseDto.builder()

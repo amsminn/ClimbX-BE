@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -42,7 +43,14 @@ public class UserStatEntity extends BaseTimeEntity {
     @Column(name = "rating", nullable = false)
     @NotNull
     @Min(0)
+    @Max(3100)
     private Integer rating = 0; // 레이팅, 기본값은 0
+
+    @Builder.Default
+    @Column(name = "top_problem_rating", nullable = false)
+    @NotNull
+    @Min(0)
+    private Integer topProblemRating = 0; // 상위 50문제 레이팅 합
 
     @Builder.Default
     @Column(name = "current_streak", nullable = false)
@@ -88,7 +96,15 @@ public class UserStatEntity extends BaseTimeEntity {
         this.solvedCount++;
     }
 
+    public void incrementContributionCount() {
+        this.contributionCount++;
+    }
+
     public void setRating(Integer rating) {
         this.rating = rating;
+    }
+
+    public void setTopProblemRating(Integer topProblemRating) {
+        this.topProblemRating = topProblemRating;
     }
 }

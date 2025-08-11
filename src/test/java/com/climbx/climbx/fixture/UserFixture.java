@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.climbx.climbx.common.enums.CriteriaType;
+import com.climbx.climbx.common.util.RatingUtil;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
+import com.climbx.climbx.user.dto.RatingResponseDto;
 import com.climbx.climbx.user.dto.UserProfileResponseDto;
 import com.climbx.climbx.user.entity.UserAccountEntity;
 import com.climbx.climbx.user.entity.UserRankingHistoryEntity;
@@ -13,7 +15,7 @@ import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.enums.UserTierType;
 import com.climbx.climbx.user.repository.UserStatRepository;
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.Collections;   
 import java.util.List;
 import java.util.Optional;
 
@@ -145,7 +147,15 @@ public class UserFixture {
             .statusMessage(DEFAULT_STATUS_MESSAGE)
             .profileImageCdnUrl(DEFAULT_PROFILE_IMAGE_URL)
             .ranking(ranking)
-            .rating(rating)
+            .rating(
+                RatingResponseDto.builder()
+                    .totalRating(rating)
+                    .topProblemRating(0)
+                    .submissionRating(0)
+                    .solvedRating(RatingUtil.calculateSolvedScore(DEFAULT_SOLVED_PROBLEMS_COUNT))
+                    .contributionRating(0)
+                    .build()
+            )
             .tier(UserTierType.fromValue(rating))
             .categoryRatings(Collections.emptyList())
             .currentStreak(DEFAULT_CURRENT_STREAK)
@@ -173,7 +183,15 @@ public class UserFixture {
             .statusMessage(statusMessage)
             .profileImageCdnUrl(profileImageUrl)
             .ranking(ranking)
-            .rating(rating)
+            .rating(
+                RatingResponseDto.builder()
+                    .totalRating(rating)
+                    .topProblemRating(0)
+                    .submissionRating(0)
+                    .solvedRating(RatingUtil.calculateSolvedScore(solvedProblemsCount))
+                    .contributionRating(0)
+                    .build()
+            )
             .tier(UserTierType.fromValue(rating))
             .categoryRatings(Collections.emptyList())
             .currentStreak(currentStreak)
@@ -259,8 +277,8 @@ public class UserFixture {
         int expectedRanking
     ) {
         assertThat(actual.nickname()).isEqualTo(expectedNickname);
-        assertThat(actual.rating()).isEqualTo((long) expectedRating);
-        assertThat(actual.ranking()).isEqualTo((long) expectedRanking);
+        assertThat(actual.rating().totalRating()).isEqualTo(expectedRating);
+        assertThat(actual.ranking()).isEqualTo(expectedRanking);
     }
 
     // DailyHistoryResponseDto 생성 메서드들

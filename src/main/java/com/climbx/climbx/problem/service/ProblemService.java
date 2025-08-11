@@ -33,6 +33,7 @@ import com.climbx.climbx.problem.repository.ProblemTagRepository;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.entity.UserAccountEntity;
+import com.climbx.climbx.user.entity.UserStatEntity;
 import com.climbx.climbx.user.exception.UserNotFoundException;
 import com.climbx.climbx.user.repository.UserAccountRepository;
 import java.util.List;
@@ -206,6 +207,9 @@ public class ProblemService {
             newProblemTier,
             primary2tags
         );
+
+        UserStatEntity userStat = user.userStatEntity();
+        userStat.incrementContributionCount();
 
         return ProblemInfoResponseDto.from(problem, problem.gymEntity(), problem.gymArea());
     }
