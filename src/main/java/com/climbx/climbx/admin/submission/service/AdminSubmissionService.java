@@ -72,9 +72,11 @@ public class AdminSubmissionService {
             );
 
             userStat.setRating(rating.totalRating());
+            userStat.setTopProblemRating(rating.topProblemRating());
             // Category Rating은 batch에서 처리
 
-            log.info("User {} (ID: {}) new rating: {}", userStat.userAccountEntity().nickname(),
+            log.info("User {} (ID: {}) new rating: {}",
+                userStat.userAccountEntity().nickname(),
                 userId, rating.totalRating());
         }
 

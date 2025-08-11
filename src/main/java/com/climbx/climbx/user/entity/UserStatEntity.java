@@ -103,4 +103,8 @@ public class UserStatEntity extends BaseTimeEntity {
     public void setRating(Integer rating) {
         this.rating = rating;
     }
+
+    public void setTopProblemRating(Integer topProblemRating) {
+        this.topProblemRating = topProblemRating;
+    }
 }
