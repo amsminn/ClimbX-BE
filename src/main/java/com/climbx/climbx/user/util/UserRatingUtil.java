@@ -1,14 +1,10 @@
-package com.climbx.climbx.common.util;
+package com.climbx.climbx.user.util;
 
-import com.climbx.climbx.common.exception.EmptyVoteException;
 import com.climbx.climbx.problem.dto.TagRatingPairDto;
-import com.climbx.climbx.problem.dto.VoteTierDto;
 import com.climbx.climbx.problem.enums.ProblemTagType;
 import com.climbx.climbx.problem.enums.ProblemTierType;
 import com.climbx.climbx.user.dto.RatingResponseDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RatingUtil {
+public class UserRatingUtil {
 
     static final int CATEGORY_TYPE_LIMIT = 8;
     
@@ -121,37 +117,5 @@ public class RatingUtil {
             .toList();
         
         return allCategoryRatings.subList(0, Math.min(CATEGORY_TYPE_LIMIT, allCategoryRatings.size()));
-    }
-
-    /**
-     * 문제의 난이도 티어를 계산합니다.
-     *
-     * @param voteTiers 투표 티어 목록(sorted by dateTime)
-     * @return 문제의 난이도 티어
-     */
-    public Integer calculateProblemTier(List<VoteTierDto> voteTiers) {
-        if (voteTiers.isEmpty()) {
-            throw new EmptyVoteException();
-        }
-
-        LocalDateTime lastVoteTime = voteTiers.getLast().dateTime();
-        int lastVoteIndex = voteTiers.size() - 1;
-
-        double weightedTierSum = 0.0;
-        double weightSum = 0.0;
-        for (int i = 0; i < voteTiers.size(); i++) {
-            VoteTierDto vote = voteTiers.get(i);
-
-            double indexDiffReliability = Math.pow(0.9, lastVoteIndex - i);
-            double dateDiffReliability = Math.pow(0.5, Duration.between(
-                vote.dateTime(), lastVoteTime).toDays());
-
-            double weight = Math.max(indexDiffReliability, dateDiffReliability);
-
-            weightedTierSum += vote.tier().value() * weight;
-            weightSum += weight;
-        }
-
-        return (int) Math.round(weightedTierSum / weightSum);
     }
 }

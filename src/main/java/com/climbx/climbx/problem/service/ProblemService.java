@@ -5,7 +5,7 @@ import com.climbx.climbx.common.enums.ErrorCode;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.exception.InvalidParameterException;
 import com.climbx.climbx.common.service.S3Service;
-import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.problem.util.ProblemRatingUtil;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
 import com.climbx.climbx.gym.entity.GymEntity;
 import com.climbx.climbx.gym.enums.GymTierType;
@@ -59,7 +59,7 @@ public class ProblemService {
     private final ContributionRepository contributionRepository;
     private final ContributionTagRepository contributionTagRepository;
     private final ProblemTagRepository problemTagRepository;
-    private final RatingUtil ratingUtil;
+    private final ProblemRatingUtil problemRatingUtil;
     private final S3Service s3Service;
 
     public List<ProblemInfoResponseDto> getProblemsWithFilters(
@@ -187,7 +187,7 @@ public class ProblemService {
             });
         }
 
-        Integer newProblemRating = ratingUtil.calculateProblemTier(
+        Integer newProblemRating = problemRatingUtil.calculateProblemTier(
             contributionRepository.findAllByProblemEntity_ProblemId(problem.problemId())
                 .stream()
                 .map(ContributionEntity::toVoteTierDto)
