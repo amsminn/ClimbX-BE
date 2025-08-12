@@ -183,3 +183,23 @@ Database initialization data available in `src/main/resources/db/init/data.sql`.
 - SpringDoc OpenAPI for documentation
 - Caffeine for caching
 - Checkstyle with Google style guide
+
+## Git Commit Guidelines
+
+### Commit Message Format
+- **DO NOT** include Claude Code author information in commit messages
+- Use conventional commit format: `type: description`
+- Keep commit messages concise and focused on actual changes
+- Example: `feat: add user authentication system`
+
+### Pull Request Guidelines
+- **ALWAYS** reference the PR template at `.github/pull_request_template.md`
+- Follow the template structure:
+  - 📝 작업 내용 (Description)
+  - ✨ 변경 사항 (Changes)
+  - ✅ 테스트 방법 (How to Test)
+  - 💬 리뷰어에게 (To Reviewer)
+  - 🚀관련 이슈 (Related Issue)
+  - 📋 앞으로의 과제 (Todo)
+- Use Korean language for all descriptions
+- Include relevant issue references (e.g., Closes: SWM-XXX)
