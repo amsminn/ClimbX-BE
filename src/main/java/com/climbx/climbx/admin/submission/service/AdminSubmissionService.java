@@ -4,7 +4,7 @@ import com.climbx.climbx.admin.submission.dto.SubmissionReviewRequestDto;
 import com.climbx.climbx.admin.submission.dto.SubmissionReviewResponseDto;
 import com.climbx.climbx.admin.submission.exception.StatusModifyToPendingException;
 import com.climbx.climbx.common.enums.StatusType;
-import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.user.util.UserRatingUtil;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.submission.entity.SubmissionEntity;
 import com.climbx.climbx.submission.exception.PendingSubmissionNotFoundException;
@@ -29,7 +29,7 @@ public class AdminSubmissionService {
 
     private final SubmissionRepository submissionRepository;
     private final UserStatRepository userStatRepository;
-    private final RatingUtil ratingUtil;
+    private final UserRatingUtil userRatingUtil;
 
     @Transactional
     public SubmissionReviewResponseDto reviewSubmission(
@@ -64,7 +64,7 @@ public class AdminSubmissionService {
 
         if (submission.status() == StatusType.ACCEPTED) {
             userStat.incrementSolvedProblemsCount();
-            RatingResponseDto rating = ratingUtil.calculateUserRating(
+            RatingResponseDto rating = userRatingUtil.calculateUserRating(
                 getUserTopProblemRatings(userId),
                 userStat.submissionCount(),
                 userStat.solvedCount(),

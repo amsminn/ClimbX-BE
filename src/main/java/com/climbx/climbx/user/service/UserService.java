@@ -4,7 +4,7 @@ import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.service.S3Service;
-import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.user.util.UserRatingUtil;
 import com.climbx.climbx.problem.dto.ProblemInfoResponseDto;
 import com.climbx.climbx.submission.repository.SubmissionRepository;
 import com.climbx.climbx.user.dto.DailyHistoryResponseDto;
@@ -43,7 +43,7 @@ public class UserService {
     private final SubmissionRepository submissionRepository;
     private final UserRankingHistoryRepository userRankingHistoryRepository;
     private final S3Service s3Service;
-    private final RatingUtil ratingUtil;
+    private final UserRatingUtil userRatingUtil;
 
     public List<UserProfileResponseDto> getUsers(String search) {
         List<UserAccountEntity> userAccounts;
@@ -172,16 +172,16 @@ public class UserService {
         Integer ratingRank = userStatRepository.findRankByRatingAndUpdatedAtAndUserId(
             userStat.rating(), userStat.updatedAt(), userId);
 
-        List<TagRatingResponseDto> categoryRatings = ratingUtil.calculateCategoryRating(
+        List<TagRatingResponseDto> categoryRatings = userRatingUtil.calculateCategoryRating(
             submissionRepository.getUserAcceptedSubmissionTagSummary(userId, StatusType.ACCEPTED),
             submissionRepository.getUserAcceptedSubmissionTagSummary(userId, null)
         );
 
         Integer totalRating = userStat.rating();
         Integer topProblemRating = userStat.topProblemRating();
-        Integer submissionRating = RatingUtil.calculateSubmissionScore(userStat.submissionCount());
-        Integer solvedRating = RatingUtil.calculateSolvedScore(userStat.solvedCount());
-        Integer contributionRating = RatingUtil.calculateContributionScore(userStat.contributionCount());
+        Integer submissionRating = UserRatingUtil.calculateSubmissionScore(userStat.submissionCount());
+        Integer solvedRating = UserRatingUtil.calculateSolvedScore(userStat.solvedCount());
+        Integer contributionRating = UserRatingUtil.calculateContributionScore(userStat.contributionCount());
 
         RatingResponseDto rating = RatingResponseDto.builder()
             .totalRating(totalRating)

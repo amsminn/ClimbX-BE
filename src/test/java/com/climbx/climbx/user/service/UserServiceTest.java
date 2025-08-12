@@ -14,7 +14,7 @@ import com.climbx.climbx.common.enums.CriteriaType;
 import com.climbx.climbx.common.enums.RoleType;
 import com.climbx.climbx.common.enums.StatusType;
 import com.climbx.climbx.common.service.S3Service;
-import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.user.util.UserRatingUtil;
 import com.climbx.climbx.fixture.ProblemFixture;
 import com.climbx.climbx.fixture.UserFixture;
 import com.climbx.climbx.gym.enums.GymTierType;
@@ -68,7 +68,7 @@ public class UserServiceTest {
     private S3Service s3Service;
 
     @Mock
-    private RatingUtil ratingUtil;
+    private UserRatingUtil userRatingUtil;
 
     @InjectMocks
     private UserService userService;
@@ -80,7 +80,7 @@ public class UserServiceTest {
         @BeforeEach
         void setUpGetUsersCommon() {
             // 모든 사용자 조회 테스트에서 공통으로 사용되는 설정
-            lenient().when(ratingUtil.calculateCategoryRating(any(), any())).thenReturn(List.of());
+            lenient().when(userRatingUtil.calculateCategoryRating(any(), any())).thenReturn(List.of());
             lenient().when(submissionRepository.getUserAcceptedSubmissionTagSummary(any(), any()))
                 .thenReturn(List.of());
         }
@@ -616,7 +616,7 @@ public class UserServiceTest {
 
         @BeforeEach
         void setUpTopProblemsCommon() {
-            lenient().when(ratingUtil.calculateCategoryRating(any(), any())).thenReturn(List.of());
+            lenient().when(userRatingUtil.calculateCategoryRating(any(), any())).thenReturn(List.of());
             lenient().when(submissionRepository.getUserAcceptedSubmissionTagSummary(any(), any()))
                 .thenReturn(List.of());
         }

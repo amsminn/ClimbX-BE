@@ -11,7 +11,7 @@ import com.climbx.climbx.admin.submission.dto.SubmissionReviewResponseDto;
 import com.climbx.climbx.admin.submission.exception.StatusModifyToPendingException;
 import com.climbx.climbx.admin.submission.service.AdminSubmissionService;
 import com.climbx.climbx.common.enums.StatusType;
-import com.climbx.climbx.common.util.RatingUtil;
+import com.climbx.climbx.user.util.UserRatingUtil;
 import com.climbx.climbx.fixture.GymAreaFixture;
 import com.climbx.climbx.fixture.GymFixture;
 import com.climbx.climbx.gym.entity.GymAreaEntity;
@@ -53,7 +53,7 @@ class AdminSubmissionServiceTest {
     private UserStatRepository userStatRepository;
 
     @Mock
-    private RatingUtil ratingUtil;
+    private UserRatingUtil userRatingUtil;
 
     @Nested
     @DisplayName("reviewSubmission 메서드 테스트")
@@ -123,7 +123,7 @@ class AdminSubmissionServiceTest {
             given(submissionRepository.getUserTopProblems(userId, StatusType.ACCEPTED,
                 Pageable.ofSize(50)))
                 .willReturn(topProblems);
-            given(ratingUtil.calculateUserRating(
+            given(userRatingUtil.calculateUserRating(
                 List.of(1300, 1250, 1200),
                 userStat.submissionCount(),
                 userStat.solvedCount() + 1, // incrementSolvedProblemsCount 호출 후
@@ -153,7 +153,7 @@ class AdminSubmissionServiceTest {
             then(userStatRepository).should(times(1)).findById(userId);
             then(submissionRepository).should(times(1))
                 .getUserTopProblems(userId, StatusType.ACCEPTED, Pageable.ofSize(50));
-            then(ratingUtil).should(times(1))
+            then(userRatingUtil).should(times(1))
                 .calculateUserRating(List.of(1300, 1250, 1200), 10, 6, 3);
         }
 
@@ -254,7 +254,7 @@ class AdminSubmissionServiceTest {
             // REJECTED의 경우 레이팅 계산 관련 메서드는 호출되지 않아야 함
             then(submissionRepository).should(times(0))
                 .getUserTopProblems(userId, StatusType.ACCEPTED, Pageable.ofSize(50));
-            then(ratingUtil).should(times(0))
+            then(userRatingUtil).should(times(0))
                 .calculateUserRating(org.mockito.ArgumentMatchers.any(),
                     org.mockito.ArgumentMatchers.anyInt(),
                     org.mockito.ArgumentMatchers.anyInt(),
