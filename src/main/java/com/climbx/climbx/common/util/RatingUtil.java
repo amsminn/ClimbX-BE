@@ -9,6 +9,7 @@ import com.climbx.climbx.user.dto.RatingResponseDto;
 import com.climbx.climbx.user.dto.TagRatingResponseDto;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,9 @@ public class RatingUtil {
                 Collectors.mapping(TagRatingPairDto::rating, Collectors.toList())
             ));
 
-        return allByTag.keySet().stream()
+        record TagRatingWithPriority(TagRatingResponseDto dto, int priority) {}
+        
+        List<TagRatingResponseDto> allCategoryRatings = Arrays.stream(ProblemTagType.values())
             .map(tag -> {
                 List<Integer> solvedRatings = solvedByTag.getOrDefault(tag, List.of());
                 List<Integer> allRatings = allByTag.getOrDefault(tag, List.of());
@@ -105,14 +108,19 @@ public class RatingUtil {
                 int solvedCountScore = (int) Math.round(
                     1000 * (1 - Math.pow(0.98, solvedRatings.size()))
                 );
-                return TagRatingResponseDto.builder()
+                TagRatingResponseDto dto = TagRatingResponseDto.builder()
                     .category(tag.displayName())
                     .rating(
                         topProblemScore + allSubmissionScore + solvedCountScore
-                    ).build();
-            }).sorted(Comparator.comparing(TagRatingResponseDto::rating).reversed())
-            .toList()
-            .subList(0, Math.min(CATEGORY_TYPE_LIMIT, allByTag.size()));
+                    )
+                    .build();
+                return new TagRatingWithPriority(dto, tag.priority());
+            }).sorted(Comparator.comparing((TagRatingWithPriority t) -> t.dto().rating()).reversed()
+                .thenComparing(t -> t.priority()))
+            .map(TagRatingWithPriority::dto)
+            .toList();
+        
+        return allCategoryRatings.subList(0, Math.min(CATEGORY_TYPE_LIMIT, allCategoryRatings.size()));
     }
 
     /**
