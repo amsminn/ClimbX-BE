@@ -61,7 +61,7 @@ public class UserAuthEntity extends BaseTimeEntity {
     @NotNull
     private UserAccountEntity userAccountEntity;
 
-    @Column(name = "provider", length = 32, nullable = false)
+    @Column(name = "provider", columnDefinition = "varchar(32)", nullable = false)
     @NotNull
     @Enumerated(EnumType.STRING)
     private OAuth2ProviderType provider; // OAuth2 provider (e.g. KAKAO)

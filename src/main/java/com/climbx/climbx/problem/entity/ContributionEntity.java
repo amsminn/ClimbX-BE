@@ -49,7 +49,7 @@ public class ContributionEntity extends BaseTimeEntity {
     private Long contributionId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tier", length = 16, nullable = false)
+    @Column(name = "tier", columnDefinition = "varchar(16)", nullable = false)
     private ProblemTierType tier;
 
     @Column(name = "comment", length = 512) // nullable

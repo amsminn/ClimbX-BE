@@ -42,7 +42,7 @@ public class UserAccountEntity extends BaseTimeEntity {
     @Column(name = "user_id", updatable = false, nullable = false)
     private Long userId; // 사용자 ID
 
-    @Column(name = "role", length = 32, nullable = false)
+    @Column(name = "role", columnDefinition = "varchar(32)", nullable = false)
     @NotNull
     @Enumerated(EnumType.STRING)
     private RoleType role; // USER, ADMIN 등 권한

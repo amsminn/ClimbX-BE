@@ -49,7 +49,7 @@ public class SubmissionEntity extends BaseTimeEntity {
     @JoinColumn(name = "problem_id", columnDefinition = "BINARY(16)")
     private ProblemEntity problemEntity; // 문제 엔티티
 
-    @Column(name = "status", length = 32, nullable = false)
+    @Column(name = "status", columnDefinition = "varchar(32)", nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusType status; // 제출 상태, 예: PENDING, ACCEPTED, REJECTED 등
 
@@ -63,7 +63,7 @@ public class SubmissionEntity extends BaseTimeEntity {
     @Builder.Default
     private String appealContent = null; // 항의 내용, nullable
 
-    @Column(name = "appeal_status", length = 32)
+    @Column(name = "appeal_status", columnDefinition = "varchar(32)")
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private StatusType appealStatus = null; // 항소 상태, 예: PENDING, ACCEPTED, REJECTED 등

@@ -85,7 +85,7 @@ public class VideoEntity extends BaseTimeEntity {
     @Size(min = 1, max = 256)
     private String jobId; // AWS MediaConvert 변환 작업 ID
 
-    @Column(name = "status", nullable = false, length = 16)
+    @Column(name = "status", columnDefinition = "varchar(16)", nullable = false)
     @NotNull
     @Enumerated(EnumType.STRING)
     private StatusType status; // 비디오 변환 상태, 예: PENDING, COMPLETED, FAILED 등

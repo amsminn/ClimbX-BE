@@ -306,4 +306,23 @@ public class UserFixture {
             .value(value)
             .build();
     }
+
+    // 예외 테스트를 위한 간단한 헬퍼 메서드들
+    public static void stubUserNotFound(
+        com.climbx.climbx.user.repository.UserAccountRepository userAccountRepository, 
+        Long userId
+    ) {
+        given(userAccountRepository.findByUserId(userId)).willReturn(Optional.empty());
+    }
+
+    public static void stubUserNotFoundByNickname(
+        com.climbx.climbx.user.repository.UserAccountRepository userAccountRepository, 
+        String nickname
+    ) {
+        given(userAccountRepository.findByNickname(nickname)).willReturn(Optional.empty());
+    }
+
+    public static void stubUserStatNotFound(UserStatRepository userStatRepository, Long userId) {
+        given(userStatRepository.findByUserId(userId)).willReturn(Optional.empty());
+    }
 } 

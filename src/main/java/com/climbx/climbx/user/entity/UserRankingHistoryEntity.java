@@ -38,7 +38,7 @@ public class UserRankingHistoryEntity extends BaseTimeEntity {
     @NotNull
     private Long historyId; // 히스토리 ID (Primary Key)
 
-    @Column(name = "criteria", length = 32, nullable = false)
+    @Column(name = "criteria", columnDefinition = "varchar(32)", nullable = false)
     @NotNull
     @Enumerated(EnumType.STRING)
     private CriteriaType criteria; // 히스토리 종류
