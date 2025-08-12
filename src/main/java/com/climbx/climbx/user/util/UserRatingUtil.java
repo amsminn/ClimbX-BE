@@ -99,6 +99,7 @@ public class UserRatingUtil {
                     .sorted(Comparator.reverseOrder())
                     .limit(50)
                     .mapToInt(Integer::intValue)
+                    .map(rating -> ProblemTierType.fromValue(rating).value())
                     .sum();
                 int allSubmissionScore = 10 * Math.min(allRatings.size(), 50);
                 int solvedCountScore = (int) Math.round(
