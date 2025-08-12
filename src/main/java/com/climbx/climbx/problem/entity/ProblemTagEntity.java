@@ -35,7 +35,7 @@ public class ProblemTagEntity extends BaseTimeEntity {
 
     @Id
     @Enumerated(EnumType.STRING)
-    @Column(name = "tag", updatable = false)
+    @Column(name = "tag", columnDefinition = "varchar(32)", updatable = false)
     private ProblemTagType tag;
 
     @Builder.Default

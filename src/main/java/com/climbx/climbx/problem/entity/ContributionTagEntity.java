@@ -35,6 +35,6 @@ public class ContributionTagEntity extends BaseTimeEntity {
 
     @Id
     @Enumerated(EnumType.STRING)
-    @Column(name = "tag", length = 32, nullable = false) // updatable은 추후 논의 필요
+    @Column(name = "tag", columnDefinition = "varchar(32)", nullable = false) // updatable은 추후 논의 필요
     private ProblemTagType tag;
 }

@@ -52,11 +52,11 @@ public class ProblemEntity extends BaseTimeEntity {
     private GymAreaEntity gymArea;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "local_level", length = 32, nullable = false)
+    @Column(name = "local_level", columnDefinition = "varchar(32)", nullable = false)
     private GymTierType localLevel; // 클라이밍장별 레벨, 예: "빨강", "파랑", "초록" 등
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "hold_color", length = 32, nullable = false)
+    @Column(name = "hold_color", columnDefinition = "varchar(32)", nullable = false)
     private HoldColorType holdColor; // 홀드 색상, 예: "빨강", "파랑", "초록" 등
 
     @Builder.Default
@@ -66,15 +66,15 @@ public class ProblemEntity extends BaseTimeEntity {
     private Integer rating = 0; // 문제 난이도
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "problem_tier", length = 16, nullable = false)
+    @Column(name = "problem_tier", columnDefinition = "varchar(16)", nullable = false)
     private ProblemTierType tier;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "primary_tag", length = 16)
+    @Column(name = "primary_tag", columnDefinition = "varchar(16)")
     private ProblemTagType primaryTag;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "secondary_tag", length = 16)
+    @Column(name = "secondary_tag", columnDefinition = "varchar(16)")
     private ProblemTagType secondaryTag;
 
     @Column(name = "problem_image_cdn_url", length = 512)
@@ -82,7 +82,7 @@ public class ProblemEntity extends BaseTimeEntity {
     private String problemImageCdnUrl; // 문제 이미지 CDN URL
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "active_status", length = 16, nullable = false)
+    @Column(name = "active_status", columnDefinition = "varchar(16)", nullable = false)
     private ActiveStatusType activeStatus; // 문제 상태 (예: 활성화, 비활성화 등)
 
     public void updateRatingAndTierAndTags(
