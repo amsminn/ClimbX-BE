@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -111,7 +111,7 @@ public class AuthController implements AuthApiDocumentation {
      * 회원 탈퇴를 처리합니다. 로그아웃 후 사용자 관련 데이터를 soft delete 처리합니다.
      */
     @Override
-    @PatchMapping("/unregister")
+    @DeleteMapping("/unregister")
     @SuccessStatus(value = HttpStatus.NO_CONTENT)
     public void unregisterUser(
         @AuthenticationPrincipal Long userId,
